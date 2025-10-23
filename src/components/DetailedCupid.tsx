@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import cupidImage from "@/assets/cupid-tlc.jpg";
+import cupidImage from "@/assets/cupid-tlc-transparent.png";
 
 export const DetailedCupid = () => {
   const [isVisible, setIsVisible] = useState(false);

@@ -48,7 +48,7 @@ export const usePlacesSearch = ({ onError }: UsePlacesSearchProps) => {
             };
 
             const places: PlaceItem[] = results.map((place) => {
-              const photoUrl = place.photos?.[0]?.getUrl({ maxWidth: 800 }) || getPlaceholder(place.name);
+              const photoUrl = place.photos?.[0]?.getUrl({ maxWidth: 2400, maxHeight: 2400 }) || getPlaceholder(place.name);
               const distance = place.geometry?.location
                 ? calculateDistance(
                     location.lat,
