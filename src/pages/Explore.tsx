@@ -16,7 +16,6 @@ import { LocationPresets } from "@/components/LocationPresets";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { EventsFeed } from "@/components/EventsFeed";
 import { UpdatesPanel } from "@/components/UpdatesPanel";
-import { PeriodTrackerForGuys } from "@/components/PeriodTrackerForGuys";
 import { trackPlaceView, trackPlaceSave, trackSearch } from "@/components/ActivityTracker";
 
 export default function Explore() {
@@ -131,13 +130,8 @@ export default function Explore() {
 
   return (
     <>
-      <div className="space-y-6 animate-fade-in relative z-10">
-        {/* Period Tracker Section - Full Width */}
-        <PeriodTrackerForGuys />
-
-        {/* Main Search Grid */}
-        <div className="grid lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
+      <div className="grid lg:grid-cols-3 gap-6 animate-fade-in relative z-10">
+        <div className="lg:col-span-2 space-y-6">
           {/* Search Card */}
           <Card className="shadow-soft border-border/50 overflow-hidden">
             <div className="gradient-primary h-1" />
@@ -251,7 +245,6 @@ export default function Explore() {
             onClearPlan={handleClearPlan}
           />
         </div>
-      </div>
 
       <ConfirmDialog
         open={showClearConfirm}

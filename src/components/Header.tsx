@@ -58,6 +58,15 @@ export const Header = () => {
                 Quizzes
               </Button>
             </Link>
+            <Link to="/period-tracker">
+              <Button 
+                variant={isActive("/period-tracker") ? "default" : "outline"} 
+                size="sm"
+                className="gap-1"
+              >
+                📅 Tracker
+              </Button>
+            </Link>
             <Link to="/teefeeme">
               <Button 
                 variant={isActive("/teefeeme") || isActive("/cartoon-generator") ? "default" : "outline"} 
