@@ -17,6 +17,8 @@ import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { EventsFeed } from "@/components/EventsFeed";
 import { UpdatesPanel } from "@/components/UpdatesPanel";
 import { trackPlaceView, trackPlaceSave, trackSearch } from "@/components/ActivityTracker";
+import { WeatherWidget } from "@/components/WeatherWidget";
+import { useWeather } from "@/hooks/useWeather";
 
 export default function Explore() {
   const [showClearConfirm, setShowClearConfirm] = useState(false);
@@ -36,6 +38,7 @@ export default function Explore() {
   const { results, isSearching, search } = usePlacesSearch({
     onError: (message) => setError(message),
   });
+  const { weather, isLoading: isWeatherLoading } = useWeather(location);
 
   useEffect(() => {
     setPlan(storage.getPlan());
@@ -183,6 +186,8 @@ export default function Explore() {
                 currentLocation={location}
               />
 
+              <WeatherWidget weather={weather} isLoading={isWeatherLoading} />
+
               <button
                 onClick={() => setShowUpdates(true)}
                 className="pill flex items-center gap-2 hover:shadow-lg transition-all mx-auto"
@@ -200,8 +205,8 @@ export default function Explore() {
             </CardContent>
           </Card>
 
-          {/* Results Grid - now above everything */}
-          {!isSearching && results.length > 0 ? (
+          {/* Results Grid */}
+          {!isSearching && results.length > 0 && (
             <div className="space-y-4">
               <FilterBar
                 sortBy={sortBy}
@@ -239,16 +244,6 @@ export default function Explore() {
                 </Card>
               )}
             </div>
-          ) : (
-            <Card className="shadow-soft">
-              <CardContent className="pt-6">
-                <EmptyState
-                  icon={Search}
-                  title="Start exploring"
-                  description="Enter a search term and click Search to discover date night spots near you."
-                />
-              </CardContent>
-            </Card>
           )}
 
         </div>
