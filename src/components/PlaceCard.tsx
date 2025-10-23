@@ -12,9 +12,10 @@ interface PlaceCardProps {
   place: PlaceItem;
   onAdd: (place: PlaceItem) => void;
   onFavoriteToggle?: (place: PlaceItem, isFavorite: boolean) => void;
+  onView?: () => void;
 }
 
-export const PlaceCard = ({ place, onAdd, onFavoriteToggle }: PlaceCardProps) => {
+export const PlaceCard = ({ place, onAdd, onFavoriteToggle, onView }: PlaceCardProps) => {
   const [isFavorite, setIsFavorite] = useState(storage.isFavorite(place.id));
   const [showDetails, setShowDetails] = useState(false);
 
@@ -51,7 +52,10 @@ export const PlaceCard = ({ place, onAdd, onFavoriteToggle }: PlaceCardProps) =>
     <>
       <Card 
         className="shadow-soft hover:shadow-glow transition-all duration-300 group overflow-hidden border-border/50 hover:border-primary/30 animate-fade-in cursor-pointer"
-        onClick={() => setShowDetails(true)}
+        onClick={() => {
+          onView?.();
+          setShowDetails(true);
+        }}
       >
         <div className="relative overflow-hidden">
         <img

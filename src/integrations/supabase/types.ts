@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_recommendations: {
+        Row: {
+          confidence_score: number | null
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          interacted_at: string | null
+          interaction_type: string | null
+          reason: string | null
+          recommendation_data: Json
+          recommendation_type: string
+          shown_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          interacted_at?: string | null
+          interaction_type?: string | null
+          reason?: string | null
+          recommendation_data: Json
+          recommendation_type: string
+          shown_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          interacted_at?: string | null
+          interaction_type?: string | null
+          reason?: string | null
+          recommendation_data?: Json
+          recommendation_type?: string
+          shown_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       app_updates: {
         Row: {
           changes: Json
@@ -156,6 +198,57 @@ export type Database = {
           },
         ]
       }
+      okc_events_cache: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          discovered_by: string | null
+          event_date: string
+          event_name: string
+          event_time: string | null
+          event_type: string | null
+          id: string
+          price_range: string | null
+          relevance_score: number | null
+          updated_at: string | null
+          url: string | null
+          venue_address: string | null
+          venue_name: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          discovered_by?: string | null
+          event_date: string
+          event_name: string
+          event_time?: string | null
+          event_type?: string | null
+          id?: string
+          price_range?: string | null
+          relevance_score?: number | null
+          updated_at?: string | null
+          url?: string | null
+          venue_address?: string | null
+          venue_name?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          discovered_by?: string | null
+          event_date?: string
+          event_name?: string
+          event_time?: string | null
+          event_type?: string | null
+          id?: string
+          price_range?: string | null
+          relevance_score?: number | null
+          updated_at?: string | null
+          url?: string | null
+          venue_address?: string | null
+          venue_name?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -230,6 +323,66 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_activity_log: {
+        Row: {
+          activity_data: Json
+          activity_type: string
+          id: string
+          timestamp: string | null
+          user_id: string | null
+        }
+        Insert: {
+          activity_data: Json
+          activity_type: string
+          id?: string
+          timestamp?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          activity_data?: Json
+          activity_type?: string
+          id?: string
+          timestamp?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      user_preferences: {
+        Row: {
+          confidence_score: number | null
+          created_at: string | null
+          id: string
+          interaction_count: number | null
+          learned_from: string | null
+          preference_type: string
+          preference_value: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string | null
+          id?: string
+          interaction_count?: number | null
+          learned_from?: string | null
+          preference_type: string
+          preference_value: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string | null
+          id?: string
+          interaction_count?: number | null
+          learned_from?: string | null
+          preference_type?: string
+          preference_value?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {

@@ -16,6 +16,9 @@ import { usePlacesSearch } from "@/hooks/usePlacesSearch";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { LocationPresets } from "@/components/LocationPresets";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { AIRecommendations } from "@/components/AIRecommendations";
+import { EventsFeed } from "@/components/EventsFeed";
+import { trackPlaceView, trackPlaceSave, trackSearch } from "@/components/ActivityTracker";
 
 export default function Explore() {
   const [showClearConfirm, setShowClearConfirm] = useState(false);
@@ -69,6 +72,7 @@ export default function Explore() {
     
     storage.addToPlan(place);
     setPlan(storage.getPlan());
+    trackPlaceSave(place);
     toast.success(`${place.name} added to plan!`);
   }, []);
 
@@ -106,6 +110,7 @@ export default function Explore() {
   const handleLoadingComplete = useCallback(() => {
     setShowLoadingScreen(false);
     search(query, location, parseInt(radius, 10));
+    trackSearch(query, { radius, location });
     setSortBy("distance");
   }, [query, location, radius, search]);
 
@@ -160,6 +165,12 @@ export default function Explore() {
             </CardContent>
           </Card>
 
+          {/* AI Recommendations */}
+          <AIRecommendations />
+
+          {/* Events Feed */}
+          <EventsFeed />
+
           {/* Results Grid */}
           {isSearching ? (
             <div className="flex items-center justify-center py-20">
@@ -202,6 +213,7 @@ export default function Explore() {
                         place={place} 
                         onAdd={handleAddToPlan}
                         onFavoriteToggle={handleFavoriteToggle}
+                        onView={() => trackPlaceView(place)}
                       />
                     </div>
                   ))}
