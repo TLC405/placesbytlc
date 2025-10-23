@@ -1,299 +1,178 @@
 import { useEffect, useState } from "react";
-import { Heart } from "lucide-react";
-import cupidImage from "@/assets/cupid-character.jpg";
-import { removeBackground, loadImageFromUrl } from "@/lib/image/backgroundRemoval";
+import cupidImage from "@/assets/cupid-transparent.png";
 
 export const DetailedCupid = () => {
   const [isVisible, setIsVisible] = useState(false);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [rotation, setRotation] = useState(0);
-  const [isBlowingKiss, setIsBlowingKiss] = useState(false);
-  const [isFalling, setIsFalling] = useState(false);
-  const [isKissDetecting, setIsKissDetecting] = useState(false);
-  const [countdown, setCountdown] = useState<number | null>(null);
-  const [isPermanentlyRemoved, setIsPermanentlyRemoved] = useState(false);
-  const [tempRemoveUntil, setTempRemoveUntil] = useState<number | null>(null);
-  const [cutoutSrc, setCutoutSrc] = useState<string | null>(null);
+  const [position, setPosition] = useState({ x: 20, y: 20 });
+  const [velocity, setVelocity] = useState({ x: 0.8, y: 0.6 });
+  const [eyeOffset, setEyeOffset] = useState({ x: 0, y: 0 });
+  const [hiddenUntil, setHiddenUntil] = useState<number | null>(null);
 
-  // Check for permanent removal and temporary removal
+  // Check if temporarily hidden
   useEffect(() => {
-    const permanentRemove = localStorage.getItem('cupid_permanent_remove');
-    const tempRemove = localStorage.getItem('cupid_temp_remove');
-    
-    if (permanentRemove === 'true') {
-      setIsPermanentlyRemoved(true);
-      return;
-    }
-    
-    if (tempRemove) {
-      const removeUntil = parseInt(tempRemove);
-      if (Date.now() < removeUntil) {
-        setTempRemoveUntil(removeUntil);
+    const checkHidden = localStorage.getItem('cupid_hidden_until');
+    if (checkHidden) {
+      const hideUntil = parseInt(checkHidden);
+      if (Date.now() < hideUntil) {
+        setHiddenUntil(hideUntil);
+        setIsVisible(false);
       } else {
-        localStorage.removeItem('cupid_temp_remove');
+        localStorage.removeItem('cupid_hidden_until');
+        setIsVisible(true);
       }
+    } else {
+      // Show after 3 seconds on load
+      setTimeout(() => setIsVisible(true), 3000);
     }
   }, []);
 
-  // One-time background removal and cache in localStorage
+  // Timer to check when to reappear
   useEffect(() => {
-    const run = async () => {
-      try {
-        const cached = localStorage.getItem('cupid_cutout_src');
-        if (cached) {
-          setCutoutSrc(cached);
-          return;
-        }
-        const img = await loadImageFromUrl(cupidImage);
-        const dataUrl = await removeBackground(img);
-        localStorage.setItem('cupid_cutout_src', dataUrl);
-        setCutoutSrc(dataUrl);
-      } catch (e) {
-        console.warn('Cupid background removal failed, using original image');
-        setCutoutSrc(null);
-      }
-    };
-    run();
-  }, []);
-
-  // Check if temp remove expired
-  useEffect(() => {
-    if (tempRemoveUntil) {
+    if (hiddenUntil) {
       const interval = setInterval(() => {
-        if (Date.now() >= tempRemoveUntil) {
-          setTempRemoveUntil(null);
-          localStorage.removeItem('cupid_temp_remove');
+        if (Date.now() >= hiddenUntil) {
+          setHiddenUntil(null);
+          localStorage.removeItem('cupid_hidden_until');
+          setIsVisible(true);
         }
-      }, 1000);
+      }, 500);
       return () => clearInterval(interval);
     }
-  }, [tempRemoveUntil]);
+  }, [hiddenUntil]);
 
-  // Motion detection for "kiss" gesture
+  // Bounce animation - screen pet behavior
   useEffect(() => {
-    if (isPermanentlyRemoved || tempRemoveUntil || !isVisible) return;
+    if (!isVisible || hiddenUntil) return;
 
-    let lastZ = 0;
-    let rapidMoveCount = 0;
+    const interval = setInterval(() => {
+      setPosition((prev) => {
+        let newX = prev.x + velocity.x;
+        let newY = prev.y + velocity.y;
+        let newVelX = velocity.x;
+        let newVelY = velocity.y;
 
-    const handleMotion = (event: DeviceMotionEvent) => {
-      const accel = event.accelerationIncludingGravity;
-      if (!accel || !accel.z) return;
-
-      const currentZ = accel.z;
-      const zDiff = Math.abs(currentZ - lastZ);
-
-      // Detect rapid forward movement (phone towards face)
-      if (zDiff > 8) {
-        rapidMoveCount++;
-        if (rapidMoveCount >= 3) {
-          setIsKissDetecting(true);
-          rapidMoveCount = 0;
+        // Bounce off edges (leave 15% padding for cupid size)
+        if (newX <= 5 || newX >= 85) {
+          newVelX = -velocity.x;
+          newX = newX <= 5 ? 5 : 85;
         }
-      } else {
-        rapidMoveCount = Math.max(0, rapidMoveCount - 1);
-      }
-
-      lastZ = currentZ;
-    };
-
-    window.addEventListener('devicemotion', handleMotion);
-    return () => window.removeEventListener('devicemotion', handleMotion);
-  }, [isPermanentlyRemoved, tempRemoveUntil, isVisible]);
-
-  // Kiss countdown sequence
-  useEffect(() => {
-    if (!isKissDetecting) return;
-
-    const audio = new Audio();
-    const countdownSequence = [3, 2, 1, 0];
-    let index = 0;
-
-    const countdownInterval = setInterval(() => {
-      if (index < countdownSequence.length) {
-        const num = countdownSequence[index];
-        setCountdown(num);
-        
-        // Play countdown audio (using speech synthesis as fallback)
-        if ('speechSynthesis' in window) {
-          const utterance = new SpeechSynthesisUtterance(num === 0 ? 'aweee' : num.toString());
-          utterance.rate = 1.5;
-          window.speechSynthesis.speak(utterance);
+        if (newY <= 5 || newY >= 80) {
+          newVelY = -velocity.y;
+          newY = newY <= 5 ? 5 : 80;
         }
-        
-        index++;
-      } else {
-        clearInterval(countdownInterval);
-        localStorage.setItem('cupid_permanent_remove', 'true');
-        setIsPermanentlyRemoved(true);
-        setIsVisible(false);
-        setIsKissDetecting(false);
-        setCountdown(null);
-      }
-    }, 800);
 
-    return () => clearInterval(countdownInterval);
-  }, [isKissDetecting]);
+        setVelocity({ x: newVelX, y: newVelY });
+        return { x: newX, y: newY };
+      });
+    }, 50);
 
+    return () => clearInterval(interval);
+  }, [isVisible, velocity, hiddenUntil]);
+
+  // Eye tracking - follow mouse/touch
   useEffect(() => {
-    if (isPermanentlyRemoved || tempRemoveUntil) return;
+    if (!isVisible || hiddenUntil) return;
 
-    const showCupid = () => {
-      // Random position (percentages for responsive)
-      const x = Math.random() * 80 + 10; // 10% to 90%
-      const y = Math.random() * 70 + 10; // 10% to 80%
-      const rot = (Math.random() - 0.5) * 30;
+    const handleMove = (clientX: number, clientY: number) => {
+      // Calculate offset from center of cupid to cursor
+      const cupidCenterX = (position.x / 100) * window.innerWidth;
+      const cupidCenterY = (position.y / 100) * window.innerHeight;
       
-      setPosition({ x, y });
-      setRotation(rot);
-      setIsVisible(true);
-      setIsFalling(false);
-
-      // Randomly blow kiss (30% chance)
-      if (Math.random() < 0.3) {
-        setTimeout(() => setIsBlowingKiss(true), 2000);
-        setTimeout(() => setIsBlowingKiss(false), 3000);
+      const deltaX = clientX - cupidCenterX;
+      const deltaY = clientY - cupidCenterY;
+      
+      // Normalize to -1 to 1 range and limit movement
+      const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+      const maxOffset = 8; // Max pixels eyes can move
+      
+      if (distance > 0) {
+        setEyeOffset({
+          x: Math.max(-maxOffset, Math.min(maxOffset, (deltaX / distance) * Math.min(distance / 50, maxOffset))),
+          y: Math.max(-maxOffset, Math.min(maxOffset, (deltaY / distance) * Math.min(distance / 50, maxOffset)))
+        });
       }
-
-      // Hide after 8 seconds
-      setTimeout(() => {
-        setIsVisible(false);
-      }, 8000);
     };
 
-    // Show every 15 seconds
-    const interval = setInterval(showCupid, 15000);
+    const handleMouseMove = (e: MouseEvent) => handleMove(e.clientX, e.clientY);
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        handleMove(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('touchmove', handleTouchMove);
     
-    // Show after 5 seconds on mount
-    const initialTimer = setTimeout(showCupid, 5000);
-
     return () => {
-      clearInterval(interval);
-      clearTimeout(initialTimer);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('touchmove', handleTouchMove);
     };
-  }, [isPermanentlyRemoved, tempRemoveUntil]);
+  }, [isVisible, position, hiddenUntil]);
 
   const handleTap = () => {
-    // Temp remove for 30 seconds
-    const removeUntil = Date.now() + 30000;
-    localStorage.setItem('cupid_temp_remove', removeUntil.toString());
-    setTempRemoveUntil(removeUntil);
+    // Hide for 10 seconds
+    const hideUntil = Date.now() + 10000;
+    localStorage.setItem('cupid_hidden_until', hideUntil.toString());
+    setHiddenUntil(hideUntil);
     setIsVisible(false);
   };
 
-  const handleSwat = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsFalling(true);
-    setTimeout(() => {
-      setIsVisible(false);
-      setIsFalling(false);
-    }, 1000);
-  };
-
-  if (!isVisible || isPermanentlyRemoved || tempRemoveUntil) return null;
+  if (!isVisible || hiddenUntil) return null;
 
   return (
     <div
-      className={`fixed z-50 transition-all duration-1000 cursor-pointer ${
-        isFalling ? 'animate-fall-and-spin' : 'pointer-events-auto'
-      }`}
+      className="fixed z-50 cursor-pointer transition-all duration-300 hover:scale-110"
       style={{
         left: `${position.x}%`,
         top: `${position.y}%`,
-        transform: `translate(-50%, -50%) rotate(${rotation}deg) scale(0.4)`,
-        opacity: isVisible ? 1 : 0,
-        transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
-        willChange: 'transform, opacity',
-        filter: 'drop-shadow(0 20px 45px rgba(0,0,0,0.45))',
+        transform: 'translate(-50%, -50%)',
+        width: '140px',
+        height: 'auto',
+        filter: 'drop-shadow(0 10px 25px rgba(0,0,0,0.3))',
+        pointerEvents: 'auto',
       }}
       onClick={handleTap}
-      onDoubleClick={handleSwat}
     >
-      {countdown !== null && (
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-full mb-4 text-6xl font-black text-white drop-shadow-lg animate-pulse z-50">
-          {countdown === 0 ? '❤️ AWEEE!' : countdown}
-        </div>
-      )}
-
-      <div className={`relative ${isFalling ? '' : 'animate-float-gentle'}`}>
+      <div className="relative animate-float-gentle">
         <img
-          src={cutoutSrc || cupidImage}
+          src={cupidImage}
           alt="TLC Cupid"
+          className="w-full h-auto"
+        />
+        
+        {/* Animated eyes overlay - follows cursor */}
+        <div 
+          className="absolute top-[28%] left-[42%] w-3 h-3 rounded-full bg-black transition-transform duration-200"
           style={{
-            width: "520px",
-            height: "auto",
-            filter: "drop-shadow(0 24px 60px rgba(0,0,0,0.55))",
+            transform: `translate(${eyeOffset.x}px, ${eyeOffset.y}px)`,
           }}
         />
-
-        {/* Blown Kiss Heart */}
-        {isBlowingKiss && (
-          <div className="absolute top-8 left-1/2 -translate-x-1/2 animate-kiss-float">
-            <Heart className="w-12 h-12 text-pink-500 fill-pink-500" />
-          </div>
-        )}
-
-        {/* Emojis/hearts removed around the cupid for cleaner UI */}
+        <div 
+          className="absolute top-[28%] right-[42%] w-3 h-3 rounded-full bg-black transition-transform duration-200"
+          style={{
+            transform: `translate(${eyeOffset.x}px, ${eyeOffset.y}px)`,
+          }}
+        />
       </div>
 
       <style>{`
         @keyframes float-gentle {
           0%, 100% {
-            transform: translateY(0px) scale(1);
+            transform: translateY(0px) rotate(0deg);
+          }
+          25% {
+            transform: translateY(-8px) rotate(2deg);
           }
           50% {
-            transform: translateY(-15px) scale(1.03);
+            transform: translateY(-12px) rotate(0deg);
           }
-        }
-
-        @keyframes float-heart-slow {
-          0% {
-            transform: translate(0, 0) rotate(0deg) scale(1);
-            opacity: 1;
-          }
-          100% {
-            transform: translate(-30px, 60px) rotate(180deg) scale(0);
-            opacity: 0;
-          }
-        }
-
-        @keyframes kiss-float {
-          0% {
-            transform: translate(0, 0) scale(1);
-            opacity: 1;
-          }
-          100% {
-            transform: translate(50px, -50px) scale(0.5);
-            opacity: 0;
-          }
-        }
-
-        @keyframes fall-and-spin {
-          0% {
-            transform: translateY(0) rotate(0deg);
-            opacity: 1;
-          }
-          100% {
-            transform: translateY(100vh) rotate(720deg);
-            opacity: 0;
+          75% {
+            transform: translateY(-8px) rotate(-2deg);
           }
         }
 
         .animate-float-gentle {
-          animation: float-gentle 3.5s ease-in-out infinite;
-        }
-
-        .animate-float-heart-slow {
-          animation: float-heart-slow 4s ease-out infinite;
-        }
-
-        .animate-kiss-float {
-          animation: kiss-float 2s ease-out forwards;
-        }
-
-        .animate-fall-and-spin {
-          animation: fall-and-spin 1s ease-in forwards;
-          pointer-events: none;
+          animation: float-gentle 4s ease-in-out infinite;
         }
       `}</style>
     </div>
