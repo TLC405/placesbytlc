@@ -42,7 +42,7 @@ export default function Home() {
                 ✨ Welcome to FELICIA.TLC ✨
               </CardTitle>
               <CardDescription className="text-base md:text-lg leading-relaxed">
-                Your personalized AI-powered love journey awaits. Discover enchanting date spots, curated just for you! 💕
+                The app that adds to our story. Discover enchanting date spots, curated just for you! 💕
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
