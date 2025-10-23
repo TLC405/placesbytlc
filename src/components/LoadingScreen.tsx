@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Heart, Sparkles } from "lucide-react";
+import feliciaPhoto from "@/assets/felicia-photo.jpg";
 
 export const LoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
   const [isVisible, setIsVisible] = useState(true);
@@ -25,15 +26,42 @@ export const LoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex items-center justify-center transition-all duration-700 ${
+      className={`fixed inset-0 z-50 flex items-center justify-center transition-all duration-700 overflow-hidden ${
         isVisible ? "opacity-100" : "opacity-0 pointer-events-none"
       }`}
-      style={{
-        background: 'linear-gradient(135deg, #FF6B9D 0%, #C239B3 50%, #FF6B9D 100%)',
-        backgroundSize: '200% 200%',
-        animation: 'gradient-shift 3s ease infinite'
-      }}
     >
+      {/* Background Image with Clay Filter Effect */}
+      <div 
+        className="absolute inset-0 animate-fade-in"
+        style={{
+          backgroundImage: `url(${feliciaPhoto})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          filter: 'saturate(1.4) contrast(1.1) brightness(0.85)',
+          animation: 'gentle-zoom 20s ease-in-out infinite'
+        }}
+      />
+      
+      {/* Clay/Frosted Glass Overlay */}
+      <div 
+        className="absolute inset-0"
+        style={{
+          background: 'linear-gradient(135deg, rgba(255, 107, 157, 0.7) 0%, rgba(194, 57, 179, 0.8) 50%, rgba(255, 107, 157, 0.7) 100%)',
+          backgroundSize: '200% 200%',
+          animation: 'gradient-shift 3s ease infinite',
+          backdropFilter: 'blur(8px) saturate(180%)',
+          mixBlendMode: 'multiply'
+        }}
+      />
+      
+      {/* Additional Clay Texture Layer */}
+      <div 
+        className="absolute inset-0 opacity-30"
+        style={{
+          background: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.05) 10px, rgba(255,255,255,0.05) 20px)',
+          animation: 'texture-shift 8s linear infinite'
+        }}
+      />
       {/* Floating sparkles */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {[...Array(20)].map((_, i) => (
@@ -119,16 +147,45 @@ export const LoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-pulse -z-10" />
             </div>
 
-            {/* Felicia message with sparkle */}
+            {/* Felicia message with 3D clay effect */}
             <div 
-              className="text-white text-4xl md:text-5xl lg:text-6xl font-black drop-shadow-2xl animate-fade-in relative"
-              style={{ animationDelay: '1.2s', animationFillMode: 'backwards' }}
+              className="text-white text-5xl md:text-6xl lg:text-7xl font-black animate-fade-in relative"
+              style={{ 
+                animationDelay: '1.2s', 
+                animationFillMode: 'backwards',
+                textShadow: `
+                  3px 3px 0px rgba(255, 182, 193, 0.4),
+                  6px 6px 0px rgba(255, 105, 180, 0.3),
+                  9px 9px 0px rgba(219, 112, 147, 0.2),
+                  12px 12px 20px rgba(0, 0, 0, 0.3),
+                  0 0 40px rgba(255, 192, 203, 0.5)
+                `,
+                transform: 'perspective(1000px) rotateX(5deg)',
+                animation: 'float 3s ease-in-out infinite, fade-in 0.6s ease-out backwards 1.2s'
+              }}
             >
-              <span className="bg-gradient-to-r from-rose-200 via-pink-200 to-purple-200 bg-clip-text text-transparent">
+              <span 
+                className="relative inline-block"
+                style={{
+                  background: 'linear-gradient(145deg, #FFE4E1, #FFC0CB, #FFB6C1)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                  filter: 'brightness(1.2) saturate(1.3)'
+                }}
+              >
                 Felicia
               </span>
-              <span className="text-rose-200 ml-2">*</span>
-              <div className="absolute -inset-8 bg-gradient-to-r from-rose-400 via-pink-400 to-purple-400 blur-3xl opacity-40 animate-pulse -z-10" />
+              <span 
+                className="ml-2 inline-block animate-pulse"
+                style={{
+                  color: '#FFE4E1',
+                  textShadow: '0 0 20px rgba(255, 192, 203, 0.8), 0 0 40px rgba(255, 182, 193, 0.6)'
+                }}
+              >
+                *
+              </span>
+              <div className="absolute -inset-8 bg-gradient-to-r from-rose-300 via-pink-300 to-rose-300 blur-3xl opacity-50 animate-pulse -z-10" />
             </div>
 
             {/* Subtitle */}
@@ -157,6 +214,33 @@ export const LoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
           0% { background-position: 0% 50%; }
           50% { background-position: 100% 50%; }
           100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes gentle-zoom {
+          0%, 100% { 
+            transform: scale(1); 
+          }
+          50% { 
+            transform: scale(1.05); 
+          }
+        }
+        
+        @keyframes texture-shift {
+          0% { 
+            transform: translateX(0) translateY(0); 
+          }
+          100% { 
+            transform: translateX(20px) translateY(20px); 
+          }
+        }
+        
+        @keyframes float {
+          0%, 100% {
+            transform: perspective(1000px) rotateX(5deg) translateY(0px);
+          }
+          50% {
+            transform: perspective(1000px) rotateX(5deg) translateY(-10px);
+          }
         }
       `}</style>
     </div>
