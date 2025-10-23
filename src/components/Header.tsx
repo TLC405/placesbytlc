@@ -20,6 +20,7 @@ export const Header = () => {
     { path: "/quizzes", label: "Quizzes", icon: null },
     { path: "/period-tracker", label: "Peripod", icon: "📅" },
     { path: "/teefeeme", label: "TeeFee Me", icon: "🎨" },
+    { path: "/install", label: "Install", icon: "📲" },
   ];
   
   return (

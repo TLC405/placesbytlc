@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Lock, Users, Activity, MapPin, Calendar, Eye, TrendingUp } from "lucide-react";
+import { Lock, Users, Activity, MapPin, Calendar, Eye, TrendingUp, Download, Code2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -28,6 +28,7 @@ export default function AdminPanel() {
   const [selectedUser, setSelectedUser] = useState<UserAnalytics | null>(null);
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [downloadingSource, setDownloadingSource] = useState(false);
 
   // Check admin authorization
   useEffect(() => {
@@ -59,6 +60,29 @@ export default function AdminPanel() {
     
     checkAuth();
   }, []);
+
+  const handleDownloadSource = async () => {
+    setDownloadingSource(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('download-source', {
+        body: {}
+      });
+
+      if (error) throw error;
+
+      if (data?.download_url) {
+        window.open(data.download_url, '_blank');
+        toast.success("Source code download started!");
+      } else {
+        toast.error("Failed to generate download link");
+      }
+    } catch (error) {
+      console.error('Error downloading source:', error);
+      toast.error("Failed to download source code");
+    } finally {
+      setDownloadingSource(false);
+    }
+  };
 
   const fetchUserAnalytics = async () => {
     try {
@@ -144,6 +168,34 @@ export default function AdminPanel() {
 
   return (
     <div className="space-y-4 sm:space-y-6">
+      {/* Admin Actions */}
+      <div className="flex flex-wrap gap-3">
+        <Button 
+          variant="outline" 
+          onClick={handleDownloadSource}
+          disabled={downloadingSource}
+        >
+          {downloadingSource ? (
+            <>
+              <div className="animate-spin rounded-full h-4 w-4 border-2 border-primary border-t-transparent mr-2" />
+              Preparing...
+            </>
+          ) : (
+            <>
+              <Download className="w-4 h-4 mr-2" />
+              Download Source Code
+            </>
+          )}
+        </Button>
+        <Button 
+          variant="outline" 
+          onClick={() => window.open('/code', '_blank')}
+        >
+          <Code2 className="w-4 h-4 mr-2" />
+          View Code Browser
+        </Button>
+      </div>
+
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <Card>
