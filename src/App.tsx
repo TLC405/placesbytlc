@@ -21,7 +21,6 @@ const TeeFeeMeCartoonifier = lazy(() => import("./pages/TeeFeeMeCartoonifier"));
 const PeriodTracker = lazy(() => import("./pages/PeriodTracker"));
 const Install = lazy(() => import("./pages/Install"));
 const FeliciaModPanel = lazy(() => import("./components/FeliciaModPanel"));
-const AdminPanel = lazy(() => import("./pages/AdminPanel"));
 const CodeViewer = lazy(() => import("./pages/CodeViewer"));
 
 import { useGoogleMaps } from "@/hooks/useGoogleMaps";
@@ -74,7 +73,6 @@ const App = () => {
                 <Route path="/install" element={<Install />} />
                 <Route path="/code" element={<CodeViewer />} />
                 <Route path="/felicia-mod" element={<FeliciaModPanel />} />
-                <Route path="/admin-1309" element={<AdminPanel />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
