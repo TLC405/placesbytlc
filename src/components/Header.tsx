@@ -15,9 +15,11 @@ export const Header = () => {
       <header className="sticky top-0 z-40 glass shadow-romantic border-b border-primary/20">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 to-rose-600 grid place-items-center text-white shadow-lg group-hover:scale-110 transition-all duration-300 font-bold text-base">
-              T&F
-            </div>
+            <img 
+              src="/src/assets/felicia-photo.jpg" 
+              alt="Felicia" 
+              className="w-16 h-16 rounded-full object-cover border-2 border-primary/30 shadow-lg group-hover:scale-110 transition-all duration-300"
+            />
             <div className="leading-tight">
               <div className="text-lg font-bold text-foreground">TLC & Felicia's</div>
               <div className="text-xs text-rose-600 -mt-0.5 font-medium">Date Night</div>

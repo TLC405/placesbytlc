@@ -165,8 +165,26 @@ export default function Explore() {
             </CardContent>
           </Card>
 
-          {/* AI Recommendations */}
-          <AIRecommendations />
+          {/* AI Weekend Suggestions */}
+          <Card className="shadow-soft border-primary/20">
+            <div className="gradient-primary h-1" />
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center">
+                  <Sparkles className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <CardTitle>AI Weekend Suggestions</CardTitle>
+                  <CardDescription>
+                    Personalized recommendations for your upcoming weekend
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <AIRecommendations />
+            </CardContent>
+          </Card>
 
           {/* Events Feed */}
           <EventsFeed />
