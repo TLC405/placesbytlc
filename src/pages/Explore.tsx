@@ -15,6 +15,7 @@ import { useGeolocation } from "@/hooks/useGeolocation";
 import { LocationPresets } from "@/components/LocationPresets";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { EventsFeed } from "@/components/EventsFeed";
+import { UpdatesPanel } from "@/components/UpdatesPanel";
 import { trackPlaceView, trackPlaceSave, trackSearch } from "@/components/ActivityTracker";
 
 export default function Explore() {
@@ -27,6 +28,8 @@ export default function Explore() {
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [favorites, setFavorites] = useState<PlaceItem[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [categoryType, setCategoryType] = useState<"food" | "activity" | "both">("both");
+  const [showUpdates, setShowUpdates] = useState(false);
 
   // Custom hooks
   const { location, setCustomLocation } = useGeolocation();
@@ -143,18 +146,28 @@ export default function Explore() {
                 radius={radius}
                 onQueryChange={setQuery}
                 onRadiusChange={setRadius}
-                onSearch={handleSearch}
-                disabled={isSearching}
-                loading={isSearching}
-                selectedCategories={selectedCategories}
-                onCategoryToggle={handleCategoryToggle}
-              />
+            onSearch={handleSearch}
+            disabled={isSearching}
+            loading={isSearching}
+            selectedCategories={selectedCategories}
+            onCategoryToggle={handleCategoryToggle}
+            categoryType={categoryType}
+            onCategoryTypeChange={setCategoryType}
+          />
 
               <LocationPresets 
                 onSelectLocation={handleLocationPreset}
                 disabled={isSearching}
                 currentLocation={location}
               />
+
+              <button
+                onClick={() => setShowUpdates(true)}
+                className="pill flex items-center gap-2 hover:shadow-lg transition-all mx-auto"
+              >
+                <Sparkles className="h-4 w-4 text-rose" />
+                <span className="text-sm font-medium">What's New</span>
+              </button>
 
               {error && (
                 <Alert variant="destructive" className="animate-in fade-in">
@@ -234,6 +247,8 @@ export default function Explore() {
         confirmText="Yes, Clear Plan"
         cancelText="Keep Plan"
       />
+
+      <UpdatesPanel isOpen={showUpdates} onClose={() => setShowUpdates(false)} />
     </>
   );
 }

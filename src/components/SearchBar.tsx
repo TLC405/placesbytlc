@@ -14,6 +14,8 @@ interface SearchBarProps {
   loading?: boolean;
   selectedCategories?: string[];
   onCategoryToggle?: (category: string) => void;
+  categoryType?: "food" | "activity" | "both";
+  onCategoryTypeChange?: (type: "food" | "activity" | "both") => void;
 }
 
 const CATEGORY_OPTIONS = [
@@ -37,6 +39,8 @@ export const SearchBar = ({
   loading,
   selectedCategories = [],
   onCategoryToggle,
+  categoryType = "both",
+  onCategoryTypeChange,
 }: SearchBarProps) => {
   const handleQueryChange = (value: string) => {
     const sanitized = value.slice(0, 200);
@@ -82,6 +86,27 @@ export const SearchBar = ({
           {loading ? "Searching..." : "Search"}
         </Button>
       </div>
+
+      {onCategoryTypeChange && (
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-sm font-medium text-muted-foreground">Type:</span>
+          <div className="flex gap-2">
+            {(["food", "activity", "both"] as const).map((type) => (
+              <button
+                key={type}
+                onClick={() => onCategoryTypeChange(type)}
+                className={`pill text-sm transition-all ${
+                  categoryType === type
+                    ? "bg-gradient-to-r from-rose to-mauve text-white shadow-md"
+                    : "hover:shadow-md"
+                }`}
+              >
+                {type === "both" ? "Both" : type.charAt(0).toUpperCase() + type.slice(1)}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {onCategoryToggle && (
         <div className="space-y-2">
