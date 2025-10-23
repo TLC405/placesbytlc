@@ -25,6 +25,7 @@ export default function PeriodTracker() {
   const [isLoading, setIsLoading] = useState(false);
   const [existingSetup, setExistingSetup] = useState<TrackerSetup | null>(null);
   const [spamMode, setSpamMode] = useState(false);
+  const [dryRun, setDryRun] = useState(false);
   const [pin, setPin] = useState("");
   const [showPinVerification, setShowPinVerification] = useState(false);
 
@@ -88,7 +89,8 @@ export default function PeriodTracker() {
           guyPhone: '+' + cleanPhone, // Add + prefix for international format
           periodDate,
           cycleLength: parseInt(cycleLength),
-          spamMode
+          spamMode,
+          dryRun
         }
       });
 
@@ -106,7 +108,11 @@ export default function PeriodTracker() {
       localStorage.setItem('periodTrackerSetup', JSON.stringify(setupData));
       setExistingSetup(setupData);
 
-      if (spamMode) {
+      if (dryRun) {
+        toast.success(`🧪 Test successful. No SMS sent.`, {
+          duration: 4000,
+        });
+      } else if (spamMode) {
         toast.success(`😈 ${guyName}'s phone is getting BLOWN UP! Revenge complete!`, {
           duration: 5000,
         });
@@ -115,7 +121,7 @@ export default function PeriodTracker() {
           duration: 5000,
         });
       }
-      
+
       // Reset form
       setPin("");
       setSpamMode(false);

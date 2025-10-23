@@ -3,6 +3,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 const TWILIO_ACCOUNT_SID = Deno.env.get("TWILIO_ACCOUNT_SID");
 const TWILIO_AUTH_TOKEN = Deno.env.get("TWILIO_AUTH_TOKEN");
 const TWILIO_PHONE_NUMBER = Deno.env.get("TWILIO_PHONE_NUMBER");
+const TWILIO_MESSAGING_SERVICE_SID = Deno.env.get("TWILIO_MESSAGING_SERVICE_SID");
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -15,23 +16,38 @@ interface PeriodTrackerRequest {
   periodDate: string;
   cycleLength: number;
   spamMode?: boolean;
+  dryRun?: boolean;
 }
 
 const sendSMS = async (to: string, message: string) => {
-  if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || !TWILIO_PHONE_NUMBER) {
+  if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || (!TWILIO_PHONE_NUMBER && !TWILIO_MESSAGING_SERVICE_SID)) {
     throw new Error("Twilio credentials not configured");
   }
 
-  // Ensure the phone number is in E.164 format (+1XXXXXXXXXX for US)
-  const formattedPhone = to.startsWith('+') ? to : `+${to}`;
+  const toFormatted = to.startsWith('+') ? to : `+${to.replace(/[^\d]/g, '')}`;
+  const fromFormatted = TWILIO_PHONE_NUMBER
+    ? (TWILIO_PHONE_NUMBER.startsWith('+') ? TWILIO_PHONE_NUMBER : `+${TWILIO_PHONE_NUMBER.replace(/[^\d]/g, '')}`)
+    : undefined;
+
+  if (fromFormatted && toFormatted === fromFormatted) {
+    const err = new Error("The destination number cannot be the same as the sender number. Please use a different 'To' number.");
+    // @ts-ignore
+    (err as any)['code'] = 'TO_EQUALS_FROM';
+    throw err;
+  }
 
   const url = `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`;
   
   const formData = new URLSearchParams({
-    To: formattedPhone,
-    From: TWILIO_PHONE_NUMBER,
+    To: toFormatted,
     Body: message,
   });
+
+  if (TWILIO_MESSAGING_SERVICE_SID) {
+    formData.set('MessagingServiceSid', TWILIO_MESSAGING_SERVICE_SID);
+  } else if (fromFormatted) {
+    formData.set('From', fromFormatted);
+  }
 
   const response = await fetch(url, {
     method: "POST",
@@ -43,9 +59,13 @@ const sendSMS = async (to: string, message: string) => {
   });
 
   if (!response.ok) {
-    const error = await response.text();
-    console.error("Twilio error:", error);
-    throw new Error(`Failed to send SMS: ${error}`);
+    let errorText = await response.text();
+    try {
+      const json = JSON.parse(errorText);
+      errorText = JSON.stringify(json);
+    } catch {}
+    console.error("Twilio error:", errorText);
+    throw new Error(`Failed to send SMS: ${errorText}`);
   }
 
   return await response.json();
@@ -57,7 +77,7 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { guyName, guyPhone, periodDate, cycleLength, spamMode }: PeriodTrackerRequest = await req.json();
+    const { guyName, guyPhone, periodDate, cycleLength, spamMode, dryRun }: PeriodTrackerRequest = await req.json();
 
     console.log("Setting up period tracker for:", guyName, guyPhone, "Spam mode:", spamMode);
 
@@ -68,6 +88,25 @@ const handler = async (req: Request): Promise<Response> => {
     
     const oneDayBefore = new Date(periodStartDate);
     oneDayBefore.setDate(oneDayBefore.getDate() - 1);
+
+    // If dry run, don't send SMS — just return schedule for verification
+    if (dryRun) {
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message: "Dry run successful. No SMS sent.",
+          scheduledDates: {
+            threeDaysBefore: threeDaysBefore.toISOString(),
+            oneDayBefore: oneDayBefore.toISOString(),
+            periodDate: periodStartDate.toISOString(),
+          },
+        }),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
 
     if (spamMode) {
       // REVENGE MODE: Send 30 texts over 5 minutes (1 every 10 seconds)
@@ -147,13 +186,16 @@ const handler = async (req: Request): Promise<Response> => {
   } catch (error: any) {
     console.error("Error in period-tracker-setup:", error);
     
+    const msg = error?.message || "Failed to set up period tracker";
+    const statusCode = typeof msg === 'string' && (msg.includes('"status":400') || msg.includes('TO_EQUALS_FROM')) ? 400 : 500;
+
     return new Response(
       JSON.stringify({
-        error: error.message || "Failed to set up period tracker",
-        details: error.toString(),
+        error: msg,
+        details: String(error),
       }),
       {
-        status: 500,
+        status: statusCode,
         headers: { "Content-Type": "application/json", ...corsHeaders },
       }
     );
