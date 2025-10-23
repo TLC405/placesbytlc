@@ -2,13 +2,18 @@ import { lazy, Suspense, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Play } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Play, Shield } from "lucide-react";
 import { AuthPanel } from "@/components/AuthPanel";
 import { supabase } from "@/integrations/supabase/client";
+
+const AdminPanel = lazy(() => import("@/pages/AdminPanel"));
+const FeliciaModPanel = lazy(() => import("@/components/FeliciaModPanel"));
 
 export default function Home() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -23,6 +28,25 @@ export default function Home() {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Check admin status
+  useEffect(() => {
+    const checkAdmin = async () => {
+      if (!user) {
+        setIsAdmin(false);
+        return;
+      }
+      
+      const { data } = await supabase.rpc('has_role', { 
+        _user_id: user.id, 
+        _role: 'admin' 
+      });
+      
+      setIsAdmin(!!data);
+    };
+    
+    checkAdmin();
+  }, [user]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
@@ -32,27 +56,27 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen space-y-8 pb-12 animate-in fade-in duration-700">
+    <div className="min-h-screen space-y-6 sm:space-y-8 pb-12 px-2 sm:px-4 animate-in fade-in duration-700">
       {/* Hero Section - Full Width */}
       <div className="max-w-6xl mx-auto">
         <Card className="shadow-glow border-2 border-primary/40 overflow-hidden hover:shadow-2xl transition-all duration-500 hover-lift">
           <div className="h-3 bg-gradient-to-r from-primary via-accent to-primary animate-gradient bg-[length:200%_100%]" />
-          <CardHeader className="pb-4">
-            <CardTitle className="text-4xl md:text-6xl font-black gradient-text text-center tracking-tight">
+          <CardHeader className="pb-4 px-4 sm:px-6">
+            <CardTitle className="text-2xl sm:text-4xl md:text-6xl font-black gradient-text text-center tracking-tight">
               Welcome to FELICIA.TLC
             </CardTitle>
-            <CardDescription className="text-lg md:text-xl leading-relaxed text-center max-w-2xl mx-auto pt-2">
+            <CardDescription className="text-base sm:text-lg md:text-xl leading-relaxed text-center max-w-2xl mx-auto pt-2">
               Your AI-powered love companion for discovering perfect date spots, romance insights, and relationship tools.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6 px-6 md:px-12 pb-8">
+          <CardContent className="space-y-4 sm:space-y-6 px-4 sm:px-6 md:px-12 pb-6 sm:pb-8">
             <Link to="/explore">
-              <Button size="lg" className="w-full gap-3 h-20 text-xl font-bold shadow-glow hover:shadow-romantic transition-all hover:scale-105 group">
-                <Play className="w-7 h-7 group-hover:scale-110 transition-transform" />
+              <Button size="lg" className="w-full gap-2 sm:gap-3 h-14 sm:h-16 md:h-20 text-base sm:text-lg md:text-xl font-bold shadow-glow hover:shadow-romantic transition-all hover:scale-105 group">
+                <Play className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 group-hover:scale-110 transition-transform" />
                 Start Your Love Journey
               </Button>
             </Link>
-            <div className="text-center text-base text-muted-foreground font-medium">
+            <div className="text-center text-sm sm:text-base text-muted-foreground font-medium">
               ✨ AI-Powered • 🗺️ Smart Discovery • 💝 Made with Love
             </div>
           </CardContent>
@@ -60,7 +84,7 @@ export default function Home() {
       </div>
 
       {/* Feature Cards Grid */}
-      <div className="max-w-6xl mx-auto grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Explore Card */}
         <Link to="/explore">
           <Card className="hover-lift shadow-soft border-primary/20 h-full cursor-pointer group">
@@ -103,6 +127,42 @@ export default function Home() {
           </Card>
         </Link>
       </div>
+
+      {/* Admin Analytics Panel */}
+      {isAdmin && (
+        <div className="max-w-7xl mx-auto">
+          <Card className="border-amber-500/50 bg-gradient-to-br from-amber-50/50 to-orange-50/50 dark:from-amber-950/20 dark:to-orange-950/20">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl">
+                <Shield className="w-5 h-5 sm:w-6 sm:h-6" />
+                Admin Analytics Dashboard
+              </CardTitle>
+              <CardDescription className="text-sm sm:text-base">
+                Monitor user activity, engagement metrics, and app usage
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Suspense fallback={
+                <div className="space-y-4">
+                  <Skeleton className="h-32 w-full" />
+                  <Skeleton className="h-64 w-full" />
+                </div>
+              }>
+                <AdminPanel />
+              </Suspense>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Felicia Mod Panel */}
+      {isAdmin && (
+        <div className="max-w-4xl mx-auto">
+          <Suspense fallback={<Skeleton className="h-48 w-full" />}>
+            <FeliciaModPanel />
+          </Suspense>
+        </div>
+      )}
 
       {/* Auth Panel - Full Width if Not Logged In */}
       {!user && (

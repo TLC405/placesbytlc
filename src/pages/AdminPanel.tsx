@@ -24,32 +24,43 @@ interface UserAnalytics {
 }
 
 export default function AdminPanel() {
-  const [authenticated, setAuthenticated] = useState(false);
-  const [code, setCode] = useState("");
-  const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState<UserAnalytics[]>([]);
   const [selectedUser, setSelectedUser] = useState<UserAnalytics | null>(null);
+  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const handleAuth = () => {
-    if (code === "1309") {
-      setAuthenticated(true);
-      sessionStorage.setItem("admin_auth", "true");
-      toast.success("Access granted");
-      fetchUserAnalytics();
-    } else {
-      toast.error("Invalid code");
-    }
-  };
-
+  // Check admin authorization
   useEffect(() => {
-    if (sessionStorage.getItem("admin_auth") === "true") {
-      setAuthenticated(true);
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast.error("Please log in first");
+        setLoading(false);
+        return;
+      }
+      
+      const { data, error } = await supabase.rpc('has_role', { 
+        _user_id: user.id, 
+        _role: 'admin' 
+      });
+      
+      if (error || !data) {
+        toast.error("Access denied: Admin privileges required");
+        setIsAuthorized(false);
+        setLoading(false);
+        return;
+      }
+      
+      setIsAuthorized(true);
+      setLoading(false);
       fetchUserAnalytics();
-    }
+    };
+    
+    checkAuth();
   }, []);
 
   const fetchUserAnalytics = async () => {
-    setLoading(true);
     try {
       // Fetch all profiles with their activity logs
       const { data: profiles, error: profilesError } = await supabase
@@ -110,65 +121,31 @@ export default function AdminPanel() {
     } catch (error) {
       console.error("Error fetching analytics:", error);
       toast.error("Failed to load analytics");
-    } finally {
-      setLoading(false);
     }
   };
 
-  if (!authenticated) {
+  if (loading) {
     return (
-      <div className="min-h-[80vh] flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
-              <Lock className="w-8 h-8 text-primary" />
-            </div>
-            <CardTitle className="text-2xl">Admin Access</CardTitle>
-            <CardDescription>Enter the admin code to continue</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Input
-              type="password"
-              placeholder="Enter code"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleAuth()}
-              className="text-center text-lg tracking-widest"
-            />
-            <Button onClick={handleAuth} className="w-full" size="lg">
-              Unlock Panel
-            </Button>
-          </CardContent>
-        </Card>
+      <div className="flex items-center justify-center p-8">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent" />
+      </div>
+    );
+  }
+
+  if (!isAuthorized) {
+    return (
+      <div className="text-center p-8">
+        <Lock className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+        <h3 className="text-xl font-semibold mb-2">Access Denied</h3>
+        <p className="text-muted-foreground">You need admin privileges to view this panel.</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold flex items-center gap-3">
-            <Users className="w-8 h-8 text-primary" />
-            Admin Analytics Dashboard
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Comprehensive user activity and engagement metrics
-          </p>
-        </div>
-        <Button
-          variant="outline"
-          onClick={() => {
-            sessionStorage.removeItem("admin_auth");
-            setAuthenticated(false);
-          }}
-        >
-          Lock Panel
-        </Button>
-      </div>
-
+    <div className="space-y-4 sm:space-y-6">
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
@@ -225,7 +202,7 @@ export default function AdminPanel() {
       </div>
 
       {/* Users Table and Details */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle>User Activity</CardTitle>
@@ -243,14 +220,8 @@ export default function AdminPanel() {
                     <TableHead>Locations</TableHead>
                   </TableRow>
                 </TableHeader>
-                <TableBody>
-                  {loading ? (
-                    <TableRow>
-                      <TableCell colSpan={5} className="text-center py-8">
-                        <div className="animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent mx-auto" />
-                      </TableCell>
-                    </TableRow>
-                  ) : users.length === 0 ? (
+                 <TableBody>
+                   {users.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
                         No users found
