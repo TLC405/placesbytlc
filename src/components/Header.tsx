@@ -17,13 +17,13 @@ export const Header = () => {
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3 group">
             <img 
-              src="/src/assets/felicia-photo.jpg" 
-              alt="Felicia" 
-              className="w-16 h-16 rounded-full object-cover border-2 border-primary/30 shadow-lg group-hover:scale-110 transition-all duration-300"
+              src="/felicia-crown.png" 
+              alt="FELICIA.TLC" 
+              className="w-12 h-12 object-contain animate-pulse group-hover:scale-110 transition-all duration-300"
             />
             <div className="leading-tight">
-              <div className="text-lg font-bold text-foreground">TLC & Felicia's</div>
-              <div className="text-xs text-rose-600 -mt-0.5 font-medium">Date Night</div>
+              <div className="text-2xl font-black gradient-text">FELICIA.TLC</div>
+              <div className="text-xs text-primary/70 -mt-1 font-medium tracking-wider">✨ YOUR LOVE JOURNEY ✨</div>
             </div>
           </Link>
           

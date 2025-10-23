@@ -41,22 +41,26 @@ export default function Home() {
       <div className="space-y-6 animate-in fade-in duration-500">
         <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-6">
           {/* Hero Section */}
-          <Card className="shadow-soft border-border/50">
+          <Card className="shadow-soft border-primary/30 overflow-hidden group hover:shadow-2xl transition-all duration-500">
+            <div className="gradient-primary h-2" />
             <CardHeader>
-              <CardTitle className="text-3xl md:text-4xl">
-                Start your date night
+              <CardTitle className="text-3xl md:text-5xl font-black gradient-text">
+                ✨ Welcome to FELICIA.TLC ✨
               </CardTitle>
-              <CardDescription className="text-base">
-                Find amazing spots, build your perfect date night plan
+              <CardDescription className="text-base md:text-lg leading-relaxed">
+                Your personalized AI-powered love journey awaits. Discover enchanting date spots, curated just for you! 💕
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
               <Link to="/explore">
-                <Button size="lg" className="w-full gap-2">
-                  <Play className="w-5 h-5" />
-                  Start Date Night
+                <Button size="lg" className="w-full gap-2 h-16 text-lg font-bold shadow-glow hover:shadow-romantic transition-all hover:scale-105">
+                  <Play className="w-6 h-6" />
+                  Start Your Love Journey
                 </Button>
               </Link>
+              <div className="text-center text-sm text-muted-foreground">
+                🎯 Personalized • 🤖 AI-Powered • 💖 Made with Love
+              </div>
             </CardContent>
           </Card>
 

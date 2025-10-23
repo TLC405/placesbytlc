@@ -11,6 +11,7 @@ import { PlaceCard } from "@/components/PlaceCard";
 import { EmptyState } from "@/components/EmptyState";
 import { FilterBar } from "@/components/FilterBar";
 import { FloatingHearts } from "@/components/FloatingHearts";
+import { FloatingCupid } from "@/components/FloatingCupid";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { usePlacesSearch } from "@/hooks/usePlacesSearch";
 import { useGeolocation } from "@/hooks/useGeolocation";
@@ -119,6 +120,7 @@ export default function Explore() {
   return (
     <>
       <FloatingHearts />
+      <FloatingCupid isActive={isSearching} />
       <div className="grid lg:grid-cols-3 gap-6 animate-fade-in relative z-10">
         <div className="lg:col-span-2 space-y-6">
           {/* Search Card */}
@@ -130,9 +132,9 @@ export default function Explore() {
                   <Sparkles className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <CardTitle>Discover Date Spots</CardTitle>
+                  <CardTitle>✨ Discover Love Spots — FELICIA.TLC ✨</CardTitle>
                   <CardDescription>
-                    Find restaurants, activities, and experiences nearby
+                    AI-powered romantic destinations curated just for you
                   </CardDescription>
                 </div>
               </div>
@@ -188,19 +190,6 @@ export default function Explore() {
           <EventsFeed />
 
           {/* Results Grid */}
-          {isSearching ? (
-            <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
-              <div className="flex flex-col items-center gap-4 bg-background/80 backdrop-blur-md px-8 py-6 rounded-2xl shadow-2xl border-2 border-primary/20">
-                <div className="relative">
-                  <div className="animate-spin rounded-full h-16 w-16 border-4 border-primary/30"></div>
-                  <div className="animate-spin rounded-full h-16 w-16 border-4 border-primary border-t-transparent absolute top-0 left-0"></div>
-                </div>
-                <p className="text-base font-bold text-primary animate-pulse">
-                  Finding perfect spots...
-                </p>
-              </div>
-            </div>
-          ) : null}
           
           {!isSearching && results.length > 0 ? (
             <div className="space-y-4">

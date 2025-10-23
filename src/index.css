@@ -269,4 +269,22 @@ All colors MUST be HSL.
     animation: gradient-shift 3s ease infinite;
     background-size: 200% 200%;
   }
+
+  /* Enhanced Cartoon Theme for Dark Mode */
+  .dark .cartoon-border {
+    border: 5px solid hsl(var(--primary));
+    box-shadow: 0 0 0 3px hsl(var(--background)), 
+                0 0 30px hsla(var(--primary), 0.8), 
+                inset 0 0 20px hsla(var(--primary), 0.3);
+    background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--card)) 100%);
+  }
+
+  .dark .cartoon-text {
+    color: hsl(var(--primary));
+    text-shadow: 2px 2px 0 hsl(var(--background)), 
+                 -2px -2px 0 hsl(var(--background)), 
+                 2px -2px 0 hsl(var(--background)), 
+                 -2px 2px 0 hsl(var(--background)),
+                 0 0 10px hsla(var(--primary), 0.8);
+  }
 }
