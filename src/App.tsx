@@ -35,10 +35,6 @@ const App = () => {
     setShowLoader(false);
   };
 
-  if (showLoader) {
-    return <LoadingScreen onComplete={handleLoadingComplete} />;
-  }
-
   // Ensure Google Maps Places API is loaded once globally
   const { isReady: isMapsReady } = useGoogleMaps();
 
@@ -47,6 +43,7 @@ const App = () => {
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        {showLoader && <LoadingScreen onComplete={handleLoadingComplete} />}
         <BrowserRouter>
           <ActivityTracker />
           <DetailedCupid />
