@@ -50,11 +50,9 @@ export const CommandStation = () => {
 
   const loadAnalytics = async () => {
     try {
-      const { data: activities } = await supabase
-        .from('user_activity_log')
-        .select('*')
-        .order('timestamp', { ascending: false })
-        .limit(1000);
+      const { data, error } = await supabase.functions.invoke('admin-portal-data', { body: { pin: '666' } });
+      if (error) throw error;
+      const activities = (data?.activities || []) as any[];
 
       if (!activities || activities.length === 0) {
         setLoading(false);

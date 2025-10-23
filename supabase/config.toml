@@ -2,3 +2,6 @@ project_id = "gsonwwqjielejftxghjo"
 
 [functions.discover-date-spots]
 verify_jwt = false
+
+[functions.admin-portal-data]
+verify_jwt = false

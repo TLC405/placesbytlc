@@ -56,26 +56,14 @@ export const UserAnalyticsDashboard = () => {
 
   const loadAnalytics = async () => {
     try {
-      // Load user analytics with profile data
-      const { data: analyticsData, error: analyticsError } = await supabase
-        .from('user_analytics')
-        .select(`
-          *,
-          profiles:user_id (
-            email,
-            display_name
-          )
-        `)
-        .order('engagement_score', { ascending: false });
-
-      if (analyticsError) throw analyticsError;
-
-      const formattedData = analyticsData?.map((item: any) => ({
+      const { data, error } = await supabase.functions.invoke('admin-portal-data', { body: { pin: '666' } });
+      if (error) throw error;
+      const analyticsData = data?.analytics || [];
+      const formattedData = analyticsData.map((item: any) => ({
         ...item,
         email: item.profiles?.email || 'Unknown',
-        display_name: item.profiles?.display_name || 'Anonymous User'
-      })) || [];
-
+        display_name: item.profiles?.display_name || 'Anonymous User',
+      }));
       setAnalytics(formattedData);
       setLoading(false);
     } catch (error) {
@@ -86,24 +74,12 @@ export const UserAnalyticsDashboard = () => {
 
   const loadUserDetails = async (userId: string) => {
     try {
-      // Load sessions
-      const { data: sessionsData } = await supabase
-        .from('user_sessions')
-        .select('*')
-        .eq('user_id', userId)
-        .order('session_start', { ascending: false })
-        .limit(20);
-
-      setSessions(sessionsData || []);
-
-      // Load IP history
-      const { data: ipData } = await supabase
-        .from('ip_history')
-        .select('*')
-        .eq('user_id', userId)
-        .order('last_seen', { ascending: false });
-
-      setIpHistory(ipData || []);
+      const { data, error } = await supabase.functions.invoke('admin-portal-data', {
+        body: { pin: '666', detail_user_id: userId }
+      });
+      if (error) throw error;
+      setSessions(data?.sessions || []);
+      setIpHistory(data?.ip_history || []);
     } catch (error) {
       console.error('Error loading user details:', error);
     }

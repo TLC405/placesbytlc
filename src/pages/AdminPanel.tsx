@@ -8,7 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Lock, Users, Activity, MapPin, Calendar, Eye, TrendingUp, Download, Code2, Sparkles, Heart, Crown, Zap, BarChart3, Search, FileText } from "lucide-react";
+import { Lock, Users, Activity, MapPin, Calendar, Eye, TrendingUp, Download, Code2, Sparkles, Heart, Crown, Zap, BarChart3, Search, FileText, Mars, Venus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -40,7 +40,7 @@ export default function AdminPanel() {
   const [activeSection, setActiveSection] = useState("dashboard");
 
   const handlePinSubmit = () => {
-    if (pinInput === "1309") {
+    if (pinInput === "666") {
       setIsUnlocked(true);
       setShowPinDialog(false);
       fetchUserAnalytics();
@@ -76,55 +76,48 @@ export default function AdminPanel() {
 
   const fetchUserAnalytics = async () => {
     try {
-      const { data: profiles, error: profilesError } = await supabase
-        .from("profiles")
-        .select("*")
-        .order("created_at", { ascending: false });
+      const { data, error } = await supabase.functions.invoke('admin-portal-data', {
+        body: { pin: '666' }
+      });
+      if (error) throw error;
 
-      if (profilesError) throw profilesError;
-
-      const { data: activities, error: activitiesError } = await supabase
-        .from("user_activity_log")
-        .select("*")
-        .order("timestamp", { ascending: false });
-
-      if (activitiesError) throw activitiesError;
+      const profiles = data?.profiles || [];
+      const activities = data?.activities || [];
 
       const userMap = new Map<string, UserAnalytics>();
 
-      profiles?.forEach((profile) => {
-        const userActivities = activities?.filter((a) => a.user_id === profile.id) || [];
-        
-        const pageVisits = userActivities.filter((a) => a.activity_type === "page_visit");
-        const placeViews = userActivities.filter((a) => a.activity_type === "place_view");
-        const searches = userActivities.filter((a) => a.activity_type === "search");
-        
+      profiles.forEach((profile: any) => {
+        const userActivities = activities.filter((a: any) => a.user_id === profile.id);
+
+        const pageVisits = userActivities.filter((a: any) => a.activity_type === 'page_visit');
+        const placeViews = userActivities.filter((a: any) => a.activity_type === 'place_view');
+        const searches = userActivities.filter((a: any) => a.activity_type === 'search');
+
         const locations = new Set<string>();
-        userActivities.forEach((activity) => {
-          const data = activity.activity_data as any;
-          if (data?.location) locations.add(data.location);
-          if (data?.country) locations.add(data.country);
-          if (data?.city) locations.add(`${data.city}, ${data.country || ""}`);
+        userActivities.forEach((activity: any) => {
+          const d = activity.activity_data as any;
+          if (d?.location?.city && d?.location?.country_name) locations.add(`${d.location.city}, ${d.location.country_name}`);
+          else if (d?.location?.country_name) locations.add(d.location.country_name);
         });
 
         userMap.set(profile.id, {
           user_id: profile.id,
-          email: profile.email || "No email",
+          email: profile.email || 'Unknown',
           display_name: profile.display_name,
           created_at: profile.created_at,
           total_visits: pageVisits.length,
-          last_visit: userActivities[0]?.timestamp || profile.created_at,
+          last_visit: (userActivities[0]?.timestamp) || profile.created_at,
           locations: Array.from(locations),
-          pages_visited: pageVisits.map((a) => a.activity_data),
-          places_viewed: placeViews.map((a) => a.activity_data),
-          searches: searches.map((a) => a.activity_data),
+          pages_visited: pageVisits.map((a: any) => a.activity_data),
+          places_viewed: placeViews.map((a: any) => a.activity_data),
+          searches: searches.map((a: any) => a.activity_data),
         });
       });
 
       setUsers(Array.from(userMap.values()));
     } catch (error) {
-      console.error("Error fetching analytics:", error);
-      toast.error("Failed to load analytics");
+      console.error('Error fetching analytics:', error);
+      toast.error('Failed to load analytics');
     }
   };
 
@@ -187,13 +180,15 @@ export default function AdminPanel() {
                 </div>
                 <Sparkles className="absolute -top-1 -right-1 w-6 h-6 text-yellow-400 animate-spin" style={{ animationDuration: "3s" }} />
               </div>
-              <div>
-                <h2 className="text-2xl font-black bg-gradient-to-r from-pink-600 via-purple-600 to-rose-600 bg-clip-text text-transparent">
-                  Admin Portal
-                </h2>
-                <p className="text-xs text-muted-foreground flex items-center justify-center gap-1 mt-1">
+                <div>
+                  <h2 className="text-2xl font-black bg-gradient-to-r from-pink-600 via-purple-600 to-rose-600 bg-clip-text text-transparent flex items-center gap-2">
+                    Admin Portal
+                    <Mars className="w-4 h-4 text-blue-400" />
+                    <Venus className="w-4 h-4 text-pink-400" />
+                  </h2>
+                  <p className="text-xs text-muted-foreground flex items-center justify-center gap-1 mt-1">
                   <Zap className="w-3 h-3 text-yellow-500" />
-                  Code: 1309
+                  Code: 666
                   <Zap className="w-3 h-3 text-yellow-500" />
                 </p>
               </div>
