@@ -204,8 +204,11 @@ export const ChangelogModal = ({ open, onOpenChange }: ChangelogModalProps) => {
             <div>
               <DialogTitle className="text-2xl">What's New</DialogTitle>
               <DialogDescription>
-                Version history and upcoming features for V1 Places
+                Updates to make Felicia smile more 💕
               </DialogDescription>
+              <p className="text-sm text-muted-foreground/80 mt-1">
+                Every feature here was built with love, just for you ✨
+              </p>
             </div>
           </div>
         </DialogHeader>
@@ -214,11 +217,11 @@ export const ChangelogModal = ({ open, onOpenChange }: ChangelogModalProps) => {
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="implemented" className="gap-2">
               <Sparkles className="w-4 h-4" />
-              Implemented ({implementedUpdates.length + versions.length})
+              Made Felicia Smile Already 😊 ({implementedUpdates.length + versions.length})
             </TabsTrigger>
             <TabsTrigger value="coming-up" className="gap-2">
               <Rocket className="w-4 h-4" />
-              Coming Up ({comingUpUpdates.length})
+              More Smiles Coming Soon 💖 ({comingUpUpdates.length})
             </TabsTrigger>
           </TabsList>
 
@@ -242,8 +245,8 @@ export const ChangelogModal = ({ open, onOpenChange }: ChangelogModalProps) => {
                 ) : (
                   <div className="text-center py-12 text-muted-foreground">
                     <Rocket className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                    <p className="text-lg font-medium">No upcoming features yet</p>
-                    <p className="text-sm">Check back soon for exciting new updates!</p>
+                    <p className="text-lg font-medium">Planning more magical moments for Felicia 💭✨</p>
+                    <p className="text-sm">Every day is a new opportunity to make you smile! 💝</p>
                   </div>
                 )}
               </div>
