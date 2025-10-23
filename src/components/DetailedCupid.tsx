@@ -126,9 +126,9 @@ export const DetailedCupid = () => {
         left: `${position.x}%`,
         top: `${position.y}%`,
         transform: 'translate(-50%, -50%)',
-        width: '140px',
+        width: '100px',
         height: 'auto',
-        filter: 'drop-shadow(0 10px 25px rgba(0,0,0,0.3))',
+        filter: 'drop-shadow(0 8px 20px rgba(0,0,0,0.25))',
         pointerEvents: 'auto',
       }}
       onClick={handleTap}

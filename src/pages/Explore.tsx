@@ -165,7 +165,7 @@ export default function Explore() {
             </CardContent>
           </Card>
 
-          {/* Results Grid - now above Upcoming */}
+          {/* Results Grid - now above everything */}
           {!isSearching && results.length > 0 ? (
             <div className="space-y-4">
               <FilterBar
@@ -216,8 +216,6 @@ export default function Explore() {
             </Card>
           )}
 
-          {/* Events Feed (Upcoming) */}
-          <EventsFeed />
         </div>
 
         <PlanSidebar 

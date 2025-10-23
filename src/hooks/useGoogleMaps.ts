@@ -11,16 +11,20 @@ export const useGoogleMaps = () => {
     const savedKey = storage.getAPIKey();
     setApiKey(savedKey);
 
-    if (savedKey) {
+    if (savedKey && savedKey.trim()) {
+      console.log('Loading Google Maps with API key');
       loadGoogleMapsScript(savedKey)
         .then(() => {
+          console.log('Google Maps loaded successfully');
           setIsReady(true);
           setIsLoading(false);
         })
-        .catch(() => {
+        .catch((err) => {
+          console.error('Failed to load Google Maps:', err);
           setIsLoading(false);
         });
     } else {
+      console.log('No API key found');
       setIsLoading(false);
     }
   }, []);
