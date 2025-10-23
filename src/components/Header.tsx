@@ -3,6 +3,7 @@ import { Heart, Sparkles } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ChangelogModal } from "@/components/ChangelogModal";
+import { DarkModeToggle } from "@/components/DarkModeToggle";
 
 export const Header = () => {
   const location = useLocation();
@@ -77,6 +78,7 @@ export const Header = () => {
               <Sparkles className="w-4 h-4" />
               Updates
             </Button>
+            <DarkModeToggle />
           </nav>
         </div>
       </header>

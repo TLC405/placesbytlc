@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Upload, Sparkles, Download, RefreshCw, Camera, Wand2 } from "lucide-react";
+import { Upload, Sparkles, Download, RefreshCw, Camera, Wand2, ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
@@ -16,44 +16,52 @@ const TeeFeeMeCartoonifier = () => {
   const [selectedStyle, setSelectedStyle] = useState<CartoonStyle>("simpsons");
   const [showResult, setShowResult] = useState(false);
   const [dragActive, setDragActive] = useState(false);
+  const [elapsedTime, setElapsedTime] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const styles = [
     { 
       id: "simpsons" as CartoonStyle, 
       name: "The Simpsons", 
       emoji: "💛",
-      gradient: "from-yellow-400 to-yellow-600"
+      gradient: "from-yellow-400 to-yellow-600",
+      borderColor: "border-yellow-500"
     },
     { 
       id: "flintstones" as CartoonStyle, 
       name: "Flintstones", 
       emoji: "🦴",
-      gradient: "from-orange-400 to-red-500"
+      gradient: "from-orange-400 to-red-500",
+      borderColor: "border-orange-500"
     },
     { 
       id: "trump" as CartoonStyle, 
       name: "Trump Style", 
       emoji: "🎩",
-      gradient: "from-red-500 to-blue-600"
+      gradient: "from-red-500 to-blue-600",
+      borderColor: "border-blue-500"
     },
     { 
       id: "elon" as CartoonStyle, 
       name: "Elon Musk", 
       emoji: "🚀",
-      gradient: "from-blue-500 to-purple-600"
+      gradient: "from-blue-500 to-purple-600",
+      borderColor: "border-purple-500"
     },
     { 
       id: "familyguy" as CartoonStyle, 
       name: "Family Guy", 
       emoji: "🍺",
-      gradient: "from-green-400 to-blue-500"
+      gradient: "from-green-400 to-blue-500",
+      borderColor: "border-teal-500"
     },
     { 
       id: "renandstimpy" as CartoonStyle, 
       name: "Ren & Stimpy", 
       emoji: "😵",
-      gradient: "from-pink-500 to-red-600"
+      gradient: "from-pink-500 to-red-600",
+      borderColor: "border-red-500"
     },
   ];
 
@@ -113,10 +121,16 @@ const TeeFeeMeCartoonifier = () => {
   };
 
   const handleCartoonify = async () => {
-    if (!selectedFile) return;
+    if (!previewUrl) return;
 
     setIsProcessing(true);
+    setElapsedTime(0);
     setCurrentMessageIndex(0);
+    
+    // Start timer
+    timerRef.current = setInterval(() => {
+      setElapsedTime(prev => prev + 0.1);
+    }, 100);
 
     const messageInterval = setInterval(() => {
       setCurrentMessageIndex((prev) => (prev + 1) % funnyMessages.length);
@@ -155,6 +169,10 @@ const TeeFeeMeCartoonifier = () => {
     } finally {
       setIsProcessing(false);
       clearInterval(messageInterval);
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
     }
   };
 
@@ -168,10 +186,16 @@ const TeeFeeMeCartoonifier = () => {
   };
 
   const handleReset = () => {
+    setCartoonUrl("");
+    setShowResult(false);
+  };
+
+  const handleNewPhoto = () => {
     setSelectedFile(null);
     setPreviewUrl("");
     setCartoonUrl("");
     setShowResult(false);
+    setSelectedStyle("simpsons");
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -279,21 +303,28 @@ const TeeFeeMeCartoonifier = () => {
 
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {styles.map((style) => (
-                <Card
+                <Button
                   key={style.id}
-                  className={`p-6 cursor-pointer transition-all duration-300 hover:scale-105 ${
-                    selectedStyle === style.id
-                      ? "border-4 border-primary shadow-glow scale-105"
-                      : "border-2 border-border hover:border-primary/50"
+                  onClick={() => {
+                    setSelectedStyle(style.id);
+                    if (cartoonUrl) {
+                      setCartoonUrl("");
+                      setShowResult(false);
+                    }
+                  }}
+                  className={`h-32 flex flex-col gap-2 transition-all duration-300 border-4 rounded-2xl ${
+                    selectedStyle === style.id 
+                      ? `bg-gradient-to-br ${style.gradient} ${style.borderColor} text-white shadow-glow scale-110 animate-bounce-in` 
+                      : `bg-muted/50 border-muted hover:border-primary/50 hover:scale-105 hover:shadow-lg`
                   }`}
-                  onClick={() => setSelectedStyle(style.id)}
+                  style={{
+                    transform: selectedStyle === style.id ? 'rotate(-2deg)' : 'rotate(0deg)',
+                    fontFamily: selectedStyle === style.id ? '"Comic Sans MS", cursive' : 'inherit'
+                  }}
                 >
-                  <div className="text-center">
-                    <div className="text-5xl mb-3 animate-bounce">{style.emoji}</div>
-                    <p className="font-bold text-base mb-2">{style.name}</p>
-                    <div className={`h-2 rounded-full bg-gradient-to-r ${style.gradient}`} />
-                  </div>
-                </Card>
+                  <span className="text-4xl drop-shadow-lg">{style.emoji}</span>
+                  <span className="font-bold text-lg">{style.name}</span>
+                </Button>
               ))}
             </div>
 
@@ -325,7 +356,7 @@ const TeeFeeMeCartoonifier = () => {
                       </>
                     )}
                   </Button>
-                  <Button variant="outline" size="lg" onClick={handleReset}>
+                  <Button variant="outline" size="lg" onClick={handleNewPhoto}>
                     <RefreshCw className="mr-2" />
                     Different Photo
                   </Button>
@@ -342,6 +373,9 @@ const TeeFeeMeCartoonifier = () => {
                   <p className="text-2xl font-bold bg-gradient-to-r from-yellow-500 via-pink-500 to-purple-600 bg-clip-text text-transparent animate-pulse-subtle">
                     {funnyMessages[currentMessageIndex]}
                   </p>
+                  <div className="text-3xl font-mono font-bold text-primary animate-pulse mt-4">
+                    {elapsedTime.toFixed(1)}s
+                  </div>
                 </div>
               )}
             </Card>
@@ -390,8 +424,12 @@ const TeeFeeMeCartoonifier = () => {
                   Download Cartoon
                 </Button>
                 <Button variant="outline" size="lg" onClick={handleReset}>
-                  <RefreshCw className="mr-2" />
+                  <Sparkles className="mr-2" />
                   Try Another Style!
+                </Button>
+                <Button variant="secondary" size="lg" onClick={handleNewPhoto}>
+                  <ImageIcon className="mr-2" />
+                  New Photo
                 </Button>
               </div>
             </Card>

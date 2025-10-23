@@ -16,44 +16,6 @@ export default function Quizzes() {
         </p>
       </div>
 
-      {/* Featured Card - Felicia's Crown */}
-      <Link to="/cartoon-generator" className="block">
-        <Card className="relative overflow-hidden border-2 border-primary/50 hover:border-primary transition-all duration-300 hover:scale-[1.02] hover:shadow-glow group">
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-600/20 via-pink-500/20 to-yellow-500/20 animate-gradient-shift" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,215,0,0.1),transparent_50%)]" />
-          
-          <CardHeader className="relative z-10">
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <CardTitle className="text-3xl md:text-4xl font-bold gradient-text mb-2 flex items-center gap-2">
-                  <Crown className="w-8 h-8" />
-                  Felicia's Crown 👑
-                </CardTitle>
-                <CardDescription className="text-lg">
-                  Upload your photo and watch as AI transforms you into a stunning cartoon character! 
-                  Choose from Disney, Pixar, Anime, and more styles.
-                </CardDescription>
-              </div>
-              <div className="hidden md:block">
-                <img 
-                  src={crownImage} 
-                  alt="Crown" 
-                  className="w-32 h-32 object-contain animate-float group-hover:scale-110 transition-transform duration-300"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="relative z-10">
-            <Button size="lg" className="w-full md:w-auto bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-glow">
-              <Sparkles className="mr-2" />
-              Transform Your Photo Now!
-            </Button>
-          </CardContent>
-        </Card>
-      </Link>
-
       {/* Quizzes Grid */}
       <div className="grid md:grid-cols-2 gap-6 animate-in fade-in duration-500">
         <Card className="shadow-soft border-border/50 hover:shadow-glow transition-shadow">
