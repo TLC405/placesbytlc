@@ -290,6 +290,15 @@ export const LoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
         .wave-letter {
           animation: wave-color 3s ease-in-out infinite;
         }
+
+        /* Performance & A11y: Respect reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+          * {
+            animation-duration: 0.001ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.001ms !important;
+          }
+        }
       `}</style>
     </div>
   );
