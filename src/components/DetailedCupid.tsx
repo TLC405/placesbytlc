@@ -61,6 +61,13 @@ export const DetailedCupid = () => {
   useEffect(() => {
     if (isProcessing || !isEnabled) return;
     
+    // Check if permanently hidden
+    const permanentlyHidden = localStorage.getItem('cupid_permanently_hidden');
+    if (permanentlyHidden === 'true') {
+      setIsVisible(false);
+      return;
+    }
+    
     const checkHidden = localStorage.getItem('cupid_hidden_until');
     if (checkHidden) {
       const hideUntil = parseInt(checkHidden);
@@ -112,15 +119,49 @@ export const DetailedCupid = () => {
     }, 10000);
   };
 
+  const handleHold = () => {
+    localStorage.setItem('cupid_permanently_hidden', 'true');
+    setIsVisible(false);
+  };
+
+  // Touch/hold detection
+  let holdTimeout: NodeJS.Timeout;
+  const handleTouchStart = () => {
+    holdTimeout = setTimeout(() => {
+      handleHold();
+    }, 800); // 800ms hold to permanently dismiss
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    clearTimeout(holdTimeout);
+  };
+
+  const handleMouseDown = () => {
+    holdTimeout = setTimeout(() => {
+      handleHold();
+    }, 800);
+  };
+
+  const handleMouseUp = () => {
+    clearTimeout(holdTimeout);
+  };
+
   if (!isVisible || !isEnabled) return null;
 
   return (
     <>
       <style>{`
-        @keyframes tlc-float {
-          0%   { transform: translate3d(0, 0, 0) rotate(0deg); }
-          50%  { transform: translate3d(0, -8px, 0) rotate(-2deg); }
-          100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+        @keyframes tlc-walk {
+          0%   { transform: translate3d(0, 0, 0) rotate(-3deg) scaleX(1); }
+          25%  { transform: translate3d(-5px, -8px, 0) rotate(2deg) scaleX(1.02); }
+          50%  { transform: translate3d(0, -12px, 0) rotate(-2deg) scaleX(0.98); }
+          75%  { transform: translate3d(5px, -8px, 0) rotate(3deg) scaleX(1.02); }
+          100% { transform: translate3d(0, 0, 0) rotate(-3deg) scaleX(1); }
+        }
+        
+        @keyframes bubble-bounce {
+          0%, 100% { transform: translateY(0) scale(1); }
+          50% { transform: translateY(-4px) scale(1.02); }
         }
         
         .cupid-float {
@@ -131,9 +172,9 @@ export const DetailedCupid = () => {
           -webkit-backface-visibility: hidden;
           backface-visibility: hidden;
           will-change: transform, filter, top, right, left, bottom;
-          animation: tlc-float 3.2s ease-in-out infinite;
+          animation: tlc-walk 1.8s ease-in-out infinite;
           filter: drop-shadow(0 8px 18px rgba(255, 106, 162, 0.3));
-          cursor: pointer;
+          cursor: grab;
           z-index: 50;
           image-rendering: auto;
           -webkit-user-drag: none;
@@ -146,34 +187,76 @@ export const DetailedCupid = () => {
         }
         
         .cupid-float:active {
+          cursor: grabbing;
           transform: scale(0.95);
+        }
+        
+        .cupid-chat-bubble {
+          position: fixed;
+          background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(255, 240, 245, 0.98));
+          border: 2px solid rgba(255, 106, 162, 0.6);
+          border-radius: 18px;
+          padding: 12px 16px;
+          font-size: 13px;
+          font-weight: 600;
+          color: #333;
+          max-width: 220px;
+          box-shadow: 0 8px 24px rgba(255, 106, 162, 0.3), 0 2px 8px rgba(0, 0, 0, 0.1);
+          pointer-events: none;
+          z-index: 51;
+          animation: bubble-bounce 2s ease-in-out infinite;
+          line-height: 1.4;
+        }
+        
+        .cupid-chat-bubble::after {
+          content: '';
+          position: absolute;
+          bottom: -8px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 0;
+          height: 0;
+          border-left: 8px solid transparent;
+          border-right: 8px solid transparent;
+          border-top: 8px solid rgba(255, 106, 162, 0.6);
         }
         
         @media (max-width: 420px) {
           .cupid-float {
             width: 60px;
-            top: 1rem;
-            right: 1rem;
           }
-        }
-        
-        /* Kill any mystery dots or markers */
-        ul, li {
-          list-style: none;
-        }
-        
-        .fab, .badge, .dot, .handle, .resize-handle, 
-        .drag-handle, .audio-toggle, .music-dot, .scroll-dot {
-          display: none !important;
+          .cupid-chat-bubble {
+            font-size: 11px;
+            max-width: 180px;
+            padding: 10px 12px;
+          }
         }
       `}</style>
       
+      {/* Chat Bubble */}
+      <div 
+        className="cupid-chat-bubble"
+        style={{
+          top: position.top === 'auto' ? 'auto' : `calc(${position.top} - 80px)`,
+          bottom: position.bottom === 'auto' ? 'auto' : `calc(${position.bottom} + 100px)`,
+          left: position.left === 'auto' ? (position.right === 'auto' ? '50%' : 'auto') : position.left,
+          right: position.right === 'auto' ? 'auto' : position.right,
+          transform: position.left === 'auto' && position.right === 'auto' ? 'translateX(-50%)' : 'none',
+        }}
+      >
+        Click me to hide. Hold me to leave forever. 💔
+      </div>
+
       <img
         src={cupidImage}
         alt="Cupid"
         className="cupid-float"
         style={position}
         onClick={handleTap}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
         draggable={false}
       />
     </>

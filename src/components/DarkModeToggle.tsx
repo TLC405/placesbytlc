@@ -5,7 +5,9 @@ import { useEffect, useState } from "react";
 export const DarkModeToggle = () => {
   const [isDark, setIsDark] = useState(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('darkMode') === 'true' || false;
+      const saved = localStorage.getItem('darkMode');
+      // Default to light mode (false) if nothing saved
+      return saved === 'true' ? true : false;
     }
     return false;
   });
