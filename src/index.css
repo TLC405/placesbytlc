@@ -320,6 +320,11 @@ button, a, input, select, textarea {
     background-size: 200% 200%;
   }
 
+  .animate-gradient-shift {
+    animation: gradient-shift 8s ease infinite;
+    background-size: 200% 200%;
+  }
+
   /* Enhanced Cartoon Theme for Dark Mode */
   .dark .cartoon-border {
     border: 5px solid hsl(var(--primary));

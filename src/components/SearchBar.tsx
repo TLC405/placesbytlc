@@ -69,14 +69,14 @@ export const SearchBar = ({
     }
   };
 
-  // Get relevant categories based on type
-  const getCategories = () => {
-    if (categoryType === "food") return FOOD_CATEGORIES;
-    if (categoryType === "activity") return ACTIVITY_CATEGORIES;
-    return [...FOOD_CATEGORIES, ...ACTIVITY_CATEGORIES];
+  // Get relevant categories based on type - optimized
+  const getCategoriesByType = () => {
+    if (categoryType === "food") return { food: FOOD_CATEGORIES };
+    if (categoryType === "activity") return { activity: ACTIVITY_CATEGORIES };
+    return { food: FOOD_CATEGORIES, activity: ACTIVITY_CATEGORIES };
   };
 
-  const categories = getCategories();
+  const categoriesByType = getCategoriesByType();
 
   return (
     <div className="space-y-5">
@@ -195,31 +195,90 @@ export const SearchBar = ({
         </div>
       </div>
 
-      {/* Step 4: Optional Category Filter */}
-      {onCategoryToggle && categoryType && categoryType !== "both" && (
-        <div className="space-y-3 p-5 bg-gradient-to-br from-primary/5 to-accent/5 rounded-xl border-2 border-border">
+      {/* Step 4: Optional Category Filter - Enhanced for "both" */}
+      {onCategoryToggle && categoryType && (
+        <div className="space-y-4 p-5 bg-gradient-to-br from-primary/5 to-accent/5 rounded-xl border-2 border-border">
           <div className="flex items-center gap-2">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-r from-primary to-accent text-white flex items-center justify-center text-base font-black shadow-md">
               4
             </div>
             <span className="text-base font-bold text-foreground">Narrow it down (optional)</span>
           </div>
-          <Select 
-            value={selectedCategories[0] || ""} 
-            onValueChange={(value) => onCategoryToggle(value)}
-            disabled={disabled || loading}
-          >
-            <SelectTrigger className="h-12 shadow-md rounded-xl border-2 border-border/50 hover:border-primary/30 transition-all bg-card">
-              <SelectValue placeholder={`Select ${categoryType} type...`} />
-            </SelectTrigger>
-            <SelectContent className="rounded-xl max-h-[300px]">
-              {categories.map((category) => (
-                <SelectItem key={category.value} value={category.value}>
-                  {category.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          
+          {categoryType === "both" ? (
+            // Show both food AND activity categories when "both" is selected
+            <div className="grid md:grid-cols-2 gap-4">
+              {/* Food Categories */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-2xl">🍽️</span>
+                  <span className="font-bold text-foreground">Food Places</span>
+                </div>
+                <Select 
+                  value={selectedCategories.find(cat => FOOD_CATEGORIES.some(fc => fc.value === cat)) || ""} 
+                  onValueChange={(value) => onCategoryToggle(value)}
+                  disabled={disabled || loading}
+                >
+                  <SelectTrigger className="h-12 shadow-md rounded-xl border-2 border-border/50 hover:border-primary/30 transition-all bg-card">
+                    <SelectValue placeholder="All Food Places" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl max-h-[300px]">
+                    {FOOD_CATEGORIES.map((category) => (
+                      <SelectItem key={category.value} value={category.value}>
+                        {category.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Activity Categories */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-2xl">🎯</span>
+                  <span className="font-bold text-foreground">Activities</span>
+                </div>
+                <Select 
+                  value={selectedCategories.find(cat => ACTIVITY_CATEGORIES.some(ac => ac.value === cat)) || ""} 
+                  onValueChange={(value) => onCategoryToggle(value)}
+                  disabled={disabled || loading}
+                >
+                  <SelectTrigger className="h-12 shadow-md rounded-xl border-2 border-border/50 hover:border-primary/30 transition-all bg-card">
+                    <SelectValue placeholder="All Activities" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl max-h-[300px]">
+                    {ACTIVITY_CATEGORIES.map((category) => (
+                      <SelectItem key={category.value} value={category.value}>
+                        {category.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          ) : (
+            // Single category selector for food or activity only
+            <Select 
+              value={selectedCategories[0] || ""} 
+              onValueChange={(value) => onCategoryToggle(value)}
+              disabled={disabled || loading}
+            >
+              <SelectTrigger className="h-12 shadow-md rounded-xl border-2 border-border/50 hover:border-primary/30 transition-all bg-card">
+                <SelectValue placeholder={`Select ${categoryType} type...`} />
+              </SelectTrigger>
+              <SelectContent className="rounded-xl max-h-[300px]">
+                {categoryType === "food" ? FOOD_CATEGORIES.map((category) => (
+                  <SelectItem key={category.value} value={category.value}>
+                    {category.label}
+                  </SelectItem>
+                )) : ACTIVITY_CATEGORIES.map((category) => (
+                  <SelectItem key={category.value} value={category.value}>
+                    {category.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
         </div>
       )}
     </div>
