@@ -14,12 +14,33 @@ export const ActivityTracker = () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
 
+      // Get location data
+      const getLocationData = async () => {
+        try {
+          const response = await fetch('https://ipapi.co/json/');
+          const data = await response.json();
+          return {
+            country: data.country_name,
+            city: data.city,
+            region: data.region,
+            timezone: data.timezone,
+          };
+        } catch {
+          return {};
+        }
+      };
+
+      const locationData = await getLocationData();
+
       await supabase.functions.invoke('track-activity', {
         body: {
           activity_type: 'page_visit',
           activity_data: {
             path: location.pathname,
             timestamp: new Date().toISOString(),
+            ...locationData,
+            userAgent: navigator.userAgent,
+            screen: `${window.screen.width}x${window.screen.height}`,
           }
         }
       });
