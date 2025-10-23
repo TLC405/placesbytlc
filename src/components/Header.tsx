@@ -64,7 +64,7 @@ export const Header = () => {
                 size="sm"
                 className="gap-1"
               >
-                📅 Tracker
+                📅 Peripod
               </Button>
             </Link>
             <Link to="/teefeeme">

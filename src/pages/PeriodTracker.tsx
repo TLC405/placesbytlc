@@ -24,6 +24,7 @@ export default function PeriodTracker() {
   const [cycleLength, setCycleLength] = useState("28");
   const [isLoading, setIsLoading] = useState(false);
   const [existingSetup, setExistingSetup] = useState<TrackerSetup | null>(null);
+  const [spamMode, setSpamMode] = useState(false);
 
   useEffect(() => {
     loadExistingSetup();
@@ -66,7 +67,8 @@ export default function PeriodTracker() {
           guyName,
           guyPhone: cleanPhone,
           periodDate,
-          cycleLength: parseInt(cycleLength)
+          cycleLength: parseInt(cycleLength),
+          spamMode
         }
       });
 
@@ -84,9 +86,15 @@ export default function PeriodTracker() {
       localStorage.setItem('periodTrackerSetup', JSON.stringify(setupData));
       setExistingSetup(setupData);
 
-      toast.success(`🎯 ${guyName} will get survival reminders via SMS!`, {
-        duration: 5000,
-      });
+      if (spamMode) {
+        toast.success(`😈 ${guyName}'s phone will be BLOWN UP for 5 minutes! Revenge mode activated!`, {
+          duration: 5000,
+        });
+      } else {
+        toast.success(`🎯 ${guyName} will get survival reminders via SMS!`, {
+          duration: 5000,
+        });
+      }
     } catch (error: any) {
       console.error('Period tracker setup error:', error);
       toast.error(error.message || "Failed to set up tracker. Please try again.");
@@ -116,37 +124,40 @@ export default function PeriodTracker() {
   return (
     <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
       {/* Hero Section */}
-      <div className="text-center space-y-3 py-8">
-        <div className="flex items-center justify-center gap-3">
-          <Calendar className="w-10 h-10 text-rose" />
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-rose to-mauve bg-clip-text text-transparent">
-            Period Tracker for Guys
+      <div className="text-center space-y-4 py-10">
+        <div className="flex items-center justify-center gap-4">
+          <Calendar className="w-12 h-12 text-primary animate-pulse-subtle" />
+          <h1 className="text-5xl md:text-6xl font-black bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+            Peripod Tracker for Him
           </h1>
-          <Laugh className="w-10 h-10 text-mauve" />
+          <Laugh className="w-12 h-12 text-accent animate-pulse-subtle" />
         </div>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Because he <span className="italic font-semibold">will</span> forget. Save him. Save yourself. Get real SMS reminders.
+        <p className="text-xl md:text-2xl font-medium text-foreground max-w-3xl mx-auto leading-relaxed">
+          Because he <span className="italic font-black text-primary">will</span> forget. Save him. Save yourself.
         </p>
-        <Badge variant="secondary" className="bg-gold/20 text-gold border-gold/30 text-sm px-4 py-1">
+        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          Send real SMS survival alerts straight to his phone. Revolutionary concept, we know. 😏
+        </p>
+        <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30 text-base px-6 py-2 font-bold">
           BETA • Real SMS Notifications
         </Badge>
       </div>
 
       {/* Main Card */}
-      <Card className="shadow-soft border-2 border-rose/20 overflow-hidden">
-        <div className="h-3 bg-gradient-to-r from-rose via-mauve to-rose animate-gradient" />
+      <Card className="shadow-glow border-2 border-primary/30 overflow-hidden">
+        <div className="h-3 bg-gradient-to-r from-primary via-accent to-primary animate-gradient bg-[length:200%_100%]" />
         
         <CardHeader className="space-y-4">
           {/* Warning Alert */}
-          <div className="flex items-start gap-3 p-4 bg-rose/5 border border-rose/20 rounded-xl">
-            <AlertTriangle className="w-5 h-5 text-rose mt-0.5 flex-shrink-0" />
-            <div className="space-y-1 flex-1">
-              <p className="text-sm font-semibold text-foreground">
-                Ladies: Set it and forget it
+          <div className="flex items-start gap-3 p-5 bg-primary/5 border-2 border-primary/20 rounded-xl">
+            <AlertTriangle className="w-6 h-6 text-primary mt-0.5 flex-shrink-0" />
+            <div className="space-y-2 flex-1">
+              <p className="text-base font-bold text-foreground">
+                Ladies: Set it and forget it 💅
               </p>
-              <p className="text-xs text-muted-foreground leading-relaxed">
+              <p className="text-sm text-foreground leading-relaxed">
                 Your man will get automated SMS reminders sent directly to his phone at strategic times. 
-                He'll be prepared with chocolate, empathy, and zero dumb questions. Revolutionary, we know.
+                He'll be prepared with chocolate, empathy, and zero dumb questions. Revolutionary, we know. 🎯
               </p>
             </div>
           </div>
@@ -155,38 +166,38 @@ export default function PeriodTracker() {
         <CardContent className="space-y-6">
           {/* Existing Setup Display */}
           {existingSetup && (
-            <div className="p-5 bg-gradient-to-br from-mint/10 to-mint/5 border-2 border-mint/30 rounded-xl space-y-3">
+            <div className="p-6 bg-gradient-to-br from-success/10 to-success/5 border-2 border-success/30 rounded-xl space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Check className="w-5 h-5 text-mint" />
-                  <span className="font-semibold text-foreground">Active Tracker</span>
+                  <Check className="w-6 h-6 text-success" />
+                  <span className="font-bold text-lg text-foreground">Active Tracker 🎉</span>
                 </div>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={handleDelete}
-                  className="text-rose hover:text-rose hover:bg-rose/10"
+                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
                 >
                   <Trash2 className="w-4 h-4 mr-1" />
                   Remove
                 </Button>
               </div>
-              <div className="grid grid-cols-2 gap-3 text-sm">
+              <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <p className="text-muted-foreground">His Name</p>
-                  <p className="font-semibold">{existingSetup.guy_name}</p>
+                  <p className="text-muted-foreground font-medium">His Name</p>
+                  <p className="font-bold text-base">{existingSetup.guy_name}</p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground">Phone</p>
-                  <p className="font-semibold">{existingSetup.guy_phone}</p>
+                  <p className="text-muted-foreground font-medium">Phone</p>
+                  <p className="font-bold text-base">{existingSetup.guy_phone}</p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground">Next Period</p>
-                  <p className="font-semibold">{new Date(existingSetup.period_date).toLocaleDateString()}</p>
+                  <p className="text-muted-foreground font-medium">Next Period</p>
+                  <p className="font-bold text-base">{new Date(existingSetup.period_date).toLocaleDateString()}</p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground">Cycle Length</p>
-                  <p className="font-semibold">{existingSetup.cycle_length} days</p>
+                  <p className="text-muted-foreground font-medium">Cycle Length</p>
+                  <p className="font-bold text-base">{existingSetup.cycle_length} days</p>
                 </div>
               </div>
             </div>
@@ -258,42 +269,64 @@ export default function PeriodTracker() {
               </div>
             </div>
 
+            {/* Spam Mode Toggle */}
+            <div className="p-5 bg-gradient-to-br from-destructive/10 to-destructive/5 border-2 border-destructive/30 rounded-xl space-y-3">
+              <div className="flex items-start gap-3">
+                <input
+                  type="checkbox"
+                  id="spamMode"
+                  checked={spamMode}
+                  onChange={(e) => setSpamMode(e.target.checked)}
+                  className="mt-1 w-5 h-5 rounded border-destructive/30 text-destructive focus:ring-destructive"
+                />
+                <div className="space-y-1">
+                  <Label htmlFor="spamMode" className="text-base font-bold text-foreground cursor-pointer">
+                    😈 Revenge Mode: Spam His Phone (5 Minutes)
+                  </Label>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Check this to send him a TEXT EVERY 10 SECONDS for 5 minutes. He'll get 30 messages. 
+                    Use this when he <span className="italic">really</span> deserves it. 💣
+                  </p>
+                </div>
+              </div>
+            </div>
+
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full h-14 text-lg font-bold bg-gradient-to-r from-rose to-mauve hover:opacity-90 transition-all shadow-lg hover:shadow-xl"
+              className="w-full h-16 text-xl font-bold bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-all shadow-glow hover:shadow-2xl hover:scale-105"
             >
-              <MessageCircle className={`w-5 h-5 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-              {isLoading ? "Setting Up SMS..." : existingSetup ? "Update Tracker" : "Activate Survival Mode"}
+              <MessageCircle className={`w-6 h-6 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+              {isLoading ? "Setting Up SMS..." : spamMode ? "💣 Activate Revenge Mode" : existingSetup ? "Update Tracker" : "🎯 Activate Survival Mode"}
             </Button>
           </form>
 
           {/* What He'll Get */}
-          <div className="space-y-4 p-5 bg-gradient-to-br from-mauve/5 to-rose/5 rounded-xl border-2 border-mauve/20">
-            <div className="flex items-center gap-2">
-              <MessageCircle className="w-5 h-5 text-mauve" />
-              <h4 className="text-base font-bold text-foreground">Real SMS Alerts He'll Receive:</h4>
+          <div className="space-y-4 p-6 bg-gradient-to-br from-accent/10 to-primary/5 rounded-xl border-2 border-accent/30">
+            <div className="flex items-center gap-3">
+              <MessageCircle className="w-6 h-6 text-accent" />
+              <h4 className="text-lg font-bold text-foreground">Real SMS Alerts He'll Receive:</h4>
             </div>
-            <ul className="space-y-3">
+            <ul className="space-y-4">
               {funnyTips.map((tip, idx) => (
-                <li key={idx} className="flex items-start gap-3 text-sm text-foreground">
-                  <span className="text-2xl flex-shrink-0">{tip.emoji}</span>
-                  <span className="leading-relaxed pt-1">{tip.text}</span>
+                <li key={idx} className="flex items-start gap-4 text-base text-foreground">
+                  <span className="text-3xl flex-shrink-0">{tip.emoji}</span>
+                  <span className="leading-relaxed pt-1 font-medium">{tip.text}</span>
                 </li>
               ))}
             </ul>
-            <div className="pt-3 mt-3 border-t border-mauve/10">
-              <p className="text-xs text-center text-muted-foreground italic">
-                Messages sent automatically 3 days before, 1 day before, and on the day of expected period start
+            <div className="pt-4 mt-4 border-t-2 border-accent/20">
+              <p className="text-sm text-center text-muted-foreground italic font-medium">
+                📱 Messages sent automatically 3 days before, 1 day before, and on the day of expected start
               </p>
             </div>
           </div>
 
           {/* Info Note */}
-          <div className="p-4 bg-background/50 rounded-lg border border-border">
-            <p className="text-xs text-muted-foreground text-center leading-relaxed">
-              <strong>Privacy Note:</strong> Phone numbers are used only for SMS reminders. 
-              We use Twilio for secure message delivery. Standard SMS rates may apply.
+          <div className="p-5 bg-muted/50 rounded-xl border-2 border-border">
+            <p className="text-sm text-muted-foreground text-center leading-relaxed">
+              <strong className="text-foreground">🔒 Privacy Note:</strong> Phone numbers are used only for SMS reminders. 
+              We use Twilio for secure message delivery. Standard SMS rates may apply. Your data is never shared.
             </p>
           </div>
         </CardContent>
