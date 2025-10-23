@@ -48,8 +48,46 @@ export const SearchBar = ({
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap gap-3">
+    <div className="space-y-5">
+      {/* Step 1: Choose Type - REQUIRED FIRST */}
+      {onCategoryTypeChange && (
+        <div className="space-y-3 p-4 bg-gradient-to-br from-rose/5 to-mauve/5 rounded-xl border-2 border-primary/20">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-rose to-mauve text-white flex items-center justify-center text-sm font-bold">
+              1
+            </div>
+            <span className="text-sm font-bold text-foreground">First, what are you looking for?</span>
+          </div>
+          <div className="flex gap-3 flex-wrap">
+            {(["food", "activity", "both"] as const).map((type) => (
+              <button
+                key={type}
+                onClick={() => onCategoryTypeChange(type)}
+                className={`flex-1 min-w-[100px] py-3 px-4 rounded-xl font-semibold text-sm transition-all ${
+                  categoryType === type
+                    ? "bg-gradient-to-r from-rose to-mauve text-white shadow-lg scale-105"
+                    : "bg-card border-2 border-border hover:border-primary/50 hover:shadow-md"
+                }`}
+              >
+                {type === "food" && "🍽️ Food"}
+                {type === "activity" && "🎯 Activity"}
+                {type === "both" && "✨ Both"}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Step 2: Search - Only available after picking type */}
+      <div className={`space-y-3 transition-all ${categoryType === "both" ? "opacity-100" : categoryType ? "opacity-100" : "opacity-50 pointer-events-none"}`}>
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-rose to-mauve text-white flex items-center justify-center text-sm font-bold">
+            2
+          </div>
+          <span className="text-sm font-bold text-foreground">Now search your area</span>
+        </div>
+        
+        <div className="flex flex-wrap gap-3">
         <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
           <Input
@@ -85,32 +123,18 @@ export const SearchBar = ({
           <Search className={`w-5 h-5 mr-2 ${loading ? 'animate-spin' : ''}`} />
           {loading ? "Searching..." : "Search"}
         </Button>
+        </div>
       </div>
 
-      {onCategoryTypeChange && (
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-sm font-medium text-muted-foreground">Type:</span>
-          <div className="flex gap-2">
-            {(["food", "activity", "both"] as const).map((type) => (
-              <button
-                key={type}
-                onClick={() => onCategoryTypeChange(type)}
-                className={`pill text-sm transition-all ${
-                  categoryType === type
-                    ? "bg-gradient-to-r from-rose to-mauve text-white shadow-md"
-                    : "hover:shadow-md"
-                }`}
-              >
-                {type === "both" ? "Both" : type.charAt(0).toUpperCase() + type.slice(1)}
-              </button>
-            ))}
+      {/* Step 3: Optional Categories */}
+      {onCategoryToggle && categoryType && (
+        <div className="space-y-3 p-4 bg-gradient-to-br from-mauve/5 to-rose/5 rounded-xl border border-border/50">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-rose to-mauve text-white flex items-center justify-center text-sm font-bold">
+              3
+            </div>
+            <span className="text-sm font-medium text-foreground">Narrow it down (optional)</span>
           </div>
-        </div>
-      )}
-
-      {onCategoryToggle && (
-        <div className="space-y-2">
-          <p className="text-sm font-medium text-muted-foreground">Quick Categories</p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {CATEGORY_OPTIONS.map((category) => {
               const isSelected = selectedCategories.includes(category.value);

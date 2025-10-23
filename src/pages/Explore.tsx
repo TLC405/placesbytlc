@@ -16,6 +16,7 @@ import { LocationPresets } from "@/components/LocationPresets";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { EventsFeed } from "@/components/EventsFeed";
 import { UpdatesPanel } from "@/components/UpdatesPanel";
+import { PeriodTrackerForGuys } from "@/components/PeriodTrackerForGuys";
 import { trackPlaceView, trackPlaceSave, trackSearch } from "@/components/ActivityTracker";
 
 export default function Explore() {
@@ -90,9 +91,17 @@ export default function Explore() {
   }, []);
 
   const handleSearch = useCallback(() => {
+    // Require category type selection first
+    if (!categoryType || categoryType === "both" && !query.trim() && selectedCategories.length === 0) {
+      toast.error("Pick Food, Activity, or Both first! 👆", {
+        duration: 3000,
+      });
+      return;
+    }
+
     const searchQuery = selectedCategories.length > 0 
       ? selectedCategories.join(" ") 
-      : query.trim();
+      : query.trim() || categoryType;
 
     if (!searchQuery) {
       toast.info("Enter a search term or select categories!");
@@ -101,9 +110,9 @@ export default function Explore() {
 
     setError("");
     search(searchQuery, location, parseInt(radius, 10));
-    trackSearch(searchQuery, { radius, location });
+    trackSearch(searchQuery, { radius, location, categoryType });
     setSortBy("distance");
-  }, [query, selectedCategories, location, radius, search]);
+  }, [query, selectedCategories, location, radius, search, categoryType]);
 
   const handleLocationPreset = useCallback((loc: { lat: number; lng: number; name: string }) => {
     setCustomLocation({ lat: loc.lat, lng: loc.lng });
@@ -122,8 +131,13 @@ export default function Explore() {
 
   return (
     <>
-      <div className="grid lg:grid-cols-3 gap-6 animate-fade-in relative z-10">
-        <div className="lg:col-span-2 space-y-6">
+      <div className="space-y-6 animate-fade-in relative z-10">
+        {/* Period Tracker Section - Full Width */}
+        <PeriodTrackerForGuys />
+
+        {/* Main Search Grid */}
+        <div className="grid lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-6">
           {/* Search Card */}
           <Card className="shadow-soft border-border/50 overflow-hidden">
             <div className="gradient-primary h-1" />
@@ -231,11 +245,12 @@ export default function Explore() {
 
         </div>
 
-        <PlanSidebar 
-          plan={plan} 
-          onUpdate={() => setPlan(storage.getPlan())}
-          onClearPlan={handleClearPlan}
-        />
+          <PlanSidebar 
+            plan={plan} 
+            onUpdate={() => setPlan(storage.getPlan())}
+            onClearPlan={handleClearPlan}
+          />
+        </div>
       </div>
 
       <ConfirmDialog
