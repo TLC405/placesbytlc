@@ -47,7 +47,7 @@ const App = () => {
         <BrowserRouter>
           <ActivityTracker />
           <DetailedCupid />
-          <Header />
+          {!showLoader && <Header />}
           <main className="max-w-7xl mx-auto px-4 py-6">
             <Suspense fallback={
               <div className="flex items-center justify-center min-h-[50vh]">
