@@ -11,11 +11,11 @@ export const LoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
       setTextVisible(true);
     }, 300);
 
-    // Hide everything after 3 seconds
+    // Hide everything after 5 seconds
     const timer = setTimeout(() => {
       setIsVisible(false);
       setTimeout(onComplete, 500);
-    }, 3000);
+    }, 5000);
 
     return () => {
       clearTimeout(textTimer);
@@ -128,6 +128,14 @@ export const LoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
               style={{ animationDelay: '1.3s', animationFillMode: 'backwards' }}
             >
               Preparing your perfect date night... ✨
+            </p>
+
+            {/* Felicia message */}
+            <p 
+              className="text-white text-3xl md:text-4xl font-bold drop-shadow-2xl animate-fade-in"
+              style={{ animationDelay: '3.5s', animationFillMode: 'backwards' }}
+            >
+              Felicia 💕
             </p>
           </div>
         </div>

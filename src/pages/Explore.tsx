@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { AlertCircle, Search, Key, Sparkles } from "lucide-react";
+import { AlertCircle, Search, Sparkles } from "lucide-react";
 import { PlaceItem } from "@/types";
 import { storage } from "@/lib/storage";
 import { toast } from "sonner";
@@ -10,10 +9,9 @@ import { PlanSidebar } from "@/components/PlanSidebar";
 import { SearchBar } from "@/components/SearchBar";
 import { PlaceCard } from "@/components/PlaceCard";
 import { EmptyState } from "@/components/EmptyState";
-import { APIKeyDialog } from "@/components/APIKeyDialog";
 import { FilterBar } from "@/components/FilterBar";
 import { FloatingHearts } from "@/components/FloatingHearts";
-import { useGoogleMaps } from "@/hooks/useGoogleMaps";
+import { LoadingScreen } from "@/components/LoadingScreen";
 import { usePlacesSearch } from "@/hooks/usePlacesSearch";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { LocationPresets } from "@/components/LocationPresets";
@@ -21,18 +19,17 @@ import { ConfirmDialog } from "@/components/ConfirmDialog";
 
 export default function Explore() {
   const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [showLoadingScreen, setShowLoadingScreen] = useState(false);
   const [query, setQuery] = useState("date night");
   const [radius, setRadius] = useState("8047"); // 5 miles in meters
   const [plan, setPlan] = useState<PlaceItem[]>([]);
-  const [showAPIDialog, setShowAPIDialog] = useState(false);
   const [error, setError] = useState("");
   const [sortBy, setSortBy] = useState("relevance");
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [favorites, setFavorites] = useState<PlaceItem[]>([]);
 
   // Custom hooks
-  const { isReady: mapsReady, isLoading: mapsLoading, initializeMaps } = useGoogleMaps();
-  const { location, isGettingLocation, getCurrentLocation, setCustomLocation } = useGeolocation();
+  const { location, setCustomLocation } = useGeolocation();
   const { results, isSearching, search } = usePlacesSearch({
     onError: (message) => setError(message),
   });
@@ -40,15 +37,7 @@ export default function Explore() {
   useEffect(() => {
     setPlan(storage.getPlan());
     setFavorites(storage.getFavorites());
-    
-    // Show API dialog 3 seconds after app opens if no key is configured
-    if (!mapsReady && !mapsLoading) {
-      const timer = setTimeout(() => {
-        setShowAPIDialog(true);
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [mapsReady, mapsLoading]);
+  }, []);
 
   // Sort and filter results
   const filteredAndSortedResults = useMemo(() => {
@@ -71,21 +60,6 @@ export default function Explore() {
     return filtered;
   }, [results, sortBy, showFavoritesOnly]);
 
-  const handleSaveAPIKey = useCallback((key: string, remember: boolean) => {
-    if (remember) {
-      storage.saveAPIKey(key);
-    }
-    
-    initializeMaps(key)
-      .then(() => {
-        toast.success("Google Maps loaded successfully!");
-        setShowAPIDialog(false);
-      })
-      .catch(() => {
-        toast.error("Failed to load Google Maps. Check your API key.");
-      });
-  }, [initializeMaps]);
-
   const handleAddToPlan = useCallback((place: PlaceItem) => {
     const existing = storage.getPlan();
     if (existing.some((p) => p.id === place.id)) {
@@ -104,39 +78,20 @@ export default function Explore() {
   }, []);
 
   const handleSearch = useCallback(() => {
-    if (!mapsReady) {
-      setShowAPIDialog(true);
-      toast.error("Please configure your Google Maps API key first.");
-      return;
-    }
-
     if (!query.trim()) {
       toast.info("Enter a search term or use quick searches below!");
       return;
     }
 
     setError("");
-    search(query, location, parseInt(radius, 10));
-  }, [mapsReady, query, location, radius, search]);
-
-  const handleUseLocation = useCallback(() => {
-    getCurrentLocation().then(() => {
-      toast.info("Click Search to find places near you!");
-    }).catch(() => {
-      // Error already handled in hook
-    });
-  }, [getCurrentLocation]);
+    setShowLoadingScreen(true);
+  }, [query]);
 
   const handleLocationPreset = useCallback((loc: { lat: number; lng: number; name: string }) => {
     setCustomLocation({ lat: loc.lat, lng: loc.lng });
     toast.success(`📍 Searching near ${loc.name}...`, { duration: 2000 });
-    // Small delay to ensure state updates
-    setTimeout(() => {
-      search(query, { lat: loc.lat, lng: loc.lng }, parseInt(radius, 10));
-      // Auto-sort by distance when location changes
-      setSortBy("distance");
-    }, 150);
-  }, [setCustomLocation, search, query, radius]);
+    setShowLoadingScreen(true);
+  }, [setCustomLocation]);
 
   const handleClearPlan = useCallback(() => {
     setShowClearConfirm(true);
@@ -147,6 +102,16 @@ export default function Explore() {
     setPlan([]);
     toast.success("Plan cleared!");
   }, []);
+
+  const handleLoadingComplete = useCallback(() => {
+    setShowLoadingScreen(false);
+    search(query, location, parseInt(radius, 10));
+    setSortBy("distance");
+  }, [query, location, radius, search]);
+
+  if (showLoadingScreen) {
+    return <LoadingScreen onComplete={handleLoadingComplete} />;
+  }
 
   return (
     <>
@@ -176,33 +141,15 @@ export default function Explore() {
                 onQueryChange={setQuery}
                 onRadiusChange={setRadius}
                 onSearch={handleSearch}
-                onUseLocation={handleUseLocation}
-                onSettings={() => setShowAPIDialog(true)}
-                disabled={!mapsReady || isSearching}
-                loading={isSearching || isGettingLocation}
+                disabled={isSearching}
+                loading={isSearching}
               />
 
               <LocationPresets 
                 onSelectLocation={handleLocationPreset}
-                disabled={!mapsReady || isSearching}
+                disabled={isSearching}
                 currentLocation={location}
               />
-
-              {!mapsReady && !mapsLoading && (
-                <Alert className="border-primary/50 bg-primary/5">
-                  <Key className="h-4 w-4 text-primary" />
-                  <AlertDescription className="flex items-center justify-between">
-                    <span className="text-sm">Google Maps API key required to search</span>
-                    <Button 
-                      size="sm" 
-                      onClick={() => setShowAPIDialog(true)}
-                      className="ml-4"
-                    >
-                      Configure
-                    </Button>
-                  </AlertDescription>
-                </Alert>
-              )}
 
               {error && (
                 <Alert variant="destructive" className="animate-in fade-in">
@@ -271,7 +218,7 @@ export default function Explore() {
                 </Card>
               )}
             </div>
-          ) : mapsReady ? (
+          ) : (
             <Card className="shadow-soft">
               <CardContent className="pt-6">
                 <EmptyState
@@ -281,7 +228,7 @@ export default function Explore() {
                 />
               </CardContent>
             </Card>
-          ) : null}
+          )}
         </div>
 
         <PlanSidebar 
@@ -290,13 +237,6 @@ export default function Explore() {
           onClearPlan={handleClearPlan}
         />
       </div>
-
-      <APIKeyDialog
-        open={showAPIDialog}
-        onOpenChange={setShowAPIDialog}
-        onSave={handleSaveAPIKey}
-        currentKey={storage.getAPIKey()}
-      />
 
       <ConfirmDialog
         open={showClearConfirm}

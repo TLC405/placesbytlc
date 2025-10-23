@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Search, Settings, UtensilsCrossed, Activity } from "lucide-react";
+import { Search, UtensilsCrossed, Activity } from "lucide-react";
 
 interface SearchBarProps {
   query: string;
@@ -11,8 +11,6 @@ interface SearchBarProps {
   onQueryChange: (query: string) => void;
   onRadiusChange: (radius: string) => void;
   onSearch: () => void;
-  onUseLocation: () => void;
-  onSettings: () => void;
   disabled?: boolean;
   loading?: boolean;
 }
@@ -37,8 +35,6 @@ export const SearchBar = ({
   onQueryChange,
   onRadiusChange,
   onSearch,
-  onUseLocation,
-  onSettings,
   disabled,
   loading,
 }: SearchBarProps) => {
@@ -93,25 +89,6 @@ export const SearchBar = ({
         >
           <Search className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
           {loading ? "Searching..." : "Search"}
-        </Button>
-        
-        <Button 
-          variant="outline" 
-          onClick={onUseLocation} 
-          disabled={disabled || loading}
-          className="h-11 shadow-sm hover:shadow-md transition-all"
-        >
-          <MapPin className="w-4 h-4 mr-2" />
-          My Location
-        </Button>
-
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          onClick={onSettings}
-          className="h-11 w-11 shadow-sm hover:shadow-md transition-all"
-        >
-          <Settings className="w-4 h-4" />
         </Button>
       </div>
 
