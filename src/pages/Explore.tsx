@@ -1,15 +1,18 @@
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { MapPin, Search, AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { AlertCircle, Search, Key } from "lucide-react";
 import { PlaceItem } from "@/types";
 import { storage } from "@/lib/storage";
 import { getPlaceholder } from "@/lib/placeholders";
+import { loadGoogleMapsScript, isGoogleMapsLoaded } from "@/lib/googleMaps";
 import { toast } from "sonner";
 import { PlanSidebar } from "@/components/PlanSidebar";
+import { SearchBar } from "@/components/SearchBar";
+import { PlaceCard } from "@/components/PlaceCard";
+import { EmptyState } from "@/components/EmptyState";
+import { APIKeyDialog } from "@/components/APIKeyDialog";
 
 export default function Explore() {
   const [query, setQuery] = useState("date night");
@@ -19,21 +22,63 @@ export default function Explore() {
   const [error, setError] = useState("");
   const [currentLocation, setCurrentLocation] = useState({ lat: 35.4676, lng: -97.5164 });
   const [plan, setPlan] = useState<PlaceItem[]>([]);
+  const [apiKey, setApiKey] = useState("");
+  const [showAPIDialog, setShowAPIDialog] = useState(false);
+  const [mapsReady, setMapsReady] = useState(false);
 
   useEffect(() => {
     setPlan(storage.getPlan());
+    const savedKey = storage.getAPIKey();
+    setApiKey(savedKey);
+    
+    if (savedKey) {
+      loadGoogleMapsScript(savedKey)
+        .then(() => {
+          setMapsReady(true);
+        })
+        .catch((err) => {
+          console.error("Failed to load Google Maps:", err);
+          setShowAPIDialog(true);
+        });
+    } else {
+      setShowAPIDialog(true);
+    }
   }, []);
 
+  const handleSaveAPIKey = (key: string, remember: boolean) => {
+    if (remember) {
+      storage.saveAPIKey(key);
+    }
+    setApiKey(key);
+    
+    loadGoogleMapsScript(key)
+      .then(() => {
+        setMapsReady(true);
+        toast.success("Google Maps loaded successfully!");
+      })
+      .catch((err) => {
+        toast.error("Failed to load Google Maps. Check your API key.");
+        console.error(err);
+      });
+  };
+
   const handleAddToPlan = (place: PlaceItem) => {
+    // Check if already in plan
+    const existing = storage.getPlan();
+    if (existing.some(p => p.id === place.id)) {
+      toast.info("Already in your plan!");
+      return;
+    }
+    
     storage.addToPlan(place);
     setPlan(storage.getPlan());
     toast.success(`${place.name} added to plan!`);
   };
 
   const handleSearch = async () => {
-    const googleMaps = (window as any).google;
-    if (!googleMaps || !googleMaps.maps?.places) {
-      toast.error("Google Maps not loaded. Please set your API key.");
+    if (!mapsReady || !isGoogleMapsLoaded()) {
+      setShowAPIDialog(true);
+      toast.error("Please configure your Google Maps API key first.");
       return;
     }
 
@@ -42,6 +87,7 @@ export default function Explore() {
     setResults([]);
 
     try {
+      const googleMaps = (window as any).google;
       const service = new googleMaps.maps.places.PlacesService(document.createElement("div"));
       const request = {
         location: new googleMaps.maps.LatLng(currentLocation.lat, currentLocation.lng),
@@ -51,7 +97,7 @@ export default function Explore() {
 
       service.textSearch(request, (res: any, status: any) => {
         if (status !== googleMaps.maps.places.PlacesServiceStatus.OK || !res) {
-          setError(`Search error: ${status}`);
+          setError(`Search failed: ${status}. Please try again or check your API key.`);
           setLoading(false);
           return;
         }
@@ -67,119 +113,113 @@ export default function Explore() {
 
         setResults(places);
         setLoading(false);
+        
+        if (places.length === 0) {
+          toast.info("No results found. Try a different search term.");
+        }
       });
     } catch (err) {
       setError("Failed to search. Please try again.");
       setLoading(false);
+      console.error(err);
     }
   };
 
   const handleUseLocation = () => {
     if (!navigator.geolocation) {
-      toast.error("Geolocation unavailable.");
+      toast.error("Geolocation is not available in your browser.");
       return;
     }
 
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         setCurrentLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-        toast.info("Location updated! Searching near you.");
-        setTimeout(handleSearch, 500);
+        toast.success("Location updated! Click Search to find nearby places.");
       },
-      () => {
-        toast.info("Location denied. Using default (OKC).");
+      (err) => {
+        console.error(err);
+        toast.error("Unable to access location. Using default location.");
       }
     );
   };
 
   return (
-    <div className="grid lg:grid-cols-3 gap-6 animate-in fade-in duration-500">
-      <div className="lg:col-span-2 space-y-4">
-        <Card className="shadow-soft border-border/50">
-          <CardHeader>
-            <CardTitle>Find Date Spots</CardTitle>
-            <CardDescription>Search for restaurants, activities, and experiences nearby</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex flex-wrap gap-3">
-              <Input
-                placeholder="Search date ideas (e.g., sushi, jazz, arcade)"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                className="flex-1 min-w-[200px]"
+    <>
+      <div className="grid lg:grid-cols-3 gap-6 animate-in fade-in duration-500">
+        <div className="lg:col-span-2 space-y-4">
+          <Card className="shadow-soft border-border/50">
+            <CardHeader>
+              <CardTitle>Find Date Spots</CardTitle>
+              <CardDescription>
+                Search for restaurants, activities, and experiences nearby
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <SearchBar
+                query={query}
+                radius={radius}
+                onQueryChange={setQuery}
+                onRadiusChange={setRadius}
+                onSearch={handleSearch}
+                onUseLocation={handleUseLocation}
+                onSettings={() => setShowAPIDialog(true)}
+                disabled={!mapsReady}
+                loading={loading}
               />
-              <Select value={radius} onValueChange={setRadius}>
-                <SelectTrigger className="w-[130px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="2000">2 km</SelectItem>
-                  <SelectItem value="5000">5 km</SelectItem>
-                  <SelectItem value="10000">10 km</SelectItem>
-                  <SelectItem value="20000">20 km</SelectItem>
-                </SelectContent>
-              </Select>
-              <Button onClick={handleSearch} disabled={loading}>
-                <Search className="w-4 h-4 mr-2" />
-                Search
-              </Button>
-              <Button variant="outline" onClick={handleUseLocation}>
-                <MapPin className="w-4 h-4 mr-2" />
-                Use My Location
-              </Button>
-            </div>
 
-            {error && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
+              {!mapsReady && (
+                <Alert className="mt-4 border-primary/50 bg-primary/5">
+                  <Key className="h-4 w-4" />
+                  <AlertDescription className="flex items-center justify-between">
+                    <span>Google Maps API key required to search</span>
+                    <Button size="sm" onClick={() => setShowAPIDialog(true)}>
+                      Configure
+                    </Button>
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {error && (
+                <Alert variant="destructive" className="mt-4">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Results Grid */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 min-h-[400px]">
+            {loading ? (
+              <div className="col-span-full flex items-center justify-center py-20">
+                <div className="flex flex-col items-center gap-3">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                  <p className="text-sm text-muted-foreground">Searching for amazing places...</p>
+                </div>
+              </div>
+            ) : results.length === 0 && mapsReady ? (
+              <EmptyState
+                icon={Search}
+                title="Start exploring"
+                description="Enter a search term and click Search to discover date night spots near you."
+              />
+            ) : (
+              results.map((place) => (
+                <PlaceCard key={place.id} place={place} onAdd={handleAddToPlan} />
+              ))
             )}
-          </CardContent>
-        </Card>
-
-        {/* Results */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 min-h-[300px]">
-          {loading ? (
-            <div className="col-span-full flex items-center justify-center p-10">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-            </div>
-          ) : results.length === 0 ? (
-            <div className="col-span-full text-center p-10 text-muted-foreground">
-              <Search className="mx-auto h-12 w-12 text-muted mb-2" />
-              <h3 className="text-lg font-semibold text-foreground">Find your date night</h3>
-              <p className="text-sm">Results will appear here once you search.</p>
-            </div>
-          ) : (
-            results.map((place) => (
-              <Card key={place.id} className="shadow-sm hover:shadow-md transition-shadow">
-                <img
-                  src={place.photo}
-                  alt={place.name}
-                  className="w-full h-40 object-cover rounded-t-lg"
-                />
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base">{place.name}</CardTitle>
-                  <CardDescription className="text-xs line-clamp-2">{place.address}</CardDescription>
-                </CardHeader>
-                <CardContent className="flex items-center justify-between">
-                  {place.rating && (
-                    <span className="text-xs text-muted-foreground">
-                      ⭐ {place.rating} ({place.userRatingsTotal || 0})
-                    </span>
-                  )}
-                  <Button size="sm" onClick={() => handleAddToPlan(place)}>
-                    ➕ Add
-                  </Button>
-                </CardContent>
-              </Card>
-            ))
-          )}
+          </div>
         </div>
+
+        <PlanSidebar plan={plan} onUpdate={() => setPlan(storage.getPlan())} />
       </div>
 
-      <PlanSidebar plan={plan} onUpdate={() => setPlan(storage.getPlan())} />
-    </div>
+      <APIKeyDialog
+        open={showAPIDialog}
+        onOpenChange={setShowAPIDialog}
+        onSave={handleSaveAPIKey}
+        currentKey={apiKey}
+      />
+    </>
   );
 }
