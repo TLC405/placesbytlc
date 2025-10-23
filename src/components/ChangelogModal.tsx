@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sparkles, Heart, Shield, Zap, Star } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Sparkles, Heart, Shield, Zap, Star, Rocket } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ChangelogModalProps {
   open: boolean;
@@ -100,6 +102,28 @@ const versions = [
 
 export const ChangelogModal = ({ open, onOpenChange }: ChangelogModalProps) => {
   const [selectedVersion, setSelectedVersion] = useState<string | null>(null);
+  const [dbUpdates, setDbUpdates] = useState<any[]>([]);
+  const [implementedUpdates, setImplementedUpdates] = useState<any[]>([]);
+  const [comingUpUpdates, setComingUpUpdates] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (open) {
+      loadUpdates();
+    }
+  }, [open]);
+
+  const loadUpdates = async () => {
+    const { data } = await supabase
+      .from("app_updates")
+      .select("*")
+      .order("created_at", { ascending: false });
+    
+    if (data) {
+      setDbUpdates(data);
+      setImplementedUpdates(data.filter(u => u.status === "implemented"));
+      setComingUpUpdates(data.filter(u => u.status === "coming_up"));
+    }
+  };
 
   const getTypeColor = (type: string) => {
     switch (type) {
@@ -119,6 +143,56 @@ export const ChangelogModal = ({ open, onOpenChange }: ChangelogModalProps) => {
     }
   };
 
+  const renderUpdateCard = (update: any, isDbUpdate: boolean = false) => {
+    const Icon = isDbUpdate 
+      ? (update.update_type === "feature" ? Sparkles : update.update_type === "security" ? Shield : Zap)
+      : update.icon;
+    const isSelected = selectedVersion === update.version || selectedVersion === update.id;
+    const versionDisplay = isDbUpdate ? `v${update.version}` : `Version ${update.version}`;
+    const changes = isDbUpdate ? update.changes : update.changes;
+    
+    return (
+      <div
+        key={isDbUpdate ? update.id : update.version}
+        className={`border rounded-lg p-5 transition-all duration-300 cursor-pointer hover:shadow-md ${
+          isSelected ? 'border-primary shadow-md bg-accent/5' : 'border-border'
+        }`}
+        onClick={() => setSelectedVersion(isSelected ? null : (isDbUpdate ? update.id : update.version))}
+      >
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg gradient-primary flex items-center justify-center">
+              <Icon className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h3 className="font-bold text-lg">{versionDisplay}</h3>
+                {isDbUpdate && update.title && (
+                  <span className="text-sm text-muted-foreground">- {update.title}</span>
+                )}
+                <Badge variant="outline" className={getTypeColor(isDbUpdate ? update.update_type : update.type)}>
+                  {getTypeLabel(isDbUpdate ? update.update_type : update.type)}
+                </Badge>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                {isDbUpdate ? update.release_date || "TBA" : update.date}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className={`space-y-2 transition-all duration-300 ${isSelected ? 'opacity-100' : 'opacity-70'}`}>
+          {changes.map((change: string, idx: number) => (
+            <div key={idx} className="flex items-start gap-2 text-sm">
+              <span className="text-primary mt-0.5">•</span>
+              <span>{change}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[80vh]">
@@ -130,56 +204,52 @@ export const ChangelogModal = ({ open, onOpenChange }: ChangelogModalProps) => {
             <div>
               <DialogTitle className="text-2xl">What's New</DialogTitle>
               <DialogDescription>
-                Version history and updates for V1 Places
+                Version history and upcoming features for V1 Places
               </DialogDescription>
             </div>
           </div>
         </DialogHeader>
 
-        <ScrollArea className="h-[500px] pr-4">
-          <div className="space-y-6">
-            {versions.map((version) => {
-              const Icon = version.icon;
-              const isSelected = selectedVersion === version.version;
-              
-              return (
-                <div
-                  key={version.version}
-                  className={`border rounded-lg p-5 transition-all duration-300 cursor-pointer hover:shadow-md ${
-                    isSelected ? 'border-primary shadow-md bg-accent/5' : 'border-border'
-                  }`}
-                  onClick={() => setSelectedVersion(isSelected ? null : version.version)}
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg gradient-primary flex items-center justify-center">
-                        <Icon className="w-5 h-5 text-white" />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-bold text-lg">Version {version.version}</h3>
-                          <Badge variant="outline" className={getTypeColor(version.type)}>
-                            {getTypeLabel(version.type)}
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground">{version.date}</p>
-                      </div>
-                    </div>
-                  </div>
+        <Tabs defaultValue="implemented" className="mt-4">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="implemented" className="gap-2">
+              <Sparkles className="w-4 h-4" />
+              Implemented ({implementedUpdates.length + versions.length})
+            </TabsTrigger>
+            <TabsTrigger value="coming-up" className="gap-2">
+              <Rocket className="w-4 h-4" />
+              Coming Up ({comingUpUpdates.length})
+            </TabsTrigger>
+          </TabsList>
 
-                  <div className={`space-y-2 transition-all duration-300 ${isSelected ? 'opacity-100' : 'opacity-70'}`}>
-                    {version.changes.map((change, idx) => (
-                      <div key={idx} className="flex items-start gap-2 text-sm">
-                        <span className="text-primary mt-0.5">•</span>
-                        <span>{change}</span>
-                      </div>
-                    ))}
+          <TabsContent value="implemented">
+            <ScrollArea className="h-[450px] pr-4">
+              <div className="space-y-6">
+                {/* Database updates marked as implemented */}
+                {implementedUpdates.map((update) => renderUpdateCard(update, true))}
+                
+                {/* Static versions from code */}
+                {versions.map((version) => renderUpdateCard(version, false))}
+              </div>
+            </ScrollArea>
+          </TabsContent>
+
+          <TabsContent value="coming-up">
+            <ScrollArea className="h-[450px] pr-4">
+              <div className="space-y-6">
+                {comingUpUpdates.length > 0 ? (
+                  comingUpUpdates.map((update) => renderUpdateCard(update, true))
+                ) : (
+                  <div className="text-center py-12 text-muted-foreground">
+                    <Rocket className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                    <p className="text-lg font-medium">No upcoming features yet</p>
+                    <p className="text-sm">Check back soon for exciting new updates!</p>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        </ScrollArea>
+                )}
+              </div>
+            </ScrollArea>
+          </TabsContent>
+        </Tabs>
 
         <div className="flex justify-end pt-4 border-t">
           <Button onClick={() => onOpenChange(false)}>

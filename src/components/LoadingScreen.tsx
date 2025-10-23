@@ -147,7 +147,7 @@ export const LoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-pulse -z-10" />
             </div>
 
-            {/* Felicia message with 3D clay effect */}
+            {/* Felicia message with 3D clay effect and WAVE ANIMATION */}
             <div 
               className="text-white text-5xl md:text-6xl lg:text-7xl font-black animate-fade-in relative"
               style={{ 
@@ -164,18 +164,27 @@ export const LoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
                 animation: 'float 3s ease-in-out infinite, fade-in 0.6s ease-out backwards 1.2s'
               }}
             >
-              <span 
-                className="relative inline-block"
-                style={{
-                  background: 'linear-gradient(145deg, #FFE4E1, #FFC0CB, #FFB6C1)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                  filter: 'brightness(1.2) saturate(1.3)'
-                }}
-              >
-                Felicia
-              </span>
+              {/* Wave animated letters */}
+              {"Felicia".split("").map((letter, i) => (
+                <span 
+                  key={i}
+                  className="relative inline-block wave-letter"
+                  style={{
+                    background: `linear-gradient(
+                      90deg,
+                      var(--wave-color-${i % 7}) 0%,
+                      var(--wave-color-${(i + 1) % 7}) 100%
+                    )`,
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                    filter: 'brightness(1.2) saturate(1.3) drop-shadow(0 0 10px currentColor)',
+                    animationDelay: `${i * 0.15}s`,
+                  }}
+                >
+                  {letter}
+                </span>
+              ))}
               <span 
                 className="ml-2 inline-block animate-pulse"
                 style={{
@@ -210,6 +219,16 @@ export const LoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
       </div>
 
       <style>{`
+        :root {
+          --wave-color-0: #FF69B4;
+          --wave-color-1: #FF1493;
+          --wave-color-2: #DA70D6;
+          --wave-color-3: #BA55D3;
+          --wave-color-4: #9370DB;
+          --wave-color-5: #8A2BE2;
+          --wave-color-6: #FF69B4;
+        }
+        
         @keyframes gradient-shift {
           0% { background-position: 0% 50%; }
           50% { background-position: 100% 50%; }
@@ -241,6 +260,29 @@ export const LoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
           50% {
             transform: perspective(1000px) rotateX(5deg) translateY(-10px);
           }
+        }
+        
+        @keyframes wave-color {
+          0%, 100% {
+            filter: brightness(1.2) saturate(1.3) drop-shadow(0 0 15px currentColor) hue-rotate(0deg);
+            transform: translateY(0) scale(1);
+          }
+          25% {
+            filter: brightness(1.4) saturate(1.5) drop-shadow(0 0 20px currentColor) hue-rotate(30deg);
+            transform: translateY(-5px) scale(1.05);
+          }
+          50% {
+            filter: brightness(1.2) saturate(1.3) drop-shadow(0 0 15px currentColor) hue-rotate(60deg);
+            transform: translateY(0) scale(1);
+          }
+          75% {
+            filter: brightness(1.4) saturate(1.5) drop-shadow(0 0 20px currentColor) hue-rotate(90deg);
+            transform: translateY(-5px) scale(1.05);
+          }
+        }
+        
+        .wave-letter {
+          animation: wave-color 3s ease-in-out infinite;
         }
       `}</style>
     </div>

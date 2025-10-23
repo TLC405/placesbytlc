@@ -13,6 +13,7 @@ import Quizzes from "./pages/Quizzes";
 import QuizLove from "./pages/QuizLove";
 import QuizMBTI from "./pages/QuizMBTI";
 import CartoonGenerator from "./pages/CartoonGenerator";
+import FeliciaModPanel from "./components/FeliciaModPanel";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -40,6 +41,7 @@ const App = () => {
               <Route path="/quiz/love" element={<QuizLove />} />
               <Route path="/quiz/mbti" element={<QuizMBTI />} />
               <Route path="/cartoon-generator" element={<CartoonGenerator />} />
+              <Route path="/felicia-mod" element={<FeliciaModPanel />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
