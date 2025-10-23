@@ -7,6 +7,7 @@ import { PlaceItem } from "@/types";
 import { storage } from "@/lib/storage";
 import { ShareButton } from "./ShareButton";
 import { PlaceDetailsModal } from "./PlaceDetailsModal";
+import { getPlaceholder } from "@/lib/placeholders";
 
 interface PlaceCardProps {
   place: PlaceItem;
@@ -64,6 +65,8 @@ export const PlaceCard = ({ place, onAdd, onFavoriteToggle, onView }: PlaceCardP
           className="w-full h-64 object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-110"
           loading="lazy"
           decoding="async"
+          referrerPolicy="no-referrer"
+          onError={(e) => { (e.currentTarget as HTMLImageElement).src = getPlaceholder(place.name); }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-500" />
         

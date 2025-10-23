@@ -39,10 +39,10 @@ export default function Home() {
             <div className="gradient-primary h-2" />
             <CardHeader>
               <CardTitle className="text-3xl md:text-5xl font-black gradient-text">
-                ✨ Welcome to FELICIA.TLC ✨
+                Welcome to FELICIA.TLC
               </CardTitle>
               <CardDescription className="text-base md:text-lg leading-relaxed">
-                The app that adds to our story. Discover enchanting date spots, curated just for you! 💕
+                Discover date spots curated just for you.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -53,7 +53,7 @@ export default function Home() {
                 </Button>
               </Link>
               <div className="text-center text-sm text-muted-foreground">
-                🎯 Personalized • 🤖 AI-Powered • 💖 Made with Love
+                Personalized • Smart discovery • Made with love
               </div>
             </CardContent>
           </Card>

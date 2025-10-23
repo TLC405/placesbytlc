@@ -10,7 +10,6 @@ import { SearchBar } from "@/components/SearchBar";
 import { PlaceCard } from "@/components/PlaceCard";
 import { EmptyState } from "@/components/EmptyState";
 import { FilterBar } from "@/components/FilterBar";
-import { FloatingHearts } from "@/components/FloatingHearts";
 import { usePlacesSearch } from "@/hooks/usePlacesSearch";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { LocationPresets } from "@/components/LocationPresets";
@@ -92,7 +91,7 @@ export default function Explore() {
 
   const handleLocationPreset = useCallback((loc: { lat: number; lng: number; name: string }) => {
     setCustomLocation({ lat: loc.lat, lng: loc.lng });
-    toast.success(`📍 Searching near ${loc.name}...`, { duration: 2000 });
+    toast.success(`Searching near ${loc.name}...`, { duration: 2000 });
   }, [setCustomLocation]);
 
   const handleClearPlan = useCallback(() => {
@@ -107,7 +106,6 @@ export default function Explore() {
 
   return (
     <>
-      <FloatingHearts />
       <div className="grid lg:grid-cols-3 gap-6 animate-fade-in relative z-10">
         <div className="lg:col-span-2 space-y-6">
           {/* Search Card */}
@@ -119,9 +117,9 @@ export default function Explore() {
                   <Sparkles className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <CardTitle>✨ Discover Love Spots — FELICIA.TLC ✨</CardTitle>
+                  <CardTitle>Discover Love Spots — FELICIA.TLC</CardTitle>
                   <CardDescription>
-                    AI-powered romantic destinations curated just for you
+                    Curated romantic destinations near you
                   </CardDescription>
                 </div>
               </div>
@@ -152,11 +150,7 @@ export default function Explore() {
             </CardContent>
           </Card>
 
-          {/* Events Feed */}
-          <EventsFeed />
-
-          {/* Results Grid */}
-          
+          {/* Results Grid - now above Upcoming */}
           {!isSearching && results.length > 0 ? (
             <div className="space-y-4">
               <FilterBar
@@ -166,20 +160,16 @@ export default function Explore() {
                 onToggleFavorites={() => setShowFavoritesOnly(!showFavoritesOnly)}
                 resultCount={filteredAndSortedResults.length}
               />
-              
               {filteredAndSortedResults.length > 0 ? (
                 <div className="grid sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-5">
                   {filteredAndSortedResults.map((place, index) => (
-                    <div 
+                    <div
                       key={place.id}
-                      style={{ 
-                        animationDelay: `${index * 50}ms`,
-                        animationFillMode: 'backwards'
-                      }}
+                      style={{ animationDelay: `${index * 50}ms`, animationFillMode: 'backwards' }}
                       className="animate-fade-in animate-scale-in"
                     >
-                      <PlaceCard 
-                        place={place} 
+                      <PlaceCard
+                        place={place}
                         onAdd={handleAddToPlan}
                         onFavoriteToggle={handleFavoriteToggle}
                         onView={() => trackPlaceView(place)}
@@ -210,6 +200,9 @@ export default function Explore() {
               </CardContent>
             </Card>
           )}
+
+          {/* Events Feed (Upcoming) */}
+          <EventsFeed />
         </div>
 
         <PlanSidebar 

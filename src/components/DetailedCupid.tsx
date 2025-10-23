@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Heart } from "lucide-react";
 import cupidImage from "@/assets/cupid-character.jpg";
+import { removeBackground, loadImageFromUrl } from "@/lib/image/backgroundRemoval";
 
 export const DetailedCupid = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -12,6 +13,7 @@ export const DetailedCupid = () => {
   const [countdown, setCountdown] = useState<number | null>(null);
   const [isPermanentlyRemoved, setIsPermanentlyRemoved] = useState(false);
   const [tempRemoveUntil, setTempRemoveUntil] = useState<number | null>(null);
+  const [cutoutSrc, setCutoutSrc] = useState<string | null>(null);
 
   // Check for permanent removal and temporary removal
   useEffect(() => {
@@ -31,6 +33,27 @@ export const DetailedCupid = () => {
         localStorage.removeItem('cupid_temp_remove');
       }
     }
+  }, []);
+
+  // One-time background removal and cache in localStorage
+  useEffect(() => {
+    const run = async () => {
+      try {
+        const cached = localStorage.getItem('cupid_cutout_src');
+        if (cached) {
+          setCutoutSrc(cached);
+          return;
+        }
+        const img = await loadImageFromUrl(cupidImage);
+        const dataUrl = await removeBackground(img);
+        localStorage.setItem('cupid_cutout_src', dataUrl);
+        setCutoutSrc(dataUrl);
+      } catch (e) {
+        console.warn('Cupid background removal failed, using original image');
+        setCutoutSrc(null);
+      }
+    };
+    run();
   }, []);
 
   // Check if temp remove expired
@@ -177,10 +200,11 @@ export const DetailedCupid = () => {
       style={{
         left: `${position.x}%`,
         top: `${position.y}%`,
-        transform: `translate(-50%, -50%) rotate(${rotation}deg) scale(0.25)`,
+        transform: `translate(-50%, -50%) rotate(${rotation}deg) scale(0.4)`,
         opacity: isVisible ? 1 : 0,
         transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
         willChange: 'transform, opacity',
+        filter: 'drop-shadow(0 20px 45px rgba(0,0,0,0.45))',
       }}
       onClick={handleTap}
       onDoubleClick={handleSwat}
@@ -193,12 +217,12 @@ export const DetailedCupid = () => {
 
       <div className={`relative ${isFalling ? '' : 'animate-float-gentle'}`}>
         <img
-          src={cupidImage}
+          src={cutoutSrc || cupidImage}
           alt="TLC Cupid"
           style={{
-            width: "400px",
+            width: "520px",
             height: "auto",
-            filter: "drop-shadow(0 10px 30px rgba(0,0,0,0.5))",
+            filter: "drop-shadow(0 24px 60px rgba(0,0,0,0.55))",
           }}
         />
 
@@ -209,16 +233,7 @@ export const DetailedCupid = () => {
           </div>
         )}
 
-        {/* Floating hearts around */}
-        <div className="absolute -top-4 left-8 animate-float-heart-slow">
-          <Heart className="w-6 h-6 text-pink-500 fill-pink-500" />
-        </div>
-        <div className="absolute top-12 -right-8 animate-float-heart-slow" style={{ animationDelay: "0.5s" }}>
-          <Heart className="w-5 h-5 text-red-500 fill-red-500" />
-        </div>
-        <div className="absolute top-32 left-0 animate-float-heart-slow" style={{ animationDelay: "1s" }}>
-          <Heart className="w-4 h-4 text-rose-400 fill-rose-400" />
-        </div>
+        {/* Emojis/hearts removed around the cupid for cleaner UI */}
       </div>
 
       <style>{`
@@ -265,7 +280,7 @@ export const DetailedCupid = () => {
         }
 
         .animate-float-gentle {
-          animation: float-gentle 3s ease-in-out infinite;
+          animation: float-gentle 3.5s ease-in-out infinite;
         }
 
         .animate-float-heart-slow {

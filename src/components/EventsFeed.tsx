@@ -2,15 +2,12 @@ import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, ExternalLink, Loader2, Music, Palette, Utensils, Trophy, Sparkles } from "lucide-react";
+import { Calendar, MapPin, ExternalLink, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
-const eventIcons: Record<string, any> = {
-  concert: Music,
-  art: Palette,
-  food: Utensils,
-  sports: Trophy,
-  default: Sparkles,
+const getThumbUrl = (type: string) => {
+  const q = encodeURIComponent(type || 'event');
+  return `https://source.unsplash.com/collection/190727/112x112/?${q}`; // small random image
 };
 
 interface Event {
@@ -101,14 +98,17 @@ export const EventsFeed = () => {
 
       <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
         {events.map((event) => {
-          const Icon = eventIcons[event.event_type] || eventIcons.default;
           return (
-            <Card key={event.id} className="p-4">
+            <Card key={event.id} className="p-3">
               <div className="space-y-2">
                 <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 w-14 h-14 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-                    <Icon className="w-7 h-7 text-primary" />
-                  </div>
+                  <img
+                    src={getThumbUrl(event.event_type)}
+                    alt={event.event_type}
+                    className="w-12 h-12 rounded-md object-cover shadow"
+                    loading="lazy"
+                    decoding="async"
+                  />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
                       <Badge variant="secondary" className="text-xs">
@@ -138,12 +138,6 @@ export const EventsFeed = () => {
                   <span className="line-clamp-1">{event.venue_name}</span>
                 </div>
               </div>
-
-              {event.description && (
-                <p className="text-xs text-muted-foreground line-clamp-2">
-                  {event.description}
-                </p>
-              )}
 
               {event.url && (
                 <Button 
