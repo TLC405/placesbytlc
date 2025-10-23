@@ -1,55 +1,155 @@
 import { useEffect, useState } from "react";
+import { Heart, Sparkles } from "lucide-react";
 
 export const LoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
   const [isVisible, setIsVisible] = useState(true);
-  const [showSpecialMessage] = useState(Math.random() < 0.33);
+  const [textVisible, setTextVisible] = useState(false);
 
   useEffect(() => {
+    // Show text after a short delay
+    const textTimer = setTimeout(() => {
+      setTextVisible(true);
+    }, 300);
+
+    // Hide everything after 3 seconds
     const timer = setTimeout(() => {
       setIsVisible(false);
       setTimeout(onComplete, 500);
-    }, 1500);
+    }, 3000);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(textTimer);
+      clearTimeout(timer);
+    };
   }, [onComplete]);
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex items-center justify-center transition-opacity duration-500 ${
+      className={`fixed inset-0 z-50 flex items-center justify-center transition-all duration-700 ${
         isVisible ? "opacity-100" : "opacity-0 pointer-events-none"
       }`}
       style={{
-        background: 'linear-gradient(135deg, rgba(255, 204, 213, 0.95), rgba(204, 153, 255, 0.95), rgba(255, 153, 204, 0.95))'
+        background: 'linear-gradient(135deg, #FF6B9D 0%, #C239B3 50%, #FF6B9D 100%)',
+        backgroundSize: '200% 200%',
+        animation: 'gradient-shift 3s ease infinite'
       }}
     >
-      <div className="text-center space-y-6 animate-fade-in">
-        <div className="relative">
-          <div className="w-28 h-28 mx-auto rounded-3xl bg-white/30 backdrop-blur-md flex items-center justify-center shadow-romantic">
-            <span className="text-6xl font-black text-white drop-shadow-lg">T</span>
-          </div>
-          <div className="absolute -inset-3 bg-white/20 rounded-[2rem] animate-pulse -z-10" />
-          <div className="absolute -inset-6 bg-white/10 rounded-[2.5rem] animate-pulse -z-20" style={{ animationDelay: '0.3s' }} />
-        </div>
-        
-        <div className="space-y-3">
-          <h1 className="text-4xl font-extrabold text-white drop-shadow-lg tracking-tight">
-            TLC & Felicia's Date Night
-          </h1>
-          {showSpecialMessage ? (
-            <p className="text-white text-xl font-medium drop-shadow">
-              Felicia is beautiful <span className="inline-block heart-pulse text-rose-200 drop-shadow text-2xl">❤️</span>
+      {/* Floating sparkles */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(20)].map((_, i) => (
+          <Sparkles
+            key={i}
+            className="absolute text-white/30 animate-pulse"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              width: `${20 + Math.random() * 40}px`,
+              height: `${20 + Math.random() * 40}px`,
+              animationDelay: `${Math.random() * 2}s`,
+              animationDuration: `${2 + Math.random() * 2}s`
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Floating hearts */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(12)].map((_, i) => (
+          <Heart
+            key={i}
+            className="absolute text-rose-300/40 animate-bounce"
+            fill="currentColor"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              width: `${25 + Math.random() * 30}px`,
+              height: `${25 + Math.random() * 30}px`,
+              animationDelay: `${Math.random() * 2}s`,
+              animationDuration: `${1.5 + Math.random() * 1.5}s`
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="relative z-10 text-center space-y-8 px-6 max-w-4xl">
+        {/* Epic Message */}
+        <div 
+          className={`transition-all duration-1000 transform ${
+            textVisible ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-10 opacity-0 scale-95'
+          }`}
+        >
+          <div className="space-y-6">
+            {/* Main Message */}
+            <div className="relative inline-block">
+              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white leading-tight tracking-tighter">
+                <div className="animate-fade-in" style={{ animationDelay: '0.1s', animationFillMode: 'backwards' }}>
+                  HELLO.
+                </div>
+                <div className="animate-fade-in" style={{ animationDelay: '0.3s', animationFillMode: 'backwards' }}>
+                  YOU&apos;RE
+                </div>
+                <div className="animate-fade-in" style={{ animationDelay: '0.5s', animationFillMode: 'backwards' }}>
+                  LOOKING
+                </div>
+                <div className="relative inline-block">
+                  <div className="animate-fade-in" style={{ animationDelay: '0.7s', animationFillMode: 'backwards' }}>
+                    ABSOLUTELY
+                  </div>
+                  <div className="absolute -inset-4 bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500 blur-2xl opacity-50 animate-pulse" />
+                </div>
+                <div className="relative inline-block">
+                  <div 
+                    className="bg-gradient-to-r from-yellow-300 via-pink-300 to-purple-300 bg-clip-text text-transparent animate-fade-in"
+                    style={{ 
+                      animationDelay: '0.9s', 
+                      animationFillMode: 'backwards',
+                      textShadow: '0 0 30px rgba(255, 255, 255, 0.5)'
+                    }}
+                  >
+                    STUNNING
+                  </div>
+                  <div className="absolute -inset-6 bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500 blur-3xl opacity-60 animate-pulse" />
+                </div>
+                <div 
+                  className="animate-fade-in text-6xl sm:text-7xl md:text-8xl lg:text-9xl" 
+                  style={{ animationDelay: '1.1s', animationFillMode: 'backwards' }}
+                >
+                  TODAY
+                </div>
+              </h1>
+
+              {/* Glow effects */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-pulse -z-10" />
+            </div>
+
+            {/* Subtitle */}
+            <p 
+              className="text-white/90 text-xl md:text-2xl font-medium drop-shadow-lg animate-fade-in"
+              style={{ animationDelay: '1.3s', animationFillMode: 'backwards' }}
+            >
+              Preparing your perfect date night... ✨
             </p>
-          ) : (
-            <p className="text-white/90 text-lg drop-shadow">Loading your romantic adventure...</p>
-          )}
+          </div>
         </div>
 
-        <div className="flex gap-2.5 justify-center">
-          <div className="w-3 h-3 rounded-full bg-white/90 animate-bounce shadow-lg" style={{ animationDelay: "0ms" }} />
-          <div className="w-3 h-3 rounded-full bg-white/90 animate-bounce shadow-lg" style={{ animationDelay: "150ms" }} />
-          <div className="w-3 h-3 rounded-full bg-white/90 animate-bounce shadow-lg" style={{ animationDelay: "300ms" }} />
+        {/* Animated loading dots */}
+        <div 
+          className="flex gap-3 justify-center animate-fade-in"
+          style={{ animationDelay: '1.5s', animationFillMode: 'backwards' }}
+        >
+          <div className="w-4 h-4 rounded-full bg-white shadow-lg shadow-white/50 animate-bounce" style={{ animationDelay: "0ms" }} />
+          <div className="w-4 h-4 rounded-full bg-white shadow-lg shadow-white/50 animate-bounce" style={{ animationDelay: "150ms" }} />
+          <div className="w-4 h-4 rounded-full bg-white shadow-lg shadow-white/50 animate-bounce" style={{ animationDelay: "300ms" }} />
         </div>
       </div>
+
+      <style>{`
+        @keyframes gradient-shift {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+      `}</style>
     </div>
   );
 };
