@@ -12,6 +12,19 @@ interface ChangelogModalProps {
 
 const versions = [
   {
+    version: "1.6.0",
+    date: "2025-10-23",
+    type: "feature",
+    icon: Sparkles,
+    changes: [
+      "✨ NEW: Felicia's Crown - AI Photo to Cartoon Generator!",
+      "🎨 Transform your photos into stunning cartoon art",
+      "👑 Choose from 5 different cartoon styles (Disney, Pixar, Anime, Comic, Watercolor)",
+      "📸 Upload or take photos directly from your device",
+      "💫 Beautiful dynamic gradient animations inspired by loading screen"
+    ]
+  },
+  {
     version: "1.5.0",
     date: "2025-10-23",
     type: "feature",
