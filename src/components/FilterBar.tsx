@@ -1,65 +1,55 @@
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { SlidersHorizontal, Star, Heart } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Heart, SlidersHorizontal } from "lucide-react";
 
 interface FilterBarProps {
   sortBy: string;
-  onSortChange: (value: string) => void;
+  onSortChange: (sort: string) => void;
   showFavoritesOnly: boolean;
   onToggleFavorites: () => void;
   resultCount: number;
 }
 
-export const FilterBar = ({ 
-  sortBy, 
-  onSortChange, 
-  showFavoritesOnly, 
+export const FilterBar = ({
+  sortBy,
+  onSortChange,
+  showFavoritesOnly,
   onToggleFavorites,
-  resultCount 
+  resultCount,
 }: FilterBarProps) => {
   return (
-    <div className="flex items-center justify-between gap-3 p-3 rounded-xl border border-border/50 bg-card/50">
-      <div className="flex items-center gap-2">
-        <SlidersHorizontal className="w-4 h-4 text-muted-foreground" />
-        <span className="text-sm text-muted-foreground">
-          {resultCount} {resultCount === 1 ? 'place' : 'places'}
-        </span>
-      </div>
-
-      <div className="flex items-center gap-2">
+    <div className="flex flex-wrap items-center justify-between gap-3 p-4 bg-card rounded-xl border border-border/50 shadow-soft">
+      <div className="flex items-center gap-3 flex-wrap">
+        <div className="flex items-center gap-2">
+          <SlidersHorizontal className="w-4 h-4 text-muted-foreground" />
+          <span className="text-sm font-semibold text-foreground">
+            {resultCount} {resultCount === 1 ? 'place' : 'places'} found
+          </span>
+        </div>
+        
         <Button
           variant={showFavoritesOnly ? "default" : "outline"}
           size="sm"
           onClick={onToggleFavorites}
-          className="gap-2"
+          className="shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105"
         >
-          <Heart className={`w-4 h-4 ${showFavoritesOnly ? 'fill-current' : ''}`} />
-          Favorites
+          <Heart className={`w-4 h-4 mr-2 ${showFavoritesOnly ? 'fill-current' : ''}`} />
+          {showFavoritesOnly ? 'Showing Favorites' : 'Show Favorites'}
         </Button>
+      </div>
 
+      <div className="flex items-center gap-2">
+        <span className="text-xs font-medium text-muted-foreground">Sort by:</span>
         <Select value={sortBy} onValueChange={onSortChange}>
-          <SelectTrigger className="w-[160px] h-9">
-            <SelectValue placeholder="Sort by..." />
+          <SelectTrigger className="w-[160px] h-9 shadow-sm">
+            <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="relevance">
-              <div className="flex items-center gap-2">
-                <Star className="w-4 h-4" />
-                Relevance
-              </div>
-            </SelectItem>
-            <SelectItem value="rating">
-              <div className="flex items-center gap-2">
-                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                Highest Rated
-              </div>
-            </SelectItem>
-            <SelectItem value="reviews">
-              <div className="flex items-center gap-2">
-                <Star className="w-4 h-4" />
-                Most Reviewed
-              </div>
-            </SelectItem>
+            <SelectItem value="relevance">Relevance</SelectItem>
+            <SelectItem value="rating">Highest Rated</SelectItem>
+            <SelectItem value="reviews">Most Reviewed</SelectItem>
+            <SelectItem value="distance">Nearest First</SelectItem>
           </SelectContent>
         </Select>
       </div>

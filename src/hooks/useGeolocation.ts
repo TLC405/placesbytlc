@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { toast } from "sonner";
 
-const DEFAULT_LOCATION = { lat: 35.4676, lng: -97.5164 }; // OKC
+const DEFAULT_LOCATION = { lat: 35.6203, lng: -97.4467 }; // Midpoint between South OKC and Edmond
 
 export const useGeolocation = () => {
   const [location, setLocation] = useState(DEFAULT_LOCATION);

@@ -38,14 +38,42 @@ export const usePlacesSearch = ({ onError }: UsePlacesSearchProps) => {
             return;
           }
 
-          const places: PlaceItem[] = res.map((place: any) => ({
-            id: place.place_id,
-            name: place.name || "Unnamed",
-            address: place.formatted_address || "",
-            photo: place.photos?.[0]?.getUrl?.({ maxWidth: 1000 }) || getPlaceholder(place.name),
-            rating: place.rating,
-            userRatingsTotal: place.user_ratings_total,
-          }));
+          const userLat = location.lat;
+          const userLng = location.lng;
+
+          const places: PlaceItem[] = res.map((place: any) => {
+            const placeLat = place.geometry?.location?.lat();
+            const placeLng = place.geometry?.location?.lng();
+            
+            // Calculate distance in miles
+            let distance;
+            if (placeLat && placeLng) {
+              const R = 3958.8; // Earth radius in miles
+              const dLat = (placeLat - userLat) * Math.PI / 180;
+              const dLng = (placeLng - userLng) * Math.PI / 180;
+              const a = 
+                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(userLat * Math.PI / 180) * Math.cos(placeLat * Math.PI / 180) *
+                Math.sin(dLng/2) * Math.sin(dLng/2);
+              const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+              distance = R * c;
+            }
+
+            return {
+              id: place.place_id,
+              name: place.name || "Unnamed",
+              address: place.formatted_address || "",
+              photo: place.photos?.[0]?.getUrl?.({ maxWidth: 1000 }) || getPlaceholder(place.name),
+              rating: place.rating,
+              userRatingsTotal: place.user_ratings_total,
+              priceLevel: place.price_level,
+              openNow: place.opening_hours?.open_now,
+              types: place.types,
+              distance: distance ? parseFloat(distance.toFixed(1)) : undefined,
+              lat: placeLat,
+              lng: placeLng,
+            };
+          });
 
           setResults(places);
         });

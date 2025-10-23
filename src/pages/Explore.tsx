@@ -12,13 +12,14 @@ import { PlaceCard } from "@/components/PlaceCard";
 import { EmptyState } from "@/components/EmptyState";
 import { APIKeyDialog } from "@/components/APIKeyDialog";
 import { FilterBar } from "@/components/FilterBar";
+import { FloatingHearts } from "@/components/FloatingHearts";
 import { useGoogleMaps } from "@/hooks/useGoogleMaps";
 import { usePlacesSearch } from "@/hooks/usePlacesSearch";
 import { useGeolocation } from "@/hooks/useGeolocation";
 
 export default function Explore() {
   const [query, setQuery] = useState("date night");
-  const [radius, setRadius] = useState("5000");
+  const [radius, setRadius] = useState("8047"); // 5 miles in meters
   const [plan, setPlan] = useState<PlaceItem[]>([]);
   const [showAPIDialog, setShowAPIDialog] = useState(false);
   const [error, setError] = useState("");
@@ -37,9 +38,12 @@ export default function Explore() {
     setPlan(storage.getPlan());
     setFavorites(storage.getFavorites());
     
-    // Show API dialog if no key is configured
+    // Show API dialog 3 seconds after app opens if no key is configured
     if (!mapsReady && !mapsLoading) {
-      setShowAPIDialog(true);
+      const timer = setTimeout(() => {
+        setShowAPIDialog(true);
+      }, 3000);
+      return () => clearTimeout(timer);
     }
   }, [mapsReady, mapsLoading]);
 
@@ -57,6 +61,8 @@ export default function Explore() {
       filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
     } else if (sortBy === "reviews") {
       filtered.sort((a, b) => (b.userRatingsTotal || 0) - (a.userRatingsTotal || 0));
+    } else if (sortBy === "distance") {
+      filtered.sort((a, b) => (a.distance || Infinity) - (b.distance || Infinity));
     }
 
     return filtered;
@@ -115,7 +121,8 @@ export default function Explore() {
 
   return (
     <>
-      <div className="grid lg:grid-cols-3 gap-6 animate-fade-in">
+      <FloatingHearts />
+      <div className="grid lg:grid-cols-3 gap-6 animate-fade-in relative z-10">
         <div className="lg:col-span-2 space-y-6">
           {/* Search Card */}
           <Card className="shadow-soft border-border/50 overflow-hidden">
@@ -196,14 +203,19 @@ export default function Explore() {
               />
               
               {filteredAndSortedResults.length > 0 ? (
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {filteredAndSortedResults.map((place) => (
-                    <PlaceCard 
-                      key={place.id} 
-                      place={place} 
-                      onAdd={handleAddToPlan}
-                      onFavoriteToggle={handleFavoriteToggle}
-                    />
+                <div className="grid sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-5">
+                  {filteredAndSortedResults.map((place, index) => (
+                    <div 
+                      key={place.id}
+                      style={{ animationDelay: `${index * 50}ms` }}
+                      className="animate-fade-in"
+                    >
+                      <PlaceCard 
+                        place={place} 
+                        onAdd={handleAddToPlan}
+                        onFavoriteToggle={handleFavoriteToggle}
+                      />
+                    </div>
                   ))}
                 </div>
               ) : (

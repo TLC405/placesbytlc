@@ -30,34 +30,44 @@ export const APIKeyDialog = ({ open, onOpenChange, onSave, currentKey }: APIKeyD
     onOpenChange(false);
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && key.trim()) {
+      handleSave();
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[550px] border-primary/20 shadow-glow">
         <DialogHeader>
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-full gradient-primary flex items-center justify-center shadow-glow">
-              <Key className="w-5 h-5 text-white" />
+            <div className="w-12 h-12 rounded-2xl gradient-primary flex items-center justify-center shadow-romantic animate-bounce-in">
+              <Key className="w-6 h-6 text-white" />
             </div>
-            <DialogTitle className="text-xl">Key to TLC's Heart 🔑</DialogTitle>
+            <DialogTitle className="text-2xl gradient-text">Key to TLC's Heart 🔑💕</DialogTitle>
           </div>
-          <DialogDescription>
-            This Google Maps API key unlocks all the places we can explore together. It's stored safely on your device.
+          <DialogDescription className="text-base leading-relaxed">
+            Enter the magic key that unlocks all the amazing date spots we can explore together! 
+            This special key is stored safely on your device and opens up a world of romantic possibilities. ✨
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
+        <div className="space-y-5 py-4">
           <div className="space-y-2">
-            <Label htmlFor="apiKey">API Key</Label>
+            <Label htmlFor="apiKey" className="text-base font-semibold">Your Magic Key</Label>
             <Input
               id="apiKey"
               placeholder="AIza..."
               value={key}
               onChange={(e) => setKey(e.target.value)}
-              className="font-mono text-sm"
+              onKeyPress={handleKeyPress}
+              className="font-mono text-sm h-11 shadow-sm focus:shadow-glow transition-all"
+              autoFocus
             />
+            <p className="text-xs text-muted-foreground">Paste the Google Maps API key here</p>
           </div>
 
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 p-3 rounded-lg bg-primary/5 border border-primary/10">
             <Checkbox
               id="remember"
               checked={remember}
@@ -65,40 +75,45 @@ export const APIKeyDialog = ({ open, onOpenChange, onSave, currentKey }: APIKeyD
             />
             <label
               htmlFor="remember"
-              className="text-sm text-muted-foreground cursor-pointer select-none"
+              className="text-sm font-medium cursor-pointer select-none flex items-center gap-1"
             >
-              Remember in this browser
+              💝 Keep this key safe in my browser
             </label>
           </div>
 
-          <div className="rounded-lg border border-border bg-muted/50 p-3">
-            <div className="text-sm space-y-2">
-              <p className="font-medium">Need an API key?</p>
-              <ol className="list-decimal list-inside space-y-1 text-muted-foreground">
-                <li>Visit Google Cloud Console</li>
-                <li>Create a project and enable Places API</li>
-                <li>Create credentials (API key)</li>
-                <li>Copy and paste it here</li>
-              </ol>
-              <a
-                href="https://developers.google.com/maps/documentation/javascript/get-api-key"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-primary hover:underline text-sm mt-2"
-              >
-                Get API Key Guide
-                <ExternalLink className="w-3 h-3" />
-              </a>
+          <div className="rounded-xl border-2 border-dashed border-primary/30 bg-gradient-to-br from-primary/5 to-accent/5 p-4 space-y-3">
+            <div className="flex items-center gap-2">
+              <span className="text-lg">🗝️</span>
+              <p className="font-semibold text-foreground">Need your own API key?</p>
             </div>
+            <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground ml-2">
+              <li>Visit <span className="font-medium text-foreground">Google Cloud Console</span></li>
+              <li>Create a project and enable <span className="font-medium text-foreground">Places API</span></li>
+              <li>Create credentials (API key) and copy it</li>
+              <li>Come back and paste it above! 💕</li>
+            </ol>
+            <a
+              href="https://developers.google.com/maps/documentation/javascript/get-api-key"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-medium text-sm mt-2 hover:underline transition-all"
+            >
+              📖 Step-by-Step Guide
+              <ExternalLink className="w-4 h-4" />
+            </a>
           </div>
         </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
+        <DialogFooter className="gap-2">
+          <Button variant="outline" onClick={() => onOpenChange(false)} className="shadow-sm">
+            Maybe Later
           </Button>
-          <Button onClick={handleSave} disabled={!key.trim()}>
-            Save Key
+          <Button 
+            onClick={handleSave} 
+            disabled={!key.trim()}
+            className="shadow-sm hover:shadow-glow transition-all hover:scale-105"
+          >
+            🔓 Unlock Adventures
           </Button>
         </DialogFooter>
       </DialogContent>

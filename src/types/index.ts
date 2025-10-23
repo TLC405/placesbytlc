@@ -5,6 +5,12 @@ export interface PlaceItem {
   photo: string;
   rating?: number;
   userRatingsTotal?: number;
+  priceLevel?: number;
+  openNow?: boolean;
+  types?: string[];
+  distance?: number;
+  lat?: number;
+  lng?: number;
 }
 
 export interface LoveLanguageScores {

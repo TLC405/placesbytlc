@@ -151,6 +151,13 @@ All colors MUST be HSL.
     background: var(--gradient-hero);
   }
 
+  .gradient-text {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
   .heart-pulse {
     animation: heart-pulse 1.5s infinite;
   }
@@ -158,5 +165,67 @@ All colors MUST be HSL.
   @keyframes heart-pulse {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.15); }
+  }
+
+  .float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-20px) rotate(5deg); }
+    66% { transform: translateY(-10px) rotate(-5deg); }
+  }
+
+  .shimmer {
+    background: linear-gradient(90deg, transparent, hsla(330, 81%, 67%, 0.3), transparent);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  .bounce-in {
+    animation: bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  @keyframes bounce-in {
+    0% { 
+      opacity: 0;
+      transform: scale(0.3);
+    }
+    50% { 
+      opacity: 1;
+      transform: scale(1.05);
+    }
+    70% { transform: scale(0.9); }
+    100% { transform: scale(1); }
+  }
+
+  .slide-up {
+    animation: slide-up 0.4s ease-out;
+  }
+
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-glow);
   }
 }
