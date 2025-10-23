@@ -13,7 +13,7 @@ import Plan from "./pages/Plan";
 import Quizzes from "./pages/Quizzes";
 import QuizLove from "./pages/QuizLove";
 import QuizMBTI from "./pages/QuizMBTI";
-import CartoonGenerator from "./pages/CartoonGenerator";
+import TeeFeeMeCartoonifier from "./pages/TeeFeeMeCartoonifier";
 import FeliciaModPanel from "./components/FeliciaModPanel";
 import NotFound from "./pages/NotFound";
 
@@ -42,7 +42,8 @@ const App = () => {
               <Route path="/quizzes" element={<Quizzes />} />
               <Route path="/quiz/love" element={<QuizLove />} />
               <Route path="/quiz/mbti" element={<QuizMBTI />} />
-              <Route path="/cartoon-generator" element={<CartoonGenerator />} />
+              <Route path="/teefeeme" element={<TeeFeeMeCartoonifier />} />
+              <Route path="/cartoon-generator" element={<TeeFeeMeCartoonifier />} />
               <Route path="/felicia-mod" element={<FeliciaModPanel />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />

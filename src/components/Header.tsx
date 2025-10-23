@@ -57,6 +57,15 @@ export const Header = () => {
                 Quizzes
               </Button>
             </Link>
+            <Link to="/teefeeme">
+              <Button 
+                variant={isActive("/teefeeme") || isActive("/cartoon-generator") ? "default" : "outline"} 
+                size="sm"
+                className="gap-1"
+              >
+                🎨 TeeFee Me
+              </Button>
+            </Link>
             <Button 
               variant="ghost" 
               size="sm"
