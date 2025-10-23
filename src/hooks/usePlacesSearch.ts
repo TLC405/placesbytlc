@@ -27,11 +27,20 @@ export const usePlacesSearch = ({ onError }: UsePlacesSearchProps) => {
           document.createElement("div")
         );
 
+        // Build more specific search request
         const request: any = {
           location: new window.google.maps.LatLng(location.lat, location.lng),
           radius,
-          keyword: query,
         };
+
+        // Use type instead of keyword for more accurate results
+        if (query && query !== "food" && query !== "activity") {
+          request.type = query;
+        } else if (query === "food") {
+          request.type = "restaurant";
+        } else if (query === "activity") {
+          request.type = "point_of_interest";
+        }
 
         service.nearbySearch(request, (results, status) => {
           if (status === window.google.maps.places.PlacesServiceStatus.OK && results) {

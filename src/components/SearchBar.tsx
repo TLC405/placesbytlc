@@ -21,15 +21,29 @@ interface SearchBarProps {
 
 type LocationMode = "tlc" | "felicia" | "middle";
 
-const CATEGORY_OPTIONS = [
+const FOOD_CATEGORIES = [
+  { label: "All Food Places", value: "food" },
   { label: "Restaurants", value: "restaurant" },
-  { label: "Cafes", value: "cafe" },
-  { label: "Bars", value: "bar" },
-  { label: "Parks", value: "park" },
+  { label: "Cafes & Coffee", value: "cafe" },
+  { label: "Bars & Lounges", value: "bar" },
+  { label: "Bakery", value: "bakery" },
+  { label: "Ice Cream", value: "ice_cream" },
+  { label: "Pizza", value: "pizza" },
+  { label: "Sushi", value: "sushi" },
+  { label: "Dessert", value: "dessert" },
+];
+
+const ACTIVITY_CATEGORIES = [
+  { label: "All Activities", value: "activity" },
+  { label: "Parks & Nature", value: "park" },
   { label: "Museums", value: "museum" },
-  { label: "Movies", value: "movie_theater" },
+  { label: "Movies & Theater", value: "movie_theater" },
   { label: "Shopping", value: "shopping_mall" },
   { label: "Art Galleries", value: "art_gallery" },
+  { label: "Bowling", value: "bowling_alley" },
+  { label: "Arcade & Games", value: "amusement_park" },
+  { label: "Spa & Wellness", value: "spa" },
+  { label: "Live Music", value: "night_club" },
 ];
 
 export const SearchBar = ({
@@ -51,11 +65,18 @@ export const SearchBar = ({
   const handleLocationModeChange = (mode: LocationMode) => {
     setLocationMode(mode);
     if (onLocationModeChange) {
-      // Just notify the parent about the mode change
-      // Parent will handle location using browser geolocation
       onLocationModeChange(mode);
     }
   };
+
+  // Get relevant categories based on type
+  const getCategories = () => {
+    if (categoryType === "food") return FOOD_CATEGORIES;
+    if (categoryType === "activity") return ACTIVITY_CATEGORIES;
+    return [...FOOD_CATEGORIES, ...ACTIVITY_CATEGORIES];
+  };
+
+  const categories = getCategories();
 
   return (
     <div className="space-y-5">
@@ -174,8 +195,8 @@ export const SearchBar = ({
         </div>
       </div>
 
-      {/* Step 4: Optional Categories */}
-      {onCategoryToggle && categoryType && (
+      {/* Step 4: Optional Category Filter */}
+      {onCategoryToggle && categoryType && categoryType !== "both" && (
         <div className="space-y-3 p-5 bg-gradient-to-br from-primary/5 to-accent/5 rounded-xl border-2 border-border">
           <div className="flex items-center gap-2">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-r from-primary to-accent text-white flex items-center justify-center text-base font-black shadow-md">
@@ -183,23 +204,22 @@ export const SearchBar = ({
             </div>
             <span className="text-base font-bold text-foreground">Narrow it down (optional)</span>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {CATEGORY_OPTIONS.map((category) => {
-              const isSelected = selectedCategories.includes(category.value);
-              return (
-                <Badge
-                  key={category.value}
-                  variant={isSelected ? "default" : "outline"}
-                  className={`cursor-pointer transition-all hover:scale-105 justify-center py-2 ${
-                    isSelected ? "shadow-md" : ""
-                  }`}
-                  onClick={() => !disabled && !loading && onCategoryToggle(category.value)}
-                >
+          <Select 
+            value={selectedCategories[0] || ""} 
+            onValueChange={(value) => onCategoryToggle(value)}
+            disabled={disabled || loading}
+          >
+            <SelectTrigger className="h-12 shadow-md rounded-xl border-2 border-border/50 hover:border-primary/30 transition-all bg-card">
+              <SelectValue placeholder={`Select ${categoryType} type...`} />
+            </SelectTrigger>
+            <SelectContent className="rounded-xl max-h-[300px]">
+              {categories.map((category) => (
+                <SelectItem key={category.value} value={category.value}>
                   {category.label}
-                </Badge>
-              );
-            })}
-          </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       )}
     </div>

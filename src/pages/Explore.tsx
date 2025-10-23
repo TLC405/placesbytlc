@@ -82,11 +82,8 @@ export default function Explore() {
   }, []);
 
   const handleCategoryToggle = useCallback((category: string) => {
-    setSelectedCategories((prev) =>
-      prev.includes(category)
-        ? prev.filter((c) => c !== category)
-        : [...prev, category]
-    );
+    // Single selection instead of multi-select
+    setSelectedCategories([category]);
   }, []);
 
   const handleLocationModeChange = (mode: "tlc" | "felicia" | "middle") => {
@@ -115,8 +112,8 @@ export default function Explore() {
     }
 
     const searchQuery = selectedCategories.length > 0 
-      ? selectedCategories.join(" ") 
-      : query.trim() || categoryType;
+      ? selectedCategories[0] 
+      : categoryType;
 
     if (!searchQuery) {
       toast.info("Enter a search term or select categories!");
