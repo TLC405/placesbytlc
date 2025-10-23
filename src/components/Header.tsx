@@ -21,6 +21,7 @@ export const Header = () => {
     { path: "/period-tracker", label: "Peripod", icon: "📅" },
     { path: "/teefeeme", label: "TeeFee Me", icon: "🎨" },
     { path: "/install", label: "Install", icon: "📲" },
+    { path: "/admin", label: "Admin", icon: "👑" },
   ];
   
   return (
