@@ -176,12 +176,15 @@
   /* Form Elements */
   .pill {
     @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full
-           bg-gradient-to-r from-primary/10 to-primary-variant/10
            border-2 border-primary/20 backdrop-blur-sm
            font-medium text-sm text-foreground
            transition-all duration-300
            hover:shadow-glow hover:scale-105 hover:border-primary/40
            active:scale-95;
+    background: linear-gradient(to right, 
+      hsl(var(--primary) / 0.1), 
+      hsl(var(--primary-variant) / 0.1)
+    );
   }
   
   .btn-pill {

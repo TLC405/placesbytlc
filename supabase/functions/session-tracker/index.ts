@@ -22,12 +22,28 @@ serve(async (req) => {
       }
     );
 
-    const { data: { user } } = await supabaseClient.auth.getUser();
-    if (!user) {
-      throw new Error('Not authenticated');
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+    
+    if (authError || !user) {
+      console.log('Authentication failed:', authError?.message || 'No user');
+      return new Response(
+        JSON.stringify({ error: 'Not authenticated', details: authError?.message }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
-    const { action, sessionId, data } = await req.json();
+    let requestData;
+    try {
+      requestData = await req.json();
+    } catch (e) {
+      console.error('Failed to parse JSON:', e);
+      return new Response(
+        JSON.stringify({ error: 'Invalid JSON in request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const { action, sessionId, data } = requestData;
 
     // Get IP address and user agent
     const ipAddress = req.headers.get('x-forwarded-for')?.split(',')[0] || 
@@ -166,9 +182,20 @@ serve(async (req) => {
 
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorStack = error instanceof Error ? error.stack : undefined;
+    
+    console.error('Session tracker error:', {
+      message: errorMessage,
+      stack: errorStack,
+      error: error
+    });
+    
     return new Response(
-      JSON.stringify({ error: errorMessage }),
-      { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      JSON.stringify({ 
+        error: errorMessage,
+        details: 'Check function logs for more information'
+      }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });
