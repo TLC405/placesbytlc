@@ -17,6 +17,7 @@ import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { EventsFeed } from "@/components/EventsFeed";
 import { UpdatesPanel } from "@/components/UpdatesPanel";
 import { trackPlaceView, trackPlaceSave, trackSearch } from "@/components/ActivityTracker";
+import type { Location } from "@/lib/midpointCalculator";
 
 export default function Explore() {
   const [showClearConfirm, setShowClearConfirm] = useState(false);
@@ -30,6 +31,7 @@ export default function Explore() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [categoryType, setCategoryType] = useState<"food" | "activity" | "both">("both");
   const [showUpdates, setShowUpdates] = useState(false);
+  const [searchLocation, setSearchLocation] = useState<Location | null>(null);
 
   // Custom hooks
   const { location, setCustomLocation } = useGeolocation();
@@ -89,12 +91,33 @@ export default function Explore() {
     );
   }, []);
 
+  const handleLocationModeChange = (mode: "tlc" | "felicia" | "middle", location?: Location) => {
+    if (location) {
+      setSearchLocation(location);
+      const modeLabels = {
+        tlc: "TLC Place",
+        felicia: "Felicia Place", 
+        middle: "Middle Ground"
+      };
+      toast.success(`🎯 Searching from ${modeLabels[mode]}!`);
+    } else {
+      toast.error("Please save both addresses to use this location option.");
+    }
+  };
+
   const handleSearch = useCallback(() => {
     // Require category type selection first
     if (!categoryType || categoryType === "both" && !query.trim() && selectedCategories.length === 0) {
       toast.error("Pick Food, Activity, or Both first! 👆", {
         duration: 3000,
       });
+      return;
+    }
+
+    const locationToUse = searchLocation || location;
+    
+    if (!locationToUse) {
+      toast.error("Location not available. Please enable location or set an address.");
       return;
     }
 
@@ -108,10 +131,10 @@ export default function Explore() {
     }
 
     setError("");
-    search(searchQuery, location, parseInt(radius, 10));
-    trackSearch(searchQuery, { radius, location, categoryType });
+    search(searchQuery, locationToUse, parseInt(radius, 10));
+    trackSearch(searchQuery, { radius, location: locationToUse, categoryType });
     setSortBy("distance");
-  }, [query, selectedCategories, location, radius, search, categoryType]);
+  }, [query, selectedCategories, searchLocation, location, radius, search, categoryType]);
 
   const handleLocationPreset = useCallback((loc: { lat: number; lng: number; name: string }) => {
     setCustomLocation({ lat: loc.lat, lng: loc.lng });
@@ -154,14 +177,15 @@ export default function Explore() {
                 radius={radius}
                 onQueryChange={setQuery}
                 onRadiusChange={setRadius}
-            onSearch={handleSearch}
-            disabled={isSearching}
-            loading={isSearching}
-            selectedCategories={selectedCategories}
-            onCategoryToggle={handleCategoryToggle}
-            categoryType={categoryType}
-            onCategoryTypeChange={setCategoryType}
-          />
+                onSearch={handleSearch}
+                disabled={isSearching}
+                loading={isSearching}
+                selectedCategories={selectedCategories}
+                onCategoryToggle={handleCategoryToggle}
+                categoryType={categoryType}
+                onCategoryTypeChange={setCategoryType}
+                onLocationModeChange={handleLocationModeChange}
+              />
 
               <LocationPresets 
                 onSelectLocation={handleLocationPreset}
