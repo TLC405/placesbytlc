@@ -26,7 +26,10 @@ export const AIRecommendations = () => {
   const fetchRecommendations = async () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
+      if (!session) {
+        setLoading(false);
+        return;
+      }
 
       const { data, error } = await supabase
         .from('ai_recommendations')
