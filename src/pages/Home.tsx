@@ -28,7 +28,7 @@ export default function Home() {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Check admin status
+  // Check admin status - restricted to inspirelawton@gmail.com with code 1309
   useEffect(() => {
     const checkAdmin = async () => {
       if (!user) {
@@ -36,12 +36,15 @@ export default function Home() {
         return;
       }
       
+      // Verify both role and specific email
       const { data } = await supabase.rpc('has_role', { 
         _user_id: user.id, 
         _role: 'admin' 
       });
       
-      setIsAdmin(!!data);
+      // Admin access restricted to inspirelawton@gmail.com only (code: 1309)
+      const isAuthorizedAdmin = !!data && user.email === 'inspirelawton@gmail.com';
+      setIsAdmin(isAuthorizedAdmin);
     };
     
     checkAdmin();

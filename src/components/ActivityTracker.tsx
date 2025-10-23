@@ -1,13 +1,126 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
 export const ActivityTracker = () => {
   const location = useLocation();
+  const sessionStartTime = useRef(Date.now());
+  const lastActivityTime = useRef(Date.now());
 
   useEffect(() => {
     trackPageView();
+    setupAdvancedTracking();
   }, [location]);
+
+  // Track session duration and engagement
+  useEffect(() => {
+    const activityInterval = setInterval(() => {
+      const sessionDuration = Date.now() - sessionStartTime.current;
+      const idleTime = Date.now() - lastActivityTime.current;
+      
+      trackSessionMetrics({
+        session_duration: sessionDuration,
+        idle_time: idleTime,
+        is_active: idleTime < 60000, // Active if less than 1 min idle
+      });
+    }, 30000); // Track every 30 seconds
+
+    return () => clearInterval(activityInterval);
+  }, []);
+
+  const setupAdvancedTracking = () => {
+    // Track all clicks
+    const trackClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      lastActivityTime.current = Date.now();
+      
+      trackInteraction({
+        type: 'click',
+        element: target.tagName,
+        text: target.textContent?.substring(0, 100) || '',
+        classes: target.className,
+        id: target.id,
+        x: e.clientX,
+        y: e.clientY,
+        timestamp: new Date().toISOString(),
+      });
+    };
+
+    // Track scroll depth
+    let maxScroll = 0;
+    const trackScroll = () => {
+      lastActivityTime.current = Date.now();
+      const scrollPercent = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+      if (scrollPercent > maxScroll) {
+        maxScroll = scrollPercent;
+        trackInteraction({
+          type: 'scroll',
+          depth: Math.round(scrollPercent),
+          position: window.scrollY,
+        });
+      }
+    };
+
+    // Track form interactions
+    const trackFormInteraction = (e: Event) => {
+      const target = e.target as HTMLInputElement;
+      lastActivityTime.current = Date.now();
+      
+      trackInteraction({
+        type: 'form_interaction',
+        field_type: target.type,
+        field_name: target.name,
+        field_id: target.id,
+      });
+    };
+
+    // Track mouse movement patterns
+    let mouseMoveCount = 0;
+    const trackMouseMove = () => {
+      mouseMoveCount++;
+      lastActivityTime.current = Date.now();
+      
+      if (mouseMoveCount % 50 === 0) { // Track every 50 movements
+        trackInteraction({
+          type: 'mouse_activity',
+          movement_count: mouseMoveCount,
+        });
+      }
+    };
+
+    // Track keyboard usage
+    const trackKeyboard = () => {
+      lastActivityTime.current = Date.now();
+      trackInteraction({
+        type: 'keyboard_activity',
+        timestamp: new Date().toISOString(),
+      });
+    };
+
+    // Add event listeners
+    document.addEventListener('click', trackClick);
+    document.addEventListener('scroll', trackScroll, { passive: true });
+    document.addEventListener('input', trackFormInteraction);
+    document.addEventListener('mousemove', trackMouseMove, { passive: true });
+    document.addEventListener('keydown', trackKeyboard);
+
+    // Track page visibility changes
+    document.addEventListener('visibilitychange', () => {
+      trackInteraction({
+        type: 'visibility_change',
+        hidden: document.hidden,
+      });
+    });
+
+    // Cleanup
+    return () => {
+      document.removeEventListener('click', trackClick);
+      document.removeEventListener('scroll', trackScroll);
+      document.removeEventListener('input', trackFormInteraction);
+      document.removeEventListener('mousemove', trackMouseMove);
+      document.removeEventListener('keydown', trackKeyboard);
+    };
+  };
 
   const trackPageView = async () => {
     try {
@@ -84,6 +197,48 @@ export const ActivityTracker = () => {
   };
 
   return null; // Invisible component
+};
+
+// Track user interactions (clicks, scrolls, etc.)
+const trackInteraction = async (interactionData: any) => {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+
+    await supabase.functions.invoke('track-activity', {
+      body: {
+        activity_type: 'interaction',
+        activity_data: {
+          ...interactionData,
+          path: window.location.pathname,
+          timestamp: new Date().toISOString(),
+        }
+      }
+    });
+  } catch (error) {
+    // Silent fail
+  }
+};
+
+// Track session metrics
+const trackSessionMetrics = async (metricsData: any) => {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+
+    await supabase.functions.invoke('track-activity', {
+      body: {
+        activity_type: 'session_metrics',
+        activity_data: {
+          ...metricsData,
+          path: window.location.pathname,
+          timestamp: new Date().toISOString(),
+        }
+      }
+    });
+  } catch (error) {
+    // Silent fail
+  }
 };
 
 export const trackPlaceView = async (place: any) => {

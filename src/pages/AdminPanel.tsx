@@ -31,7 +31,7 @@ export default function AdminPanel() {
   const [downloadingSource, setDownloadingSource] = useState(false);
   const [activeSection, setActiveSection] = useState("dashboard");
 
-  // Check admin authorization
+  // Check admin authorization - restricted to inspirelawton@gmail.com (code: 1309)
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -47,7 +47,10 @@ export default function AdminPanel() {
         _role: 'admin' 
       });
       
-      if (error || !data) {
+      // Admin panel restricted to inspirelawton@gmail.com only (access code: 1309)
+      const isAuthorizedAdmin = !error && !!data && user.email === 'inspirelawton@gmail.com';
+      
+      if (!isAuthorizedAdmin) {
         toast.error("Access denied: Admin privileges required");
         setIsAuthorized(false);
         setLoading(false);
