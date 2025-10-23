@@ -28,8 +28,8 @@ export const PlaceCard = ({ place, onAdd, onFavoriteToggle }: PlaceCardProps) =>
   };
 
   const getPriceLevel = (level?: number) => {
-    if (!level) return null;
-    return "$".repeat(level);
+    if (!level) return "Price not listed";
+    return "$".repeat(level) + "  •  " + ["Budget-Friendly", "Moderate", "Upscale", "Luxury"][level - 1];
   };
 
   const getTypeLabel = (types?: string[]) => {
@@ -100,12 +100,6 @@ export const PlaceCard = ({ place, onAdd, onFavoriteToggle }: PlaceCardProps) =>
           <CardTitle className="text-base line-clamp-1 group-hover:text-primary transition-colors">
             {place.name}
           </CardTitle>
-          {place.priceLevel && (
-            <Badge variant="outline" className="font-semibold text-emerald-600 border-emerald-200 bg-emerald-50">
-              <DollarSign className="w-3 h-3 mr-0.5" />
-              {getPriceLevel(place.priceLevel)}
-            </Badge>
-          )}
         </div>
         
         <CardDescription className="text-xs line-clamp-2 flex items-start gap-1">
@@ -113,11 +107,18 @@ export const PlaceCard = ({ place, onAdd, onFavoriteToggle }: PlaceCardProps) =>
           <span>{place.address}</span>
         </CardDescription>
 
-        {getTypeLabel(place.types) && (
-          <Badge variant="secondary" className="w-fit text-xs">
-            {getTypeLabel(place.types)}
-          </Badge>
-        )}
+        <div className="flex flex-wrap gap-2">
+          {getTypeLabel(place.types) && (
+            <Badge variant="secondary" className="text-xs">
+              {getTypeLabel(place.types)}
+            </Badge>
+          )}
+          {place.priceLevel && (
+            <Badge variant="outline" className="text-xs font-medium text-emerald-600 border-emerald-200 bg-emerald-50">
+              {getPriceLevel(place.priceLevel)}
+            </Badge>
+          )}
+        </div>
       </CardHeader>
       
       <CardContent className="pt-0">

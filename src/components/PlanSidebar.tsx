@@ -9,13 +9,16 @@ import { Save, Trash2, X, Heart, Star, MapPin } from "lucide-react";
 interface PlanSidebarProps {
   plan: PlaceItem[];
   onUpdate: () => void;
+  onClearPlan?: () => void;
 }
 
-export const PlanSidebar = ({ plan, onUpdate }: PlanSidebarProps) => {
+export const PlanSidebar = ({ plan, onUpdate, onClearPlan }: PlanSidebarProps) => {
   const handleClear = () => {
     if (plan.length === 0) return;
     
-    if (confirm("Are you sure you want to clear your entire date plan? 💔")) {
+    if (onClearPlan) {
+      onClearPlan();
+    } else {
       storage.clearPlan();
       onUpdate();
       toast.success("Plan cleared. Time to start fresh! ✨");

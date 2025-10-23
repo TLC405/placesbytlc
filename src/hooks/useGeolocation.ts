@@ -1,11 +1,15 @@
 import { useState, useCallback } from "react";
 import { toast } from "sonner";
 
-const DEFAULT_LOCATION = { lat: 35.6203, lng: -97.4467 }; // Midpoint between South OKC and Edmond
+const DEFAULT_LOCATION = { lat: 35.5602, lng: -97.4973 }; // Perfect midpoint between South OKC and Edmond
 
 export const useGeolocation = () => {
   const [location, setLocation] = useState(DEFAULT_LOCATION);
   const [isGettingLocation, setIsGettingLocation] = useState(false);
+
+  const setCustomLocation = useCallback((newLocation: { lat: number; lng: number }) => {
+    setLocation(newLocation);
+  }, []);
 
   const getCurrentLocation = useCallback(() => {
     if (!navigator.geolocation) {
@@ -41,5 +45,6 @@ export const useGeolocation = () => {
     location,
     isGettingLocation,
     getCurrentLocation,
+    setCustomLocation,
   };
 };

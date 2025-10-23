@@ -16,8 +16,11 @@ import { FloatingHearts } from "@/components/FloatingHearts";
 import { useGoogleMaps } from "@/hooks/useGoogleMaps";
 import { usePlacesSearch } from "@/hooks/usePlacesSearch";
 import { useGeolocation } from "@/hooks/useGeolocation";
+import { LocationPresets } from "@/components/LocationPresets";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 
 export default function Explore() {
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [query, setQuery] = useState("date night");
   const [radius, setRadius] = useState("8047"); // 5 miles in meters
   const [plan, setPlan] = useState<PlaceItem[]>([]);
@@ -29,7 +32,7 @@ export default function Explore() {
 
   // Custom hooks
   const { isReady: mapsReady, isLoading: mapsLoading, initializeMaps } = useGoogleMaps();
-  const { location, isGettingLocation, getCurrentLocation } = useGeolocation();
+  const { location, isGettingLocation, getCurrentLocation, setCustomLocation } = useGeolocation();
   const { results, isSearching, search } = usePlacesSearch({
     onError: (message) => setError(message),
   });
@@ -119,6 +122,22 @@ export default function Explore() {
     });
   }, [getCurrentLocation]);
 
+  const handleLocationPreset = useCallback((loc: { lat: number; lng: number; name: string }) => {
+    setCustomLocation({ lat: loc.lat, lng: loc.lng });
+    toast.success(`Searching near ${loc.name}...`);
+    setTimeout(() => search(query, { lat: loc.lat, lng: loc.lng }, parseInt(radius, 10)), 100);
+  }, [setCustomLocation, search, query, radius]);
+
+  const handleClearPlan = useCallback(() => {
+    setShowClearConfirm(true);
+  }, []);
+
+  const confirmClearPlan = useCallback(() => {
+    storage.clearPlan();
+    setPlan([]);
+    toast.success("Plan cleared!");
+  }, []);
+
   return (
     <>
       <FloatingHearts />
@@ -140,7 +159,7 @@ export default function Explore() {
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-5">
               <SearchBar
                 query={query}
                 radius={radius}
@@ -151,6 +170,11 @@ export default function Explore() {
                 onSettings={() => setShowAPIDialog(true)}
                 disabled={!mapsReady || isSearching}
                 loading={isSearching || isGettingLocation}
+              />
+
+              <LocationPresets 
+                onSelectLocation={handleLocationPreset}
+                disabled={!mapsReady || isSearching}
               />
 
               {!mapsReady && !mapsLoading && (
@@ -243,7 +267,11 @@ export default function Explore() {
           ) : null}
         </div>
 
-        <PlanSidebar plan={plan} onUpdate={() => setPlan(storage.getPlan())} />
+        <PlanSidebar 
+          plan={plan} 
+          onUpdate={() => setPlan(storage.getPlan())}
+          onClearPlan={handleClearPlan}
+        />
       </div>
 
       <APIKeyDialog
@@ -251,6 +279,16 @@ export default function Explore() {
         onOpenChange={setShowAPIDialog}
         onSave={handleSaveAPIKey}
         currentKey={storage.getAPIKey()}
+      />
+
+      <ConfirmDialog
+        open={showClearConfirm}
+        onOpenChange={setShowClearConfirm}
+        title="Clear Your Plan?"
+        description="Are you sure you want to remove all places from your date plan? This action cannot be undone."
+        onConfirm={confirmClearPlan}
+        confirmText="Yes, Clear Plan"
+        cancelText="Keep Plan"
       />
     </>
   );

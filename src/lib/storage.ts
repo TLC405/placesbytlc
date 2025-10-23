@@ -1,4 +1,5 @@
 import { PlaceItem, LoveLanguageScores, MBTIScores } from "@/types";
+import { secureStorage } from "./secureStorage";
 
 const PLAN_KEY = "tlc_plan";
 const FAVORITES_KEY = "tlc_favorites";
@@ -10,7 +11,7 @@ export const storage = {
   // Plan management
   getPlan: (): PlaceItem[] => {
     try {
-      const data = localStorage.getItem(PLAN_KEY);
+      const data = secureStorage.getItem(PLAN_KEY);
       return data ? JSON.parse(data) : [];
     } catch {
       return [];
@@ -18,7 +19,7 @@ export const storage = {
   },
 
   savePlan: (plan: PlaceItem[]) => {
-    localStorage.setItem(PLAN_KEY, JSON.stringify(plan));
+    secureStorage.setItem(PLAN_KEY, JSON.stringify(plan));
   },
 
   addToPlan: (item: PlaceItem) => {
@@ -34,13 +35,13 @@ export const storage = {
   },
 
   clearPlan: () => {
-    localStorage.setItem(PLAN_KEY, "[]");
+    secureStorage.setItem(PLAN_KEY, "[]");
   },
 
   // Favorites management
   getFavorites: (): PlaceItem[] => {
     try {
-      const data = localStorage.getItem(FAVORITES_KEY);
+      const data = secureStorage.getItem(FAVORITES_KEY);
       return data ? JSON.parse(data) : [];
     } catch {
       return [];
@@ -48,7 +49,7 @@ export const storage = {
   },
 
   saveFavorites: (favorites: PlaceItem[]) => {
-    localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+    secureStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
   },
 
   addToFavorites: (item: PlaceItem) => {
@@ -74,7 +75,7 @@ export const storage = {
   // Love language scores
   getLoveScores: (): LoveLanguageScores | null => {
     try {
-      const data = localStorage.getItem(LOVE_SCORES_KEY);
+      const data = secureStorage.getItem(LOVE_SCORES_KEY);
       return data ? JSON.parse(data) : null;
     } catch {
       return null;
@@ -82,13 +83,13 @@ export const storage = {
   },
 
   saveLoveScores: (scores: LoveLanguageScores) => {
-    localStorage.setItem(LOVE_SCORES_KEY, JSON.stringify(scores));
+    secureStorage.setItem(LOVE_SCORES_KEY, JSON.stringify(scores));
   },
 
   // MBTI scores
   getMBTIScores: (): MBTIScores | null => {
     try {
-      const data = localStorage.getItem(MBTI_SCORES_KEY);
+      const data = secureStorage.getItem(MBTI_SCORES_KEY);
       return data ? JSON.parse(data) : null;
     } catch {
       return null;
@@ -96,15 +97,15 @@ export const storage = {
   },
 
   saveMBTIScores: (scores: MBTIScores) => {
-    localStorage.setItem(MBTI_SCORES_KEY, JSON.stringify(scores));
+    secureStorage.setItem(MBTI_SCORES_KEY, JSON.stringify(scores));
   },
 
   // API key
   getAPIKey: (): string => {
-    return localStorage.getItem(GMAPS_KEY) || "";
+    return secureStorage.getItem(GMAPS_KEY) || "";
   },
 
   saveAPIKey: (key: string) => {
-    localStorage.setItem(GMAPS_KEY, key);
+    secureStorage.setItem(GMAPS_KEY, key);
   },
 };
