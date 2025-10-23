@@ -11,7 +11,6 @@ import { PlaceCard } from "@/components/PlaceCard";
 import { EmptyState } from "@/components/EmptyState";
 import { FilterBar } from "@/components/FilterBar";
 import { FloatingHearts } from "@/components/FloatingHearts";
-import { FloatingCupid } from "@/components/FloatingCupid";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { usePlacesSearch } from "@/hooks/usePlacesSearch";
 import { useGeolocation } from "@/hooks/useGeolocation";
@@ -120,7 +119,6 @@ export default function Explore() {
   return (
     <>
       <FloatingHearts />
-      <FloatingCupid isActive={isSearching} />
       <div className="grid lg:grid-cols-3 gap-6 animate-fade-in relative z-10">
         <div className="lg:col-span-2 space-y-6">
           {/* Search Card */}

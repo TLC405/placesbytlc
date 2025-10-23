@@ -6,8 +6,6 @@ import { Play } from "lucide-react";
 import { AuthPanel } from "@/components/AuthPanel";
 import { supabase } from "@/integrations/supabase/client";
 
-const CupidAnimation = lazy(() => import("@/components/CupidAnimation").then(m => ({ default: m.CupidAnimation })));
-
 export default function Home() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -34,12 +32,8 @@ export default function Home() {
   }
 
   return (
-    <>
-      <Suspense fallback={<div className="h-20" />}>
-        <CupidAnimation />
-      </Suspense>
-      <div className="space-y-6 animate-in fade-in duration-500">
-        <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-6">
+    <div className="space-y-6 animate-in fade-in duration-500">
+      <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-6">
           {/* Hero Section */}
           <Card className="shadow-soft border-primary/30 overflow-hidden group hover:shadow-2xl transition-all duration-500">
             <div className="gradient-primary h-2" />
@@ -67,7 +61,6 @@ export default function Home() {
           {/* Auth Panel */}
           {!user && <AuthPanel />}
         </div>
-      </div>
-    </>
+    </div>
   );
 }
