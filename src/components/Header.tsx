@@ -16,11 +16,9 @@ export const Header = () => {
       <header className="sticky top-0 z-40 glass shadow-romantic border-b border-primary/20">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3 group">
-            <img 
-              src="/felicia-crown.png" 
-              alt="FELICIA.TLC" 
-              className="w-12 h-12 object-contain animate-pulse group-hover:scale-110 transition-all duration-300"
-            />
+            <div className="w-12 h-12 flex items-center justify-center bg-gradient-to-br from-amber-700 to-amber-900 rounded-full border-2 border-white shadow-lg group-hover:scale-110 transition-all duration-300">
+              <Heart className="w-6 h-6 text-white fill-white animate-pulse" />
+            </div>
             <div className="leading-tight">
               <div className="text-2xl font-black gradient-text">FELICIA.TLC</div>
               <div className="text-xs text-primary/70 -mt-1 font-medium tracking-wider">✨ YOUR LOVE JOURNEY ✨</div>

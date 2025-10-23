@@ -17,6 +17,7 @@ const TeeFeeMeCartoonifier = () => {
   const [showResult, setShowResult] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
+  const [estimatedTime] = useState(30); // 30 seconds estimated
   const fileInputRef = useRef<HTMLInputElement>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -373,8 +374,13 @@ const TeeFeeMeCartoonifier = () => {
                   <p className="text-2xl font-bold bg-gradient-to-r from-yellow-500 via-pink-500 to-purple-600 bg-clip-text text-transparent animate-pulse-subtle">
                     {funnyMessages[currentMessageIndex]}
                   </p>
-                  <div className="text-3xl font-mono font-bold text-primary animate-pulse mt-4">
-                    {elapsedTime.toFixed(1)}s
+                  <div className="mt-4 space-y-2">
+                    <div className="text-5xl font-black text-primary animate-pulse">
+                      {Math.max(0, Math.ceil(estimatedTime - elapsedTime))}s
+                    </div>
+                    <p className="text-sm text-muted-foreground font-semibold">
+                      Estimated time remaining
+                    </p>
                   </div>
                 </div>
               )}

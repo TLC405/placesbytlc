@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { ActivityTracker } from "@/components/ActivityTracker";
+import { InteractiveCupid } from "@/components/InteractiveCupid";
 import Home from "./pages/Home";
 import Explore from "./pages/Explore";
 import Plan from "./pages/Plan";
@@ -46,6 +47,7 @@ const App = () => {
         <Sonner />
         <BrowserRouter>
           <ActivityTracker />
+          <InteractiveCupid />
           <Header />
           <main className="max-w-7xl mx-auto px-4 py-6">
             <Suspense fallback={
