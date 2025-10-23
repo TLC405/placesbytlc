@@ -1,6 +1,7 @@
 import { PlaceItem, LoveLanguageScores, MBTIScores } from "@/types";
 
 const PLAN_KEY = "tlc_plan";
+const FAVORITES_KEY = "tlc_favorites";
 const LOVE_SCORES_KEY = "love_scores";
 const MBTI_SCORES_KEY = "mbti_scores";
 const GMAPS_KEY = "gmaps";
@@ -34,6 +35,40 @@ export const storage = {
 
   clearPlan: () => {
     localStorage.setItem(PLAN_KEY, "[]");
+  },
+
+  // Favorites management
+  getFavorites: (): PlaceItem[] => {
+    try {
+      const data = localStorage.getItem(FAVORITES_KEY);
+      return data ? JSON.parse(data) : [];
+    } catch {
+      return [];
+    }
+  },
+
+  saveFavorites: (favorites: PlaceItem[]) => {
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+  },
+
+  addToFavorites: (item: PlaceItem) => {
+    const favorites = storage.getFavorites();
+    if (!favorites.some(f => f.id === item.id)) {
+      favorites.push(item);
+      storage.saveFavorites(favorites);
+      return true;
+    }
+    return false;
+  },
+
+  removeFromFavorites: (id: string) => {
+    const favorites = storage.getFavorites();
+    const filtered = favorites.filter(f => f.id !== id);
+    storage.saveFavorites(filtered);
+  },
+
+  isFavorite: (id: string): boolean => {
+    return storage.getFavorites().some(f => f.id === id);
   },
 
   // Love language scores

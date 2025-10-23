@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { SearchBar } from "@/components/SearchBar";
 import { PlaceCard } from "@/components/PlaceCard";
 import { EmptyState } from "@/components/EmptyState";
 import { APIKeyDialog } from "@/components/APIKeyDialog";
+import { FilterBar } from "@/components/FilterBar";
 import { useGoogleMaps } from "@/hooks/useGoogleMaps";
 import { usePlacesSearch } from "@/hooks/usePlacesSearch";
 import { useGeolocation } from "@/hooks/useGeolocation";
@@ -21,6 +22,9 @@ export default function Explore() {
   const [plan, setPlan] = useState<PlaceItem[]>([]);
   const [showAPIDialog, setShowAPIDialog] = useState(false);
   const [error, setError] = useState("");
+  const [sortBy, setSortBy] = useState("relevance");
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const [favorites, setFavorites] = useState<PlaceItem[]>([]);
 
   // Custom hooks
   const { isReady: mapsReady, isLoading: mapsLoading, initializeMaps } = useGoogleMaps();
@@ -31,12 +35,32 @@ export default function Explore() {
 
   useEffect(() => {
     setPlan(storage.getPlan());
+    setFavorites(storage.getFavorites());
     
     // Show API dialog if no key is configured
     if (!mapsReady && !mapsLoading) {
       setShowAPIDialog(true);
     }
   }, [mapsReady, mapsLoading]);
+
+  // Sort and filter results
+  const filteredAndSortedResults = useMemo(() => {
+    let filtered = [...results];
+
+    // Filter by favorites
+    if (showFavoritesOnly) {
+      filtered = filtered.filter(place => storage.isFavorite(place.id));
+    }
+
+    // Sort
+    if (sortBy === "rating") {
+      filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+    } else if (sortBy === "reviews") {
+      filtered.sort((a, b) => (b.userRatingsTotal || 0) - (a.userRatingsTotal || 0));
+    }
+
+    return filtered;
+  }, [results, sortBy, showFavoritesOnly]);
 
   const handleSaveAPIKey = useCallback((key: string, remember: boolean) => {
     if (remember) {
@@ -63,6 +87,11 @@ export default function Explore() {
     storage.addToPlan(place);
     setPlan(storage.getPlan());
     toast.success(`${place.name} added to plan!`);
+  }, []);
+
+  const handleFavoriteToggle = useCallback((place: PlaceItem, isFavorite: boolean) => {
+    setFavorites(storage.getFavorites());
+    toast.success(isFavorite ? `${place.name} added to favorites!` : `${place.name} removed from favorites`);
   }, []);
 
   const handleSearch = useCallback(() => {
@@ -158,16 +187,36 @@ export default function Explore() {
             </div>
           ) : results.length > 0 ? (
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-muted-foreground">
-                  Found {results.length} {results.length === 1 ? 'place' : 'places'}
-                </p>
-              </div>
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {results.map((place) => (
-                  <PlaceCard key={place.id} place={place} onAdd={handleAddToPlan} />
-                ))}
-              </div>
+              <FilterBar
+                sortBy={sortBy}
+                onSortChange={setSortBy}
+                showFavoritesOnly={showFavoritesOnly}
+                onToggleFavorites={() => setShowFavoritesOnly(!showFavoritesOnly)}
+                resultCount={filteredAndSortedResults.length}
+              />
+              
+              {filteredAndSortedResults.length > 0 ? (
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {filteredAndSortedResults.map((place) => (
+                    <PlaceCard 
+                      key={place.id} 
+                      place={place} 
+                      onAdd={handleAddToPlan}
+                      onFavoriteToggle={handleFavoriteToggle}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <Card className="shadow-soft">
+                  <CardContent className="pt-6">
+                    <EmptyState
+                      icon={Search}
+                      title="No results"
+                      description={showFavoritesOnly ? "No favorites found in these results." : "Try adjusting your filters."}
+                    />
+                  </CardContent>
+                </Card>
+              )}
             </div>
           ) : mapsReady ? (
             <Card className="shadow-soft">
