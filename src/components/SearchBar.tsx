@@ -53,17 +53,24 @@ export const SearchBar = ({
     setTimeout(() => onSearch(), 100);
   };
 
+  const handleQueryChange = (value: string) => {
+    // Validate input: max 200 characters
+    const sanitized = value.slice(0, 200);
+    onQueryChange(sanitized);
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-3">
         <Input
           placeholder="Search date ideas (e.g., sushi, jazz, arcade)"
           value={query}
-          onChange={(e) => onQueryChange(e.target.value)}
+          onChange={(e) => handleQueryChange(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && !disabled && onSearch()}
           disabled={disabled || loading}
           className="flex-1 min-w-[200px] h-11 shadow-sm focus:shadow-md transition-shadow"
           autoFocus
+          maxLength={200}
         />
         
         <Select value={radius} onValueChange={onRadiusChange} disabled={disabled || loading}>

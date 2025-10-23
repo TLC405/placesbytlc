@@ -27,12 +27,20 @@ export const APIKeyDialog = ({ open, onOpenChange, onSave, currentKey }: APIKeyD
 
   const handleSave = () => {
     if (!key.trim()) return;
-    // Check if it's the secret code
-    if (key.trim().toLowerCase() === 'tlcinokc') {
-      // Store the actual API key (you'll need to add your real Google Maps API key here)
-      const actualAPIKey = 'AIzaSyBYourActualGoogleMapsAPIKey'; // Replace with actual key
-      onSave(actualAPIKey, remember);
-      onOpenChange(false);
+    
+    const secretCode = 'tlcinokc';
+    const enteredKey = key.trim().toLowerCase();
+    
+    if (enteredKey === secretCode) {
+      // If the secret code is entered, use the stored API key
+      // API key should be configured via environment or secure method
+      const storedKey = localStorage.getItem('gm_api_key_secure');
+      if (storedKey) {
+        onSave(storedKey, remember);
+        onOpenChange(false);
+      } else {
+        toast.error("API key not configured. Contact administrator.");
+      }
     } else {
       toast.error("That's not the right code! Try again 💕");
     }
