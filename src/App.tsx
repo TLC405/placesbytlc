@@ -28,15 +28,11 @@ import { useGoogleMaps } from "@/hooks/useGoogleMaps";
 const queryClient = new QueryClient();
 
 const App = () => {
-  // Show loading screen only on first app load
-  const [showLoader, setShowLoader] = useState(() => {
-    const hasVisited = sessionStorage.getItem('hasVisited');
-    return !hasVisited;
-  });
+  // Show loading screen on every page refresh
+  const [showLoader, setShowLoader] = useState(true);
 
   const handleLoadingComplete = () => {
     setShowLoader(false);
-    sessionStorage.setItem('hasVisited', 'true');
   };
 
   if (showLoader) {
