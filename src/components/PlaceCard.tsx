@@ -51,7 +51,7 @@ export const PlaceCard = ({ place, onAdd, onFavoriteToggle, onView }: PlaceCardP
   return (
     <>
       <Card 
-        className="shadow-soft hover:shadow-glow transition-all duration-300 group overflow-hidden border-border/50 hover:border-primary/30 animate-fade-in cursor-pointer"
+        className="shadow-md hover:shadow-xl transition-all duration-300 group overflow-hidden border border-border/50 hover:border-primary/50 animate-fade-in cursor-pointer hover:-translate-y-1"
         onClick={() => {
           onView?.();
           setShowDetails(true);
@@ -61,11 +61,11 @@ export const PlaceCard = ({ place, onAdd, onFavoriteToggle, onView }: PlaceCardP
         <img
           src={place.photo}
           alt={place.name}
-          className="w-full h-52 object-cover transition-transform duration-500 group-hover:scale-110"
+          className="w-full h-56 object-cover transition-transform duration-500 group-hover:scale-105"
           loading="lazy"
           decoding="async"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         
         <Button
           variant="ghost"
@@ -111,26 +111,26 @@ export const PlaceCard = ({ place, onAdd, onFavoriteToggle, onView }: PlaceCardP
         )}
       </div>
       
-      <CardHeader className="pb-3 space-y-2">
+      <CardHeader className="pb-3 space-y-3">
         <div className="flex items-start justify-between gap-2">
-          <CardTitle className="text-base line-clamp-1 group-hover:text-primary transition-colors">
+          <CardTitle className="text-lg font-bold line-clamp-2 group-hover:text-primary transition-colors leading-tight">
             {place.name}
           </CardTitle>
         </div>
         
-        <CardDescription className="text-xs line-clamp-2 flex items-start gap-1">
-          <MapPin className="w-3 h-3 mt-0.5 flex-shrink-0 text-muted-foreground" />
-          <span>{place.address}</span>
+        <CardDescription className="text-xs line-clamp-2 flex items-start gap-1.5">
+          <MapPin className="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-muted-foreground" />
+          <span className="leading-relaxed">{place.address}</span>
         </CardDescription>
 
         <div className="flex flex-wrap gap-2">
           {getTypeLabel(place.types) && (
-            <Badge variant="secondary" className="text-xs">
+            <Badge variant="secondary" className="text-xs font-medium px-2.5 py-1">
               {getTypeLabel(place.types)}
             </Badge>
           )}
           {place.priceLevel && (
-            <Badge variant="outline" className="text-xs font-medium text-emerald-600 border-emerald-200 bg-emerald-50">
+            <Badge variant="outline" className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 border-emerald-300 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-950/50 px-2.5 py-1">
               {getPriceLevel(place.priceLevel)}
             </Badge>
           )}
@@ -140,21 +140,23 @@ export const PlaceCard = ({ place, onAdd, onFavoriteToggle, onView }: PlaceCardP
       <CardContent className="pt-0">
         <div className="flex flex-col gap-3">
           {place.userRatingsTotal && (
-            <span className="text-xs text-muted-foreground font-medium">
-              {place.userRatingsTotal.toLocaleString()} reviews
-            </span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs text-muted-foreground font-medium">
+                {place.userRatingsTotal.toLocaleString()} reviews
+              </span>
+            </div>
           )}
           
-          <div className="flex flex-wrap gap-2">
+          <div className="flex gap-2">
             <Button 
               size="sm" 
               onClick={(e) => {
                 e.stopPropagation();
                 onAdd(place);
               }}
-              className="shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 active:scale-95"
+              className="flex-1 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.02] active:scale-95 font-semibold"
             >
-              <Plus className="w-4 h-4 mr-1" />
+              <Plus className="w-4 h-4 mr-1.5" />
               Add to Plan
             </Button>
             

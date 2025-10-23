@@ -22,7 +22,7 @@ import { trackPlaceView, trackPlaceSave, trackSearch } from "@/components/Activi
 
 export default function Explore() {
   const [showClearConfirm, setShowClearConfirm] = useState(false);
-  const [showLoadingScreen, setShowLoadingScreen] = useState(false);
+  const [showLoadingScreen, setShowLoadingScreen] = useState(true);
   const [query, setQuery] = useState("date night");
   const [radius, setRadius] = useState("8047"); // 5 miles in meters
   const [plan, setPlan] = useState<PlaceItem[]>([]);
@@ -88,13 +88,14 @@ export default function Explore() {
     }
 
     setError("");
-    setShowLoadingScreen(true);
-  }, [query]);
+    search(query, location, parseInt(radius, 10));
+    trackSearch(query, { radius, location });
+    setSortBy("distance");
+  }, [query, location, radius, search]);
 
   const handleLocationPreset = useCallback((loc: { lat: number; lng: number; name: string }) => {
     setCustomLocation({ lat: loc.lat, lng: loc.lng });
     toast.success(`📍 Searching near ${loc.name}...`, { duration: 2000 });
-    setShowLoadingScreen(true);
   }, [setCustomLocation]);
 
   const handleClearPlan = useCallback(() => {
@@ -109,10 +110,7 @@ export default function Explore() {
 
   const handleLoadingComplete = useCallback(() => {
     setShowLoadingScreen(false);
-    search(query, location, parseInt(radius, 10));
-    trackSearch(query, { radius, location });
-    setSortBy("distance");
-  }, [query, location, radius, search]);
+  }, []);
 
   if (showLoadingScreen) {
     return <LoadingScreen onComplete={handleLoadingComplete} />;
@@ -191,22 +189,20 @@ export default function Explore() {
 
           {/* Results Grid */}
           {isSearching ? (
-            <div className="flex items-center justify-center py-20">
-              <div className="flex flex-col items-center gap-4">
+            <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+              <div className="flex flex-col items-center gap-3">
                 <div className="relative">
-                  <div className="animate-spin rounded-full h-16 w-16 border-4 border-muted"></div>
-                  <div className="animate-spin rounded-full h-16 w-16 border-4 border-primary border-t-transparent absolute top-0 left-0"></div>
-                  <div className="absolute inset-0 animate-ping rounded-full bg-primary/20"></div>
+                  <div className="animate-spin rounded-full h-12 w-12 border-3 border-primary/30"></div>
+                  <div className="animate-spin rounded-full h-12 w-12 border-3 border-primary border-t-transparent absolute top-0 left-0"></div>
                 </div>
-                <div className="text-center animate-pulse">
-                  <p className="text-lg font-semibold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                    Searching for amazing places...
-                  </p>
-                  <p className="text-sm text-muted-foreground mt-1">Finding perfect date spots near you</p>
-                </div>
+                <p className="text-sm font-medium text-primary animate-pulse">
+                  Searching...
+                </p>
               </div>
             </div>
-          ) : results.length > 0 ? (
+          ) : null}
+          
+          {!isSearching && results.length > 0 ? (
             <div className="space-y-4">
               <FilterBar
                 sortBy={sortBy}
