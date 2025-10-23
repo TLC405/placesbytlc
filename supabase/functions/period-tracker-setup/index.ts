@@ -22,10 +22,13 @@ const sendSMS = async (to: string, message: string) => {
     throw new Error("Twilio credentials not configured");
   }
 
+  // Ensure the phone number is in E.164 format (+1XXXXXXXXXX for US)
+  const formattedPhone = to.startsWith('+') ? to : `+${to}`;
+
   const url = `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`;
   
   const formData = new URLSearchParams({
-    To: to.startsWith('+') ? to : `+1${to}`,
+    To: formattedPhone,
     From: TWILIO_PHONE_NUMBER,
     Body: message,
   });

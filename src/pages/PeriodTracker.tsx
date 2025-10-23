@@ -25,6 +25,8 @@ export default function PeriodTracker() {
   const [isLoading, setIsLoading] = useState(false);
   const [existingSetup, setExistingSetup] = useState<TrackerSetup | null>(null);
   const [spamMode, setSpamMode] = useState(false);
+  const [pin, setPin] = useState("");
+  const [showPinVerification, setShowPinVerification] = useState(false);
 
   useEffect(() => {
     loadExistingSetup();
@@ -50,22 +52,40 @@ export default function PeriodTracker() {
       return;
     }
 
-    // Validate phone number
-    const phoneRegex = /^\+?1?\d{10,15}$/;
-    const cleanPhone = guyPhone.replace(/\D/g, '');
-    if (!phoneRegex.test(cleanPhone)) {
-      toast.error("Please enter a valid phone number (10-15 digits)");
+    // Show PIN verification
+    setShowPinVerification(true);
+  };
+
+  const handlePinSubmit = async () => {
+    if (pin !== "666") {
+      toast.error("Wrong PIN! Try again 😈");
+      setPin("");
+      return;
+    }
+
+    // Clean phone number - handle US numbers with or without +1
+    let cleanPhone = guyPhone.replace(/\D/g, '');
+    
+    // If it's a 10-digit US number, add the country code
+    if (cleanPhone.length === 10) {
+      cleanPhone = '1' + cleanPhone;
+    }
+    
+    // Validate phone number (should be 11 digits for US with country code)
+    if (cleanPhone.length !== 11 || !cleanPhone.startsWith('1')) {
+      toast.error("Please enter a valid 10-digit US phone number");
       return;
     }
 
     setIsLoading(true);
+    setShowPinVerification(false);
 
     try {
       // Call edge function to set up SMS notifications
       const { data, error } = await supabase.functions.invoke('period-tracker-setup', {
         body: {
           guyName,
-          guyPhone: cleanPhone,
+          guyPhone: '+' + cleanPhone, // Add + prefix for international format
           periodDate,
           cycleLength: parseInt(cycleLength),
           spamMode
@@ -77,7 +97,7 @@ export default function PeriodTracker() {
       // Store locally as well
       const setupData = {
         guy_name: guyName,
-        guy_phone: cleanPhone,
+        guy_phone: '+' + cleanPhone,
         period_date: periodDate,
         cycle_length: parseInt(cycleLength),
         created_at: new Date().toISOString()
@@ -87,14 +107,18 @@ export default function PeriodTracker() {
       setExistingSetup(setupData);
 
       if (spamMode) {
-        toast.success(`😈 ${guyName}'s phone will be BLOWN UP for 5 minutes! Revenge mode activated!`, {
+        toast.success(`😈 ${guyName}'s phone is getting BLOWN UP! Revenge complete!`, {
           duration: 5000,
         });
       } else {
-        toast.success(`🎯 ${guyName} will get survival reminders via SMS!`, {
+        toast.success(`🎯 ${guyName} will get survival texts! He'll thank you later 💝`, {
           duration: 5000,
         });
       }
+      
+      // Reset form
+      setPin("");
+      setSpamMode(false);
     } catch (error: any) {
       console.error('Period tracker setup error:', error);
       toast.error(error.message || "Failed to set up tracker. Please try again.");
@@ -110,6 +134,8 @@ export default function PeriodTracker() {
     setGuyPhone("");
     setPeriodDate("");
     setCycleLength("28");
+    setPin("");
+    setSpamMode(false);
     toast.success("Period tracker cleared!");
   };
 
@@ -228,11 +254,11 @@ export default function PeriodTracker() {
                 <Input
                   id="guyPhone"
                   type="tel"
-                  placeholder="+1 (555) 123-4567"
+                  placeholder="(555) 123-4567"
                   value={guyPhone}
                   onChange={(e) => setGuyPhone(e.target.value)}
                   className="h-12 text-base"
-                  maxLength={20}
+                  maxLength={14}
                 />
               </div>
             </div>
@@ -281,15 +307,63 @@ export default function PeriodTracker() {
                 />
                 <div className="space-y-1">
                   <Label htmlFor="spamMode" className="text-base font-bold text-foreground cursor-pointer">
-                    😈 Revenge Mode: Spam His Phone (5 Minutes)
+                    😈 Revenge Mode: Auto-Spam His Phone
                   </Label>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    Check this to send him a TEXT EVERY 10 SECONDS for 5 minutes. He'll get 30 messages. 
-                    Use this when he <span className="italic">really</span> deserves it. 💣
+                    Check this to AUTOMATICALLY send him a TEXT EVERY 10 SECONDS for 5 minutes. 30 messages total. 
+                    Use when he <span className="italic font-bold">really</span> deserves it. 💣
                   </p>
                 </div>
               </div>
             </div>
+
+            {/* PIN Verification Dialog */}
+            {showPinVerification && (
+              <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in">
+                <div className="bg-card border-2 border-primary rounded-2xl p-8 max-w-md w-full space-y-6 animate-in zoom-in shadow-2xl">
+                  <div className="text-center space-y-3">
+                    <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                      <MessageCircle className="w-8 h-8 text-white" />
+                    </div>
+                    <h3 className="text-2xl font-bold">Enter Secret PIN</h3>
+                    <p className="text-sm text-muted-foreground">
+                      {spamMode ? "You're about to unleash CHAOS 😈" : "Confirm you want to send survival alerts 🎯"}
+                    </p>
+                  </div>
+                  
+                  <Input
+                    type="password"
+                    placeholder="Enter PIN (3 digits)"
+                    value={pin}
+                    onChange={(e) => setPin(e.target.value.slice(0, 3))}
+                    onKeyDown={(e) => e.key === "Enter" && handlePinSubmit()}
+                    className="h-16 text-center text-2xl font-bold tracking-widest"
+                    maxLength={3}
+                    autoFocus
+                  />
+                  
+                  <div className="flex gap-3">
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setShowPinVerification(false);
+                        setPin("");
+                      }}
+                      className="flex-1 h-12 font-bold"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={handlePinSubmit}
+                      disabled={pin.length !== 3}
+                      className="flex-1 h-12 font-bold bg-gradient-to-r from-primary to-accent"
+                    >
+                      {spamMode ? "💣 UNLEASH" : "📱 Send It"}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <Button
               type="submit"
@@ -297,7 +371,7 @@ export default function PeriodTracker() {
               className="w-full h-16 text-xl font-bold bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-all shadow-glow hover:shadow-2xl hover:scale-105"
             >
               <MessageCircle className={`w-6 h-6 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-              {isLoading ? "Setting Up SMS..." : spamMode ? "💣 Activate Revenge Mode" : existingSetup ? "Update Tracker" : "🎯 Activate Survival Mode"}
+              {isLoading ? "Sending SMS..." : spamMode ? "😈 Auto-Spam Mode" : "💝 Thank TLC Later (Send to Your Boo)"}
             </Button>
           </form>
 
