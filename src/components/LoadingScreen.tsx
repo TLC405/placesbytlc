@@ -202,6 +202,14 @@ export const LoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
             >
               Preparing your perfect date night... ✨
             </p>
+            
+            {/* Cupid Hint */}
+            <p 
+              className="text-white/80 text-sm md:text-base font-medium drop-shadow-lg animate-fade-in max-w-2xl mx-auto"
+              style={{ animationDelay: '1.8s', animationFillMode: 'backwards' }}
+            >
+              💡 Tap TLC cupid to remove for 30 seconds. Kiss him to permanently remove. Not actual kiss - phone TLC algorithm that starts countdown to remove him permanently. You'll see.
+            </p>
           </div>
         </div>
 
