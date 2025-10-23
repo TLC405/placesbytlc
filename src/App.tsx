@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from "react";
+import { useState, lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -24,20 +24,19 @@ const AdminPanel = lazy(() => import("./pages/AdminPanel"));
 const queryClient = new QueryClient();
 
 const App = () => {
-  // Skip loading screen on repeat visits for better performance
+  // Show loading screen only on first app load
   const [showLoader, setShowLoader] = useState(() => {
     const hasVisited = sessionStorage.getItem('hasVisited');
     return !hasVisited;
   });
 
-  useEffect(() => {
-    if (!showLoader) {
-      sessionStorage.setItem('hasVisited', 'true');
-    }
-  }, [showLoader]);
+  const handleLoadingComplete = () => {
+    setShowLoader(false);
+    sessionStorage.setItem('hasVisited', 'true');
+  };
 
   if (showLoader) {
-    return <LoadingScreen onComplete={() => setShowLoader(false)} />;
+    return <LoadingScreen onComplete={handleLoadingComplete} />;
   }
 
   return (

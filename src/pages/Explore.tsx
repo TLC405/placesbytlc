@@ -11,18 +11,15 @@ import { PlaceCard } from "@/components/PlaceCard";
 import { EmptyState } from "@/components/EmptyState";
 import { FilterBar } from "@/components/FilterBar";
 import { FloatingHearts } from "@/components/FloatingHearts";
-import { LoadingScreen } from "@/components/LoadingScreen";
 import { usePlacesSearch } from "@/hooks/usePlacesSearch";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { LocationPresets } from "@/components/LocationPresets";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
-import { AIRecommendations } from "@/components/AIRecommendations";
 import { EventsFeed } from "@/components/EventsFeed";
 import { trackPlaceView, trackPlaceSave, trackSearch } from "@/components/ActivityTracker";
 
 export default function Explore() {
   const [showClearConfirm, setShowClearConfirm] = useState(false);
-  const [showLoadingScreen, setShowLoadingScreen] = useState(true);
   const [query, setQuery] = useState("date night");
   const [radius, setRadius] = useState("8047"); // 5 miles in meters
   const [plan, setPlan] = useState<PlaceItem[]>([]);
@@ -108,14 +105,6 @@ export default function Explore() {
     toast.success("Plan cleared!");
   }, []);
 
-  const handleLoadingComplete = useCallback(() => {
-    setShowLoadingScreen(false);
-  }, []);
-
-  if (showLoadingScreen) {
-    return <LoadingScreen onComplete={handleLoadingComplete} />;
-  }
-
   return (
     <>
       <FloatingHearts />
@@ -160,27 +149,6 @@ export default function Explore() {
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
-            </CardContent>
-          </Card>
-
-          {/* AI Weekend Suggestions */}
-          <Card className="shadow-soft border-primary/20">
-            <div className="gradient-primary h-1" />
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center">
-                  <Sparkles className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <CardTitle>AI Weekend Suggestions</CardTitle>
-                  <CardDescription>
-                    Personalized recommendations for your upcoming weekend
-                  </CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <AIRecommendations />
             </CardContent>
           </Card>
 
