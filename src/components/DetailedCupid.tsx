@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import cupidImageOriginal from "@/assets/cupid-icon-original.png";
 import { removeBackground, loadImage } from "@/lib/backgroundRemoval";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,6 +9,12 @@ export const DetailedCupid = () => {
   const [isProcessing, setIsProcessing] = useState(true);
   const [isEnabled, setIsEnabled] = useState(true);
   const [position, setPosition] = useState({ top: '1.5rem', right: '1.5rem', left: 'auto', bottom: 'auto' });
+  const [isRunning, setIsRunning] = useState(false);
+  const [isPeeking, setIsPeeking] = useState(false);
+  const [isDodging, setIsDodging] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const cupidRef = useRef<HTMLImageElement>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
 
   // Process image to remove background
   useEffect(() => {
@@ -80,36 +86,188 @@ export const DetailedCupid = () => {
     }
   }, [isProcessing, isEnabled]);
 
-  // Make Cupid hop around the screen
+  // Initialize Audio Context
+  useEffect(() => {
+    audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+    return () => {
+      audioContextRef.current?.close();
+    };
+  }, []);
+
+  // Play fun water drop sound effect
+  const playPopSound = () => {
+    if (!audioContextRef.current) return;
+    
+    const ctx = audioContextRef.current;
+    const oscillator = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(ctx.destination);
+    
+    // Water drop effect: quick descending frequency
+    oscillator.frequency.setValueAtTime(800, ctx.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.1);
+    oscillator.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.2);
+    
+    // Volume envelope
+    gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+    
+    oscillator.type = 'sine';
+    oscillator.start(ctx.currentTime);
+    oscillator.stop(ctx.currentTime + 0.3);
+  };
+
+  // Track mouse position for evasive behavior
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePos({ x: e.clientX, y: e.clientY });
+    };
+    
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  // Evasive behavior - dodge when mouse gets close
+  useEffect(() => {
+    if (!isVisible || !cupidRef.current || isDodging) return;
+
+    const checkDistance = () => {
+      const rect = cupidRef.current?.getBoundingClientRect();
+      if (!rect) return;
+
+      const cupidCenterX = rect.left + rect.width / 2;
+      const cupidCenterY = rect.top + rect.height / 2;
+      
+      const distance = Math.sqrt(
+        Math.pow(mousePos.x - cupidCenterX, 2) + 
+        Math.pow(mousePos.y - cupidCenterY, 2)
+      );
+
+      // If mouse within 150px, dodge!
+      if (distance < 150 && Math.random() > 0.3) {
+        setIsDodging(true);
+        
+        // Quick dodge to random position
+        const positions = [
+          { top: '1.5rem', right: '1.5rem', left: 'auto', bottom: 'auto' },
+          { top: 'auto', right: '1.5rem', left: 'auto', bottom: '1.5rem' },
+          { top: '1.5rem', right: 'auto', left: '1.5rem', bottom: 'auto' },
+          { top: 'auto', right: 'auto', left: '1.5rem', bottom: '1.5rem' },
+          { top: '50%', right: '1.5rem', left: 'auto', bottom: 'auto' },
+          { top: '50%', right: 'auto', left: '1.5rem', bottom: 'auto' },
+        ];
+        
+        const randomPos = positions[Math.floor(Math.random() * positions.length)];
+        setPosition(randomPos);
+        
+        setTimeout(() => setIsDodging(false), 800);
+      }
+    };
+
+    const interval = setInterval(checkDistance, 100);
+    return () => clearInterval(interval);
+  }, [isVisible, mousePos, isDodging]);
+
+  // Make Cupid do various actions: hop, run, peek
   useEffect(() => {
     if (!isVisible) return;
 
     const positions = [
-      { top: '1.5rem', right: '1.5rem', left: 'auto', bottom: 'auto' }, // top right
-      { top: 'auto', right: '1.5rem', left: 'auto', bottom: '1.5rem' }, // bottom right
-      { top: '1.5rem', right: 'auto', left: '1.5rem', bottom: 'auto' }, // top left
-      { top: 'auto', right: 'auto', left: '1.5rem', bottom: '1.5rem' }, // bottom left
-      { top: '50%', right: '1.5rem', left: 'auto', bottom: 'auto' }, // middle right
-      { top: '50%', right: 'auto', left: '1.5rem', bottom: 'auto' }, // middle left
+      { top: '1.5rem', right: '1.5rem', left: 'auto', bottom: 'auto' },
+      { top: 'auto', right: '1.5rem', left: 'auto', bottom: '1.5rem' },
+      { top: '1.5rem', right: 'auto', left: '1.5rem', bottom: 'auto' },
+      { top: 'auto', right: 'auto', left: '1.5rem', bottom: '1.5rem' },
+      { top: '50%', right: '1.5rem', left: 'auto', bottom: 'auto' },
+      { top: '50%', right: 'auto', left: '1.5rem', bottom: 'auto' },
     ];
 
-    const hopInterval = setInterval(() => {
-      const randomPos = positions[Math.floor(Math.random() * positions.length)];
-      setPosition(randomPos);
-    }, 8000); // Hop every 8 seconds
+    const performAction = () => {
+      const action = Math.random();
+      
+      if (action < 0.3) {
+        // Peek out from edge
+        setIsPeeking(true);
+        const peekPositions = [
+          { top: '50%', right: '-40px', left: 'auto', bottom: 'auto' },
+          { top: '50%', right: 'auto', left: '-40px', bottom: 'auto' },
+          { top: '-40px', right: 'auto', left: '50%', bottom: 'auto' },
+          { top: 'auto', right: 'auto', left: '50%', bottom: '-40px' },
+        ];
+        setPosition(peekPositions[Math.floor(Math.random() * peekPositions.length)]);
+        
+        setTimeout(() => {
+          setIsPeeking(false);
+          setPosition(positions[Math.floor(Math.random() * positions.length)]);
+        }, 2000);
+        
+      } else if (action < 0.6) {
+        // Run across screen
+        setIsRunning(true);
+        const startSide = Math.random() > 0.5 ? 'left' : 'right';
+        const yPos = Math.random() > 0.5 ? '20%' : '70%';
+        
+        if (startSide === 'left') {
+          setPosition({ top: yPos, right: 'auto', left: '-100px', bottom: 'auto' });
+          setTimeout(() => {
+            setPosition({ top: yPos, right: '-100px', left: 'auto', bottom: 'auto' });
+          }, 50);
+        } else {
+          setPosition({ top: yPos, right: '-100px', left: 'auto', bottom: 'auto' });
+          setTimeout(() => {
+            setPosition({ top: yPos, right: 'auto', left: '-100px', bottom: 'auto' });
+          }, 50);
+        }
+        
+        setTimeout(() => {
+          setIsRunning(false);
+          setPosition(positions[Math.floor(Math.random() * positions.length)]);
+        }, 1500);
+        
+      } else {
+        // Normal hop
+        const randomPos = positions[Math.floor(Math.random() * positions.length)];
+        setPosition(randomPos);
+      }
+    };
 
-    return () => clearInterval(hopInterval);
+    const actionInterval = setInterval(performAction, 5000);
+    return () => clearInterval(actionInterval);
   }, [isVisible]);
 
-  const handleTap = () => {
-    const hideUntil = Date.now() + 10000;
+  const handleTap = (e: React.MouseEvent) => {
+    e.preventDefault();
+    
+    // Only catch if not dodging or running
+    if (isDodging || isRunning) {
+      // Play miss sound
+      if (audioContextRef.current) {
+        const ctx = audioContextRef.current;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.value = 100;
+        gain.gain.setValueAtTime(0.1, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.1);
+      }
+      return;
+    }
+    
+    // Success! Play pop sound
+    playPopSound();
+    
+    const hideUntil = Date.now() + 8000;
     localStorage.setItem('cupid_hidden_until', hideUntil.toString());
     setIsVisible(false);
     
     setTimeout(() => {
       localStorage.removeItem('cupid_hidden_until');
       setIsVisible(true);
-    }, 10000);
+    }, 8000);
   };
 
   if (!isVisible || !isEnabled) return null;
@@ -138,6 +296,27 @@ export const DetailedCupid = () => {
           image-rendering: auto;
           -webkit-user-drag: none;
           transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .cupid-float.running {
+          transition: all 0.8s linear !important;
+          animation: none;
+          transform: scale(1.1);
+        }
+        
+        .cupid-float.peeking {
+          animation: peek 2s ease-in-out;
+          transform: scale(0.9);
+        }
+        
+        .cupid-float.dodging {
+          transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
+          transform: scale(0.8) rotate(15deg);
+        }
+        
+        @keyframes peek {
+          0%, 100% { transform: translateX(0); }
+          50% { transform: translateX(20px); }
         }
         
         .cupid-float:hover {
@@ -169,11 +348,22 @@ export const DetailedCupid = () => {
       `}</style>
       
       <img
+        ref={cupidRef}
         src={cupidImage}
         alt="Cupid"
-        className="cupid-float"
+        className={`cupid-float ${isRunning ? 'running' : ''} ${isPeeking ? 'peeking' : ''} ${isDodging ? 'dodging' : ''}`}
         style={position}
         onClick={handleTap}
+        onMouseEnter={() => {
+          // Extra evasive on hover
+          if (Math.random() > 0.5 && !isDodging) {
+            const quickDodge = new MouseEvent('mousemove', {
+              clientX: mousePos.x + 200,
+              clientY: mousePos.y + 200
+            });
+            window.dispatchEvent(quickDodge);
+          }
+        }}
         draggable={false}
       />
     </>
