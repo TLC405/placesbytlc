@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { CommandStation } from "@/components/admin/CommandStation";
+import { UserAnalyticsDashboard } from "@/components/admin/UserAnalyticsDashboard";
 
 const FeliciaModPanel = lazy(() => import("@/components/FeliciaModPanel"));
 
@@ -168,6 +169,7 @@ export default function AdminPanel() {
     { id: "dashboard", label: "Dashboard", icon: BarChart3, color: "from-pink-500 to-rose-500" },
     { id: "command", label: "Command Station", icon: Activity, color: "from-blue-500 to-purple-500" },
     { id: "users", label: "Users", icon: Users, color: "from-purple-500 to-pink-500" },
+    { id: "analytics", label: "Analytics", icon: TrendingUp, color: "from-orange-500 to-amber-500" },
     { id: "tools", label: "Dev Tools", icon: Code2, color: "from-emerald-500 to-teal-500" },
   ];
 
@@ -429,6 +431,24 @@ export default function AdminPanel() {
                   </Table>
                 </CardContent>
               </Card>
+            </div>
+          )}
+
+          {/* Analytics Section */}
+          {activeSection === "analytics" && (
+            <div className="space-y-6 animate-fade-in">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-3 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl shadow-lg">
+                  <TrendingUp className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-3xl font-black bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
+                    User Analytics
+                  </h1>
+                  <p className="text-sm text-muted-foreground">Deep insights into user behavior and sessions</p>
+                </div>
+              </div>
+              <UserAnalyticsDashboard />
             </div>
           )}
 

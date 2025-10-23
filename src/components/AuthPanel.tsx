@@ -12,6 +12,7 @@ export const AuthPanel = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [displayName, setDisplayName] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -33,11 +34,15 @@ export const AuthPanel = () => {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/`
+            emailRedirectTo: `${window.location.origin}/`,
+            data: {
+              display_name: displayName,
+            }
           }
         });
         if (error) throw error;
-        toast.success("Account created! Check your email 📧");
+        toast.success("Welcome to Places by TLC! 💕");
+        navigate("/explore");
       }
     } catch (error: any) {
       toast.error(error.message || "Authentication failed");
@@ -47,29 +52,51 @@ export const AuthPanel = () => {
   };
 
   return (
-    <Card className="relative overflow-hidden border-2 border-primary/50 shadow-glow backdrop-blur-sm bg-background/80">
-      <div className="absolute inset-0 bg-gradient-to-br from-pink-500/10 via-purple-500/10 to-rose-500/10 animate-pulse-subtle" />
+    <Card className="relative overflow-hidden border-2 border-primary/20 shadow-2xl backdrop-blur-md bg-gradient-to-br from-background via-background/95 to-background/90">
+      <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 via-purple-500/5 to-rose-500/5" />
+      <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -z-10" />
+      <div className="absolute bottom-0 left-0 w-64 h-64 bg-accent/10 rounded-full blur-3xl -z-10" />
       
-      <CardHeader className="relative z-10 text-center">
-        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center shadow-lg">
-          <Heart className="w-8 h-8 text-white animate-pulse" />
+      <CardHeader className="relative z-10 text-center space-y-4 pb-6">
+        <div className="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-pink-500 via-purple-500 to-rose-600 flex items-center justify-center shadow-2xl shadow-primary/30 ring-4 ring-primary/20 backdrop-blur">
+          <Heart className="w-10 h-10 text-white animate-pulse drop-shadow-lg" />
         </div>
-        <CardTitle className="text-3xl font-bold gradient-text">
-          {isLogin ? "Welcome Back!" : "Join Us!"}
-        </CardTitle>
-        <CardDescription className="text-base">
-          {isLogin 
-            ? "Sign in to save your favorite spots and plans" 
-            : "Create an account to unlock all features"}
-        </CardDescription>
+        <div>
+          <CardTitle className="text-4xl font-bold bg-gradient-to-r from-pink-500 via-purple-500 to-rose-500 bg-clip-text text-transparent mb-2">
+            {isLogin ? "Welcome Back" : "Join Places by TLC"}
+          </CardTitle>
+          <CardDescription className="text-base text-muted-foreground/80">
+            {isLogin 
+              ? "Continue your journey to discover amazing date spots" 
+              : "Start discovering the best date spots in OKC"}
+          </CardDescription>
+        </div>
       </CardHeader>
 
-      <CardContent className="relative z-10">
-        <form onSubmit={handleAuth} className="space-y-4">
+      <CardContent className="relative z-10 px-6 pb-6">
+        <form onSubmit={handleAuth} className="space-y-5">
+          {!isLogin && (
+            <div className="space-y-2">
+              <Label htmlFor="displayName" className="flex items-center gap-2 text-sm font-medium">
+                <UserPlus className="w-4 h-4 text-primary" />
+                Display Name
+              </Label>
+              <Input
+                id="displayName"
+                type="text"
+                placeholder="Your name"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                required={!isLogin}
+                className="border-primary/20 focus:border-primary/50 transition-all h-11"
+              />
+            </div>
+          )}
+
           <div className="space-y-2">
-            <Label htmlFor="email" className="flex items-center gap-2">
-              <Mail className="w-4 h-4" />
-              Email
+            <Label htmlFor="email" className="flex items-center gap-2 text-sm font-medium">
+              <Mail className="w-4 h-4 text-primary" />
+              Email Address
             </Label>
             <Input
               id="email"
@@ -78,13 +105,13 @@ export const AuthPanel = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="border-primary/30"
+              className="border-primary/20 focus:border-primary/50 transition-all h-11"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password" className="flex items-center gap-2">
-              <Lock className="w-4 h-4" />
+            <Label htmlFor="password" className="flex items-center gap-2 text-sm font-medium">
+              <Lock className="w-4 h-4 text-primary" />
               Password
             </Label>
             <Input
@@ -95,40 +122,66 @@ export const AuthPanel = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={6}
-              className="border-primary/30"
+              className="border-primary/20 focus:border-primary/50 transition-all h-11"
             />
+            {!isLogin && (
+              <p className="text-xs text-muted-foreground">
+                Minimum 6 characters
+              </p>
+            )}
           </div>
 
           <Button 
             type="submit" 
-            className="w-full gap-2 shadow-lg" 
+            className="w-full gap-2 shadow-xl h-11 bg-gradient-to-r from-pink-500 via-purple-500 to-rose-600 hover:from-pink-600 hover:via-purple-600 hover:to-rose-700 text-white font-semibold transition-all hover:scale-[1.02] active:scale-[0.98]" 
             disabled={loading}
           >
             {loading ? (
-              "Processing..."
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Processing...
+              </div>
             ) : isLogin ? (
               <>
-                <LogIn className="w-4 h-4" />
-                Sign In
+                <LogIn className="w-5 h-5" />
+                Sign In to Your Account
               </>
             ) : (
               <>
-                <UserPlus className="w-4 h-4" />
-                Create Account
+                <UserPlus className="w-5 h-5" />
+                Create Your Account
               </>
             )}
           </Button>
 
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-border/50"></div>
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">or</span>
+            </div>
+          </div>
+
           <Button
             type="button"
             variant="ghost"
-            className="w-full"
-            onClick={() => setIsLogin(!isLogin)}
+            className="w-full hover:bg-primary/5 transition-colors"
+            onClick={() => {
+              setIsLogin(!isLogin);
+              setDisplayName("");
+            }}
           >
             {isLogin 
-              ? "Don't have an account? Sign up" 
-              : "Already have an account? Sign in"}
+              ? "Need an account? Sign up →" 
+              : "← Back to sign in"}
           </Button>
+
+          {isLogin && (
+            <p className="text-xs text-center text-muted-foreground mt-4">
+              Secure authentication powered by Lovable Cloud
+            </p>
+          )}
         </form>
       </CardContent>
     </Card>
