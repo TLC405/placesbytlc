@@ -40,7 +40,9 @@ export default defineConfig(({ mode }) => ({
         ]
       },
       workbox: {
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // Increase to 5MB
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        globIgnores: ['**/cupid-icon-original.png', '**/ort-wasm-simd-threaded.jsep.wasm'],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -53,6 +55,17 @@ export default defineConfig(({ mode }) => ({
               },
               cacheableResponse: {
                 statuses: [0, 200]
+              }
+            }
+          },
+          {
+            urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp)$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'images-cache',
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24 * 30
               }
             }
           }
