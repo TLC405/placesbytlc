@@ -8,7 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Lock, Users, Activity, MapPin, Calendar, Eye, TrendingUp, Download, Code2, Sparkles, Heart, Crown, Zap, BarChart3, Search, FileText, Mars, Venus } from "lucide-react";
+import { Lock, Users, Activity, MapPin, Calendar, Eye, TrendingUp, Download, Code2, Sparkles, Heart, Crown, Zap, BarChart3, Search, FileText, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -183,8 +183,8 @@ export default function AdminPanel() {
                 <div>
                   <h2 className="text-2xl font-black bg-gradient-to-r from-pink-600 via-purple-600 to-rose-600 bg-clip-text text-transparent flex items-center gap-2">
                     Admin Portal
-                    <Mars className="w-4 h-4 text-blue-400" />
-                    <Venus className="w-4 h-4 text-pink-400" />
+                    <User className="w-4 h-4 text-blue-400" />
+                    <User className="w-4 h-4 text-pink-400" />
                   </h2>
                   <p className="text-xs text-muted-foreground flex items-center justify-center gap-1 mt-1">
                   <Zap className="w-3 h-3 text-yellow-500" />

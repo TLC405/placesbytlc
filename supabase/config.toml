@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.admin-portal-data]
 verify_jwt = false
+
+[functions.period-tracker-setup]
+verify_jwt = false
