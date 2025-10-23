@@ -14,16 +14,264 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      app_updates: {
+        Row: {
+          changes: Json
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          release_date: string | null
+          status: string | null
+          title: string
+          update_type: string
+          updated_at: string
+          version: string
+        }
+        Insert: {
+          changes: Json
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          release_date?: string | null
+          status?: string | null
+          title: string
+          update_type: string
+          updated_at?: string
+          version: string
+        }
+        Update: {
+          changes?: Json
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          release_date?: string | null
+          status?: string | null
+          title?: string
+          update_type?: string
+          updated_at?: string
+          version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "app_updates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      couples: {
+        Row: {
+          code_expires_at: string | null
+          created_at: string
+          id: string
+          paired_at: string | null
+          pairing_code: string | null
+          partner_1_id: string
+          partner_2_id: string | null
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          code_expires_at?: string | null
+          created_at?: string
+          id?: string
+          paired_at?: string | null
+          pairing_code?: string | null
+          partner_1_id: string
+          partner_2_id?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          code_expires_at?: string | null
+          created_at?: string
+          id?: string
+          paired_at?: string | null
+          pairing_code?: string | null
+          partner_1_id?: string
+          partner_2_id?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "couples_partner_1_id_fkey"
+            columns: ["partner_1_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "couples_partner_2_id_fkey"
+            columns: ["partner_2_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      custom_themes: {
+        Row: {
+          colors: Json
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          colors: Json
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          colors?: Json
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "custom_themes_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          email: string | null
+          gender: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          gender?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          gender?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      shared_data: {
+        Row: {
+          couple_id: string
+          created_at: string
+          created_by: string | null
+          data: Json
+          data_type: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          couple_id: string
+          created_at?: string
+          created_by?: string | null
+          data: Json
+          data_type: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          couple_id?: string
+          created_at?: string
+          created_by?: string | null
+          data?: Json
+          data_type?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shared_data_couple_id_fkey"
+            columns: ["couple_id"]
+            isOneToOne: false
+            referencedRelation: "couples"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shared_data_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +398,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+    },
   },
 } as const
