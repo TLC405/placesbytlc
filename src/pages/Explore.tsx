@@ -26,6 +26,7 @@ export default function Explore() {
   const [sortBy, setSortBy] = useState("relevance");
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [favorites, setFavorites] = useState<PlaceItem[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
   // Custom hooks
   const { location, setCustomLocation } = useGeolocation();
@@ -77,17 +78,29 @@ export default function Explore() {
     toast.success(isFavorite ? `${place.name} added to favorites!` : `${place.name} removed from favorites`);
   }, []);
 
+  const handleCategoryToggle = useCallback((category: string) => {
+    setSelectedCategories((prev) =>
+      prev.includes(category)
+        ? prev.filter((c) => c !== category)
+        : [...prev, category]
+    );
+  }, []);
+
   const handleSearch = useCallback(() => {
-    if (!query.trim()) {
-      toast.info("Enter a search term or use quick searches below!");
+    const searchQuery = selectedCategories.length > 0 
+      ? selectedCategories.join(" ") 
+      : query.trim();
+
+    if (!searchQuery) {
+      toast.info("Enter a search term or select categories!");
       return;
     }
 
     setError("");
-    search(query, location, parseInt(radius, 10));
-    trackSearch(query, { radius, location });
+    search(searchQuery, location, parseInt(radius, 10));
+    trackSearch(searchQuery, { radius, location });
     setSortBy("distance");
-  }, [query, location, radius, search]);
+  }, [query, selectedCategories, location, radius, search]);
 
   const handleLocationPreset = useCallback((loc: { lat: number; lng: number; name: string }) => {
     setCustomLocation({ lat: loc.lat, lng: loc.lng });
@@ -133,6 +146,8 @@ export default function Explore() {
                 onSearch={handleSearch}
                 disabled={isSearching}
                 loading={isSearching}
+                selectedCategories={selectedCategories}
+                onCategoryToggle={handleCategoryToggle}
               />
 
               <LocationPresets 

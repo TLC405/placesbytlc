@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import { Search } from "lucide-react";
 
 interface SearchBarProps {
@@ -11,7 +12,20 @@ interface SearchBarProps {
   onSearch: () => void;
   disabled?: boolean;
   loading?: boolean;
+  selectedCategories?: string[];
+  onCategoryToggle?: (category: string) => void;
 }
+
+const CATEGORY_OPTIONS = [
+  { label: "Restaurants", value: "restaurant" },
+  { label: "Cafes", value: "cafe" },
+  { label: "Bars", value: "bar" },
+  { label: "Parks", value: "park" },
+  { label: "Museums", value: "museum" },
+  { label: "Movies", value: "movie_theater" },
+  { label: "Shopping", value: "shopping_mall" },
+  { label: "Art Galleries", value: "art_gallery" },
+];
 
 export const SearchBar = ({
   query,
@@ -21,6 +35,8 @@ export const SearchBar = ({
   onSearch,
   disabled,
   loading,
+  selectedCategories = [],
+  onCategoryToggle,
 }: SearchBarProps) => {
   const handleQueryChange = (value: string) => {
     const sanitized = value.slice(0, 200);
@@ -28,7 +44,7 @@ export const SearchBar = ({
   };
 
   return (
-    <div className="relative">
+    <div className="space-y-4">
       <div className="flex flex-wrap gap-3">
         <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
@@ -63,9 +79,32 @@ export const SearchBar = ({
           className="h-14 px-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 rounded-xl text-base font-semibold gradient-primary"
         >
           <Search className={`w-5 h-5 mr-2 ${loading ? 'animate-spin' : ''}`} />
-          {loading ? "Discovering..." : "Search"}
+          {loading ? "Searching..." : "Search"}
         </Button>
       </div>
+
+      {onCategoryToggle && (
+        <div className="space-y-2">
+          <p className="text-sm font-medium text-muted-foreground">Quick Categories</p>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {CATEGORY_OPTIONS.map((category) => {
+              const isSelected = selectedCategories.includes(category.value);
+              return (
+                <Badge
+                  key={category.value}
+                  variant={isSelected ? "default" : "outline"}
+                  className={`cursor-pointer transition-all hover:scale-105 justify-center py-2 ${
+                    isSelected ? "shadow-md" : ""
+                  }`}
+                  onClick={() => !disabled && !loading && onCategoryToggle(category.value)}
+                >
+                  {category.label}
+                </Badge>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
