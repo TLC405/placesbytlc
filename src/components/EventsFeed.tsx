@@ -2,8 +2,16 @@ import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, ExternalLink, Loader2 } from "lucide-react";
+import { Calendar, MapPin, ExternalLink, Loader2, Music, Palette, Utensils, Trophy, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+
+const eventIcons: Record<string, any> = {
+  concert: Music,
+  art: Palette,
+  food: Utensils,
+  sports: Trophy,
+  default: Sparkles,
+};
 
 interface Event {
   id: string;
@@ -92,19 +100,28 @@ export const EventsFeed = () => {
       </div>
 
       <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-        {events.map((event) => (
-          <Card key={event.id} className="p-4">
-            <div className="space-y-2">
-              <div className="flex items-start justify-between gap-2">
-                <Badge variant="secondary" className="text-xs">
-                  {event.event_type}
-                </Badge>
-                {event.price_range && (
-                  <Badge variant="outline" className="text-xs">
-                    {event.price_range}
-                  </Badge>
-                )}
-              </div>
+        {events.map((event) => {
+          const Icon = eventIcons[event.event_type] || eventIcons.default;
+          return (
+            <Card key={event.id} className="p-4">
+              <div className="space-y-2">
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 w-14 h-14 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                    <Icon className="w-7 h-7 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2">
+                      <Badge variant="secondary" className="text-xs">
+                        {event.event_type}
+                      </Badge>
+                      {event.price_range && (
+                        <Badge variant="outline" className="text-xs">
+                          {event.price_range}
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                </div>
 
               <h4 className="font-medium text-sm line-clamp-2">
                 {event.event_name}
@@ -141,9 +158,10 @@ export const EventsFeed = () => {
                   </a>
                 </Button>
               )}
-            </div>
-          </Card>
-        ))}
+              </div>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );

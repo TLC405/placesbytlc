@@ -20,7 +20,7 @@ import { trackPlaceView, trackPlaceSave, trackSearch } from "@/components/Activi
 
 export default function Explore() {
   const [showClearConfirm, setShowClearConfirm] = useState(false);
-  const [query, setQuery] = useState("date night");
+  const [query, setQuery] = useState("");
   const [radius, setRadius] = useState("8047"); // 5 miles in meters
   const [plan, setPlan] = useState<PlaceItem[]>([]);
   const [error, setError] = useState("");

@@ -198,6 +198,60 @@ export type Database = {
           },
         ]
       }
+      discovered_places: {
+        Row: {
+          address: string | null
+          category: string | null
+          city: string | null
+          created_at: string | null
+          description: string | null
+          discovery_context: string | null
+          facebook_verified: boolean | null
+          id: string
+          lat: number | null
+          lng: number | null
+          name: string
+          place_id: string
+          source_url: string | null
+          state: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          address?: string | null
+          category?: string | null
+          city?: string | null
+          created_at?: string | null
+          description?: string | null
+          discovery_context?: string | null
+          facebook_verified?: boolean | null
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          name: string
+          place_id: string
+          source_url?: string | null
+          state?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          address?: string | null
+          category?: string | null
+          city?: string | null
+          created_at?: string | null
+          description?: string | null
+          discovery_context?: string | null
+          facebook_verified?: boolean | null
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          name?: string
+          place_id?: string
+          source_url?: string | null
+          state?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       okc_events_cache: {
         Row: {
           created_at: string | null

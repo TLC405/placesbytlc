@@ -177,8 +177,10 @@ export const DetailedCupid = () => {
       style={{
         left: `${position.x}%`,
         top: `${position.y}%`,
-        transform: `translate(-50%, -50%) rotate(${rotation}deg) scale(0.3)`,
+        transform: `translate(-50%, -50%) rotate(${rotation}deg) scale(0.25)`,
         opacity: isVisible ? 1 : 0,
+        transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+        willChange: 'transform, opacity',
       }}
       onClick={handleTap}
       onDoubleClick={handleSwat}
