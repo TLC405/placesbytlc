@@ -51,21 +51,21 @@ export const PlaceCard = ({ place, onAdd, onFavoriteToggle, onView }: PlaceCardP
   return (
     <>
       <Card 
-        className="shadow-md hover:shadow-xl transition-all duration-300 group overflow-hidden border border-border/50 hover:border-primary/50 animate-fade-in cursor-pointer hover:-translate-y-1"
+        className="shadow-lg hover:shadow-2xl transition-all duration-500 group overflow-hidden border-2 border-border/30 hover:border-primary/60 animate-fade-in cursor-pointer hover:-translate-y-2 rounded-2xl bg-card/95 backdrop-blur-sm"
         onClick={() => {
           onView?.();
           setShowDetails(true);
         }}
       >
-        <div className="relative overflow-hidden">
+        <div className="relative overflow-hidden rounded-t-xl">
         <img
           src={place.photo}
           alt={place.name}
-          className="w-full h-56 object-cover transition-transform duration-500 group-hover:scale-105"
+          className="w-full h-64 object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-110"
           loading="lazy"
           decoding="async"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-500" />
         
         <Button
           variant="ghost"
@@ -74,96 +74,96 @@ export const PlaceCard = ({ place, onAdd, onFavoriteToggle, onView }: PlaceCardP
             e.stopPropagation();
             handleFavoriteClick();
           }}
-          className={`absolute top-3 left-3 h-9 w-9 rounded-full backdrop-blur-md transition-all duration-300 shadow-md ${
+          className={`absolute top-4 left-4 h-11 w-11 rounded-full backdrop-blur-lg transition-all duration-300 shadow-xl border-2 ${
             isFavorite 
-              ? 'bg-rose-500/95 hover:bg-rose-600 text-white scale-110' 
-              : 'bg-white/95 hover:bg-white text-muted-foreground hover:text-rose-500'
+              ? 'bg-rose-500/95 hover:bg-rose-600 text-white scale-110 border-rose-400' 
+              : 'bg-white/95 hover:bg-white text-muted-foreground hover:text-rose-500 border-white/50'
           }`}
         >
-          <Heart className={`w-4 h-4 transition-transform ${isFavorite ? 'fill-current scale-110' : ''}`} />
+          <Heart className={`w-5 h-5 transition-transform duration-300 ${isFavorite ? 'fill-current scale-110' : ''}`} />
         </Button>
 
-        <div className="absolute top-3 right-3 flex flex-col gap-2">
+        <div className="absolute top-4 right-4 flex flex-col gap-2.5">
           {place.rating && (
-            <Badge className="bg-white/95 backdrop-blur-md text-foreground border-0 shadow-md">
-              <Star className="w-3 h-3 fill-amber-400 text-amber-400 mr-1" />
-              <span className="font-semibold">{place.rating}</span>
+            <Badge className="bg-white/95 backdrop-blur-lg text-foreground border-2 border-white/50 shadow-xl px-3 py-1.5 rounded-full">
+              <Star className="w-4 h-4 fill-amber-400 text-amber-400 mr-1.5" />
+              <span className="font-bold text-base">{place.rating}</span>
             </Badge>
           )}
           
           {place.openNow !== undefined && (
-            <Badge className={`backdrop-blur-md border-0 shadow-md ${
+            <Badge className={`backdrop-blur-lg border-2 shadow-xl px-3 py-1.5 rounded-full font-semibold ${
               place.openNow 
-                ? 'bg-emerald-500/95 text-white' 
-                : 'bg-slate-500/95 text-white'
+                ? 'bg-emerald-500/95 text-white border-emerald-400' 
+                : 'bg-slate-500/95 text-white border-slate-400'
             }`}>
-              <Clock className="w-3 h-3 mr-1" />
-              {place.openNow ? 'Open' : 'Closed'}
+              <Clock className="w-3.5 h-3.5 mr-1.5" />
+              {place.openNow ? 'Open Now' : 'Closed'}
             </Badge>
           )}
         </div>
 
         {place.distance && (
-          <Badge className="absolute bottom-3 left-3 bg-primary/95 backdrop-blur-md text-primary-foreground border-0 shadow-md">
-            <MapPin className="w-3 h-3 mr-1" />
-            {place.distance} mi
+          <Badge className="absolute bottom-4 left-4 bg-primary/95 backdrop-blur-lg text-primary-foreground border-2 border-primary-foreground/30 shadow-xl px-3 py-1.5 rounded-full font-semibold">
+            <MapPin className="w-3.5 h-3.5 mr-1.5" />
+            {place.distance} mi away
           </Badge>
         )}
       </div>
       
-      <CardHeader className="pb-3 space-y-3">
+      <CardHeader className="pb-4 space-y-4 pt-5">
         <div className="flex items-start justify-between gap-2">
-          <CardTitle className="text-lg font-bold line-clamp-2 group-hover:text-primary transition-colors leading-tight">
+          <CardTitle className="text-xl font-bold line-clamp-2 group-hover:text-primary transition-colors duration-300 leading-tight">
             {place.name}
           </CardTitle>
         </div>
         
-        <CardDescription className="text-xs line-clamp-2 flex items-start gap-1.5">
-          <MapPin className="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-muted-foreground" />
-          <span className="leading-relaxed">{place.address}</span>
+        <CardDescription className="text-sm line-clamp-2 flex items-start gap-2">
+          <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0 text-primary" />
+          <span className="leading-relaxed font-medium">{place.address}</span>
         </CardDescription>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2.5">
           {getTypeLabel(place.types) && (
-            <Badge variant="secondary" className="text-xs font-medium px-2.5 py-1">
+            <Badge variant="secondary" className="text-sm font-semibold px-3 py-1.5 rounded-full shadow-sm">
               {getTypeLabel(place.types)}
             </Badge>
           )}
           {place.priceLevel && (
-            <Badge variant="outline" className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 border-emerald-300 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-950/50 px-2.5 py-1">
+            <Badge variant="outline" className="text-sm font-bold text-emerald-700 dark:text-emerald-400 border-2 border-emerald-400 dark:border-emerald-600 bg-emerald-50 dark:bg-emerald-950/50 px-3 py-1.5 rounded-full shadow-sm">
               {getPriceLevel(place.priceLevel)}
             </Badge>
           )}
         </div>
       </CardHeader>
       
-      <CardContent className="pt-0">
-        <div className="flex flex-col gap-3">
+      <CardContent className="pt-0 pb-5">
+        <div className="flex flex-col gap-4">
           {place.userRatingsTotal && (
-            <div className="flex items-center gap-1.5">
-              <span className="text-xs text-muted-foreground font-medium">
+            <div className="flex items-center gap-2 px-1">
+              <span className="text-sm text-muted-foreground font-semibold">
                 {place.userRatingsTotal.toLocaleString()} reviews
               </span>
             </div>
           )}
           
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             <Button 
-              size="sm" 
+              size="lg" 
               onClick={(e) => {
                 e.stopPropagation();
                 onAdd(place);
               }}
-              className="flex-1 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.02] active:scale-95 font-semibold"
+              className="flex-1 shadow-md hover:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 font-bold rounded-xl h-12 gradient-primary"
             >
-              <Plus className="w-4 h-4 mr-1.5" />
+              <Plus className="w-5 h-5 mr-2" />
               Add to Plan
             </Button>
             
             <ShareButton 
               placeName={place.name}
               placeAddress={place.address}
-              className="flex-1"
+              className="flex-1 shadow-md hover:shadow-xl h-12"
             />
           </div>
         </div>

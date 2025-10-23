@@ -190,13 +190,13 @@ export default function Explore() {
           {/* Results Grid */}
           {isSearching ? (
             <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
-              <div className="flex flex-col items-center gap-3">
+              <div className="flex flex-col items-center gap-4 bg-background/80 backdrop-blur-md px-8 py-6 rounded-2xl shadow-2xl border-2 border-primary/20">
                 <div className="relative">
-                  <div className="animate-spin rounded-full h-12 w-12 border-3 border-primary/30"></div>
-                  <div className="animate-spin rounded-full h-12 w-12 border-3 border-primary border-t-transparent absolute top-0 left-0"></div>
+                  <div className="animate-spin rounded-full h-16 w-16 border-4 border-primary/30"></div>
+                  <div className="animate-spin rounded-full h-16 w-16 border-4 border-primary border-t-transparent absolute top-0 left-0"></div>
                 </div>
-                <p className="text-sm font-medium text-primary animate-pulse">
-                  Searching...
+                <p className="text-base font-bold text-primary animate-pulse">
+                  Finding perfect spots...
                 </p>
               </div>
             </div>
