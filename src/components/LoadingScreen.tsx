@@ -81,18 +81,15 @@ export const LoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
           <div className="space-y-6">
             {/* Main Message */}
             <div className="relative inline-block">
-              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white leading-tight tracking-tighter">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-tight tracking-tight">
                 <div className="animate-fade-in" style={{ animationDelay: '0.1s', animationFillMode: 'backwards' }}>
-                  HELLO.
+                  WELL HELLO
                 </div>
                 <div className="animate-fade-in" style={{ animationDelay: '0.3s', animationFillMode: 'backwards' }}>
-                  YOU&apos;RE
-                </div>
-                <div className="animate-fade-in" style={{ animationDelay: '0.5s', animationFillMode: 'backwards' }}>
-                  LOOKING
+                  YOU&apos;RE LOOKING
                 </div>
                 <div className="relative inline-block">
-                  <div className="animate-fade-in" style={{ animationDelay: '0.7s', animationFillMode: 'backwards' }}>
+                  <div className="animate-fade-in" style={{ animationDelay: '0.5s', animationFillMode: 'backwards' }}>
                     ABSOLUTELY
                   </div>
                   <div className="absolute -inset-4 bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500 blur-2xl opacity-50 animate-pulse" />
@@ -101,7 +98,7 @@ export const LoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
                   <div 
                     className="bg-gradient-to-r from-yellow-300 via-pink-300 to-purple-300 bg-clip-text text-transparent animate-fade-in"
                     style={{ 
-                      animationDelay: '0.9s', 
+                      animationDelay: '0.7s', 
                       animationFillMode: 'backwards',
                       textShadow: '0 0 30px rgba(255, 255, 255, 0.5)'
                     }}
@@ -111,8 +108,8 @@ export const LoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
                   <div className="absolute -inset-6 bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500 blur-3xl opacity-60 animate-pulse" />
                 </div>
                 <div 
-                  className="animate-fade-in text-6xl sm:text-7xl md:text-8xl lg:text-9xl" 
-                  style={{ animationDelay: '1.1s', animationFillMode: 'backwards' }}
+                  className="animate-fade-in text-5xl sm:text-6xl md:text-7xl lg:text-8xl" 
+                  style={{ animationDelay: '0.9s', animationFillMode: 'backwards' }}
                 >
                   TODAY
                 </div>
@@ -122,20 +119,24 @@ export const LoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-pulse -z-10" />
             </div>
 
+            {/* Felicia message with sparkle */}
+            <div 
+              className="text-white text-4xl md:text-5xl lg:text-6xl font-black drop-shadow-2xl animate-fade-in relative"
+              style={{ animationDelay: '1.2s', animationFillMode: 'backwards' }}
+            >
+              <span className="bg-gradient-to-r from-rose-200 via-pink-200 to-purple-200 bg-clip-text text-transparent">
+                Felicia
+              </span>
+              <span className="text-rose-200 ml-2">*</span>
+              <div className="absolute -inset-8 bg-gradient-to-r from-rose-400 via-pink-400 to-purple-400 blur-3xl opacity-40 animate-pulse -z-10" />
+            </div>
+
             {/* Subtitle */}
             <p 
-              className="text-white/90 text-xl md:text-2xl font-medium drop-shadow-lg animate-fade-in"
-              style={{ animationDelay: '1.3s', animationFillMode: 'backwards' }}
+              className="text-white/90 text-lg md:text-xl font-medium drop-shadow-lg animate-fade-in"
+              style={{ animationDelay: '1.5s', animationFillMode: 'backwards' }}
             >
               Preparing your perfect date night... ✨
-            </p>
-
-            {/* Felicia message */}
-            <p 
-              className="text-white text-3xl md:text-4xl font-bold drop-shadow-2xl animate-fade-in"
-              style={{ animationDelay: '3.5s', animationFillMode: 'backwards' }}
-            >
-              Felicia 💕
             </p>
           </div>
         </div>
