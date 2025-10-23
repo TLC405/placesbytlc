@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Skeleton } from "@/components/ui/skeleton";
 import { Play, Shield } from "lucide-react";
 import { AuthPanel } from "@/components/AuthPanel";
+import { RecentUpdates } from "@/components/RecentUpdates";
 import { supabase } from "@/integrations/supabase/client";
 
 const AdminPanel = lazy(() => import("@/pages/AdminPanel"));
@@ -163,6 +164,11 @@ export default function Home() {
           </Suspense>
         </div>
       )}
+
+      {/* What's New - Updates Section */}
+      <div className="max-w-6xl mx-auto">
+        <RecentUpdates />
+      </div>
 
       {/* Auth Panel - Full Width if Not Logged In */}
       {!user && (
