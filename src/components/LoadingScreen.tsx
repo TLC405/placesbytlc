@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Heart, Sparkles } from "lucide-react";
-import feliciaPhoto from "@/assets/felicia-photo.jpg";
 
 export const LoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
   const [isVisible, setIsVisible] = useState(true);
@@ -30,14 +29,13 @@ export const LoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
         isVisible ? "opacity-100" : "opacity-0 pointer-events-none"
       }`}
     >
-      {/* Background Image with Clay Filter Effect */}
+      {/* Optimized Gradient Background - No heavy image */}
       <div 
         className="absolute inset-0 animate-fade-in"
         style={{
-          backgroundImage: `url(${feliciaPhoto})`,
-          backgroundSize: 'cover',
+          background: 'radial-gradient(circle at 30% 40%, rgba(255, 107, 157, 0.9) 0%, rgba(219, 112, 147, 0.8) 25%, rgba(194, 57, 179, 0.85) 50%, rgba(138, 43, 226, 0.9) 75%, rgba(147, 51, 234, 0.95) 100%)',
+          backgroundSize: '120% 120%',
           backgroundPosition: 'center',
-          filter: 'saturate(1.4) contrast(1.1) brightness(0.85)',
           animation: 'gentle-zoom 20s ease-in-out infinite'
         }}
       />

@@ -202,6 +202,8 @@ const TeeFeeMeCartoonifier = () => {
                 alt="TeeFee Crown"
                 className="w-72 h-auto mx-auto animate-float cursor-pointer hover:scale-110 transition-transform duration-300 drop-shadow-2xl"
                 onClick={() => fileInputRef.current?.click()}
+                loading="lazy"
+                decoding="async"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-yellow-400/30 to-transparent blur-3xl animate-pulse-subtle" />
             </div>

@@ -41,6 +41,8 @@ export const PlaceDetailsModal = ({ place, open, onOpenChange, onAddToPlan }: Pl
               src={place.photo}
               alt={place.name}
               className="w-full h-full object-cover"
+              loading="lazy"
+              decoding="async"
             />
           </div>
 

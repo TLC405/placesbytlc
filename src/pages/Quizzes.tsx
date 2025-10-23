@@ -39,6 +39,8 @@ export default function Quizzes() {
                   src={crownImage} 
                   alt="Crown" 
                   className="w-32 h-32 object-contain animate-float group-hover:scale-110 transition-transform duration-300"
+                  loading="lazy"
+                  decoding="async"
                 />
               </div>
             </div>

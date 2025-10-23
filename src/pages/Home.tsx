@@ -1,13 +1,17 @@
+import { lazy, Suspense } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Play } from "lucide-react";
-import { CupidAnimation } from "@/components/CupidAnimation";
+
+const CupidAnimation = lazy(() => import("@/components/CupidAnimation").then(m => ({ default: m.CupidAnimation })));
 
 export default function Home() {
   return (
     <>
-      <CupidAnimation />
+      <Suspense fallback={<div className="h-20" />}>
+        <CupidAnimation />
+      </Suspense>
       <div className="space-y-6 animate-in fade-in duration-500">
         <div className="max-w-2xl mx-auto">
           {/* Hero Section */}
