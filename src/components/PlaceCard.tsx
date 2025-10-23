@@ -67,6 +67,12 @@ export const PlaceCard = ({ place, onAdd, onFavoriteToggle, onView }: PlaceCardP
           decoding="async"
           referrerPolicy="no-referrer"
           onError={(e) => { (e.currentTarget as HTMLImageElement).src = getPlaceholder(place.name); }}
+          style={{
+            imageRendering: '-webkit-optimize-contrast',
+            filter: 'contrast(1.08) saturate(1.12) brightness(1.02)',
+            backfaceVisibility: 'hidden',
+            WebkitBackfaceVisibility: 'hidden'
+          }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-500" />
         

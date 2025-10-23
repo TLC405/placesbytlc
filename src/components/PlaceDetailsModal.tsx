@@ -43,6 +43,12 @@ export const PlaceDetailsModal = ({ place, open, onOpenChange, onAddToPlan }: Pl
               className="w-full h-full object-cover"
               loading="lazy"
               decoding="async"
+              style={{
+                imageRendering: '-webkit-optimize-contrast',
+                filter: 'contrast(1.08) saturate(1.12) brightness(1.02)',
+                backfaceVisibility: 'hidden',
+                WebkitBackfaceVisibility: 'hidden'
+              }}
             />
           </div>
 
