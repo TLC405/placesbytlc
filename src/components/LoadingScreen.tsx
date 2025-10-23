@@ -29,14 +29,23 @@ export const LoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
         isVisible ? "opacity-100" : "opacity-0 pointer-events-none"
       }`}
     >
-      {/* Optimized Gradient Background - No heavy image */}
+      {/* Enhanced Gradient Background with multiple layers */}
       <div 
         className="absolute inset-0 animate-fade-in"
         style={{
-          background: 'radial-gradient(circle at 30% 40%, rgba(255, 107, 157, 0.9) 0%, rgba(219, 112, 147, 0.8) 25%, rgba(194, 57, 179, 0.85) 50%, rgba(138, 43, 226, 0.9) 75%, rgba(147, 51, 234, 0.95) 100%)',
-          backgroundSize: '120% 120%',
+          background: 'radial-gradient(circle at 30% 40%, rgba(255, 107, 157, 0.95) 0%, rgba(219, 112, 147, 0.85) 25%, rgba(194, 57, 179, 0.9) 50%, rgba(138, 43, 226, 0.95) 75%, rgba(147, 51, 234, 1) 100%)',
+          backgroundSize: '150% 150%',
           backgroundPosition: 'center',
-          animation: 'gentle-zoom 20s ease-in-out infinite'
+          animation: 'gentle-zoom 15s ease-in-out infinite'
+        }}
+      />
+      
+      {/* Secondary animated layer */}
+      <div 
+        className="absolute inset-0"
+        style={{
+          background: 'radial-gradient(ellipse at 70% 60%, rgba(236, 72, 153, 0.6) 0%, transparent 60%)',
+          animation: 'gentle-zoom 12s ease-in-out infinite reverse'
         }}
       />
       
@@ -44,84 +53,146 @@ export const LoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
       <div 
         className="absolute inset-0"
         style={{
-          background: 'linear-gradient(135deg, rgba(255, 107, 157, 0.7) 0%, rgba(194, 57, 179, 0.8) 50%, rgba(255, 107, 157, 0.7) 100%)',
+          background: 'linear-gradient(135deg, rgba(255, 107, 157, 0.6) 0%, rgba(194, 57, 179, 0.7) 50%, rgba(255, 107, 157, 0.6) 100%)',
           backgroundSize: '200% 200%',
-          animation: 'gradient-shift 3s ease infinite',
-          backdropFilter: 'blur(8px) saturate(180%)',
-          mixBlendMode: 'multiply'
+          animation: 'gradient-shift 4s ease infinite',
+          backdropFilter: 'blur(10px) saturate(200%)',
+          mixBlendMode: 'overlay'
+        }}
+      />
+      
+      {/* Shimmer effect */}
+      <div 
+        className="absolute inset-0"
+        style={{
+          background: 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.15) 50%, transparent 100%)',
+          backgroundSize: '200% 100%',
+          animation: 'shimmer 3s ease-in-out infinite'
         }}
       />
       
       {/* Additional Clay Texture Layer */}
       <div 
-        className="absolute inset-0 opacity-30"
+        className="absolute inset-0 opacity-20"
         style={{
-          background: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.05) 10px, rgba(255,255,255,0.05) 20px)',
+          background: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.08) 10px, rgba(255,255,255,0.08) 20px)',
           animation: 'texture-shift 8s linear infinite'
         }}
       />
-      {/* Floating sparkles */}
+
+      {/* Enhanced floating sparkles */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(40)].map((_, i) => (
+          <Sparkles
+            key={`sparkle-${i}`}
+            className="absolute text-white/40 animate-pulse"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              width: `${15 + Math.random() * 35}px`,
+              height: `${15 + Math.random() * 35}px`,
+              animationDelay: `${Math.random() * 3}s`,
+              animationDuration: `${2 + Math.random() * 3}s`,
+              filter: `blur(${Math.random() * 2}px)`,
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Enhanced floating hearts */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {[...Array(20)].map((_, i) => (
-          <Sparkles
-            key={i}
-            className="absolute text-white/30 animate-pulse"
+          <Heart
+            key={`heart-${i}`}
+            className="absolute text-rose-200/50 animate-bounce"
+            fill="currentColor"
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
               width: `${20 + Math.random() * 40}px`,
               height: `${20 + Math.random() * 40}px`,
-              animationDelay: `${Math.random() * 2}s`,
-              animationDuration: `${2 + Math.random() * 2}s`
+              animationDelay: `${Math.random() * 3}s`,
+              animationDuration: `${1.5 + Math.random() * 2}s`,
+              opacity: 0.3 + Math.random() * 0.4,
             }}
           />
         ))}
       </div>
 
-      {/* Floating hearts */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(12)].map((_, i) => (
-          <Heart
-            key={i}
-            className="absolute text-rose-300/40 animate-bounce"
-            fill="currentColor"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              width: `${25 + Math.random() * 30}px`,
-              height: `${25 + Math.random() * 30}px`,
-              animationDelay: `${Math.random() * 2}s`,
-              animationDuration: `${1.5 + Math.random() * 1.5}s`
-            }}
+      {/* Enhanced animated text with particles */}
+      <div
+        className={`fixed inset-0 flex items-center justify-center z-30 transition-all duration-1000 pointer-events-none ${
+          textVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`}
+      >
+        {/* Multiple layered glows */}
+        <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
+          <div className={`w-[600px] h-[600px] rounded-full bg-gradient-to-r from-pink-400/50 via-purple-400/50 to-rose-400/50 blur-3xl transition-all duration-1000 ${
+            textVisible ? 'scale-100 opacity-100' : 'scale-50 opacity-0'
+          }`} 
+          style={{ animation: 'gentle-zoom 4s ease-in-out infinite' }}
           />
-        ))}
-      </div>
-
-      <div className="relative z-10 text-center space-y-8 px-6 max-w-6xl">
-        {/* Simplified Message */}
-        <div 
-          className={`transition-all duration-1000 transform ${
-            textVisible ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-10 opacity-0 scale-95'
+          <div className={`absolute w-[500px] h-[500px] rounded-full bg-gradient-to-br from-violet-400/40 to-fuchsia-400/40 blur-2xl transition-all duration-1200 ${
+            textVisible ? 'scale-100 opacity-100' : 'scale-50 opacity-0'
           }`}
-        >
-          <div className="relative inline-block">
-            <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-white leading-tight tracking-tight">
-              <div className="relative inline-block">
-                <div 
-                  className="bg-gradient-to-r from-yellow-300 via-pink-300 to-purple-300 bg-clip-text text-transparent animate-fade-in"
-                  style={{ 
-                    animationDelay: '0.3s', 
-                    animationFillMode: 'backwards',
-                    textShadow: '0 0 40px rgba(255, 255, 255, 0.6)'
-                  }}
-                >
-                  Hello gorgeous
-                </div>
-                <div className="absolute -inset-8 bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500 blur-3xl opacity-70 animate-pulse" />
-              </div>
-            </h1>
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-pulse -z-10" />
-          </div>
+          style={{ animation: 'gentle-zoom 5s ease-in-out infinite reverse' }}
+          />
+        </div>
+
+        {/* Sparkle particles around text */}
+        {textVisible && (
+          <>
+            {[...Array(30)].map((_, i) => (
+              <Sparkles
+                key={`sparkle-text-${i}`}
+                className="absolute text-white/70"
+                style={{
+                  width: `${Math.random() * 14 + 10}px`,
+                  height: `${Math.random() * 14 + 10}px`,
+                  left: `${38 + Math.random() * 24}%`,
+                  top: `${38 + Math.random() * 24}%`,
+                  animation: `float ${Math.random() * 3 + 3}s ease-in-out infinite`,
+                  animationDelay: `${Math.random() * 2}s`,
+                  filter: `blur(${Math.random() * 2}px)`,
+                }}
+              />
+            ))}
+          </>
+        )}
+        
+        {/* Text with enhanced styling */}
+        <div className="relative z-10 text-center px-4">
+          <h1
+            className="text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-black relative leading-tight pb-6"
+            style={{
+              background: 'linear-gradient(135deg, #ec4899, #a855f7, #f472b6, #c084fc, #ec4899)',
+              backgroundSize: '300% 300%',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              animation: 'wave-color 4s ease-in-out infinite',
+              textShadow: '0 0 60px rgba(236, 72, 153, 0.6)',
+              filter: 'drop-shadow(0 6px 30px rgba(168, 85, 247, 0.5))',
+            }}
+          >
+            Hello gorgeous
+          </h1>
+          
+          {/* Subtitle */}
+          <p 
+            className="text-lg md:text-2xl font-bold mt-4 animate-pulse"
+            style={{
+              background: 'linear-gradient(90deg, #fbbf24, #f59e0b, #fbbf24)',
+              backgroundSize: '200% 200%',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              animation: 'gradient-shift 3s ease-in-out infinite',
+              filter: 'drop-shadow(0 2px 10px rgba(251, 191, 36, 0.6))',
+            }}
+          >
+            Your love journey awaits ✨
+          </p>
         </div>
       </div>
 
@@ -142,12 +213,17 @@ export const LoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
           100% { background-position: 0% 50%; }
         }
         
+        @keyframes shimmer {
+          0% { background-position: -200% 0; }
+          100% { background-position: 200% 0; }
+        }
+        
         @keyframes gentle-zoom {
           0%, 100% { 
             transform: scale(1); 
           }
           50% { 
-            transform: scale(1.05); 
+            transform: scale(1.08); 
           }
         }
         
@@ -165,26 +241,26 @@ export const LoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
             transform: perspective(1000px) rotateX(5deg) translateY(0px);
           }
           50% {
-            transform: perspective(1000px) rotateX(5deg) translateY(-10px);
+            transform: perspective(1000px) rotateX(5deg) translateY(-15px);
           }
         }
         
         @keyframes wave-color {
           0%, 100% {
-            filter: brightness(1.2) saturate(1.3) drop-shadow(0 0 15px currentColor) hue-rotate(0deg);
+            filter: brightness(1.3) saturate(1.4) drop-shadow(0 0 20px currentColor) hue-rotate(0deg);
             transform: translateY(0) scale(1);
           }
           25% {
-            filter: brightness(1.4) saturate(1.5) drop-shadow(0 0 20px currentColor) hue-rotate(30deg);
-            transform: translateY(-5px) scale(1.05);
+            filter: brightness(1.5) saturate(1.6) drop-shadow(0 0 25px currentColor) hue-rotate(30deg);
+            transform: translateY(-8px) scale(1.05);
           }
           50% {
-            filter: brightness(1.2) saturate(1.3) drop-shadow(0 0 15px currentColor) hue-rotate(60deg);
+            filter: brightness(1.3) saturate(1.4) drop-shadow(0 0 20px currentColor) hue-rotate(60deg);
             transform: translateY(0) scale(1);
           }
           75% {
-            filter: brightness(1.4) saturate(1.5) drop-shadow(0 0 20px currentColor) hue-rotate(90deg);
-            transform: translateY(-5px) scale(1.05);
+            filter: brightness(1.5) saturate(1.6) drop-shadow(0 0 25px currentColor) hue-rotate(90deg);
+            transform: translateY(-8px) scale(1.05);
           }
         }
         
