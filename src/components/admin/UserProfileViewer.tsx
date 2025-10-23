@@ -74,6 +74,9 @@ export const UserProfileViewer = ({ userId, activities, open, onOpenChange }: Us
             </Badge>
           </DialogTitle>
         </DialogHeader>
+        <p className="text-xs sm:text-sm text-slate-400 px-6">
+          Comprehensive analytics and behavior patterns for this user including location, device, network, and activity data.
+        </p>
 
         <ScrollArea className="h-[70vh]">
           <div className="space-y-6 p-2 sm:p-4">

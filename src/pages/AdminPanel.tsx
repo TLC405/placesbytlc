@@ -385,50 +385,50 @@ export default function AdminPanel() {
                   <h1 className="text-3xl font-black bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                     User Analytics
                   </h1>
-                  <p className="text-sm text-muted-foreground">Detailed user insights</p>
+                  <p className="text-sm text-muted-foreground">Detailed user insights and activity tracking</p>
                 </div>
               </div>
 
-              <Card className="shadow-xl border-2">
+              <Card className="shadow-2xl border-2 border-purple-500/30 bg-gradient-to-br from-slate-950/90 to-slate-900/90 backdrop-blur">
                 <CardHeader>
-                  <CardTitle>All Users</CardTitle>
-                  <CardDescription>Click on a user to view detailed analytics</CardDescription>
+                  <CardTitle className="text-purple-100 flex items-center gap-2">
+                    <Users className="w-5 h-5 text-purple-400" />
+                    All Users
+                  </CardTitle>
+                  <CardDescription className="text-slate-400">Click on a user to view detailed analytics</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Visits</TableHead>
-                        <TableHead>Last Visit</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
+                  <ScrollArea className="h-[600px]">
+                    <div className="space-y-3">
                       {users.map((user) => (
-                        <TableRow key={user.user_id}>
-                          <TableCell className="font-medium">{user.email}</TableCell>
-                          <TableCell>{user.display_name || "N/A"}</TableCell>
-                          <TableCell>
-                            <Badge>{user.total_visits}</Badge>
-                          </TableCell>
-                          <TableCell className="text-sm text-muted-foreground">
-                            {new Date(user.last_visit).toLocaleString()}
-                          </TableCell>
-                          <TableCell>
+                        <Card
+                          key={user.user_id}
+                          className="p-3 sm:p-4 hover:shadow-xl transition-all hover:scale-[1.01] bg-gradient-to-r from-slate-900/50 to-slate-800/50 backdrop-blur border-purple-500/20 hover:border-purple-500/40 cursor-pointer"
+                          onClick={() => setSelectedUser(user)}
+                        >
+                          <div className="flex flex-col sm:flex-row items-start justify-between gap-3">
+                            <div className="space-y-1 flex-1 min-w-0">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <p className="font-semibold text-purple-100">{user.display_name || "Anonymous"}</p>
+                                <Badge className="bg-purple-500 text-white">{user.total_visits} visits</Badge>
+                              </div>
+                              <p className="text-xs sm:text-sm text-slate-400 truncate">{user.email}</p>
+                              <div className="flex items-center gap-4 mt-2 text-xs text-slate-500">
+                                <span>Last: {new Date(user.last_visit).toLocaleDateString()}</span>
+                                <span>{user.locations?.length || 0} locations</span>
+                              </div>
+                            </div>
                             <Button
-                              variant="outline"
                               size="sm"
-                              onClick={() => setSelectedUser(user)}
+                              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 w-full sm:w-auto"
                             >
                               View Details
                             </Button>
-                          </TableCell>
-                        </TableRow>
+                          </div>
+                        </Card>
                       ))}
-                    </TableBody>
-                  </Table>
+                    </div>
+                  </ScrollArea>
                 </CardContent>
               </Card>
             </div>

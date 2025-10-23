@@ -147,37 +147,40 @@ export const UserAnalyticsDashboard = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 border-purple-200/50">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-            <Users className="h-4 w-4 text-purple-500" />
+    <div className="space-y-6 p-4 sm:p-0">
+      <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-4">
+        <Card className="relative overflow-hidden border-purple-500/30 bg-gradient-to-br from-purple-950/40 to-purple-900/20 backdrop-blur">
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent" />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative">
+            <CardTitle className="text-xs sm:text-sm font-medium text-purple-100">Total Users</CardTitle>
+            <Users className="h-3 w-3 sm:h-4 sm:w-4 text-purple-400" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{analytics.length}</div>
+          <CardContent className="relative">
+            <div className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-purple-300 to-purple-500 bg-clip-text text-transparent">{analytics.length}</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border-blue-200/50">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Sessions</CardTitle>
-            <Activity className="h-4 w-4 text-blue-500" />
+        <Card className="relative overflow-hidden border-blue-500/30 bg-gradient-to-br from-blue-950/40 to-blue-900/20 backdrop-blur">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent" />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative">
+            <CardTitle className="text-xs sm:text-sm font-medium text-blue-100">Total Sessions</CardTitle>
+            <Activity className="h-3 w-3 sm:h-4 sm:w-4 text-blue-400" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
+          <CardContent className="relative">
+            <div className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-300 to-blue-500 bg-clip-text text-transparent">
               {analytics.reduce((sum, user) => sum + (user.total_sessions || 0), 0)}
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-green-200/50">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg Session Time</CardTitle>
-            <Clock className="h-4 w-4 text-green-500" />
+        <Card className="relative overflow-hidden border-emerald-500/30 bg-gradient-to-br from-emerald-950/40 to-emerald-900/20 backdrop-blur">
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent" />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative">
+            <CardTitle className="text-xs sm:text-sm font-medium text-emerald-100">Avg Time</CardTitle>
+            <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-emerald-400" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
+          <CardContent className="relative">
+            <div className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-emerald-300 to-emerald-500 bg-clip-text text-transparent">
               {formatTimeSpent(
                 analytics.reduce((sum, user) => sum + (user.average_session_duration || 0), 0) / 
                 (analytics.length || 1)
@@ -186,13 +189,14 @@ export const UserAnalyticsDashboard = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-orange-500/10 to-amber-500/10 border-orange-200/50">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Unique IPs</CardTitle>
-            <Globe className="h-4 w-4 text-orange-500" />
+        <Card className="relative overflow-hidden border-amber-500/30 bg-gradient-to-br from-amber-950/40 to-amber-900/20 backdrop-blur">
+          <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-transparent" />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative">
+            <CardTitle className="text-xs sm:text-sm font-medium text-amber-100">Unique IPs</CardTitle>
+            <Globe className="h-3 w-3 sm:h-4 sm:w-4 text-amber-400" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
+          <CardContent className="relative">
+            <div className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-amber-300 to-amber-500 bg-clip-text text-transparent">
               {analytics.reduce((sum, user) => sum + (user.unique_ips_count || 0), 0)}
             </div>
           </CardContent>
@@ -200,17 +204,20 @@ export const UserAnalyticsDashboard = () => {
       </div>
 
       <Tabs defaultValue="users" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="users">User Overview</TabsTrigger>
-          <TabsTrigger value="sessions">Sessions</TabsTrigger>
-          <TabsTrigger value="ips">IP History</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3 bg-gradient-to-r from-slate-900/80 to-slate-800/80 backdrop-blur-xl border border-slate-700/50">
+          <TabsTrigger value="users" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-purple-500 data-[state=active]:text-white text-xs sm:text-sm">User Overview</TabsTrigger>
+          <TabsTrigger value="sessions" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-500 data-[state=active]:text-white text-xs sm:text-sm">Sessions</TabsTrigger>
+          <TabsTrigger value="ips" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-600 data-[state=active]:to-emerald-500 data-[state=active]:text-white text-xs sm:text-sm">IP History</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="users" className="space-y-4">
-          <Card>
+        <TabsContent value="users" className="space-y-4 mt-4">
+          <Card className="border-purple-500/30 bg-gradient-to-br from-slate-950/90 to-slate-900/90 backdrop-blur">
             <CardHeader>
-              <CardTitle>User Analytics</CardTitle>
-              <CardDescription>Detailed user engagement metrics and behavior patterns</CardDescription>
+              <CardTitle className="text-purple-100 flex items-center gap-2">
+                <Users className="w-5 h-5 text-purple-400" />
+                User Analytics
+              </CardTitle>
+              <CardDescription className="text-slate-400">Detailed user engagement metrics and behavior patterns</CardDescription>
             </CardHeader>
             <CardContent>
               <ScrollArea className="h-[600px]">
@@ -218,44 +225,44 @@ export const UserAnalyticsDashboard = () => {
                   {analytics.map((user) => (
                     <Card
                       key={user.user_id}
-                      className="cursor-pointer hover:shadow-lg transition-all hover:scale-[1.01]"
+                      className="cursor-pointer hover:shadow-xl transition-all hover:scale-[1.01] bg-gradient-to-r from-slate-900/50 to-slate-800/50 backdrop-blur border-purple-500/20 hover:border-purple-500/40"
                       onClick={() => {
                         setSelectedUser(user.user_id);
                         loadUserDetails(user.user_id);
                       }}
                     >
-                      <CardContent className="p-4">
-                        <div className="flex items-start justify-between">
-                          <div className="space-y-1 flex-1">
-                            <div className="flex items-center gap-2">
-                              <p className="font-semibold">{user.display_name}</p>
-                              <Badge className={getSegmentColor(user.user_segment)}>
+                      <CardContent className="p-3 sm:p-4">
+                        <div className="flex flex-col sm:flex-row items-start justify-between gap-3">
+                          <div className="space-y-1 flex-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <p className="font-semibold text-purple-100 truncate">{user.display_name}</p>
+                              <Badge className={getSegmentColor(user.user_segment) + " text-white"}>
                                 {user.user_segment}
                               </Badge>
                             </div>
-                            <p className="text-sm text-muted-foreground">{user.email}</p>
-                            <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+                            <p className="text-xs sm:text-sm text-slate-400 truncate">{user.email}</p>
+                            <div className="flex items-center gap-2 sm:gap-4 mt-2 text-xs text-slate-400 flex-wrap">
                               <span className="flex items-center gap-1">
-                                <Activity className="w-3 h-3" />
-                                {user.total_sessions} sessions
+                                <Activity className="w-3 h-3 text-blue-400" />
+                                {user.total_sessions}
                               </span>
                               <span className="flex items-center gap-1">
-                                <Clock className="w-3 h-3" />
+                                <Clock className="w-3 h-3 text-emerald-400" />
                                 {formatTimeSpent(user.total_time_spent)}
                               </span>
                               <span className="flex items-center gap-1">
-                                <TrendingUp className="w-3 h-3" />
-                                {user.engagement_score.toFixed(1)} score
+                                <TrendingUp className="w-3 h-3 text-purple-400" />
+                                {user.engagement_score.toFixed(1)}
                               </span>
                             </div>
                           </div>
-                          <div className="text-right">
-                            <Badge variant="outline" className="text-xs">
+                          <div className="flex items-center gap-2">
+                            <Badge variant="outline" className="text-xs bg-amber-950/50 text-amber-300 border-amber-500/30">
                               <Globe className="w-3 h-3 mr-1" />
                               {user.unique_ips_count} IPs
                             </Badge>
-                            <p className="text-xs text-muted-foreground mt-2">
-                              Last: {new Date(user.last_seen).toLocaleDateString()}
+                            <p className="text-xs text-slate-500 hidden sm:block">
+                              {new Date(user.last_seen).toLocaleDateString()}
                             </p>
                           </div>
                         </div>
@@ -268,19 +275,22 @@ export const UserAnalyticsDashboard = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="sessions" className="space-y-4">
+        <TabsContent value="sessions" className="space-y-4 mt-4">
           {selectedUser ? (
-            <Card>
+            <Card className="border-blue-500/30 bg-gradient-to-br from-slate-950/90 to-slate-900/90 backdrop-blur">
               <CardHeader>
-                <CardTitle>Session History</CardTitle>
-                <CardDescription>Recent user sessions and activity</CardDescription>
+                <CardTitle className="text-blue-100 flex items-center gap-2">
+                  <Activity className="w-5 h-5 text-blue-400" />
+                  Session History
+                </CardTitle>
+                <CardDescription className="text-slate-400">Recent user sessions and activity</CardDescription>
               </CardHeader>
               <CardContent>
                 <ScrollArea className="h-[600px]">
                   <div className="space-y-3">
                     {sessions.map((session) => (
-                      <Card key={session.id} className="bg-card/50">
-                        <CardContent className="p-4">
+                      <Card key={session.id} className="bg-gradient-to-r from-slate-900/50 to-slate-800/50 backdrop-blur border-blue-500/20">
+                        <CardContent className="p-3 sm:p-4">
                           <div className="space-y-2">
                             <div className="flex items-center justify-between">
                               <Badge variant={session.is_active ? "default" : "secondary"}>
@@ -320,27 +330,30 @@ export const UserAnalyticsDashboard = () => {
               </CardContent>
             </Card>
           ) : (
-            <Card>
-              <CardContent className="flex items-center justify-center min-h-[400px] text-muted-foreground">
-                Select a user to view their session history
+            <Card className="border-slate-700/50 bg-gradient-to-br from-slate-950/90 to-slate-900/90 backdrop-blur">
+              <CardContent className="flex items-center justify-center min-h-[400px] text-slate-400">
+                Select a user from the User Overview tab to view their session history
               </CardContent>
             </Card>
           )}
         </TabsContent>
 
-        <TabsContent value="ips" className="space-y-4">
+        <TabsContent value="ips" className="space-y-4 mt-4">
           {selectedUser ? (
-            <Card>
+            <Card className="border-emerald-500/30 bg-gradient-to-br from-slate-950/90 to-slate-900/90 backdrop-blur">
               <CardHeader>
-                <CardTitle>IP Address History</CardTitle>
-                <CardDescription>Tracked IP addresses for this user</CardDescription>
+                <CardTitle className="text-emerald-100 flex items-center gap-2">
+                  <Globe className="w-5 h-5 text-emerald-400" />
+                  IP Address History
+                </CardTitle>
+                <CardDescription className="text-slate-400">Tracked IP addresses for this user</CardDescription>
               </CardHeader>
               <CardContent>
                 <ScrollArea className="h-[600px]">
                   <div className="space-y-3">
                     {ipHistory.map((ip, index) => (
-                      <Card key={index} className="bg-card/50">
-                        <CardContent className="p-4">
+                      <Card key={index} className="bg-gradient-to-r from-slate-900/50 to-slate-800/50 backdrop-blur border-emerald-500/20">
+                        <CardContent className="p-3 sm:p-4">
                           <div className="space-y-2">
                             <div className="flex items-center justify-between">
                               <p className="font-mono font-semibold">{ip.ip_address}</p>
@@ -376,9 +389,9 @@ export const UserAnalyticsDashboard = () => {
               </CardContent>
             </Card>
           ) : (
-            <Card>
-              <CardContent className="flex items-center justify-center min-h-[400px] text-muted-foreground">
-                Select a user to view their IP history
+            <Card className="border-slate-700/50 bg-gradient-to-br from-slate-950/90 to-slate-900/90 backdrop-blur">
+              <CardContent className="flex items-center justify-center min-h-[400px] text-slate-400">
+                Select a user from the User Overview tab to view their IP history
               </CardContent>
             </Card>
           )}
