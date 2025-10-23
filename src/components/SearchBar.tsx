@@ -1,10 +1,8 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Search, MapPin, Heart, Scale } from "lucide-react";
-import { useState, useEffect } from "react";
-import { getSavedLocations, saveLocation, calculateMidpoint, type Location } from "@/lib/midpointCalculator";
+import { useState } from "react";
 
 interface SearchBarProps {
   query: string;
@@ -18,7 +16,7 @@ interface SearchBarProps {
   onCategoryToggle?: (category: string) => void;
   categoryType?: "food" | "activity" | "both";
   onCategoryTypeChange?: (type: "food" | "activity" | "both") => void;
-  onLocationModeChange?: (mode: "tlc" | "felicia" | "middle", location?: Location) => void;
+  onLocationModeChange?: (mode: "tlc" | "felicia" | "middle") => void;
 }
 
 type LocationMode = "tlc" | "felicia" | "middle";
@@ -49,72 +47,13 @@ export const SearchBar = ({
   onLocationModeChange,
 }: SearchBarProps) => {
   const [locationMode, setLocationMode] = useState<LocationMode>("tlc");
-  const [tlcAddress, setTlcAddress] = useState("");
-  const [feliciaAddress, setFeliciaAddress] = useState("");
-  const [savedLocations, setSavedLocations] = useState(getSavedLocations());
-
-  useEffect(() => {
-    const saved = getSavedLocations();
-    setSavedLocations(saved);
-  }, []);
-
-  const handleQueryChange = (value: string) => {
-    const sanitized = value.slice(0, 200);
-    onQueryChange(sanitized);
-  };
 
   const handleLocationModeChange = (mode: LocationMode) => {
     setLocationMode(mode);
     if (onLocationModeChange) {
-      let location: Location | undefined;
-      
-      if (mode === "tlc" && savedLocations.myPlace) {
-        location = savedLocations.myPlace;
-      } else if (mode === "felicia" && savedLocations.partnerPlace) {
-        location = savedLocations.partnerPlace;
-      } else if (mode === "middle" && savedLocations.myPlace && savedLocations.partnerPlace) {
-        location = calculateMidpoint(savedLocations.myPlace, savedLocations.partnerPlace);
-      }
-      
-      onLocationModeChange(mode, location);
-    }
-  };
-
-  const geocodeAddress = async (address: string): Promise<Location | null> => {
-    try {
-      const response = await fetch(
-        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}`
-      );
-      const data = await response.json();
-      if (data.results && data.results[0]) {
-        const { lat, lng } = data.results[0].geometry.location;
-        return { lat, lng, label: address };
-      }
-    } catch (error) {
-      console.error("Geocoding error:", error);
-    }
-    return null;
-  };
-
-  const handleSaveLocation = async (type: "tlc" | "felicia") => {
-    const address = type === "tlc" ? tlcAddress : feliciaAddress;
-    if (!address) return;
-
-    const location = await geocodeAddress(address);
-    if (location) {
-      const storageKey = type === "tlc" ? "myPlace" : "partnerPlace";
-      saveLocation(storageKey, location);
-      setSavedLocations(getSavedLocations());
-      
-      if (locationMode === type) {
-        onLocationModeChange?.(type, location);
-      } else if (locationMode === "middle") {
-        const updated = getSavedLocations();
-        if (updated.myPlace && updated.partnerPlace) {
-          const midpoint = calculateMidpoint(updated.myPlace, updated.partnerPlace);
-          onLocationModeChange?.("middle", midpoint);
-        }
-      }
+      // Just notify the parent about the mode change
+      // Parent will handle location using browser geolocation
+      onLocationModeChange(mode);
     }
   };
 
@@ -158,69 +97,15 @@ export const SearchBar = ({
             
             <button
               onClick={() => handleLocationModeChange("middle")}
-              disabled={!savedLocations.myPlace || !savedLocations.partnerPlace}
               className={`group p-4 rounded-xl font-bold text-sm transition-all ${
                 locationMode === "middle"
                   ? "bg-gradient-to-br from-primary to-accent text-white shadow-glow scale-105"
-                  : !savedLocations.myPlace || !savedLocations.partnerPlace
-                  ? "bg-muted border-2 border-border opacity-50 cursor-not-allowed"
                   : "bg-card border-2 border-border hover:border-primary/50 hover:shadow-md"
               }`}
             >
               <Scale className={`w-6 h-6 mx-auto mb-2 ${locationMode === "middle" ? "text-white" : "text-success"}`} />
               <div className="text-center">Middle Ground</div>
             </button>
-          </div>
-
-          {/* Location Inputs */}
-          <div className="grid sm:grid-cols-2 gap-3 pt-2">
-            <div className="space-y-2">
-              <label className="text-xs font-semibold text-muted-foreground">TLC's Address</label>
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Enter TLC's address"
-                  value={tlcAddress}
-                  onChange={(e) => setTlcAddress(e.target.value)}
-                  className="h-11 text-sm"
-                  onKeyDown={(e) => e.key === "Enter" && handleSaveLocation("tlc")}
-                />
-                <Button
-                  size="sm"
-                  onClick={() => handleSaveLocation("tlc")}
-                  disabled={!tlcAddress}
-                  className="h-11 px-4 text-xs font-bold"
-                >
-                  Save
-                </Button>
-              </div>
-              {savedLocations.myPlace && (
-                <p className="text-xs text-success font-medium">✓ Location saved</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-xs font-semibold text-muted-foreground">Felicia's Address</label>
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Enter Felicia's address"
-                  value={feliciaAddress}
-                  onChange={(e) => setFeliciaAddress(e.target.value)}
-                  className="h-11 text-sm"
-                  onKeyDown={(e) => e.key === "Enter" && handleSaveLocation("felicia")}
-                />
-                <Button
-                  size="sm"
-                  onClick={() => handleSaveLocation("felicia")}
-                  disabled={!feliciaAddress}
-                  className="h-11 px-4 text-xs font-bold"
-                >
-                  Save
-                </Button>
-              </div>
-              {savedLocations.partnerPlace && (
-                <p className="text-xs text-success font-medium">✓ Location saved</p>
-              )}
-            </div>
           </div>
         </div>
       )}
@@ -260,25 +145,12 @@ export const SearchBar = ({
           <div className="w-9 h-9 rounded-xl bg-gradient-to-r from-primary to-accent text-white flex items-center justify-center text-base font-black shadow-md">
             3
           </div>
-          <span className="text-base font-bold text-foreground">Search for date spots</span>
+          <span className="text-base font-bold text-foreground">Choose search radius</span>
         </div>
         
         <div className="flex flex-wrap gap-3">
-        <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
-          <Input
-            placeholder="Search nearby date spots..."
-            value={query}
-            onChange={(e) => handleQueryChange(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && !disabled && onSearch()}
-            disabled={disabled || loading}
-            className="h-14 pl-12 pr-4 text-base shadow-lg hover:shadow-xl focus:shadow-xl transition-all duration-300 border-2 border-border/50 focus:border-primary/50 rounded-2xl bg-card/80 backdrop-blur-sm"
-            maxLength={200}
-          />
-        </div>
-        
         <Select value={radius} onValueChange={onRadiusChange} disabled={disabled || loading}>
-          <SelectTrigger className="w-[160px] h-14 shadow-lg rounded-xl border-2 border-border/50 hover:border-primary/30 transition-all bg-card/80 backdrop-blur-sm">
+          <SelectTrigger className="flex-1 h-14 shadow-lg rounded-xl border-2 border-border/50 hover:border-primary/30 transition-all bg-card/80 backdrop-blur-sm">
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="rounded-xl">
