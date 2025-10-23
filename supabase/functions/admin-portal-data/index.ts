@@ -6,20 +6,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-function maskIp(ip: string | null): string | null {
-  if (!ip) return ip;
-  // IPv4 mask last octet; IPv6 truncate
-  if (ip.includes('.')) {
-    const parts = ip.split('.');
-    parts[3] = '***';
-    return parts.join('.');
-  }
-  if (ip.includes(':')) {
-    const parts = ip.split(':');
-    return parts.slice(0, 4).join(':') + '::****';
-  }
-  return ip;
-}
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -61,11 +47,8 @@ serve(async (req) => {
 
       if (ipError) throw ipError;
 
-      const maskedSessions = (sessions || []).map((s) => ({ ...s, ip_address: maskIp(s.ip_address) }));
-      const maskedIpHistory = (ipHistory || []).map((i) => ({ ...i, ip_address: maskIp(i.ip_address) }));
-
       return new Response(
-        JSON.stringify({ sessions: maskedSessions, ip_history: maskedIpHistory }),
+        JSON.stringify({ sessions: sessions || [], ip_history: ipHistory || [] }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -81,21 +64,8 @@ serve(async (req) => {
     if (activitiesError) throw activitiesError;
     if (analyticsError) throw analyticsError;
 
-    // Mask IP addresses inside activity payloads when present
-    const safeActivities = (activities || []).map((a) => {
-      try {
-        const data = a.activity_data || {};
-        if (data?.location?.ip) {
-          data.location.ip = maskIp(data.location.ip);
-        }
-        return { ...a, activity_data: data };
-      } catch (_) {
-        return a;
-      }
-    });
-
     return new Response(
-      JSON.stringify({ profiles, activities: safeActivities, analytics }),
+      JSON.stringify({ profiles, activities: activities || [], analytics }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
