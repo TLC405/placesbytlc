@@ -124,8 +124,13 @@ export default function Explore() {
 
   const handleLocationPreset = useCallback((loc: { lat: number; lng: number; name: string }) => {
     setCustomLocation({ lat: loc.lat, lng: loc.lng });
-    toast.success(`Searching near ${loc.name}...`);
-    setTimeout(() => search(query, { lat: loc.lat, lng: loc.lng }, parseInt(radius, 10)), 100);
+    toast.success(`📍 Searching near ${loc.name}...`, { duration: 2000 });
+    // Small delay to ensure state updates
+    setTimeout(() => {
+      search(query, { lat: loc.lat, lng: loc.lng }, parseInt(radius, 10));
+      // Auto-sort by distance when location changes
+      setSortBy("distance");
+    }, 150);
   }, [setCustomLocation, search, query, radius]);
 
   const handleClearPlan = useCallback(() => {
@@ -175,6 +180,7 @@ export default function Explore() {
               <LocationPresets 
                 onSelectLocation={handleLocationPreset}
                 disabled={!mapsReady || isSearching}
+                currentLocation={location}
               />
 
               {!mapsReady && !mapsLoading && (
@@ -209,10 +215,13 @@ export default function Explore() {
                 <div className="relative">
                   <div className="animate-spin rounded-full h-16 w-16 border-4 border-muted"></div>
                   <div className="animate-spin rounded-full h-16 w-16 border-4 border-primary border-t-transparent absolute top-0 left-0"></div>
+                  <div className="absolute inset-0 animate-ping rounded-full bg-primary/20"></div>
                 </div>
-                <div className="text-center">
-                  <p className="text-lg font-semibold">Searching for amazing places...</p>
-                  <p className="text-sm text-muted-foreground mt-1">This may take a few seconds</p>
+                <div className="text-center animate-pulse">
+                  <p className="text-lg font-semibold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                    Searching for amazing places...
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-1">Finding perfect date spots near you</p>
                 </div>
               </div>
             </div>
@@ -231,8 +240,11 @@ export default function Explore() {
                   {filteredAndSortedResults.map((place, index) => (
                     <div 
                       key={place.id}
-                      style={{ animationDelay: `${index * 50}ms` }}
-                      className="animate-fade-in"
+                      style={{ 
+                        animationDelay: `${index * 50}ms`,
+                        animationFillMode: 'backwards'
+                      }}
+                      className="animate-fade-in animate-scale-in"
                     >
                       <PlaceCard 
                         place={place} 

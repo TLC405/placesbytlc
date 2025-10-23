@@ -134,9 +134,9 @@ export const PlaceCard = ({ place, onAdd, onFavoriteToggle }: PlaceCardProps) =>
           <Button 
             size="sm" 
             onClick={() => onAdd(place)}
-            className="shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105"
+            className="shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 active:scale-95"
           >
-            <Plus className="w-4 h-4 mr-1" />
+            <Plus className="w-4 h-4 mr-1 group-hover:rotate-90 transition-transform duration-300" />
             Add to Plan
           </Button>
         </div>

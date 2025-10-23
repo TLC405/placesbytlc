@@ -53,6 +53,7 @@ export const SearchBar = ({
           onKeyDown={(e) => e.key === "Enter" && !disabled && onSearch()}
           disabled={disabled || loading}
           className="flex-1 min-w-[200px] h-11 shadow-sm focus:shadow-md transition-shadow"
+          autoFocus
         />
         
         <Select value={radius} onValueChange={onRadiusChange} disabled={disabled || loading}>
@@ -71,9 +72,9 @@ export const SearchBar = ({
         <Button 
           onClick={onSearch} 
           disabled={disabled || loading}
-          className="h-11 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105"
+          className={`h-11 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 ${!disabled && !loading ? 'animate-pulse-subtle' : ''}`}
         >
-          <Search className="w-4 h-4 mr-2" />
+          <Search className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
           {loading ? "Searching..." : "Search"}
         </Button>
         
@@ -106,10 +107,10 @@ export const SearchBar = ({
             <Badge
               key={item.query}
               variant="outline"
-              className="cursor-pointer hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 hover:scale-105 shadow-sm hover:shadow-md px-3 py-1.5"
+              className="cursor-pointer hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 hover:scale-110 hover:-translate-y-0.5 shadow-sm hover:shadow-lg px-3 py-1.5 group"
               onClick={() => !disabled && !loading && handleQuickSearch(item.query)}
             >
-              <Icon className="w-3 h-3 mr-1.5" />
+              <Icon className="w-3 h-3 mr-1.5 group-hover:animate-bounce" />
               {item.label}
             </Badge>
           );
