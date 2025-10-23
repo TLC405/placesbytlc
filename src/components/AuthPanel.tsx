@@ -3,12 +3,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Heart, Mail, Lock, UserPlus } from "lucide-react";
+import { Heart, Mail, Lock, UserPlus, LogIn } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
 export const AuthPanel = () => {
+  const [isLogin, setIsLogin] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
@@ -20,19 +21,31 @@ export const AuthPanel = () => {
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/`,
-          data: {
-            display_name: displayName,
+      if (isLogin) {
+        // Login
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (error) throw error;
+        toast.success("Welcome back! 💕");
+        navigate("/explore");
+      } else {
+        // Sign up
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/`,
+            data: {
+              display_name: displayName,
+            }
           }
-        }
-      });
-      if (error) throw error;
-      toast.success("Welcome to Places by TLC! 💕");
-      navigate("/explore");
+        });
+        if (error) throw error;
+        toast.success("Welcome to Places by TLC! 💕");
+        navigate("/explore");
+      }
     } catch (error: any) {
       toast.error(error.message || "Authentication failed");
     } finally {
@@ -52,31 +65,35 @@ export const AuthPanel = () => {
         </div>
         <div>
           <CardTitle className="text-4xl font-bold bg-gradient-to-r from-pink-500 via-purple-500 to-rose-500 bg-clip-text text-transparent mb-2">
-            Join Places by TLC
+            {isLogin ? "Welcome Back" : "Join Places by TLC"}
           </CardTitle>
           <CardDescription className="text-base text-muted-foreground/80">
-            Create your account to start discovering the best date spots in OKC
+            {isLogin 
+              ? "Sign in to access your saved places and continue your journey" 
+              : "Create your account to start discovering the best date spots in OKC"}
           </CardDescription>
         </div>
       </CardHeader>
 
       <CardContent className="relative z-10 px-6 pb-6">
         <form onSubmit={handleAuth} className="space-y-5">
-          <div className="space-y-2">
-            <Label htmlFor="displayName" className="flex items-center gap-2 text-sm font-medium">
-              <UserPlus className="w-4 h-4 text-primary" />
-              Display Name
-            </Label>
-            <Input
-              id="displayName"
-              type="text"
-              placeholder="Your name"
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
-              required
-              className="border-primary/20 focus:border-primary/50 transition-all h-11"
-            />
-          </div>
+          {!isLogin && (
+            <div className="space-y-2">
+              <Label htmlFor="displayName" className="flex items-center gap-2 text-sm font-medium">
+                <UserPlus className="w-4 h-4 text-primary" />
+                Display Name
+              </Label>
+              <Input
+                id="displayName"
+                type="text"
+                placeholder="Your name"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                required={!isLogin}
+                className="border-primary/20 focus:border-primary/50 transition-all h-11"
+              />
+            </div>
+          )}
 
           <div className="space-y-2">
             <Label htmlFor="email" className="flex items-center gap-2 text-sm font-medium">
@@ -109,9 +126,11 @@ export const AuthPanel = () => {
               minLength={6}
               className="border-primary/20 focus:border-primary/50 transition-all h-11"
             />
-            <p className="text-xs text-muted-foreground">
-              Minimum 6 characters
-            </p>
+            {!isLogin && (
+              <p className="text-xs text-muted-foreground">
+                Minimum 6 characters
+              </p>
+            )}
           </div>
 
           <Button 
@@ -122,14 +141,42 @@ export const AuthPanel = () => {
             {loading ? (
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Creating Account...
+                {isLogin ? "Signing in..." : "Creating Account..."}
               </div>
+            ) : isLogin ? (
+              <>
+                <LogIn className="w-5 h-5" />
+                Sign In to Your Account
+              </>
             ) : (
               <>
                 <UserPlus className="w-5 h-5" />
                 Create Your Account
               </>
             )}
+          </Button>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-border/50"></div>
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">or</span>
+            </div>
+          </div>
+
+          <Button
+            type="button"
+            variant="ghost"
+            className="w-full hover:bg-primary/5 transition-colors"
+            onClick={() => {
+              setIsLogin(!isLogin);
+              setDisplayName("");
+            }}
+          >
+            {isLogin 
+              ? "Need an account? Sign up →" 
+              : "Already have an account? Sign in →"}
           </Button>
 
           <p className="text-xs text-center text-muted-foreground mt-4">
