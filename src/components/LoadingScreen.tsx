@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Heart, Sparkles } from "lucide-react";
 
 export const LoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
