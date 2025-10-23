@@ -1,3 +1,5 @@
+export type Category = "food" | "activity" | "both";
+
 export interface PlaceItem {
   id: string;
   name: string;
@@ -11,6 +13,9 @@ export interface PlaceItem {
   distance?: number;
   lat?: number;
   lng?: number;
+  phone?: string;
+  website?: string;
+  category?: Category;
 }
 
 export interface LoveLanguageScores {

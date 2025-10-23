@@ -2,9 +2,11 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, Plus, Heart, MapPin, DollarSign, Clock } from "lucide-react";
+import { Star, Plus, Heart, MapPin, Clock } from "lucide-react";
 import { PlaceItem } from "@/types";
 import { storage } from "@/lib/storage";
+import { ShareButton } from "./ShareButton";
+import { PlaceDetailsModal } from "./PlaceDetailsModal";
 
 interface PlaceCardProps {
   place: PlaceItem;
@@ -14,6 +16,7 @@ interface PlaceCardProps {
 
 export const PlaceCard = ({ place, onAdd, onFavoriteToggle }: PlaceCardProps) => {
   const [isFavorite, setIsFavorite] = useState(storage.isFavorite(place.id));
+  const [showDetails, setShowDetails] = useState(false);
 
   const handleFavoriteClick = () => {
     if (isFavorite) {
@@ -45,8 +48,12 @@ export const PlaceCard = ({ place, onAdd, onFavoriteToggle }: PlaceCardProps) =>
   };
 
   return (
-    <Card className="shadow-soft hover:shadow-glow transition-all duration-300 group overflow-hidden border-border/50 hover:border-primary/30 animate-fade-in">
-      <div className="relative overflow-hidden">
+    <>
+      <Card 
+        className="shadow-soft hover:shadow-glow transition-all duration-300 group overflow-hidden border-border/50 hover:border-primary/30 animate-fade-in cursor-pointer"
+        onClick={() => setShowDetails(true)}
+      >
+        <div className="relative overflow-hidden">
         <img
           src={place.photo}
           alt={place.name}
@@ -57,7 +64,10 @@ export const PlaceCard = ({ place, onAdd, onFavoriteToggle }: PlaceCardProps) =>
         <Button
           variant="ghost"
           size="icon"
-          onClick={handleFavoriteClick}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleFavoriteClick();
+          }}
           className={`absolute top-3 left-3 h-9 w-9 rounded-full backdrop-blur-md transition-all duration-300 shadow-md ${
             isFavorite 
               ? 'bg-rose-500/95 hover:bg-rose-600 text-white scale-110' 
@@ -122,25 +132,42 @@ export const PlaceCard = ({ place, onAdd, onFavoriteToggle }: PlaceCardProps) =>
       </CardHeader>
       
       <CardContent className="pt-0">
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex flex-col gap-0.5">
-            {place.userRatingsTotal && (
-              <span className="text-xs text-muted-foreground font-medium">
-                {place.userRatingsTotal.toLocaleString()} reviews
-              </span>
-            )}
-          </div>
+        <div className="flex flex-col gap-3">
+          {place.userRatingsTotal && (
+            <span className="text-xs text-muted-foreground font-medium">
+              {place.userRatingsTotal.toLocaleString()} reviews
+            </span>
+          )}
           
-          <Button 
-            size="sm" 
-            onClick={() => onAdd(place)}
-            className="shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 active:scale-95"
-          >
-            <Plus className="w-4 h-4 mr-1 group-hover:rotate-90 transition-transform duration-300" />
-            Add to Plan
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button 
+              size="sm" 
+              onClick={(e) => {
+                e.stopPropagation();
+                onAdd(place);
+              }}
+              className="shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 active:scale-95"
+            >
+              <Plus className="w-4 h-4 mr-1" />
+              Add to Plan
+            </Button>
+            
+            <ShareButton 
+              placeName={place.name}
+              placeAddress={place.address}
+              className="flex-1"
+            />
+          </div>
         </div>
       </CardContent>
     </Card>
+
+    <PlaceDetailsModal
+      place={place}
+      open={showDetails}
+      onOpenChange={setShowDetails}
+      onAddToPlan={onAdd}
+    />
+  </>
   );
 };

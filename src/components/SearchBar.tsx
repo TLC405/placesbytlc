@@ -1,8 +1,9 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Search, Settings, Coffee, UtensilsCrossed, Wine, Music, ShoppingBag, Film, Heart, Sparkles } from "lucide-react";
+import { MapPin, Search, Settings, UtensilsCrossed, Activity } from "lucide-react";
 
 interface SearchBarProps {
   query: string;
@@ -16,15 +17,18 @@ interface SearchBarProps {
   loading?: boolean;
 }
 
-const quickSearches = [
-  { label: "Romantic Dinner", query: "romantic restaurant dinner", icon: Heart },
-  { label: "Coffee Date", query: "coffee shop cafe", icon: Coffee },
-  { label: "Fine Dining", query: "fine dining restaurant", icon: UtensilsCrossed },
-  { label: "Wine Bar", query: "wine bar", icon: Wine },
-  { label: "Live Music", query: "live music venue", icon: Music },
-  { label: "Shopping", query: "shopping mall boutique", icon: ShoppingBag },
-  { label: "Movies", query: "movie theater cinema", icon: Film },
-  { label: "Date Night", query: "date night", icon: Sparkles },
+type Category = "food" | "activity" | "both" | null;
+
+const foodSubcategories = [
+  "Italian", "Mexican", "Asian", "American", "Steakhouse",
+  "Pizza", "Burgers", "Seafood", "Dessert", "Coffee",
+  "Fine Dining", "Casual", "Fast Food"
+];
+
+const activitySubcategories = [
+  "Movies", "Live Music", "Bowling", "Arcade",
+  "Shopping", "Museums", "Parks", "Outdoors",
+  "Sports", "Arts & Crafts", "Escape Rooms"
 ];
 
 export const SearchBar = ({
@@ -38,8 +42,14 @@ export const SearchBar = ({
   disabled,
   loading,
 }: SearchBarProps) => {
-  const handleQuickSearch = (searchQuery: string) => {
-    onQueryChange(searchQuery);
+  const [selectedCategory, setSelectedCategory] = useState<Category>(null);
+
+  const handleCategoryClick = (category: Category) => {
+    setSelectedCategory(category === selectedCategory ? null : category);
+  };
+
+  const handleSubcategoryClick = (subcategory: string) => {
+    onQueryChange(subcategory);
     setTimeout(() => onSearch(), 100);
   };
 
@@ -98,23 +108,89 @@ export const SearchBar = ({
         </Button>
       </div>
 
-      {/* Quick Search Buttons */}
-      <div className="flex flex-wrap gap-2">
-        <span className="text-xs font-medium text-muted-foreground self-center">Quick searches:</span>
-        {quickSearches.map((item) => {
-          const Icon = item.icon;
-          return (
-            <Badge
-              key={item.query}
-              variant="outline"
-              className="cursor-pointer hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 hover:scale-110 hover:-translate-y-0.5 shadow-sm hover:shadow-lg px-3 py-1.5 group"
-              onClick={() => !disabled && !loading && handleQuickSearch(item.query)}
-            >
-              <Icon className="w-3 h-3 mr-1.5 group-hover:animate-bounce" />
-              {item.label}
-            </Badge>
-          );
-        })}
+      {/* Category Selection */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-semibold">Pick a category:</span>
+        </div>
+        
+        <div className="flex flex-wrap gap-3">
+          <Button
+            variant={selectedCategory === "food" ? "default" : "outline"}
+            onClick={() => handleCategoryClick("food")}
+            disabled={disabled || loading}
+            className="h-12 px-6 shadow-sm hover:shadow-md transition-all"
+          >
+            <UtensilsCrossed className="w-4 h-4 mr-2" />
+            FOOD
+          </Button>
+          
+          <Button
+            variant={selectedCategory === "activity" ? "default" : "outline"}
+            onClick={() => handleCategoryClick("activity")}
+            disabled={disabled || loading}
+            className="h-12 px-6 shadow-sm hover:shadow-md transition-all"
+          >
+            <Activity className="w-4 h-4 mr-2" />
+            ACTIVITY
+          </Button>
+          
+          <Button
+            variant={selectedCategory === "both" ? "default" : "outline"}
+            onClick={() => handleCategoryClick("both")}
+            disabled={disabled || loading}
+            className="h-12 px-6 shadow-sm hover:shadow-md transition-all"
+          >
+            ✨ BOTH
+          </Button>
+        </div>
+
+        {/* Subcategories */}
+        {selectedCategory === "food" && (
+          <div className="flex flex-wrap gap-2 animate-fade-in">
+            {foodSubcategories.map((sub) => (
+              <Badge
+                key={sub}
+                variant="outline"
+                className="cursor-pointer hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 hover:scale-105 shadow-sm px-3 py-1.5"
+                onClick={() => !disabled && !loading && handleSubcategoryClick(sub)}
+              >
+                {sub}
+              </Badge>
+            ))}
+          </div>
+        )}
+
+        {selectedCategory === "activity" && (
+          <div className="flex flex-wrap gap-2 animate-fade-in">
+            {activitySubcategories.map((sub) => (
+              <Badge
+                key={sub}
+                variant="outline"
+                className="cursor-pointer hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 hover:scale-105 shadow-sm px-3 py-1.5"
+                onClick={() => !disabled && !loading && handleSubcategoryClick(sub)}
+              >
+                {sub}
+              </Badge>
+            ))}
+          </div>
+        )}
+
+        {selectedCategory === "both" && (
+          <div className="flex flex-wrap gap-2 animate-fade-in">
+            <span className="text-xs text-muted-foreground w-full">Mix of food & activities:</span>
+            {[...foodSubcategories.slice(0, 5), ...activitySubcategories.slice(0, 5)].map((sub) => (
+              <Badge
+                key={sub}
+                variant="outline"
+                className="cursor-pointer hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 hover:scale-105 shadow-sm px-3 py-1.5"
+                onClick={() => !disabled && !loading && handleSubcategoryClick(sub)}
+              >
+                {sub}
+              </Badge>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

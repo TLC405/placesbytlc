@@ -9,8 +9,8 @@ interface LocationPresetsProps {
 }
 
 const LOCATIONS = [
-  { name: "TLC's Place (South OKC)", lat: 35.4676, lng: -97.5164, icon: "♂️", color: "bg-blue-500" },
-  { name: "Felicia's Place (Edmond)", lat: 35.6528, lng: -97.4781, icon: "♀️", color: "bg-pink-500" },
+  { name: "TLC's Place", lat: 35.4676, lng: -97.5164, icon: "♂️", color: "bg-blue-500" },
+  { name: "Felicia's Place", lat: 35.6528, lng: -97.4781, icon: "♀️", color: "bg-pink-500" },
   { name: "Perfect Midpoint", lat: 35.5602, lng: -97.4973, icon: "💕", color: "bg-purple-500" },
 ];
 

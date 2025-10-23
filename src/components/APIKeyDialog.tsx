@@ -11,7 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ExternalLink, Key } from "lucide-react";
+import { ExternalLink, Key, Heart } from "lucide-react";
+import { toast } from "sonner";
 
 interface APIKeyDialogProps {
   open: boolean;
@@ -26,8 +27,15 @@ export const APIKeyDialog = ({ open, onOpenChange, onSave, currentKey }: APIKeyD
 
   const handleSave = () => {
     if (!key.trim()) return;
-    onSave(key.trim(), remember);
-    onOpenChange(false);
+    // Check if it's the secret code
+    if (key.trim().toLowerCase() === 'tlcinokc') {
+      // Store the actual API key (you'll need to add your real Google Maps API key here)
+      const actualAPIKey = 'AIzaSyBYourActualGoogleMapsAPIKey'; // Replace with actual key
+      onSave(actualAPIKey, remember);
+      onOpenChange(false);
+    } else {
+      toast.error("That's not the right code! Try again 💕");
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -54,18 +62,28 @@ export const APIKeyDialog = ({ open, onOpenChange, onSave, currentKey }: APIKeyD
         </DialogHeader>
 
         <div className="space-y-5 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="apiKey" className="text-base font-semibold">Your Magic Key</Label>
+          <div className="space-y-4">
+            <Label htmlFor="apiKey" className="text-base font-semibold">Enter the Secret Code 💕</Label>
             <Input
               id="apiKey"
-              placeholder="AIza..."
+              placeholder="Type the magic words..."
               value={key}
               onChange={(e) => setKey(e.target.value)}
               onKeyPress={handleKeyPress}
-              className="font-mono text-sm h-11 shadow-sm focus:shadow-glow transition-all"
+              className="text-center text-lg h-14 shadow-sm focus:shadow-glow transition-all"
               autoFocus
             />
-            <p className="text-xs text-muted-foreground">Paste the Google Maps API key here</p>
+            <div className="flex justify-center">
+              <Button 
+                onClick={handleSave}
+                disabled={!key.trim()}
+                size="lg"
+                className="w-32 h-32 rounded-full shadow-glow hover:shadow-romantic transition-all hover:scale-110 disabled:opacity-50 disabled:scale-100"
+              >
+                <Heart className="w-16 h-16 fill-current" />
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground text-center">Hint: It's the special code TLC gave you 🔑</p>
           </div>
 
           <div className="flex items-center space-x-2 p-3 rounded-lg bg-primary/5 border border-primary/10">
@@ -108,13 +126,6 @@ export const APIKeyDialog = ({ open, onOpenChange, onSave, currentKey }: APIKeyD
         <DialogFooter className="gap-2">
           <Button variant="outline" onClick={() => onOpenChange(false)} className="shadow-sm">
             Maybe Later
-          </Button>
-          <Button 
-            onClick={handleSave} 
-            disabled={!key.trim()}
-            className="shadow-sm hover:shadow-glow transition-all hover:scale-105"
-          >
-            🔓 Unlock Adventures
           </Button>
         </DialogFooter>
       </DialogContent>
