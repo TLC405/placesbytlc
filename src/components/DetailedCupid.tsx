@@ -1,11 +1,33 @@
 import { useEffect, useState } from "react";
-import cupidImage from "@/assets/cupid-tlc-transparent.png";
+import cupidImageOriginal from "@/assets/cupid-icon-original.png";
+import { removeBackground, loadImage } from "@/lib/backgroundRemoval";
 
 export const DetailedCupid = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const [cupidImage, setCupidImage] = useState<string>(cupidImageOriginal);
+  const [isProcessing, setIsProcessing] = useState(true);
 
-  // Show cupid after 3 seconds
+  // Process image to remove background
   useEffect(() => {
+    const processImage = async () => {
+      try {
+        const img = await loadImage(cupidImageOriginal);
+        const processedImage = await removeBackground(img);
+        setCupidImage(processedImage);
+        setIsProcessing(false);
+      } catch (error) {
+        console.error('Failed to process cupid image:', error);
+        // Fallback to original if processing fails
+        setIsProcessing(false);
+      }
+    };
+    processImage();
+  }, []);
+
+  // Show cupid after processing and 3 seconds
+  useEffect(() => {
+    if (isProcessing) return;
+    
     const checkHidden = localStorage.getItem('cupid_hidden_until');
     if (checkHidden) {
       const hideUntil = parseInt(checkHidden);
@@ -23,7 +45,7 @@ export const DetailedCupid = () => {
     } else {
       setTimeout(() => setIsVisible(true), 3000);
     }
-  }, []);
+  }, [isProcessing]);
 
   const handleTap = () => {
     const hideUntil = Date.now() + 10000;
@@ -49,16 +71,16 @@ export const DetailedCupid = () => {
         
         .cupid-float {
           position: fixed;
-          right: 1rem;
-          bottom: 7rem;
-          width: 120px;
+          right: 1.5rem;
+          top: 1.5rem;
+          width: 80px;
           height: auto;
           user-select: none;
           -webkit-backface-visibility: hidden;
           backface-visibility: hidden;
           will-change: transform, filter;
           animation: tlc-float 3.2s ease-in-out infinite;
-          filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.25));
+          filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.2));
           cursor: pointer;
           z-index: 50;
           image-rendering: auto;
@@ -72,9 +94,9 @@ export const DetailedCupid = () => {
         
         @media (max-width: 420px) {
           .cupid-float {
-            width: 92px;
-            bottom: 6rem;
-            right: 0.75rem;
+            width: 60px;
+            top: 1rem;
+            right: 1rem;
           }
         }
         
