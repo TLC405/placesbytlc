@@ -21,6 +21,8 @@ const TeeFeeMeCartoonifier = lazy(() => import("./pages/TeeFeeMeCartoonifier"));
 const FeliciaModPanel = lazy(() => import("./components/FeliciaModPanel"));
 const AdminPanel = lazy(() => import("./pages/AdminPanel"));
 
+import { useGoogleMaps } from "@/hooks/useGoogleMaps";
+
 const queryClient = new QueryClient();
 
 const App = () => {
@@ -38,6 +40,9 @@ const App = () => {
   if (showLoader) {
     return <LoadingScreen onComplete={handleLoadingComplete} />;
   }
+
+  // Ensure Google Maps Places API is loaded once globally
+  const { isReady: isMapsReady } = useGoogleMaps();
 
   return (
     <QueryClientProvider client={queryClient}>
