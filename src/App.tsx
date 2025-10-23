@@ -19,6 +19,7 @@ const QuizLove = lazy(() => import("./pages/QuizLove"));
 const QuizMBTI = lazy(() => import("./pages/QuizMBTI"));
 const TeeFeeMeCartoonifier = lazy(() => import("./pages/TeeFeeMeCartoonifier"));
 const PeriodTracker = lazy(() => import("./pages/PeriodTracker"));
+const Install = lazy(() => import("./pages/Install"));
 const FeliciaModPanel = lazy(() => import("./components/FeliciaModPanel"));
 const AdminPanel = lazy(() => import("./pages/AdminPanel"));
 
@@ -70,6 +71,7 @@ const App = () => {
                 <Route path="/period-tracker" element={<PeriodTracker />} />
                 <Route path="/teefeeme" element={<TeeFeeMeCartoonifier />} />
                 <Route path="/cartoon-generator" element={<TeeFeeMeCartoonifier />} />
+                <Route path="/install" element={<Install />} />
                 <Route path="/felicia-mod" element={<FeliciaModPanel />} />
                 <Route path="/admin-1309" element={<AdminPanel />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

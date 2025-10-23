@@ -132,6 +132,11 @@ All colors MUST be HSL.
     background: linear-gradient(135deg, #ffccd5, #cc99ff, #ff99cc);
     background-attachment: fixed;
     position: relative;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overscroll-behavior: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: pan-x pan-y;
   }
 
   body::before {
