@@ -80,16 +80,21 @@ export const DetailedCupid = () => {
           backface-visibility: hidden;
           will-change: transform, filter;
           animation: tlc-float 3.2s ease-in-out infinite;
-          filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.2));
+          filter: drop-shadow(0 8px 18px rgba(255, 106, 162, 0.3));
           cursor: pointer;
           z-index: 50;
           image-rendering: auto;
           -webkit-user-drag: none;
-          transition: opacity 0.3s ease-out;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         .cupid-float:hover {
-          filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.35));
+          filter: drop-shadow(0 0 40px rgba(255, 106, 162, 0.5)) drop-shadow(0 8px 20px rgba(0, 0, 0, 0.25));
+          transform: scale(1.05);
+        }
+        
+        .cupid-float:active {
+          transform: scale(0.95);
         }
         
         @media (max-width: 420px) {

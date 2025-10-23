@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================
+   FELICIA.TLC Design System - Disney Polish
+   ============================================ */
+
 @keyframes pulse-subtle {
   0%, 100% {
     opacity: 1;

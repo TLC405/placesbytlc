@@ -20,6 +20,8 @@
     
     <link rel="icon" type="image/png" href="/felicia-crown.png" />
     <link rel="apple-touch-icon" href="/felicia-crown.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#ff6aa2" />
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -31,5 +33,15 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Register service worker for PWA
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/service-worker.js')
+            .then(reg => console.log('[App] Service Worker registered', reg.scope))
+            .catch(err => console.log('[App] Service Worker registration failed', err));
+        });
+      }
+    </script>
   </body>
 </html>
