@@ -172,6 +172,30 @@ p {
   font-size: 0.95rem;
   line-height: 1.6;
 }
+
+/* Mobile touch targets */
+button, a, input, select, textarea {
+  min-height: 44px;
+  touch-action: manipulation;
+}
+
+@media (max-width: 640px) {
+  button, a, input, select, textarea {
+    min-height: 48px;
+  }
+}
+
+/* Mobile-optimized inputs */
+@media (max-width: 768px) {
+  input, select, textarea {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+}
+
+/* Better mobile scroll */
+.overflow-scroll, .overflow-auto {
+  -webkit-overflow-scrolling: touch;
+}
 }
 
 @layer utilities {

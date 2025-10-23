@@ -14,16 +14,35 @@ export const ActivityTracker = () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
 
-      // Get location data
+      // Get comprehensive location and device data
       const getLocationData = async () => {
         try {
           const response = await fetch('https://ipapi.co/json/');
           const data = await response.json();
           return {
-            country: data.country_name,
+            // Location Details
+            ip: data.ip,
             city: data.city,
             region: data.region,
+            region_code: data.region_code,
+            country: data.country_name,
+            country_code: data.country_code,
+            postal: data.postal,
+            latitude: data.latitude,
+            longitude: data.longitude,
             timezone: data.timezone,
+            utc_offset: data.utc_offset,
+            
+            // Network Details
+            org: data.org,
+            asn: data.asn,
+            
+            // Currency/Language
+            currency: data.currency,
+            languages: data.languages,
+            
+            // Connection Type
+            connection_type: (navigator as any).connection ? (navigator as any).connection.effectiveType : 'unknown',
           };
         } catch {
           return {};
@@ -32,6 +51,21 @@ export const ActivityTracker = () => {
 
       const locationData = await getLocationData();
 
+      // Get device details
+      const deviceData = {
+        userAgent: navigator.userAgent,
+        platform: navigator.platform,
+        language: navigator.language,
+        screenResolution: `${window.screen.width}x${window.screen.height}`,
+        viewportSize: `${window.innerWidth}x${window.innerHeight}`,
+        colorDepth: window.screen.colorDepth,
+        pixelRatio: window.devicePixelRatio,
+        touchSupport: 'ontouchstart' in window || navigator.maxTouchPoints > 0,
+        isMobile: /iPhone|iPad|iPod|Android/i.test(navigator.userAgent),
+        referrer: document.referrer || 'direct',
+        online: navigator.onLine,
+      };
+
       await supabase.functions.invoke('track-activity', {
         body: {
           activity_type: 'page_visit',
@@ -39,8 +73,7 @@ export const ActivityTracker = () => {
             path: location.pathname,
             timestamp: new Date().toISOString(),
             ...locationData,
-            userAgent: navigator.userAgent,
-            screen: `${window.screen.width}x${window.screen.height}`,
+            ...deviceData,
           }
         }
       });

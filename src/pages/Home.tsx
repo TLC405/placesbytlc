@@ -3,12 +3,12 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Play, Shield } from "lucide-react";
+import { Play, Shield, Activity } from "lucide-react";
 import { AuthPanel } from "@/components/AuthPanel";
 import { RecentUpdates } from "@/components/RecentUpdates";
 import { supabase } from "@/integrations/supabase/client";
 
-const AdminPanel = lazy(() => import("@/pages/AdminPanel"));
+const CommandStation = lazy(() => import("@/components/admin/CommandStation").then(m => ({ default: m.CommandStation })));
 const FeliciaModPanel = lazy(() => import("@/components/FeliciaModPanel"));
 
 export default function Home() {
@@ -129,27 +129,26 @@ export default function Home() {
         </Link>
       </div>
 
-      {/* Admin Analytics Panel */}
+      {/* Admin Command Station */}
       {isAdmin && (
         <div className="max-w-7xl mx-auto">
           <Card className="border-amber-500/50 bg-gradient-to-br from-amber-50/50 to-orange-50/50 dark:from-amber-950/20 dark:to-orange-950/20">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl">
-                <Shield className="w-5 h-5 sm:w-6 sm:h-6" />
-                Admin Analytics Dashboard
+                <Activity className="w-5 h-5 sm:w-6 sm:h-6" />
+                Command Station - Analytics Dashboard
               </CardTitle>
               <CardDescription className="text-sm sm:text-base">
-                Monitor user activity, engagement metrics, and app usage
+                Real-time user activity, geographic data, and engagement metrics
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Suspense fallback={
-                <div className="space-y-4">
-                  <Skeleton className="h-32 w-full" />
-                  <Skeleton className="h-64 w-full" />
+                <div className="flex items-center justify-center p-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent" />
                 </div>
               }>
-                <AdminPanel />
+                <CommandStation />
               </Suspense>
             </CardContent>
           </Card>
