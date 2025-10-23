@@ -67,7 +67,7 @@ export const usePlacesSearch = ({ onError }: UsePlacesSearchProps) => {
               rating: place.rating,
               userRatingsTotal: place.user_ratings_total,
               priceLevel: place.price_level,
-              openNow: place.opening_hours?.open_now,
+              openNow: place.opening_hours?.isOpen?.() ?? place.opening_hours?.open_now,
               types: place.types,
               distance: distance ? parseFloat(distance.toFixed(1)) : undefined,
               lat: placeLat,

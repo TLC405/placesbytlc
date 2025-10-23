@@ -47,8 +47,9 @@ export const APIKeyDialog = ({ open, onOpenChange, onSave, currentKey }: APIKeyD
             <DialogTitle className="text-2xl gradient-text">Key to TLC's Heart 🔑💕</DialogTitle>
           </div>
           <DialogDescription className="text-base leading-relaxed">
-            Enter the magic key that unlocks all the amazing date spots we can explore together! 
-            This special key is stored safely on your device and opens up a world of romantic possibilities. ✨
+            💝 Felicia, you hold the key to unlock our romantic adventures together! 
+            Enter the magic key below to discover all the amazing date spots waiting for us. 
+            This special key opens up a world of possibilities for our journey together. ✨
           </DialogDescription>
         </DialogHeader>
 

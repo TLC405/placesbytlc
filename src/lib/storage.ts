@@ -101,14 +101,7 @@ export const storage = {
 
   // API key
   getAPIKey: (): string => {
-    const saved = localStorage.getItem(GMAPS_KEY);
-    if (!saved) {
-      // Pre-configure the API key
-      const defaultKey = "AIzaSyAmZ989l5QauVfNqpKkBW-kp3S6byTbBd0";
-      localStorage.setItem(GMAPS_KEY, defaultKey);
-      return defaultKey;
-    }
-    return saved;
+    return localStorage.getItem(GMAPS_KEY) || "";
   },
 
   saveAPIKey: (key: string) => {
