@@ -32,13 +32,15 @@ export const LoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
         </div>
         
         <div className="space-y-3">
-          <h1 className="text-4xl font-extrabold text-white drop-shadow-lg tracking-tight">TLC Date Night</h1>
+          <h1 className="text-4xl font-extrabold text-white drop-shadow-lg tracking-tight">
+            TLC & Felicia's Date Night
+          </h1>
           {showSpecialMessage ? (
             <p className="text-white text-xl font-medium drop-shadow">
               Felicia is beautiful <span className="inline-block heart-pulse text-rose-200 drop-shadow text-2xl">❤️</span>
             </p>
           ) : (
-            <p className="text-white/90 text-lg drop-shadow">Loading Cupid's magic...</p>
+            <p className="text-white/90 text-lg drop-shadow">Loading your romantic adventure...</p>
           )}
         </div>
 

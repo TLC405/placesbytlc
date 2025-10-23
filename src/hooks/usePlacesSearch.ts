@@ -28,13 +28,23 @@ export const usePlacesSearch = ({ onError }: UsePlacesSearchProps) => {
           location: new google.maps.LatLng(location.lat, location.lng),
           radius: radius,
           query: query.trim() || "date night",
+          type: 'establishment' // Add type to improve results
         };
 
         service.textSearch(request, (res: any, status: any) => {
           setIsSearching(false);
 
-          if (status !== google.maps.places.PlacesServiceStatus.OK || !res) {
-            onError(`Search failed: ${status}. Please try a different search or check your API key.`);
+          if (status !== google.maps.places.PlacesServiceStatus.OK) {
+            if (status === google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {
+              setResults([]);
+              return;
+            }
+            onError(`Search failed: ${status}. Please try a different search.`);
+            return;
+          }
+
+          if (!res || res.length === 0) {
+            setResults([]);
             return;
           }
 
@@ -80,7 +90,7 @@ export const usePlacesSearch = ({ onError }: UsePlacesSearchProps) => {
       } catch (err) {
         setIsSearching(false);
         onError("Search failed. Please try again.");
-        console.error(err);
+        console.error("Search error:", err);
       }
     },
     [onError]

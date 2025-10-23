@@ -3,17 +3,21 @@ let isLoaded = false;
 
 export const loadGoogleMapsScript = (apiKey: string): Promise<void> => {
   return new Promise((resolve, reject) => {
-    if (isLoaded) {
+    if (isLoaded && (window as any).google?.maps?.places) {
       resolve();
       return;
     }
 
     if (isLoading) {
-      // Wait for existing load
+      // Wait for existing load with timeout
+      const startTime = Date.now();
       const checkInterval = setInterval(() => {
-        if (isLoaded) {
+        if (isLoaded && (window as any).google?.maps?.places) {
           clearInterval(checkInterval);
           resolve();
+        } else if (Date.now() - startTime > 10000) {
+          clearInterval(checkInterval);
+          reject(new Error("Google Maps loading timeout"));
         }
       }, 100);
       return;
@@ -25,7 +29,8 @@ export const loadGoogleMapsScript = (apiKey: string): Promise<void> => {
     }
 
     // Check if already in DOM
-    if (document.getElementById("google-maps-script")) {
+    const existingScript = document.getElementById("google-maps-script");
+    if (existingScript && (window as any).google?.maps?.places) {
       isLoaded = true;
       resolve();
       return;
@@ -35,11 +40,12 @@ export const loadGoogleMapsScript = (apiKey: string): Promise<void> => {
 
     const script = document.createElement("script");
     script.id = "google-maps-script";
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&loading=async`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&loading=async&callback=initMap`;
     script.async = true;
     script.defer = true;
 
-    script.onload = () => {
+    // Add global callback
+    (window as any).initMap = () => {
       isLoading = false;
       isLoaded = true;
       resolve();
@@ -47,7 +53,8 @@ export const loadGoogleMapsScript = (apiKey: string): Promise<void> => {
 
     script.onerror = () => {
       isLoading = false;
-      document.getElementById("google-maps-script")?.remove();
+      const scriptEl = document.getElementById("google-maps-script");
+      if (scriptEl) scriptEl.remove();
       reject(new Error("Failed to load Google Maps"));
     };
 

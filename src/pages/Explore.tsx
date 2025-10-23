@@ -110,6 +110,11 @@ export default function Explore() {
       return;
     }
 
+    if (!query.trim()) {
+      toast.info("Enter a search term or use quick searches below!");
+      return;
+    }
+
     setError("");
     search(query, location, parseInt(radius, 10));
   }, [mapsReady, query, location, radius, search]);
