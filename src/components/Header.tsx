@@ -8,15 +8,15 @@ export const Header = () => {
   const isActive = (path: string) => location.pathname === path;
   
   return (
-    <header className="sticky top-0 z-40 glass shadow-soft border-b border-border/50">
+    <header className="sticky top-0 z-40 glass shadow-romantic border-b border-primary/20">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3 group">
-          <div className="w-9 h-9 rounded-xl gradient-primary grid place-items-center text-white shadow-glow group-hover:scale-105 transition-transform">
-            <Heart className="w-5 h-5 fill-white" />
+          <div className="w-10 h-10 rounded-xl gradient-primary grid place-items-center text-white shadow-glow group-hover:scale-110 transition-all duration-300">
+            <Heart className="w-5 h-5 fill-white group-hover:animate-pulse" />
           </div>
           <div className="leading-tight">
-            <div className="text-lg font-extrabold text-foreground">TLC Date Night</div>
-            <div className="text-xs text-muted-foreground -mt-0.5">Explore • Plan • Match</div>
+            <div className="text-lg font-extrabold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">TLC Date Night</div>
+            <div className="text-xs text-muted-foreground -mt-0.5 font-medium">Explore • Plan • Match</div>
           </div>
         </Link>
         

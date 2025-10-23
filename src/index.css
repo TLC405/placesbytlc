@@ -8,7 +8,7 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 33 50% 98%;
+    --background: 330 100% 98%;
     --foreground: 222 47% 11%;
 
     --card: 0 0% 100%;
@@ -17,17 +17,17 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    --primary: 262 83% 58%;
+    --primary: 330 81% 67%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 250 100% 75%;
+    --primary-glow: 300 100% 80%;
 
-    --secondary: 33 50% 98%;
+    --secondary: 330 100% 98%;
     --secondary-foreground: 222 47% 11%;
 
     --muted: 220 13% 91%;
     --muted-foreground: 220 9% 46%;
 
-    --accent: 263 70% 50%;
+    --accent: 300 67% 73%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
@@ -36,16 +36,18 @@ All colors MUST be HSL.
     --success: 142 71% 45%;
     --success-foreground: 0 0% 100%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 262 83% 58%;
+    --border: 330 30% 92%;
+    --input: 330 30% 95%;
+    --ring: 330 81% 67%;
 
     --radius: 1rem;
 
-    --gradient-primary: linear-gradient(90deg, hsl(262 83% 58%), hsl(243 75% 59%));
-    --gradient-hero: linear-gradient(135deg, hsl(262 83% 58% / 0.1), hsl(243 75% 59% / 0.05));
-    --shadow-soft: 0 10px 30px hsl(222 47% 11% / 0.12);
-    --shadow-glow: 0 0 40px hsl(262 83% 58% / 0.2);
+    --gradient-primary: linear-gradient(135deg, hsl(330 81% 67%), hsl(280 67% 73%));
+    --gradient-ethereal: linear-gradient(135deg, hsl(330 100% 90%), hsl(280 80% 85%), hsl(330 70% 85%));
+    --gradient-hero: linear-gradient(135deg, hsl(330 81% 67% / 0.15), hsl(280 67% 73% / 0.1));
+    --shadow-soft: 0 10px 30px hsl(330 81% 67% / 0.15);
+    --shadow-glow: 0 0 40px hsl(330 81% 67% / 0.25);
+    --shadow-romantic: 0 5px 20px hsl(330 81% 67% / 0.2);
   }
 
   .dark {
@@ -94,8 +96,24 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
     font-feature-settings: 'rlig' 1, 'calt' 1;
+    background: linear-gradient(135deg, #ffccd5, #cc99ff, #ff99cc);
+    background-attachment: fixed;
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAFUlEQVQYV2NkYGD4z8DAwMgAB//+AD8D4Gf/8B4A8L8GfgCjE7oX/hP0AAAAASUVORK5CYII=') repeat;
+    opacity: 0.08;
+    z-index: -1;
+    pointer-events: none;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -105,7 +123,8 @@ All colors MUST be HSL.
 
 @layer utilities {
   .glass {
-    @apply bg-white/70 backdrop-blur-lg backdrop-saturate-150;
+    @apply bg-white/80 backdrop-blur-xl backdrop-saturate-150;
+    box-shadow: 0 8px 32px hsl(330 81% 67% / 0.1);
   }
   
   .shadow-soft {
@@ -116,11 +135,28 @@ All colors MUST be HSL.
     box-shadow: var(--shadow-glow);
   }
 
+  .shadow-romantic {
+    box-shadow: var(--shadow-romantic);
+  }
+
   .gradient-primary {
     background: var(--gradient-primary);
   }
 
+  .gradient-ethereal {
+    background: var(--gradient-ethereal);
+  }
+
   .gradient-hero {
     background: var(--gradient-hero);
+  }
+
+  .heart-pulse {
+    animation: heart-pulse 1.5s infinite;
+  }
+
+  @keyframes heart-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
   }
 }
