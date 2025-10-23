@@ -11,11 +11,11 @@ export const LoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
       setTextVisible(true);
     }, 300);
 
-    // Hide everything after 5 seconds
+    // Hide everything after ~2 seconds
     const timer = setTimeout(() => {
       setIsVisible(false);
-      setTimeout(onComplete, 500);
-    }, 5000);
+      setTimeout(onComplete, 300);
+    }, 2000);
 
     return () => {
       clearTimeout(textTimer);

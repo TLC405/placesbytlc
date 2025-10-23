@@ -1,4 +1,4 @@
-import React, { useState, lazy, Suspense } from "react";
+import React, { useState, useEffect, lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -35,6 +35,12 @@ const App = () => {
   const handleLoadingComplete = () => {
     setShowLoader(false);
   };
+
+  // Safety fallback: ensure loader hides even if onComplete doesn't fire
+  useEffect(() => {
+    const t = setTimeout(() => setShowLoader(false), 6000);
+    return () => clearTimeout(t);
+  }, []);
 
   // Ensure Google Maps Places API is loaded once globally
   const { isReady: isMapsReady } = useGoogleMaps();
