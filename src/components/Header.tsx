@@ -11,12 +11,12 @@ export const Header = () => {
     <header className="sticky top-0 z-40 glass shadow-romantic border-b border-primary/20">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 rounded-xl gradient-primary grid place-items-center text-white shadow-glow group-hover:scale-110 transition-all duration-300">
-            <Heart className="w-5 h-5 fill-white group-hover:animate-pulse" />
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 to-rose-600 grid place-items-center text-white shadow-lg group-hover:scale-110 transition-all duration-300 font-bold text-base">
+            T&F
           </div>
           <div className="leading-tight">
-            <div className="text-lg font-extrabold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">TLC Date Night</div>
-            <div className="text-xs text-muted-foreground -mt-0.5 font-medium">Explore • Plan • Match</div>
+            <div className="text-lg font-bold text-foreground">TLC & Felicia's</div>
+            <div className="text-xs text-rose-600 -mt-0.5 font-medium">Date Night</div>
           </div>
         </Link>
         
