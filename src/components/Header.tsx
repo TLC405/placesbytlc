@@ -76,15 +76,15 @@ export const Header = () => {
               </div>
               
               <div className="leading-tight">
-                <div className="text-xl sm:text-3xl font-black text-foreground tracking-tight drop-shadow-sm">
-                  FELICIA.TLC
+                <div className="text-xl sm:text-3xl font-black gradient-text tracking-tight drop-shadow-lg animate-pulse">
+                  ✨ FELICIA.TLC ✨
                 </div>
-                <div className="text-xs sm:text-sm font-bold tracking-widest hidden sm:block text-muted-foreground">
-                  <span className="inline-block animate-pulse">✨</span>
+                <div className="text-xs sm:text-sm font-bold tracking-widest hidden sm:block bg-gradient-to-r from-amber-400 via-rose-400 to-amber-400 bg-clip-text text-transparent animate-gradient-shift" style={{ backgroundSize: '200% 200%' }}>
+                  <span className="inline-block animate-pulse">👑</span>
                   <span className="mx-1">
-                    YOUR LOVE JOURNEY
+                    QUEEN FELICIA'S LOVE HUB
                   </span>
-                  <span className="inline-block animate-pulse delay-75">✨</span>
+                  <span className="inline-block animate-pulse delay-75">👑</span>
                 </div>
               </div>
             </Link>

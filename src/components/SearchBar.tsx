@@ -83,12 +83,12 @@ export const SearchBar = ({
             onClick={() => handleLocationModeChange("felicia")}
             className={`flex-1 p-2 rounded-lg text-sm font-semibold transition-all ${
               locationMode === "felicia"
-                ? "bg-gradient-to-r from-primary to-accent text-white shadow-md"
+                ? "bg-gradient-to-r from-primary to-accent text-white shadow-md animate-pulse"
                 : "hover:bg-accent/20"
             }`}
           >
-            <Heart className="w-4 h-4 mx-auto mb-1" />
-            Felicia
+            <Heart className="w-4 h-4 mx-auto mb-1 fill-current" />
+            👑 Queen Felicia 👑
           </button>
           <button
             onClick={() => handleLocationModeChange("middle")}

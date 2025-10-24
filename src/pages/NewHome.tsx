@@ -113,18 +113,18 @@ export default function NewHome() {
           
           <div className="relative z-10 p-8 sm:p-12 text-center space-y-6">
             <div className="inline-block">
-              <Badge className="px-6 py-2 text-base bg-gradient-to-r from-pink-500 to-purple-500 border-0 text-white">
-                <Crown className="w-4 h-4 mr-2" />
-                V1 Places by TLC for FeeFee
+              <Badge className="px-6 py-2 text-base bg-gradient-to-r from-pink-500 via-purple-500 to-rose-500 border-0 text-white shadow-glow animate-pulse">
+                <Crown className="w-5 h-5 mr-2 animate-bounce" />
+                ✨ FELICIA'S ROYAL DATE FINDER ✨
               </Badge>
             </div>
             
-            <h1 className="text-4xl sm:text-6xl md:text-7xl font-black gradient-text">
-              Discover Your Perfect Date Spots
+            <h1 className="text-4xl sm:text-6xl md:text-7xl font-black gradient-text drop-shadow-xl">
+              Queen Felicia's Perfect Date Spots 👑
             </h1>
             
-            <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
-              AI-powered recommendations for unforgettable moments in OKC
+            <p className="text-lg sm:text-xl font-semibold bg-gradient-to-r from-rose-400 via-purple-400 to-pink-400 bg-clip-text text-transparent max-w-2xl mx-auto">
+              ✨ Your Royal AI-Powered Guide to Unforgettable Moments in OKC ✨
             </p>
 
             {!user && (

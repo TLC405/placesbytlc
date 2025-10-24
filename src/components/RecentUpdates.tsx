@@ -65,12 +65,12 @@ export const RecentUpdates = () => {
   return (
     <Card className="border-primary/30 bg-gradient-to-br from-primary/5 to-accent/5">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl">
-          <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
-          What's New in FELICIA.TLC
+        <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl animate-pulse">
+          <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-primary animate-spin" />
+          👑 What's New in Queen Felicia's Kingdom 👑
         </CardTitle>
-        <CardDescription className="text-sm sm:text-base">
-          Recent updates and improvements
+        <CardDescription className="text-sm sm:text-base font-semibold">
+          ✨ Royal updates and magical improvements ✨
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">

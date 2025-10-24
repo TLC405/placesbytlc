@@ -56,11 +56,11 @@ export default function Install() {
           <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg">
             <Smartphone className="w-10 h-10 text-white" />
           </div>
-          <CardTitle className="text-3xl font-black gradient-text">
-            Install FELICIA.TLC
+          <CardTitle className="text-3xl font-black gradient-text animate-pulse">
+            ✨ Install FELICIA.TLC ✨
           </CardTitle>
-          <CardDescription className="text-lg">
-            Get the full app experience on your phone!
+          <CardDescription className="text-lg font-semibold">
+            👑 Get Queen Felicia's full royal app experience! 👑
           </CardDescription>
         </CardHeader>
 
@@ -71,8 +71,8 @@ export default function Install() {
                 <Check className="w-8 h-8 text-success" />
                 <h3 className="text-xl font-bold text-success">Already Installed! 🎉</h3>
               </div>
-              <p className="text-center text-muted-foreground">
-                FELICIA.TLC is installed on your device. Look for the app icon on your home screen!
+              <p className="text-center text-muted-foreground font-semibold">
+                ✨ Queen Felicia's FELICIA.TLC is installed! Look for the royal app icon on your home screen! 👑
               </p>
             </div>
           ) : (

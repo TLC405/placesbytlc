@@ -191,7 +191,7 @@ export const LoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
               filter: 'drop-shadow(0 2px 10px rgba(251, 191, 36, 0.6))',
             }}
           >
-            Your love journey awaits ✨
+            exploring a new city together. one date at a time ✨
           </p>
         </div>
       </div>
