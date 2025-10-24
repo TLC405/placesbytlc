@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { Shield, Search, Calendar, Palette, LogOut } from "lucide-react";
+import { Shield, Calendar, Palette, LogOut } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const TesterDashboard = () => {
@@ -90,35 +90,7 @@ const TesterDashboard = () => {
             <Button
               className="w-full justify-start h-auto py-4"
               variant="outline"
-              onClick={() => navigate("/explore")}
-            >
-              <Search className="w-5 h-5 mr-3" />
-              <div className="text-left">
-                <div className="font-semibold">Search Places</div>
-                <div className="text-xs text-muted-foreground">
-                  Discover date spots and locations
-                </div>
-              </div>
-            </Button>
-
-            <Button
-              className="w-full justify-start h-auto py-4"
-              variant="outline"
-              onClick={() => navigate("/period-tracker")}
-            >
-              <Calendar className="w-5 h-5 mr-3" />
-              <div className="text-left">
-                <div className="font-semibold">Period Tracker</div>
-                <div className="text-xs text-muted-foreground">
-                  Set up SMS reminders (1 free SMS included)
-                </div>
-              </div>
-            </Button>
-
-            <Button
-              className="w-full justify-start h-auto py-4"
-              variant="outline"
-              onClick={() => navigate("/teefeeme-cartoonifier")}
+              onClick={() => navigate("/teefeeme")}
             >
               <Palette className="w-5 h-5 mr-3" />
               <div className="text-left">

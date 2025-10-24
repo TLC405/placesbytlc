@@ -30,7 +30,7 @@ export const AuthPanel = () => {
         });
         if (error) throw error;
         toast.success("Welcome back! 💕");
-        navigate("/explore");
+        navigate("/");
       } else {
         // Sign up - check for tester code
         const role = testerCode === "405" ? "tester" : "user";

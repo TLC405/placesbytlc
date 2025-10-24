@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Heart, Menu, Compass, Calendar, Brain, Palette, Download, Crown, Sparkles } from "lucide-react";
+import { Heart, Menu, Calendar, Brain, Palette, Download, Crown, Sparkles } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
@@ -46,8 +46,6 @@ export const Header = () => {
   
   const allNavItems = [
     { path: "/", label: "Home", icon: Heart, emoji: "💝", allowTester: true },
-    { path: "/explore", label: "Explore", icon: Compass, emoji: "🗺️", allowTester: true },
-    { path: "/plan", label: "Plan", icon: Calendar, emoji: "📋", allowTester: true },
     { path: "/quizzes", label: "Quizzes", icon: Brain, emoji: "🧠", allowTester: false },
     { path: "/period-tracker", label: "Peripod", icon: Calendar, emoji: "📅", allowTester: false },
     { path: "/teefeeme", label: "TeeFee Me", icon: Palette, emoji: "🎨", allowTester: true },

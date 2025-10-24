@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Play, Heart, Sparkles } from "lucide-react";
+import { Palette, Heart, Sparkles } from "lucide-react";
 import { AuthPanel } from "@/components/AuthPanel";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -47,10 +47,10 @@ export default function Home() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 sm:space-y-6 px-4 sm:px-6 md:px-12 pb-6 sm:pb-8">
-            <Link to="/explore">
+            <Link to="/teefeeme">
               <Button size="lg" className="w-full gap-2 sm:gap-3 h-14 sm:h-16 md:h-20 text-base sm:text-lg md:text-xl font-bold shadow-glow hover:shadow-romantic transition-all hover:scale-105 group">
-                <Play className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 group-hover:scale-110 transition-transform" />
-                Start Your Love Journey
+                <Palette className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 group-hover:scale-110 transition-transform" />
+                Try Cartoon Generator
               </Button>
             </Link>
             <div className="text-center text-sm sm:text-base text-muted-foreground font-medium">
@@ -81,46 +81,6 @@ export default function Home() {
           </TabsList>
 
           <TabsContent value="features" className="mt-6 space-y-6">
-            {/* TLC's Place & Felicia's Place at Top */}
-            <Card className="bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50 dark:from-purple-950/30 dark:via-pink-950/30 dark:to-rose-950/30 border-2 border-primary/40">
-              <CardHeader>
-                <CardTitle className="text-3xl gradient-text text-center">
-                  👑 Felicia's Featured Spots
-                </CardTitle>
-                <CardDescription className="text-center text-base">
-                  Hand-picked by your TLC curator for unforgettable date experiences
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Link to="/explore">
-                    <Card className="hover-lift cursor-pointer group border-2 border-primary/20">
-                      <CardHeader>
-                        <CardTitle className="flex items-center gap-2 group-hover:text-primary">
-                          🗺️ TLC's Place
-                        </CardTitle>
-                        <CardDescription>
-                          Discover the best date spots in OKC curated with love
-                        </CardDescription>
-                      </CardHeader>
-                    </Card>
-                  </Link>
-                  
-                  <Link to="/explore">
-                    <Card className="hover-lift cursor-pointer group border-2 border-primary/20">
-                      <CardHeader>
-                        <CardTitle className="flex items-center gap-2 group-hover:text-primary">
-                          💝 Felicia's Place
-                        </CardTitle>
-                        <CardDescription>
-                          Personal recommendations from your love expert
-                        </CardDescription>
-                      </CardHeader>
-                    </Card>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
 
             {/* Other Features */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
@@ -167,19 +127,6 @@ export default function Home() {
               </Link>
             </div>
 
-            {/* Search Bar at End */}
-            <Card className="border-2 border-primary/30">
-              <CardHeader>
-                <CardTitle className="text-center">🔍 Search Everywhere</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Link to="/explore">
-                  <Button className="w-full" size="lg">
-                    Start Searching for Date Spots
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
           </TabsContent>
 
           <TabsContent value="account" className="mt-6">
@@ -196,10 +143,10 @@ export default function Home() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <Link to="/explore">
+                  <Link to="/teefeeme">
                     <Button className="w-full" size="lg">
-                      <Play className="w-5 h-5 mr-2" />
-                      Continue Exploring
+                      <Palette className="w-5 h-5 mr-2" />
+                      Try Cartoon Generator
                     </Button>
                   </Link>
                   <Button 
