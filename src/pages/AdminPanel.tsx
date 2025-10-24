@@ -1,89 +1,104 @@
-import { lazy, Suspense, useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Lock, Users, Activity, MapPin, Calendar, Eye, TrendingUp, Download, Code2, Sparkles, Heart, Crown, Zap, BarChart3, Search, FileText, User } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
+import { 
+  Users, 
+  BarChart3, 
+  Terminal, 
+  Settings, 
+  Download,
+  Code,
+  ChevronLeft,
+  Activity,
+  Eye
+} from "lucide-react";
 import { CommandStation } from "@/components/admin/CommandStation";
 import { UserAnalyticsDashboard } from "@/components/admin/UserAnalyticsDashboard";
+import { UserProfileViewer } from "@/components/admin/UserProfileViewer";
 import { FileUploadManager } from "@/components/FileUploadManager";
 
-const FeliciaModPanel = lazy(() => import("@/components/FeliciaModPanel"));
-
 interface UserAnalytics {
-  user_id: string;
+  id: string;
   email: string;
-  display_name: string | null;
+  display_name: string;
   created_at: string;
-  total_visits: number;
-  last_visit: string;
-  locations: string[];
-  pages_visited: any[];
-  places_viewed: any[];
-  searches: any[];
+  visit_count?: number;
+  last_visit?: string;
+  locations_visited?: string[];
+  pages_visited?: string[];
+  places_viewed?: string[];
+  searches_made?: string[];
 }
 
-export default function AdminPanel() {
-  const [isUnlocked, setIsUnlocked] = useState(false);
-  const [pinInput, setPinInput] = useState("");
-  const [showPinDialog, setShowPinDialog] = useState(true);
+const AdminPanel = () => {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [user, setUser] = useState<any>(null);
   const [users, setUsers] = useState<UserAnalytics[]>([]);
-  const [selectedUser, setSelectedUser] = useState<UserAnalytics | null>(null);
-  const [downloadingSource, setDownloadingSource] = useState(false);
-  const [activeSection, setActiveSection] = useState("dashboard");
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [allActivities, setAllActivities] = useState<any[]>([]);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [profileDialogOpen, setProfileDialogOpen] = useState(false);
 
-  const handlePinSubmit = () => {
-    if (pinInput === "666") {
-      setIsUnlocked(true);
-      setShowPinDialog(false);
-      fetchUserAnalytics();
-      toast.success("Welcome to Admin Portal!");
-    } else {
-      toast.error("Invalid PIN");
-      setPinInput("");
-    }
-  };
+  // Check admin access on mount
+  useEffect(() => {
+    const checkAdminAccess = async () => {
+      try {
+        const { data: { user: currentUser } } = await supabase.auth.getUser();
+        
+        if (!currentUser) {
+          toast.error("Please log in to access admin panel");
+          navigate('/');
+          return;
+        }
 
-  const handleDownloadSource = async () => {
-    setDownloadingSource(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('download-source', {
-        body: {}
-      });
+        setUser(currentUser);
 
-      if (error) throw error;
+        // Check if user has admin role
+        const { data: roles } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', currentUser.id);
+        
+        const hasAdminRole = roles?.some(r => r.role === 'admin');
+        
+        if (!hasAdminRole) {
+          toast.error("Admin access required");
+          navigate('/');
+          return;
+        }
 
-      if (data?.download_url) {
-        window.open(data.download_url, '_blank');
-        toast.success("Source code download started!");
-      } else {
-        toast.error("Failed to generate download link");
+        setIsAdmin(true);
+        fetchUserAnalytics();
+      } catch (error) {
+        console.error("Admin access check failed:", error);
+        toast.error("Failed to verify admin access");
+        navigate('/');
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Error downloading source:', error);
-      toast.error("Failed to download source code");
-    } finally {
-      setDownloadingSource(false);
-    }
-  };
+    };
+
+    checkAdminAccess();
+  }, [navigate]);
 
   const fetchUserAnalytics = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke('admin-portal-data', {
-        body: { pin: '666' }
-      });
+      const { data, error } = await supabase.functions.invoke('admin-portal-data');
+      
       if (error) throw error;
 
       const profiles = data?.profiles || [];
       const activities = data?.activities || [];
+      
+      // Store all activities for UserProfileViewer
+      setAllActivities(activities);
 
       const userMap = new Map<string, UserAnalytics>();
 
@@ -97,21 +112,24 @@ export default function AdminPanel() {
         const locations = new Set<string>();
         userActivities.forEach((activity: any) => {
           const d = activity.activity_data as any;
-          if (d?.location?.city && d?.location?.country_name) locations.add(`${d.location.city}, ${d.location.country_name}`);
-          else if (d?.location?.country_name) locations.add(d.location.country_name);
+          if (d?.location?.city && d?.location?.country_name) {
+            locations.add(`${d.location.city}, ${d.location.country_name}`);
+          } else if (d?.location?.country_name) {
+            locations.add(d.location.country_name);
+          }
         });
 
         userMap.set(profile.id, {
-          user_id: profile.id,
+          id: profile.id,
           email: profile.email || 'Unknown',
           display_name: profile.display_name,
           created_at: profile.created_at,
-          total_visits: pageVisits.length,
-          last_visit: (userActivities[0]?.timestamp) || profile.created_at,
-          locations: Array.from(locations),
+          visit_count: pageVisits.length,
+          last_visit: userActivities[0]?.timestamp || profile.created_at,
+          locations_visited: Array.from(locations),
           pages_visited: pageVisits.map((a: any) => a.activity_data),
           places_viewed: placeViews.map((a: any) => a.activity_data),
-          searches: searches.map((a: any) => a.activity_data),
+          searches_made: searches.map((a: any) => a.activity_data),
         });
       });
 
@@ -122,408 +140,260 @@ export default function AdminPanel() {
     }
   };
 
-  if (!isUnlocked) {
+  const handleDownloadSource = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke('download-source');
+      
+      if (error) throw error;
+      
+      toast.success("Source code download initiated");
+    } catch (error: any) {
+      console.error("Download error:", error);
+      toast.error(error.message || "Failed to download source");
+    }
+  };
+
+  if (loading) {
     return (
-      <Dialog open={showPinDialog} onOpenChange={() => {}}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <div className="flex justify-center mb-4">
-              <div className="w-20 h-20 bg-gradient-to-br from-yellow-400 via-pink-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-2xl animate-pulse">
-                <Lock className="w-10 h-10 text-white" />
-              </div>
-            </div>
-            <DialogTitle className="text-center text-2xl font-black bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
-              Administrative Access
-            </DialogTitle>
-            <DialogDescription className="text-center">
-              Enter PIN to access the admin panel
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 pt-4">
-            <Input
-              type="password"
-              placeholder="Enter PIN"
-              value={pinInput}
-              onChange={(e) => setPinInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handlePinSubmit()}
-              className="text-center text-2xl tracking-widest"
-              maxLength={4}
-            />
-            <Button onClick={handlePinSubmit} className="w-full" size="lg">
-              <Lock className="w-4 h-4 mr-2" />
-              Unlock Admin Panel
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent" />
+      </div>
     );
   }
 
-  const sidebarItems = [
-    { id: "dashboard", label: "Dashboard", icon: BarChart3, color: "from-pink-500 to-rose-500" },
-    { id: "command", label: "Command Station", icon: Activity, color: "from-blue-500 to-purple-500" },
-    { id: "users", label: "Users", icon: Users, color: "from-purple-500 to-pink-500" },
-    { id: "analytics", label: "Analytics", icon: TrendingUp, color: "from-orange-500 to-amber-500" },
-    { id: "tools", label: "Dev Tools", icon: Code2, color: "from-emerald-500 to-teal-500" },
+  if (!isAdmin) {
+    return null;
+  }
+
+  const tabItems = [
+    { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
+    { id: 'command', label: 'Command Station', icon: Terminal },
+    { id: 'users', label: 'Users', icon: Users },
+    { id: 'analytics', label: 'Analytics', icon: Activity },
+    { id: 'tools', label: 'Dev Tools', icon: Settings },
   ];
 
+  const totalUsers = users.length;
+  const activeUsers = users.filter(u => u.last_visit).length;
+  const totalSessions = users.reduce((sum, u) => sum + (u.visit_count || 0), 0);
+
   return (
-    <div className="fixed inset-0 flex overflow-hidden bg-gradient-to-br from-rose-50/50 via-purple-50/30 to-pink-50/50 dark:from-background dark:via-background dark:to-background">
-      {/* Sidebar */}
-      <aside className="w-72 bg-gradient-to-br from-white/80 to-pink-50/80 dark:from-card dark:to-card backdrop-blur-xl border-r border-border/50 shadow-2xl overflow-hidden">
-        <ScrollArea className="h-full">
-          <div className="p-6 space-y-8">
-            {/* Header */}
-            <div className="text-center space-y-3 pb-4 border-b border-border/50">
-              <div className="relative inline-block">
-                <div className="w-16 h-16 mx-auto bg-gradient-to-br from-yellow-400 via-pink-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg animate-pulse">
-                  <Crown className="w-8 h-8 text-white" />
-                </div>
-                <Sparkles className="absolute -top-1 -right-1 w-6 h-6 text-yellow-400 animate-spin" style={{ animationDuration: "3s" }} />
-              </div>
-                <div>
-                  <h2 className="text-2xl font-black bg-gradient-to-r from-pink-600 via-purple-600 to-rose-600 bg-clip-text text-transparent flex items-center gap-2">
-                    Admin Portal
-                    <User className="w-4 h-4 text-blue-400" />
-                    <User className="w-4 h-4 text-pink-400" />
-                  </h2>
-                  <p className="text-xs text-muted-foreground flex items-center justify-center gap-1 mt-1">
-                  <Zap className="w-3 h-3 text-yellow-500" />
-                  Code: 666
-                  <Zap className="w-3 h-3 text-yellow-500" />
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+      {/* Header */}
+      <div className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate('/')}
+                className="gap-2"
+              >
+                <ChevronLeft className="h-4 w-4" />
+                Back
+              </Button>
+              <div>
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+                  Admin Portal
+                </h1>
+                <p className="text-sm text-muted-foreground">
+                  Logged in as {user?.email}
                 </p>
               </div>
             </div>
-
-            {/* Navigation */}
-            <nav className="space-y-2">
-              {sidebarItems.map((item) => {
-                const Icon = item.icon;
-                const isActive = activeSection === item.id;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => setActiveSection(item.id)}
-                    className={cn(
-                      "w-full group relative overflow-hidden rounded-xl p-4 transition-all duration-300",
-                      isActive
-                        ? "bg-gradient-to-r " + item.color + " text-white shadow-lg scale-105"
-                        : "bg-gradient-to-r from-white/50 to-pink-50/50 dark:from-muted/30 dark:to-muted/10 hover:shadow-md hover:scale-102"
-                    )}
-                  >
-                    {isActive && <div className="absolute inset-0 bg-white/20 animate-pulse" />}
-                    <div className="relative flex items-center gap-3">
-                      <div className={cn(
-                        "p-2 rounded-lg transition-colors",
-                        isActive ? "bg-white/20" : "bg-gradient-to-br " + item.color
-                      )}>
-                        <Icon className={cn("w-5 h-5", isActive ? "text-white" : "text-white")} />
-                      </div>
-                      <span className={cn(
-                        "font-semibold transition-colors",
-                        isActive ? "text-white" : "text-foreground/80"
-                      )}>
-                        {item.label}
-                      </span>
-                      {isActive && <Heart className="ml-auto w-4 h-4 text-white animate-pulse" fill="currentColor" />}
-                    </div>
-                  </button>
-                );
-              })}
-            </nav>
-
-            {/* Quick Stats */}
-            <div className="space-y-3 pt-4 border-t border-border/50">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Quick Stats</p>
-              <div className="space-y-2">
-                <div className="p-3 rounded-lg bg-gradient-to-r from-pink-100 to-rose-100 dark:from-pink-950/30 dark:to-rose-950/30">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Total Users</span>
-                    <Badge className="bg-gradient-to-r from-pink-500 to-rose-500 text-white border-0">
-                      {users.length}
-                    </Badge>
-                  </div>
-                </div>
-                <div className="p-3 rounded-lg bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-950/30 dark:to-pink-950/30">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Total Visits</span>
-                    <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0">
-                      {users.reduce((sum, u) => sum + u.total_visits, 0)}
-                    </Badge>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <Badge variant="outline" className="gap-2">
+              <Users className="h-3 w-3" />
+              {totalUsers} Users
+            </Badge>
           </div>
-        </ScrollArea>
-      </aside>
+        </div>
+      </div>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-auto">
-        <div className="p-8 max-w-7xl mx-auto">
-          {/* Dashboard Section */}
-          {activeSection === "dashboard" && (
-            <div className="space-y-6 animate-fade-in">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-3 bg-gradient-to-br from-pink-500 to-purple-500 rounded-xl shadow-lg">
-                  <BarChart3 className="w-6 h-6 text-white" />
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-grid">
+            {tabItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <TabsTrigger
+                  key={item.id}
+                  value={item.id}
+                  className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                >
+                  <Icon className="h-4 w-4" />
+                  <span className="hidden sm:inline">{item.label}</span>
+                </TabsTrigger>
+              );
+            })}
+          </TabsList>
+
+          <TabsContent value="dashboard" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <Card className="p-6">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-muted-foreground">Total Users</span>
+                  <Users className="h-4 w-4 text-blue-500" />
                 </div>
-                <div>
-                  <h1 className="text-3xl font-black bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
-                    Dashboard Overview
-                  </h1>
-                  <p className="text-sm text-muted-foreground">Your empire at a glance</p>
+                <div className="text-3xl font-bold">{totalUsers}</div>
+              </Card>
+
+              <Card className="p-6">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-muted-foreground">Active Users</span>
+                  <Users className="h-4 w-4 text-green-500" />
                 </div>
-              </div>
+                <div className="text-3xl font-bold">{activeUsers}</div>
+              </Card>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <Card className="overflow-hidden group hover:shadow-2xl transition-all duration-300 hover:scale-105 border-2">
-                  <div className="absolute inset-0 bg-gradient-to-br from-pink-500/10 to-rose-500/5 group-hover:from-pink-500/20 group-hover:to-rose-500/10 transition-all" />
-                  <CardHeader className="pb-3 relative">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                        <Users className="w-5 h-5 text-pink-500" />
-                        Total Users
-                      </CardTitle>
-                      <Sparkles className="w-4 h-4 text-pink-400 animate-pulse" />
-                    </div>
-                  </CardHeader>
-                  <CardContent className="relative">
-                    <div className="text-4xl font-black bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">
-                      {users.length}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="overflow-hidden group hover:shadow-2xl transition-all duration-300 hover:scale-105 border-2">
-                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-pink-500/5 group-hover:from-purple-500/20 group-hover:to-pink-500/10 transition-all" />
-                  <CardHeader className="pb-3 relative">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                        <Activity className="w-5 h-5 text-purple-500" />
-                        Total Visits
-                      </CardTitle>
-                      <Zap className="w-4 h-4 text-yellow-400 animate-pulse" />
-                    </div>
-                  </CardHeader>
-                  <CardContent className="relative">
-                    <div className="text-4xl font-black bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                      {users.reduce((sum, u) => sum + u.total_visits, 0)}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="overflow-hidden group hover:shadow-2xl transition-all duration-300 hover:scale-105 border-2">
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/5 group-hover:from-blue-500/20 group-hover:to-purple-500/10 transition-all" />
-                  <CardHeader className="pb-3 relative">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                        <Eye className="w-5 h-5 text-blue-500" />
-                        Places Viewed
-                      </CardTitle>
-                      <Heart className="w-4 h-4 text-rose-400 animate-pulse" fill="currentColor" />
-                    </div>
-                  </CardHeader>
-                  <CardContent className="relative">
-                    <div className="text-4xl font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                      {users.reduce((sum, u) => sum + u.places_viewed.length, 0)}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="overflow-hidden group hover:shadow-2xl transition-all duration-300 hover:scale-105 border-2">
-                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-teal-500/5 group-hover:from-emerald-500/20 group-hover:to-teal-500/10 transition-all" />
-                  <CardHeader className="pb-3 relative">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                        <Search className="w-5 h-5 text-emerald-500" />
-                        Searches
-                      </CardTitle>
-                      <TrendingUp className="w-4 h-4 text-emerald-400 animate-pulse" />
-                    </div>
-                  </CardHeader>
-                  <CardContent className="relative">
-                    <div className="text-4xl font-black bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                      {users.reduce((sum, u) => sum + u.searches.length, 0)}
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          )}
-
-          {/* Command Station Section */}
-          {activeSection === "command" && (
-            <div className="space-y-6 animate-fade-in">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-3 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl shadow-lg">
-                  <Activity className="w-6 h-6 text-white" />
+              <Card className="p-6">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-muted-foreground">Total Sessions</span>
+                  <BarChart3 className="h-4 w-4 text-purple-500" />
                 </div>
-                <div>
-                  <h1 className="text-3xl font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                    Command Station
-                  </h1>
-                  <p className="text-sm text-muted-foreground">Real-time analytics and monitoring</p>
-                </div>
-              </div>
-              <CommandStation />
-            </div>
-          )}
+                <div className="text-3xl font-bold">{totalSessions}</div>
+              </Card>
 
-          {/* Users Section */}
-          {activeSection === "users" && (
-            <div className="space-y-6 animate-fade-in">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl shadow-lg">
-                  <Users className="w-6 h-6 text-white" />
+              <Card className="p-6">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-muted-foreground">Avg. Session</span>
+                  <BarChart3 className="h-4 w-4 text-orange-500" />
                 </div>
-                <div>
-                  <h1 className="text-3xl font-black bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                    User Analytics
-                  </h1>
-                  <p className="text-sm text-muted-foreground">Detailed user insights and activity tracking</p>
+                <div className="text-3xl font-bold">
+                  {totalUsers > 0 ? Math.round(totalSessions / totalUsers) : 0}
                 </div>
-              </div>
-
-              <Card className="shadow-2xl border-2 border-purple-500/30 bg-gradient-to-br from-slate-950/90 to-slate-900/90 backdrop-blur">
-                <CardHeader>
-                  <CardTitle className="text-purple-100 flex items-center gap-2">
-                    <Users className="w-5 h-5 text-purple-400" />
-                    All Users
-                  </CardTitle>
-                  <CardDescription className="text-slate-400">Click on a user to view detailed analytics</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ScrollArea className="h-[600px]">
-                    <div className="space-y-3">
-                      {users.map((user) => (
-                        <Card
-                          key={user.user_id}
-                          className="p-3 sm:p-4 hover:shadow-xl transition-all hover:scale-[1.01] bg-gradient-to-r from-slate-900/50 to-slate-800/50 backdrop-blur border-purple-500/20 hover:border-purple-500/40 cursor-pointer"
-                          onClick={() => setSelectedUser(user)}
-                        >
-                          <div className="flex flex-col sm:flex-row items-start justify-between gap-3">
-                            <div className="space-y-1 flex-1 min-w-0">
-                              <div className="flex items-center gap-2 flex-wrap">
-                                <p className="font-semibold text-purple-100">{user.display_name || "Anonymous"}</p>
-                                <Badge className="bg-purple-500 text-white">{user.total_visits} visits</Badge>
-                              </div>
-                              <p className="text-xs sm:text-sm text-slate-400 truncate">{user.email}</p>
-                              <div className="flex items-center gap-4 mt-2 text-xs text-slate-500">
-                                <span>Last: {new Date(user.last_visit).toLocaleDateString()}</span>
-                                <span>{user.locations?.length || 0} locations</span>
-                              </div>
-                            </div>
-                            <Button
-                              size="sm"
-                              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 w-full sm:w-auto"
-                            >
-                              View Details
-                            </Button>
-                          </div>
-                        </Card>
-                      ))}
-                    </div>
-                  </ScrollArea>
-                </CardContent>
               </Card>
             </div>
-          )}
 
-          {/* Analytics Section */}
-          {activeSection === "analytics" && (
-            <div className="space-y-6 animate-fade-in">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-3 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl shadow-lg">
-                  <TrendingUp className="w-6 h-6 text-white" />
+            <Card className="p-6">
+              <h3 className="text-lg font-semibold mb-4">Recent Activity</h3>
+              <div className="space-y-2">
+                {users.slice(0, 10).map((user) => (
+                  <div
+                    key={user.id}
+                    className="flex items-center justify-between p-3 rounded-lg hover:bg-accent/50 transition-colors"
+                  >
+                    <div>
+                      <p className="font-medium">{user.display_name || user.email}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {user.last_visit
+                          ? `Last active: ${new Date(user.last_visit).toLocaleDateString()}`
+                          : 'Never visited'}
+                      </p>
+                    </div>
+                    <Badge variant="outline">
+                      {user.visit_count || 0} visits
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="command">
+            <CommandStation />
+          </TabsContent>
+
+          <TabsContent value="users" className="space-y-6">
+            <Card className="p-6">
+              <h3 className="text-lg font-semibold mb-4">User List</h3>
+              <div className="space-y-2 max-h-[600px] overflow-y-auto">
+                {users.map((user) => (
+                  <div
+                    key={user.id}
+                    className="flex items-center justify-between p-4 rounded-lg border border-border hover:bg-accent/50 transition-colors"
+                  >
+                    <div className="flex-1">
+                      <p className="font-medium">{user.display_name || 'Anonymous'}</p>
+                      <p className="text-sm text-muted-foreground">{user.email}</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Joined: {new Date(user.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="text-right">
+                        <p className="text-sm font-medium">{user.visit_count || 0} visits</p>
+                        <p className="text-xs text-muted-foreground">
+                          {user.last_visit
+                            ? `Last: ${new Date(user.last_visit).toLocaleDateString()}`
+                            : 'Never visited'}
+                        </p>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          setSelectedUserId(user.id);
+                          setProfileDialogOpen(true);
+                        }}
+                        className="gap-2"
+                      >
+                        <Eye className="h-4 w-4" />
+                        View
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="analytics">
+            <UserAnalyticsDashboard />
+          </TabsContent>
+
+          <TabsContent value="tools" className="space-y-6">
+            <Card className="p-6">
+              <h3 className="text-lg font-semibold mb-4">Developer Tools</h3>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 rounded-lg border border-border">
+                  <div>
+                    <p className="font-medium">Download Source Code</p>
+                    <p className="text-sm text-muted-foreground">
+                      Export the entire codebase as a ZIP file
+                    </p>
+                  </div>
+                  <Button onClick={handleDownloadSource} className="gap-2">
+                    <Download className="h-4 w-4" />
+                    Download
+                  </Button>
                 </div>
-                <div>
-                  <h1 className="text-3xl font-black bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
-                    User Analytics
-                  </h1>
-                  <p className="text-sm text-muted-foreground">Deep insights into user behavior and sessions</p>
+
+                <div className="flex items-center justify-between p-4 rounded-lg border border-border">
+                  <div>
+                    <p className="font-medium">Code Browser</p>
+                    <p className="text-sm text-muted-foreground">
+                      View and browse the codebase
+                    </p>
+                  </div>
+                  <Button onClick={() => navigate('/code')} variant="outline" className="gap-2">
+                    <Code className="h-4 w-4" />
+                    Open Browser
+                  </Button>
+                </div>
+
+                <div className="p-4 rounded-lg border border-border">
+                  <h4 className="font-medium mb-4">File Upload Manager</h4>
+                  <FileUploadManager />
                 </div>
               </div>
-              <UserAnalyticsDashboard />
-            </div>
-          )}
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
 
-          {/* Dev Tools Section */}
-          {activeSection === "tools" && (
-            <div className="space-y-6 animate-fade-in">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-3 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl shadow-lg">
-                  <Code2 className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-3xl font-black bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                    Developer Tools
-                  </h1>
-                  <p className="text-sm text-muted-foreground">Powerful utilities for developers</p>
-                </div>
-              </div>
-
-              <div className="grid gap-6">
-                <Card className="shadow-xl border-2">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Download className="w-5 h-5 text-emerald-500" />
-                      Source Code
-                    </CardTitle>
-                    <CardDescription>Download the complete source code as a ZIP file</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Button 
-                      onClick={handleDownloadSource}
-                      disabled={downloadingSource}
-                      className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white border-0"
-                      size="lg"
-                    >
-                      {downloadingSource ? (
-                        <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2" />
-                          Preparing Download...
-                        </>
-                      ) : (
-                        <>
-                          <Download className="w-4 h-4 mr-2" />
-                          Download Source Code
-                        </>
-                      )}
-                    </Button>
-                  </CardContent>
-                </Card>
-
-                <Card className="shadow-xl border-2">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Code2 className="w-5 h-5 text-blue-500" />
-                      Code Browser
-                    </CardTitle>
-                    <CardDescription>Browse and explore the project's codebase online</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Button 
-                      onClick={() => window.open('/code', '_blank')}
-                      variant="outline"
-                      size="lg"
-                    >
-                      <Code2 className="w-4 h-4 mr-2" />
-                      Open Code Browser
-                    </Button>
-                  </CardContent>
-                </Card>
-
-                <FileUploadManager />
-
-                <Suspense fallback={<Skeleton className="h-48 w-full" />}>
-                  <FeliciaModPanel />
-                </Suspense>
-              </div>
-            </div>
-          )}
-        </div>
-      </main>
+      {/* User Profile Viewer Dialog */}
+      {selectedUserId && (
+        <UserProfileViewer
+          userId={selectedUserId}
+          activities={allActivities}
+          open={profileDialogOpen}
+          onOpenChange={setProfileDialogOpen}
+        />
+      )}
     </div>
   );
-}
+};
+
+export default AdminPanel;

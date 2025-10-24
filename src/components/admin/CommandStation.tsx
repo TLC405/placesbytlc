@@ -50,7 +50,7 @@ export const CommandStation = () => {
 
   const loadAnalytics = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke('admin-portal-data', { body: { pin: '666' } });
+      const { data, error } = await supabase.functions.invoke('admin-portal-data');
       if (error) throw error;
       const activities = (data?.activities || []) as any[];
 
