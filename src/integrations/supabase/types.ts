@@ -363,6 +363,30 @@ export type Database = {
         }
         Relationships: []
       }
+      phone_rate_limits: {
+        Row: {
+          created_at: string
+          id: string
+          last_send_at: string
+          phone_number: string
+          send_count: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_send_at?: string
+          phone_number: string
+          send_count?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_send_at?: string
+          phone_number?: string
+          send_count?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
