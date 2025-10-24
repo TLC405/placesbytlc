@@ -41,12 +41,12 @@ export const Header = () => {
               </div>
               
               <div className="leading-tight">
-                <div className="text-xl sm:text-3xl font-black bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent tracking-tight drop-shadow-sm">
+                <div className="text-xl sm:text-3xl font-black text-foreground tracking-tight drop-shadow-sm">
                   FELICIA.TLC
                 </div>
-                <div className="text-xs sm:text-sm font-bold tracking-widest hidden sm:block">
+                <div className="text-xs sm:text-sm font-bold tracking-widest hidden sm:block text-muted-foreground">
                   <span className="inline-block animate-pulse">✨</span>
-                  <span className="bg-gradient-to-r from-primary/90 to-accent/90 bg-clip-text text-transparent mx-1">
+                  <span className="mx-1">
                     YOUR LOVE JOURNEY
                   </span>
                   <span className="inline-block animate-pulse delay-75">✨</span>
@@ -96,7 +96,7 @@ export const Header = () => {
                         <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-yellow-300 animate-pulse" />
                       </div>
                       <div>
-                        <div className="text-xl font-black bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                        <div className="text-xl font-black text-foreground">
                           FELICIA.TLC
                         </div>
                         <div className="text-xs font-semibold text-muted-foreground flex items-center gap-1">

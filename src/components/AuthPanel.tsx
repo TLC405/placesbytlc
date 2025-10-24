@@ -47,8 +47,8 @@ export const AuthPanel = () => {
           }
         });
         if (error) throw error;
-        toast.success(role === "tester" ? "Tester Account Created! Limited access + 1 free SMS" : "Welcome to Places by TLC! 💕");
-        navigate(role === "tester" ? "/tester" : "/explore");
+        toast.success(role === "tester" ? "Tester Account Created! Welcome to testing 🧪" : "Welcome to Places by TLC! 💕");
+        navigate("/");
       }
     } catch (error: any) {
       toast.error(error.message || "Authentication failed");
@@ -113,8 +113,8 @@ export const AuthPanel = () => {
                   className="border-primary/20 focus:border-primary/50 transition-all h-11"
                 />
                 {testerCode === "405" && (
-                  <p className="text-xs text-purple-600 font-medium">
-                    ⚠️ Tester mode: Limited access (Search, Period Tracker, Cartoon) + 1 free SMS
+                  <p className="text-xs text-purple-600 dark:text-purple-400 font-medium">
+                    ✅ Tester Access: Search, Explore, Plan & Cartoon Editor
                   </p>
                 )}
               </div>
