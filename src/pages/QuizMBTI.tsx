@@ -11,8 +11,10 @@ import { MBTIScores } from "@/types";
 import { storage } from "@/lib/storage";
 import { toast } from "sonner";
 import { ArrowLeft, Share2 } from "lucide-react";
+import { useTesterCheck } from "@/hooks/useTesterCheck";
 
 export default function QuizMBTI() {
+  useTesterCheck();
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [result, setResult] = useState<string | null>(null);
 

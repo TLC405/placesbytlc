@@ -5,8 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Users, Heart, Link as LinkIcon, Calendar, Star } from "lucide-react";
 import { toast } from "sonner";
+import { useTesterCheck } from "@/hooks/useTesterCheck";
 
 export default function CoupleMode() {
+  useTesterCheck();
   const [pairingCode, setPairingCode] = useState("");
   const [isPaired, setIsPaired] = useState(false);
 

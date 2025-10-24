@@ -15,12 +15,14 @@ import {
   Code,
   ChevronLeft,
   Activity,
-  Eye
+  Eye,
+  Sparkles
 } from "lucide-react";
 import { CommandStation } from "@/components/admin/CommandStation";
 import { UserAnalyticsDashboard } from "@/components/admin/UserAnalyticsDashboard";
 import { UserProfileViewer } from "@/components/admin/UserProfileViewer";
 import { FileUploadManager } from "@/components/FileUploadManager";
+import { RecentUpdates } from "@/components/RecentUpdates";
 
 interface UserAnalytics {
   id: string;
@@ -170,6 +172,7 @@ const AdminPanel = () => {
     { id: 'command', label: 'Command Station', icon: Terminal },
     { id: 'users', label: 'Users', icon: Users },
     { id: 'analytics', label: 'Analytics', icon: Activity },
+    { id: 'updates', label: 'Updates', icon: Sparkles },
     { id: 'tools', label: 'Dev Tools', icon: Settings },
   ];
 
@@ -213,7 +216,7 @@ const AdminPanel = () => {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-grid">
+          <TabsList className="grid w-full grid-cols-6 lg:w-auto lg:inline-grid">
             {tabItems.map((item) => {
               const Icon = item.icon;
               return (
@@ -341,6 +344,10 @@ const AdminPanel = () => {
 
           <TabsContent value="analytics">
             <UserAnalyticsDashboard />
+          </TabsContent>
+
+          <TabsContent value="updates">
+            <RecentUpdates />
           </TabsContent>
 
           <TabsContent value="tools" className="space-y-6">

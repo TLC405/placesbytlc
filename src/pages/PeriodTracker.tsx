@@ -7,6 +7,7 @@ import { Calendar, MessageCircle, AlertTriangle, Laugh, Trash2, Check } from "lu
 import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
+import { useTesterCheck } from "@/hooks/useTesterCheck";
 
 interface TrackerSetup {
   id?: string;
@@ -18,6 +19,8 @@ interface TrackerSetup {
 }
 
 export default function PeriodTracker() {
+  useTesterCheck(true);
+  
   const [periodDate, setPeriodDate] = useState("");
   const [guyPhone, setGuyPhone] = useState("");
   const [guyName, setGuyName] = useState("");
@@ -26,7 +29,6 @@ export default function PeriodTracker() {
   const [existingSetup, setExistingSetup] = useState<TrackerSetup | null>(null);
   const [spamMode, setSpamMode] = useState(false);
   const [dryRun, setDryRun] = useState(false);
-  const [pin, setPin] = useState("");
   const [showPinVerification, setShowPinVerification] = useState(false);
 
   useEffect(() => {
@@ -53,16 +55,10 @@ export default function PeriodTracker() {
       return;
     }
 
-    // Show PIN verification
     setShowPinVerification(true);
   };
 
   const handlePinSubmit = async () => {
-    if (pin !== "666") {
-      toast.error("Wrong PIN! Try again 😈");
-      setPin("");
-      return;
-    }
 
     // Clean phone number - handle US numbers with or without +1
     let cleanPhone = guyPhone.replace(/\D/g, '');
@@ -123,8 +119,8 @@ export default function PeriodTracker() {
       }
 
       // Reset form
-      setPin("");
       setSpamMode(false);
+      setShowPinVerification(false);
     } catch (error: any) {
       console.error('Period tracker setup error:', error);
       toast.error(error.message || "Failed to set up tracker. Please try again.");
@@ -140,7 +136,6 @@ export default function PeriodTracker() {
     setGuyPhone("");
     setPeriodDate("");
     setCycleLength("28");
-    setPin("");
     setSpamMode(false);
     toast.success("Period tracker cleared!");
   };
@@ -337,34 +332,23 @@ export default function PeriodTracker() {
                     </p>
                   </div>
                   
-                  <Input
-                    type="password"
-                    placeholder="Enter PIN (3 digits)"
-                    value={pin}
-                    onChange={(e) => setPin(e.target.value.slice(0, 3))}
-                    onKeyDown={(e) => e.key === "Enter" && handlePinSubmit()}
-                    className="h-16 text-center text-2xl font-bold tracking-widest"
-                    maxLength={3}
-                    autoFocus
-                  />
+                  <p className="text-center text-muted-foreground">
+                    Click confirm to proceed with setup
+                  </p>
                   
                   <div className="flex gap-3">
                     <Button
                       variant="outline"
-                      onClick={() => {
-                        setShowPinVerification(false);
-                        setPin("");
-                      }}
+                      onClick={() => setShowPinVerification(false)}
                       className="flex-1 h-12 font-bold"
                     >
                       Cancel
                     </Button>
                     <Button
                       onClick={handlePinSubmit}
-                      disabled={pin.length !== 3}
                       className="flex-1 h-12 font-bold bg-gradient-to-r from-primary to-accent"
                     >
-                      {spamMode ? "💣 UNLEASH" : "📱 Send It"}
+                      {spamMode ? "💣 UNLEASH" : "📱 Confirm Setup"}
                     </Button>
                   </div>
                 </div>

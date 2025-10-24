@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Search, MapPin, Heart, Scale } from "lucide-react";
+import { Search, MapPin, Heart, Scale, SlidersHorizontal } from "lucide-react";
 import { useState } from "react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface SearchBarProps {
   query: string;
@@ -22,28 +22,23 @@ interface SearchBarProps {
 type LocationMode = "tlc" | "felicia" | "middle";
 
 const FOOD_CATEGORIES = [
-  { label: "All Food Places", value: "food" },
+  { label: "All Food", value: "food" },
   { label: "Restaurants", value: "restaurant" },
-  { label: "Cafes & Coffee", value: "cafe" },
-  { label: "Bars & Lounges", value: "bar" },
+  { label: "Cafes", value: "cafe" },
+  { label: "Bars", value: "bar" },
   { label: "Bakery", value: "bakery" },
-  { label: "Ice Cream", value: "ice_cream" },
   { label: "Pizza", value: "pizza" },
   { label: "Sushi", value: "sushi" },
-  { label: "Dessert", value: "dessert" },
 ];
 
 const ACTIVITY_CATEGORIES = [
   { label: "All Activities", value: "activity" },
-  { label: "Parks & Nature", value: "park" },
+  { label: "Parks", value: "park" },
   { label: "Museums", value: "museum" },
-  { label: "Movies & Theater", value: "movie_theater" },
+  { label: "Movies", value: "movie_theater" },
   { label: "Shopping", value: "shopping_mall" },
-  { label: "Art Galleries", value: "art_gallery" },
-  { label: "Bowling", value: "bowling_alley" },
-  { label: "Arcade & Games", value: "amusement_park" },
-  { label: "Spa & Wellness", value: "spa" },
-  { label: "Live Music", value: "night_club" },
+  { label: "Art", value: "art_gallery" },
+  { label: "Spa", value: "spa" },
 ];
 
 export const SearchBar = ({
@@ -61,225 +56,167 @@ export const SearchBar = ({
   onLocationModeChange,
 }: SearchBarProps) => {
   const [locationMode, setLocationMode] = useState<LocationMode>("tlc");
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const handleLocationModeChange = (mode: LocationMode) => {
     setLocationMode(mode);
-    if (onLocationModeChange) {
-      onLocationModeChange(mode);
-    }
+    onLocationModeChange?.(mode);
   };
-
-  // Get relevant categories based on type - optimized
-  const getCategoriesByType = () => {
-    if (categoryType === "food") return { food: FOOD_CATEGORIES };
-    if (categoryType === "activity") return { activity: ACTIVITY_CATEGORIES };
-    return { food: FOOD_CATEGORIES, activity: ACTIVITY_CATEGORIES };
-  };
-
-  const categoriesByType = getCategoriesByType();
 
   return (
-    <div className="space-y-5">
-      {/* Step 1: Choose Location Mode */}
+    <div className="space-y-3">
+      {/* Compact Location Selector */}
       {onLocationModeChange && (
-        <div className="space-y-4 p-5 bg-gradient-to-br from-primary/5 to-accent/5 rounded-xl border-2 border-primary/30">
-          <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-r from-primary to-accent text-white flex items-center justify-center text-base font-black shadow-md">
-              1
-            </div>
-            <span className="text-base font-bold text-foreground">Whose location should we search?</span>
-          </div>
-          
-          {/* Location Mode Pills */}
-          <div className="grid grid-cols-3 gap-3">
-            <button
-              onClick={() => handleLocationModeChange("tlc")}
-              className={`group p-4 rounded-xl font-bold text-sm transition-all ${
-                locationMode === "tlc"
-                  ? "bg-gradient-to-br from-primary to-accent text-white shadow-glow scale-105"
-                  : "bg-card border-2 border-border hover:border-primary/50 hover:shadow-md"
-              }`}
-            >
-              <MapPin className={`w-6 h-6 mx-auto mb-2 ${locationMode === "tlc" ? "text-white" : "text-primary"}`} />
-              <div className="text-center">TLC Place</div>
-            </button>
-            
-            <button
-              onClick={() => handleLocationModeChange("felicia")}
-              className={`group p-4 rounded-xl font-bold text-sm transition-all ${
-                locationMode === "felicia"
-                  ? "bg-gradient-to-br from-primary to-accent text-white shadow-glow scale-105"
-                  : "bg-card border-2 border-border hover:border-primary/50 hover:shadow-md"
-              }`}
-            >
-              <Heart className={`w-6 h-6 mx-auto mb-2 ${locationMode === "felicia" ? "text-white" : "text-accent"}`} />
-              <div className="text-center">Felicia Place</div>
-            </button>
-            
-            <button
-              onClick={() => handleLocationModeChange("middle")}
-              className={`group p-4 rounded-xl font-bold text-sm transition-all ${
-                locationMode === "middle"
-                  ? "bg-gradient-to-br from-primary to-accent text-white shadow-glow scale-105"
-                  : "bg-card border-2 border-border hover:border-primary/50 hover:shadow-md"
-              }`}
-            >
-              <Scale className={`w-6 h-6 mx-auto mb-2 ${locationMode === "middle" ? "text-white" : "text-success"}`} />
-              <div className="text-center">Middle Ground</div>
-            </button>
-          </div>
+        <div className="flex gap-2 p-3 bg-card/50 backdrop-blur-sm rounded-xl border border-border/50">
+          <button
+            onClick={() => handleLocationModeChange("tlc")}
+            className={`flex-1 p-2 rounded-lg text-sm font-semibold transition-all ${
+              locationMode === "tlc"
+                ? "bg-gradient-to-r from-primary to-accent text-white shadow-md"
+                : "hover:bg-accent/20"
+            }`}
+          >
+            <MapPin className="w-4 h-4 mx-auto mb-1" />
+            TLC
+          </button>
+          <button
+            onClick={() => handleLocationModeChange("felicia")}
+            className={`flex-1 p-2 rounded-lg text-sm font-semibold transition-all ${
+              locationMode === "felicia"
+                ? "bg-gradient-to-r from-primary to-accent text-white shadow-md"
+                : "hover:bg-accent/20"
+            }`}
+          >
+            <Heart className="w-4 h-4 mx-auto mb-1" />
+            Felicia
+          </button>
+          <button
+            onClick={() => handleLocationModeChange("middle")}
+            className={`flex-1 p-2 rounded-lg text-sm font-semibold transition-all ${
+              locationMode === "middle"
+                ? "bg-gradient-to-r from-primary to-accent text-white shadow-md"
+                : "hover:bg-accent/20"
+            }`}
+          >
+            <Scale className="w-4 h-4 mx-auto mb-1" />
+            Middle
+          </button>
         </div>
       )}
 
-      {/* Step 2: Choose Type - REQUIRED FIRST */}
-      {onCategoryTypeChange && (
-        <div className="space-y-3 p-5 bg-gradient-to-br from-accent/5 to-primary/5 rounded-xl border-2 border-primary/20">
-          <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-r from-primary to-accent text-white flex items-center justify-center text-base font-black shadow-md">
-              2
-            </div>
-            <span className="text-base font-bold text-foreground">What are you looking for?</span>
-          </div>
-          <div className="flex gap-3 flex-wrap">
-            {(["food", "activity", "both"] as const).map((type) => (
-              <button
-                key={type}
-                onClick={() => onCategoryTypeChange(type)}
-                className={`flex-1 min-w-[100px] py-3 px-5 rounded-xl font-bold text-sm transition-all ${
-                  categoryType === type
-                    ? "bg-gradient-to-r from-primary to-accent text-white shadow-glow scale-105"
-                    : "bg-card border-2 border-border hover:border-primary/50 hover:shadow-md"
-                }`}
-              >
-                {type === "food" && "🍽️ Food"}
-                {type === "activity" && "🎯 Activity"}
-                {type === "both" && "✨ Both"}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
+      {/* Main Search Controls */}
+      <div className="flex gap-2">
+        {onCategoryTypeChange && (
+          <Select value={categoryType} onValueChange={onCategoryTypeChange} disabled={disabled || loading}>
+            <SelectTrigger className="w-[140px] h-11 shadow-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="food">🍽️ Food</SelectItem>
+              <SelectItem value="activity">🎯 Activity</SelectItem>
+              <SelectItem value="both">✨ Both</SelectItem>
+            </SelectContent>
+          </Select>
+        )}
 
-      {/* Step 3: Search - Only available after picking type */}
-      <div className={`space-y-3 transition-all ${categoryType === "both" ? "opacity-100" : categoryType ? "opacity-100" : "opacity-50 pointer-events-none"}`}>
-        <div className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-r from-primary to-accent text-white flex items-center justify-center text-base font-black shadow-md">
-            3
-          </div>
-          <span className="text-base font-bold text-foreground">Choose search radius</span>
-        </div>
-        
-        <div className="flex flex-wrap gap-3">
         <Select value={radius} onValueChange={onRadiusChange} disabled={disabled || loading}>
-          <SelectTrigger className="flex-1 h-14 shadow-lg rounded-xl border-2 border-border/50 hover:border-primary/30 transition-all bg-card/80 backdrop-blur-sm">
+          <SelectTrigger className="w-[120px] h-11 shadow-sm">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="rounded-xl">
-            <SelectItem value="1609">1 mile</SelectItem>
-            <SelectItem value="3219">2 miles</SelectItem>
-            <SelectItem value="8047">5 miles</SelectItem>
-            <SelectItem value="16093">10 miles</SelectItem>
-            <SelectItem value="32187">20 miles</SelectItem>
+          <SelectContent>
+            <SelectItem value="1609">1 mi</SelectItem>
+            <SelectItem value="3219">2 mi</SelectItem>
+            <SelectItem value="8047">5 mi</SelectItem>
+            <SelectItem value="16093">10 mi</SelectItem>
+            <SelectItem value="32187">20 mi</SelectItem>
           </SelectContent>
         </Select>
+
+        {onCategoryToggle && (
+          <Button 
+            variant="outline"
+            size="icon"
+            onClick={() => setFiltersOpen(!filtersOpen)}
+            className="h-11 w-11 shadow-sm"
+          >
+            <SlidersHorizontal className="w-4 h-4" />
+          </Button>
+        )}
 
         <Button 
           onClick={onSearch} 
           disabled={disabled || loading}
-          size="lg"
-          className="h-14 px-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 rounded-xl text-base font-semibold gradient-primary"
+          className="flex-1 h-11 shadow-md hover:shadow-lg transition-all font-semibold gradient-primary"
         >
-          <Search className={`w-5 h-5 mr-2 ${loading ? 'animate-spin' : ''}`} />
+          <Search className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
           {loading ? "Searching..." : "Search"}
         </Button>
-        </div>
       </div>
 
-      {/* Step 4: Optional Category Filter - Enhanced for "both" */}
-      {onCategoryToggle && categoryType && (
-        <div className="space-y-4 p-5 bg-gradient-to-br from-primary/5 to-accent/5 rounded-xl border-2 border-border">
-          <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-r from-primary to-accent text-white flex items-center justify-center text-base font-black shadow-md">
-              4
-            </div>
-            <span className="text-base font-bold text-foreground">Narrow it down (optional)</span>
-          </div>
-          
-          {categoryType === "both" ? (
-            // Show both food AND activity categories when "both" is selected
-            <div className="grid md:grid-cols-2 gap-4">
-              {/* Food Categories */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="text-2xl">🍽️</span>
-                  <span className="font-bold text-foreground">Food Places</span>
-                </div>
-                <Select 
-                  value={selectedCategories.find(cat => FOOD_CATEGORIES.some(fc => fc.value === cat)) || ""} 
-                  onValueChange={(value) => onCategoryToggle(value)}
-                  disabled={disabled || loading}
-                >
-                  <SelectTrigger className="h-12 shadow-md rounded-xl border-2 border-border/50 hover:border-primary/30 transition-all bg-card">
-                    <SelectValue placeholder="All Food Places" />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-xl max-h-[300px]">
-                    {FOOD_CATEGORIES.map((category) => (
-                      <SelectItem key={category.value} value={category.value}>
-                        {category.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+      {/* Advanced Filters (Collapsible) */}
+      {onCategoryToggle && (
+        <Collapsible open={filtersOpen} onOpenChange={setFiltersOpen}>
+          <CollapsibleContent>
+            <div className="p-3 bg-card/50 backdrop-blur-sm rounded-xl border border-border/50 space-y-2">
+              <p className="text-xs font-semibold text-muted-foreground mb-2">REFINE SEARCH</p>
+              
+              {categoryType === "both" ? (
+                <div className="grid grid-cols-2 gap-2">
+                  <Select 
+                    value={selectedCategories.find(cat => FOOD_CATEGORIES.some(fc => fc.value === cat)) || ""} 
+                    onValueChange={onCategoryToggle}
+                    disabled={disabled || loading}
+                  >
+                    <SelectTrigger className="h-9 text-sm">
+                      <SelectValue placeholder="Food type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {FOOD_CATEGORIES.map((cat) => (
+                        <SelectItem key={cat.value} value={cat.value} className="text-sm">
+                          {cat.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
 
-              {/* Activity Categories */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="text-2xl">🎯</span>
-                  <span className="font-bold text-foreground">Activities</span>
+                  <Select 
+                    value={selectedCategories.find(cat => ACTIVITY_CATEGORIES.some(ac => ac.value === cat)) || ""} 
+                    onValueChange={onCategoryToggle}
+                    disabled={disabled || loading}
+                  >
+                    <SelectTrigger className="h-9 text-sm">
+                      <SelectValue placeholder="Activity type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {ACTIVITY_CATEGORIES.map((cat) => (
+                        <SelectItem key={cat.value} value={cat.value} className="text-sm">
+                          {cat.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
+              ) : (
                 <Select 
-                  value={selectedCategories.find(cat => ACTIVITY_CATEGORIES.some(ac => ac.value === cat)) || ""} 
-                  onValueChange={(value) => onCategoryToggle(value)}
+                  value={selectedCategories[0] || ""} 
+                  onValueChange={onCategoryToggle}
                   disabled={disabled || loading}
                 >
-                  <SelectTrigger className="h-12 shadow-md rounded-xl border-2 border-border/50 hover:border-primary/30 transition-all bg-card">
-                    <SelectValue placeholder="All Activities" />
+                  <SelectTrigger className="h-9 text-sm">
+                    <SelectValue placeholder={`Select ${categoryType} type`} />
                   </SelectTrigger>
-                  <SelectContent className="rounded-xl max-h-[300px]">
-                    {ACTIVITY_CATEGORIES.map((category) => (
-                      <SelectItem key={category.value} value={category.value}>
-                        {category.label}
+                  <SelectContent>
+                    {(categoryType === "food" ? FOOD_CATEGORIES : ACTIVITY_CATEGORIES).map((cat) => (
+                      <SelectItem key={cat.value} value={cat.value} className="text-sm">
+                        {cat.label}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-              </div>
+              )}
             </div>
-          ) : (
-            // Single category selector for food or activity only
-            <Select 
-              value={selectedCategories[0] || ""} 
-              onValueChange={(value) => onCategoryToggle(value)}
-              disabled={disabled || loading}
-            >
-              <SelectTrigger className="h-12 shadow-md rounded-xl border-2 border-border/50 hover:border-primary/30 transition-all bg-card">
-                <SelectValue placeholder={`Select ${categoryType} type...`} />
-              </SelectTrigger>
-              <SelectContent className="rounded-xl max-h-[300px]">
-                {categoryType === "food" ? FOOD_CATEGORIES.map((category) => (
-                  <SelectItem key={category.value} value={category.value}>
-                    {category.label}
-                  </SelectItem>
-                )) : ACTIVITY_CATEGORIES.map((category) => (
-                  <SelectItem key={category.value} value={category.value}>
-                    {category.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
-        </div>
+          </CollapsibleContent>
+        </Collapsible>
       )}
     </div>
   );

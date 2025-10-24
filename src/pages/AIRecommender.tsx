@@ -5,8 +5,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, Send, Heart, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
+import { useTesterCheck } from "@/hooks/useTesterCheck";
 
 export default function AIRecommender() {
+  useTesterCheck();
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
   const [recommendations, setRecommendations] = useState<string[]>([]);

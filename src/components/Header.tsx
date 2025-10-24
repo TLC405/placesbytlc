@@ -1,14 +1,12 @@
 import { useState } from "react";
-import { Heart, Menu, Sparkles, Compass, Calendar, Brain, Palette, Download, Crown } from "lucide-react";
+import { Heart, Menu, Compass, Calendar, Brain, Palette, Download, Crown, Sparkles } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ChangelogModal } from "@/components/ChangelogModal";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export const Header = () => {
   const location = useLocation();
-  const [showChangelog, setShowChangelog] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   
   const isActive = (path: string) => location.pathname === path;
@@ -77,15 +75,6 @@ export const Header = () => {
                   </Link>
                 );
               })}
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={() => setShowChangelog(true)}
-                className="gap-2 font-semibold hover:scale-105 transition-all duration-300 hover:shadow-soft"
-              >
-                <Sparkles className="w-4 h-4 animate-pulse" />
-                <span className="hidden xl:inline">Updates</span>
-              </Button>
               <DarkModeToggle />
             </nav>
 
@@ -139,19 +128,6 @@ export const Header = () => {
                         </Link>
                       );
                     })}
-                    
-                    <Button 
-                      variant="outline"
-                      className="w-full justify-start gap-3 h-13 text-base font-semibold hover:scale-105 hover:shadow-soft transition-all"
-                      onClick={() => {
-                        setShowChangelog(true);
-                        setIsMenuOpen(false);
-                      }}
-                    >
-                      <Sparkles className="w-5 h-5 animate-pulse" />
-                      <span>What's New</span>
-                      <span className="ml-auto text-lg">🎉</span>
-                    </Button>
                   </div>
                 </SheetContent>
               </Sheet>
@@ -159,8 +135,6 @@ export const Header = () => {
           </div>
         </div>
       </header>
-
-      <ChangelogModal open={showChangelog} onOpenChange={setShowChangelog} />
     </>
   );
 };

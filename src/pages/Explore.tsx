@@ -17,7 +17,6 @@ import { useGeolocation } from "@/hooks/useGeolocation";
 import { LocationPresets } from "@/components/LocationPresets";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { EventsFeed } from "@/components/EventsFeed";
-import { UpdatesPanel } from "@/components/UpdatesPanel";
 import { trackPlaceView, trackPlaceSave, trackSearch } from "@/components/ActivityTracker";
 import { WeatherWidget } from "@/components/WeatherWidget";
 import { useWeather } from "@/hooks/useWeather";
@@ -33,7 +32,6 @@ export default function Explore() {
   const [favorites, setFavorites] = useState<PlaceItem[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [categoryType, setCategoryType] = useState<"food" | "activity" | "both">("both");
-  const [showUpdates, setShowUpdates] = useState(false);
 
   // Custom hooks
   const { location, setCustomLocation } = useGeolocation();
@@ -283,14 +281,6 @@ export default function Explore() {
 
             <WeatherWidget weather={weather} isLoading={isWeatherLoading} />
 
-            <button
-              onClick={() => setShowUpdates(true)}
-              className="pill flex items-center gap-2 hover:shadow-lg transition-all mx-auto"
-            >
-              <Sparkles className="h-4 w-4 text-rose" />
-              <span className="text-sm font-medium">What's New</span>
-            </button>
-
             {error && (
               <Alert variant="destructive" className="animate-in fade-in">
                 <AlertCircle className="h-4 w-4" />
@@ -351,8 +341,6 @@ export default function Explore() {
         confirmText="Yes, Clear Plan"
         cancelText="Keep Plan"
       />
-
-      <UpdatesPanel isOpen={showUpdates} onClose={() => setShowUpdates(false)} />
     </>
   );
 }

@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Heart, Brain, Crown, Sparkles } from "lucide-react";
-import crownImage from "@/assets/felicia-crown.png";
+import { Heart, Brain } from "lucide-react";
+import { useTesterCheck } from "@/hooks/useTesterCheck";
 
 export default function Quizzes() {
+  useTesterCheck();
   return (
     <div className="space-y-8">
       <div className="text-center space-y-4">
