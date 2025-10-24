@@ -6,6 +6,8 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { 
   Users, 
   BarChart3, 
@@ -47,6 +49,9 @@ const AdminPanel = () => {
   const [allActivities, setAllActivities] = useState<any[]>([]);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
+  const [codeUnlocked, setCodeUnlocked] = useState(false);
+  const [codeInput, setCodeInput] = useState("");
+  const [showCodeDialog, setShowCodeDialog] = useState(true);
 
   // Check admin access on mount
   useEffect(() => {
@@ -77,7 +82,14 @@ const AdminPanel = () => {
         }
 
         setIsAdmin(true);
-        fetchUserAnalytics();
+        
+        // Check if code was already entered in this session
+        const sessionCode = sessionStorage.getItem('admin_code_unlocked');
+        if (sessionCode === 'true') {
+          setCodeUnlocked(true);
+          setShowCodeDialog(false);
+          fetchUserAnalytics();
+        }
       } catch (error) {
         console.error("Admin access check failed:", error);
         toast.error("Failed to verify admin access");
@@ -89,6 +101,19 @@ const AdminPanel = () => {
 
     checkAdminAccess();
   }, [navigate]);
+
+  const handleCodeSubmit = () => {
+    if (codeInput === "1309") {
+      setCodeUnlocked(true);
+      setShowCodeDialog(false);
+      sessionStorage.setItem('admin_code_unlocked', 'true');
+      fetchUserAnalytics();
+      toast.success("Access granted");
+    } else {
+      toast.error("Incorrect code");
+      setCodeInput("");
+    }
+  };
 
   const fetchUserAnalytics = async () => {
     try {
@@ -165,6 +190,35 @@ const AdminPanel = () => {
 
   if (!isAdmin) {
     return null;
+  }
+
+  if (!codeUnlocked) {
+    return (
+      <Dialog open={showCodeDialog} onOpenChange={() => navigate('/')}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Admin Access Code Required</DialogTitle>
+            <DialogDescription>
+              Enter the access code to unlock the admin panel
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <Input
+              type="password"
+              placeholder="Enter code"
+              value={codeInput}
+              onChange={(e) => setCodeInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleCodeSubmit()}
+              className="text-center text-2xl tracking-widest"
+              maxLength={4}
+            />
+            <Button onClick={handleCodeSubmit} className="w-full">
+              Unlock
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
   }
 
   const tabItems = [
