@@ -24,6 +24,7 @@ const Install = lazy(() => import("./pages/Install"));
 const FeliciaModPanel = lazy(() => import("./components/FeliciaModPanel"));
 const CodeViewer = lazy(() => import("./pages/CodeViewer"));
 const AdminPanel = lazy(() => import("./pages/AdminPanel"));
+const TesterDashboard = lazy(() => import("./components/TesterDashboard"));
 
 import { useGoogleMaps } from "@/hooks/useGoogleMaps";
 
@@ -52,6 +53,7 @@ const AppRoutes = () => {
         <Route path="/code" element={<CodeViewer />} />
         <Route path="/felicia-mod" element={<FeliciaModPanel />} />
         <Route path="/admin" element={<AdminPanel />} />
+        <Route path="/tester" element={<TesterDashboard />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>

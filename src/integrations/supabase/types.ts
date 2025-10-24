@@ -438,6 +438,36 @@ export type Database = {
           },
         ]
       }
+      sms_usage: {
+        Row: {
+          id: string
+          is_free_message: boolean | null
+          message_type: string
+          phone_number: string
+          sent_at: string | null
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          is_free_message?: boolean | null
+          message_type: string
+          phone_number: string
+          sent_at?: string | null
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          id?: string
+          is_free_message?: boolean | null
+          message_type?: string
+          phone_number?: string
+          sent_at?: string | null
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_activity_log: {
         Row: {
           activity_data: Json

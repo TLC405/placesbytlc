@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
 const TWILIO_ACCOUNT_SID = Deno.env.get("TWILIO_ACCOUNT_SID");
 const TWILIO_AUTH_TOKEN = Deno.env.get("TWILIO_AUTH_TOKEN");
@@ -77,7 +78,52 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    const authHeader = req.headers.get("Authorization");
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseKey, {
+      global: { headers: { Authorization: authHeader! } },
+    });
+
     const { guyName, guyPhone, periodDate, cycleLength, spamMode, dryRun }: PeriodTrackerRequest = await req.json();
+    
+    // Get current user
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
+      throw new Error("Unauthorized");
+    }
+
+    // Check user's role and SMS usage
+    const { data: roles } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id);
+    
+    const isTester = roles?.some(r => r.role === "tester");
+    
+    // Check SMS usage for testers
+    if (isTester) {
+      const { data: smsUsage } = await supabase
+        .from("sms_usage")
+        .select("*")
+        .eq("user_id", user.id)
+        .eq("is_free_message", true);
+      
+      const hasUsedFreeSms = (smsUsage?.length || 0) > 0;
+      
+      if (hasUsedFreeSms && !dryRun) {
+        return new Response(
+          JSON.stringify({
+            error: "Testers only get 1 free SMS. You've already used yours.",
+            testerLimit: true,
+          }),
+          {
+            status: 403,
+            headers: { "Content-Type": "application/json", ...corsHeaders },
+          }
+        );
+      }
+    }
 
     console.log("Setting up period tracker for:", guyName, guyPhone, "Spam mode:", spamMode);
 
@@ -158,6 +204,15 @@ const handler = async (req: Request): Promise<Response> => {
       const confirmationMessage = `Hey ${guyName}! 👋 You're now subscribed to Peripod Tracker survival alerts. You'll get helpful reminders 3 days before, 1 day before, and on the day. Prepare to be the most thoughtful boyfriend ever. 💪`;
       
       await sendSMS(guyPhone, confirmationMessage);
+
+      // Log SMS usage
+      await supabase.from("sms_usage").insert({
+        user_id: user.id,
+        phone_number: guyPhone,
+        message_type: "period_tracker_setup",
+        is_free_message: isTester,
+        status: "sent",
+      });
 
       console.log(`Scheduled reminders for ${guyName}:`);
       console.log(`- 3 days before (${threeDaysBefore.toISOString()}): Stock up reminder`);

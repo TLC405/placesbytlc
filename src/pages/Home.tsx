@@ -80,22 +80,50 @@ export default function Home() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="features" className="mt-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              {/* Explore Card */}
-              <Link to="/explore">
-                <Card className="hover-lift shadow-soft border-primary/20 h-full cursor-pointer group">
-                  <CardHeader>
-                    <CardTitle className="text-2xl flex items-center gap-2 group-hover:text-primary transition-colors">
-                      🗺️ Explore
-                    </CardTitle>
-                    <CardDescription className="text-base leading-relaxed pt-2">
-                      Discover romantic restaurants, fun activities, and perfect date spots nearby.
-                    </CardDescription>
-                  </CardHeader>
-                </Card>
-              </Link>
+          <TabsContent value="features" className="mt-6 space-y-6">
+            {/* TLC's Place & Felicia's Place at Top */}
+            <Card className="bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50 dark:from-purple-950/30 dark:via-pink-950/30 dark:to-rose-950/30 border-2 border-primary/40">
+              <CardHeader>
+                <CardTitle className="text-3xl gradient-text text-center">
+                  👑 Felicia's Featured Spots
+                </CardTitle>
+                <CardDescription className="text-center text-base">
+                  Hand-picked by your TLC curator for unforgettable date experiences
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Link to="/explore">
+                    <Card className="hover-lift cursor-pointer group border-2 border-primary/20">
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2 group-hover:text-primary">
+                          🗺️ TLC's Place
+                        </CardTitle>
+                        <CardDescription>
+                          Discover the best date spots in OKC curated with love
+                        </CardDescription>
+                      </CardHeader>
+                    </Card>
+                  </Link>
+                  
+                  <Link to="/explore">
+                    <Card className="hover-lift cursor-pointer group border-2 border-primary/20">
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2 group-hover:text-primary">
+                          💝 Felicia's Place
+                        </CardTitle>
+                        <CardDescription>
+                          Personal recommendations from your love expert
+                        </CardDescription>
+                      </CardHeader>
+                    </Card>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
 
+            {/* Other Features */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {/* Period Tracker Card */}
               <Link to="/period-tracker">
                 <Card className="hover-lift shadow-soft border-primary/20 h-full cursor-pointer group bg-gradient-to-br from-rose-50 to-purple-50 dark:from-rose-950/20 dark:to-purple-950/20">
@@ -123,7 +151,35 @@ export default function Home() {
                   </CardHeader>
                 </Card>
               </Link>
+
+              {/* Cartoon Generator */}
+              <Link to="/teefeeme-cartoonifier">
+                <Card className="hover-lift shadow-soft border-primary/20 h-full cursor-pointer group">
+                  <CardHeader>
+                    <CardTitle className="text-2xl flex items-center gap-2 group-hover:text-primary transition-colors">
+                      🎨 Cartoon Generator
+                    </CardTitle>
+                    <CardDescription className="text-base leading-relaxed pt-2">
+                      Transform your photos into adorable cartoons
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+              </Link>
             </div>
+
+            {/* Search Bar at End */}
+            <Card className="border-2 border-primary/30">
+              <CardHeader>
+                <CardTitle className="text-center">🔍 Search Everywhere</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Link to="/explore">
+                  <Button className="w-full" size="lg">
+                    Start Searching for Date Spots
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="account" className="mt-6">

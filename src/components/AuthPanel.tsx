@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Heart, Mail, Lock, UserPlus, LogIn } from "lucide-react";
+import { Heart, Mail, Lock, UserPlus, LogIn, Key } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
@@ -13,6 +13,7 @@ export const AuthPanel = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const [testerCode, setTesterCode] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -31,7 +32,9 @@ export const AuthPanel = () => {
         toast.success("Welcome back! 💕");
         navigate("/explore");
       } else {
-        // Sign up
+        // Sign up - check for tester code
+        const role = testerCode === "405" ? "tester" : "user";
+        
         const { error } = await supabase.auth.signUp({
           email,
           password,
@@ -39,12 +42,13 @@ export const AuthPanel = () => {
             emailRedirectTo: `${window.location.origin}/`,
             data: {
               display_name: displayName,
+              role: role,
             }
           }
         });
         if (error) throw error;
-        toast.success("Welcome to Places by TLC! 💕");
-        navigate("/explore");
+        toast.success(role === "tester" ? "Tester Account Created! Limited access + 1 free SMS" : "Welcome to Places by TLC! 💕");
+        navigate(role === "tester" ? "/tester" : "/explore");
       }
     } catch (error: any) {
       toast.error(error.message || "Authentication failed");
@@ -78,21 +82,43 @@ export const AuthPanel = () => {
       <CardContent className="relative z-10 px-6 pb-6">
         <form onSubmit={handleAuth} className="space-y-5">
           {!isLogin && (
-            <div className="space-y-2">
-              <Label htmlFor="displayName" className="flex items-center gap-2 text-sm font-medium">
-                <UserPlus className="w-4 h-4 text-primary" />
-                Display Name
-              </Label>
-              <Input
-                id="displayName"
-                type="text"
-                placeholder="Your name"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                required={!isLogin}
-                className="border-primary/20 focus:border-primary/50 transition-all h-11"
-              />
-            </div>
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="displayName" className="flex items-center gap-2 text-sm font-medium">
+                  <UserPlus className="w-4 h-4 text-primary" />
+                  Display Name
+                </Label>
+                <Input
+                  id="displayName"
+                  type="text"
+                  placeholder="Your name"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  required={!isLogin}
+                  className="border-primary/20 focus:border-primary/50 transition-all h-11"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="testerCode" className="flex items-center gap-2 text-sm font-medium">
+                  <Key className="w-4 h-4 text-purple-600" />
+                  Tester Code (Optional)
+                </Label>
+                <Input
+                  id="testerCode"
+                  type="text"
+                  placeholder="Enter 405 for tester access"
+                  value={testerCode}
+                  onChange={(e) => setTesterCode(e.target.value)}
+                  className="border-primary/20 focus:border-primary/50 transition-all h-11"
+                />
+                {testerCode === "405" && (
+                  <p className="text-xs text-purple-600 font-medium">
+                    ⚠️ Tester mode: Limited access (Search, Period Tracker, Cartoon) + 1 free SMS
+                  </p>
+                )}
+              </div>
+            </>
           )}
 
           <div className="space-y-2">

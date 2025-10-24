@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { CommandStation } from "@/components/admin/CommandStation";
 import { UserAnalyticsDashboard } from "@/components/admin/UserAnalyticsDashboard";
+import { FileUploadManager } from "@/components/FileUploadManager";
 
 const FeliciaModPanel = lazy(() => import("@/components/FeliciaModPanel"));
 
@@ -512,6 +513,8 @@ export default function AdminPanel() {
                     </Button>
                   </CardContent>
                 </Card>
+
+                <FileUploadManager />
 
                 <Suspense fallback={<Skeleton className="h-48 w-full" />}>
                   <FeliciaModPanel />
