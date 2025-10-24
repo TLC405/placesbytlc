@@ -13,19 +13,8 @@ serve(async (req) => {
   }
 
   try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, serviceKey);
-
-    const { pin, detail_user_id } = await req.json().catch(() => ({ pin: undefined, detail_user_id: undefined }));
-
-    // Simple PIN gate per product requirement (no auth)
-    if (pin !== '666') {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
+    const authHeader = req.headers.get('Authorization');
+    const su
 
     // Return details for a single user (sessions + ip history)
     if (detail_user_id) {

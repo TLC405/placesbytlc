@@ -4,7 +4,7 @@ project_id = "gsonwwqjielejftxghjo"
 verify_jwt = false
 
 [functions.admin-portal-data]
-verify_jwt = false
+verify_jwt = true
 
 [functions.period-tracker-setup]
-verify_jwt = false
+verify_jwt = true
