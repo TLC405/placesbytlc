@@ -3,11 +3,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Calendar, MessageCircle, AlertTriangle, Laugh, Trash2, Check } from "lucide-react";
 import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useTesterCheck } from "@/hooks/useTesterCheck";
+import { useNavigate } from "react-router-dom";
 
 interface TrackerSetup {
   id?: string;
@@ -15,25 +18,53 @@ interface TrackerSetup {
   guy_phone: string;
   period_date: string;
   cycle_length: number;
+  food_allergies?: string;
   created_at?: string;
 }
 
 export default function PeriodTracker() {
   useTesterCheck(true);
+  const navigate = useNavigate();
   
   const [periodDate, setPeriodDate] = useState("");
   const [guyPhone, setGuyPhone] = useState("");
   const [guyName, setGuyName] = useState("");
   const [cycleLength, setCycleLength] = useState("28");
+  const [foodAllergies, setFoodAllergies] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [existingSetup, setExistingSetup] = useState<TrackerSetup | null>(null);
   const [spamMode, setSpamMode] = useState(false);
   const [dryRun, setDryRun] = useState(false);
   const [showPinVerification, setShowPinVerification] = useState(false);
+  const [codeUnlocked, setCodeUnlocked] = useState(false);
+  const [codeInput, setCodeInput] = useState("");
+  const [showCodeDialog, setShowCodeDialog] = useState(true);
 
   useEffect(() => {
-    loadExistingSetup();
+    const sessionCode = sessionStorage.getItem('peripod_code_unlocked');
+    if (sessionCode === 'true') {
+      setCodeUnlocked(true);
+      setShowCodeDialog(false);
+    }
   }, []);
+
+  useEffect(() => {
+    if (codeUnlocked) {
+      loadExistingSetup();
+    }
+  }, [codeUnlocked]);
+
+  const handleCodeSubmit = () => {
+    if (codeInput === "666") {
+      setCodeUnlocked(true);
+      setShowCodeDialog(false);
+      sessionStorage.setItem('peripod_code_unlocked', 'true');
+      toast.success("Access granted");
+    } else {
+      toast.error("Incorrect code");
+      setCodeInput("");
+    }
+  };
 
   const loadExistingSetup = async () => {
     const stored = localStorage.getItem('periodTrackerSetup');
@@ -44,6 +75,7 @@ export default function PeriodTracker() {
       setGuyPhone(data.guy_phone);
       setPeriodDate(data.period_date);
       setCycleLength(data.cycle_length?.toString() || "28");
+      setFoodAllergies(data.food_allergies || "");
     }
   };
 
@@ -98,6 +130,7 @@ export default function PeriodTracker() {
         guy_phone: '+' + cleanPhone,
         period_date: periodDate,
         cycle_length: parseInt(cycleLength),
+        food_allergies: foodAllergies,
         created_at: new Date().toISOString()
       };
       
@@ -136,6 +169,7 @@ export default function PeriodTracker() {
     setGuyPhone("");
     setPeriodDate("");
     setCycleLength("28");
+    setFoodAllergies("");
     setSpamMode(false);
     toast.success("Period tracker cleared!");
   };
@@ -147,6 +181,35 @@ export default function PeriodTracker() {
     { emoji: "🛡️", text: "Emergency tip: 'She's NOT overreacting. You're underreacting.'" },
     { emoji: "🎯", text: "Pro move: 'Flowers solve 90% of problems you didn't know existed'" },
   ];
+
+  if (!codeUnlocked) {
+    return (
+      <Dialog open={showCodeDialog} onOpenChange={() => navigate('/')}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Peripod Access Code Required</DialogTitle>
+            <DialogDescription>
+              Enter the access code to unlock the period tracker
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <Input
+              type="password"
+              placeholder="Enter code"
+              value={codeInput}
+              onChange={(e) => setCodeInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleCodeSubmit()}
+              className="text-center text-2xl tracking-widest"
+              maxLength={3}
+            />
+            <Button onClick={handleCodeSubmit} className="w-full">
+              Unlock
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
@@ -294,6 +357,24 @@ export default function PeriodTracker() {
                   max="35"
                 />
               </div>
+            </div>
+
+            {/* Food Allergies Field */}
+            <div className="space-y-2">
+              <Label htmlFor="foodAllergies" className="text-sm font-semibold">
+                Food Allergies / Dietary Restrictions 🥜
+              </Label>
+              <Textarea
+                id="foodAllergies"
+                placeholder="e.g., Nuts, Dairy, Gluten, Shellfish"
+                value={foodAllergies}
+                onChange={(e) => setFoodAllergies(e.target.value)}
+                className="text-base min-h-[80px]"
+                maxLength={200}
+              />
+              <p className="text-xs text-muted-foreground">
+                Optional: Help him remember what snacks to avoid bringing home
+              </p>
             </div>
 
             {/* Spam Mode Toggle */}

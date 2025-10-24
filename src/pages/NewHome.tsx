@@ -177,44 +177,6 @@ export default function NewHome() {
 
         {/* Discover Tab - Search & Results */}
         <TabsContent value="discover" className="space-y-8">
-          {/* TLC & Felicia Featured Section */}
-          <Card className="bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50 dark:from-purple-950/30 dark:via-pink-950/30 dark:to-rose-950/30 border-2 border-primary/40">
-            <CardHeader>
-              <CardTitle className="text-3xl gradient-text text-center flex items-center justify-center gap-2">
-                <Crown className="w-8 h-8" />
-                Featured Spots
-              </CardTitle>
-              <CardDescription className="text-center text-base">
-                Hand-picked by Felicia for unforgettable experiences
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Card className="hover-lift cursor-pointer group border-2 border-primary/20 bg-gradient-to-br from-pink-100 to-rose-100 dark:from-pink-950/50 dark:to-rose-950/50">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 group-hover:text-primary text-2xl">
-                      🗺️ TLC's Place
-                    </CardTitle>
-                    <CardDescription className="text-base">
-                      The best date spots curated with love
-                    </CardDescription>
-                  </CardHeader>
-                </Card>
-                
-                <Card className="hover-lift cursor-pointer group border-2 border-primary/20 bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-950/50 dark:to-pink-950/50">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 group-hover:text-primary text-2xl">
-                      💝 Felicia's Place
-                    </CardTitle>
-                    <CardDescription className="text-base">
-                      Personal recommendations from your love expert
-                    </CardDescription>
-                  </CardHeader>
-                </Card>
-              </div>
-            </CardContent>
-          </Card>
-
           {/* Search Section */}
           <Card className="border-2 border-primary/30 shadow-xl">
             <CardHeader>

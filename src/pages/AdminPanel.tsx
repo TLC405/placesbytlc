@@ -117,20 +117,32 @@ const AdminPanel = () => {
 
   const fetchUserAnalytics = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke('admin-portal-data');
+      console.log('Fetching admin portal data...');
+      const { data, error } = await supabase.functions.invoke('admin-portal-data', {
+        body: {}
+      });
       
-      if (error) throw error;
+      if (error) {
+        console.error('Edge function error:', error);
+        throw error;
+      }
+
+      console.log('Admin portal data received:', data);
 
       const profiles = data?.profiles || [];
       const activities = data?.activities || [];
+      const analytics = data?.analytics || [];
       
       // Store all activities for UserProfileViewer
       setAllActivities(activities);
+
+      console.log(`Loaded ${profiles.length} profiles, ${activities.length} activities, ${analytics.length} analytics`);
 
       const userMap = new Map<string, UserAnalytics>();
 
       profiles.forEach((profile: any) => {
         const userActivities = activities.filter((a: any) => a.user_id === profile.id);
+        const userAnalytics = analytics.find((a: any) => a.user_id === profile.id);
 
         const pageVisits = userActivities.filter((a: any) => a.activity_type === 'page_visit');
         const placeViews = userActivities.filter((a: any) => a.activity_type === 'place_view');
@@ -149,9 +161,9 @@ const AdminPanel = () => {
         userMap.set(profile.id, {
           id: profile.id,
           email: profile.email || 'Unknown',
-          display_name: profile.display_name,
+          display_name: profile.display_name || 'Anonymous',
           created_at: profile.created_at,
-          visit_count: pageVisits.length,
+          visit_count: userAnalytics?.total_sessions || pageVisits.length,
           last_visit: userActivities[0]?.timestamp || profile.created_at,
           locations_visited: Array.from(locations),
           pages_visited: pageVisits.map((a: any) => a.activity_data),
@@ -160,10 +172,18 @@ const AdminPanel = () => {
         });
       });
 
-      setUsers(Array.from(userMap.values()));
+      const userList = Array.from(userMap.values());
+      console.log('Processed user list:', userList.length, 'users');
+      setUsers(userList);
+      
+      if (userList.length === 0) {
+        toast.info('No user data found yet. Users will appear as they use the app.');
+      } else {
+        toast.success(`Loaded ${userList.length} users`);
+      }
     } catch (error) {
       console.error('Error fetching analytics:', error);
-      toast.error('Failed to load analytics');
+      toast.error('Failed to load analytics: ' + (error as Error).message);
     }
   };
 
