@@ -6,7 +6,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -14,11 +13,47 @@ serve(async (req) => {
 
   try {
     const authHeader = req.headers.get('Authorization');
-    const su
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    
+    // Create client with user's auth for checking permissions
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader! } },
+    });
+
+    // Get current user
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Check if user has admin role
+    const { data: roles } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', user.id);
+    
+    const isAdmin = roles?.some(r => r.role === 'admin');
+    
+    if (!isAdmin) {
+      return new Response(JSON.stringify({ error: 'Forbidden: Admin access required' }), {
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Use service role client for data access
+    const adminClient = createClient(supabaseUrl, serviceKey);
+    
+    const { detail_user_id } = await req.json().catch(() => ({ detail_user_id: undefined }));
 
     // Return details for a single user (sessions + ip history)
     if (detail_user_id) {
-      const { data: sessions, error: sessionsError } = await supabase
+      const { data: sessions, error: sessionsError } = await adminClient
         .from('user_sessions')
         .select('*')
         .eq('user_id', detail_user_id)
@@ -27,7 +62,7 @@ serve(async (req) => {
 
       if (sessionsError) throw sessionsError;
 
-      const { data: ipHistory, error: ipError } = await supabase
+      const { data: ipHistory, error: ipError } = await adminClient
         .from('ip_history')
         .select('*')
         .eq('user_id', detail_user_id)
@@ -44,9 +79,9 @@ serve(async (req) => {
 
     // Summary payload (for dashboards)
     const [{ data: profiles, error: profilesError }, { data: activities, error: activitiesError }, { data: analytics, error: analyticsError }] = await Promise.all([
-      supabase.from('profiles').select('id, email, display_name, created_at').order('created_at', { ascending: false }).limit(1000),
-      supabase.from('user_activity_log').select('*').order('timestamp', { ascending: false }).limit(2000),
-      supabase.from('user_analytics').select(`*, profiles:user_id (email, display_name)`).order('engagement_score', { ascending: false }).limit(1000),
+      adminClient.from('profiles').select('id, email, display_name, created_at').order('created_at', { ascending: false }).limit(1000),
+      adminClient.from('user_activity_log').select('*').order('timestamp', { ascending: false }).limit(2000),
+      adminClient.from('user_analytics').select(`*, profiles:user_id (email, display_name)`).order('engagement_score', { ascending: false }).limit(1000),
     ]);
 
     if (profilesError) throw profilesError;
