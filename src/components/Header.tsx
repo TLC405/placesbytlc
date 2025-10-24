@@ -1,26 +1,65 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Heart, Menu, Compass, Calendar, Brain, Palette, Download, Crown, Sparkles } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Header = () => {
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isTester, setIsTester] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  
+  useEffect(() => {
+    const checkUserRole = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setIsTester(false);
+        setIsAdmin(false);
+        return;
+      }
+      
+      const { data: roles } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id);
+      
+      const hasAdminRole = roles?.some(r => (r.role as string) === 'admin') ?? false;
+      const hasTesterRole = roles?.some(r => (r.role as string) === 'tester') ?? false;
+      
+      setIsAdmin(hasAdminRole);
+      setIsTester(hasTesterRole);
+    };
+    
+    checkUserRole();
+    
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+      checkUserRole();
+    });
+    
+    return () => subscription.unsubscribe();
+  }, []);
   
   const isActive = (path: string) => location.pathname === path;
   
-  const navItems = [
-    { path: "/", label: "Home", icon: Heart, emoji: "💝" },
-    { path: "/explore", label: "Explore", icon: Compass, emoji: "🗺️" },
-    { path: "/plan", label: "Plan", icon: Calendar, emoji: "📋" },
-    { path: "/quizzes", label: "Quizzes", icon: Brain, emoji: "🧠" },
-    { path: "/period-tracker", label: "Peripod", icon: Calendar, emoji: "📅" },
-    { path: "/teefeeme", label: "TeeFee Me", icon: Palette, emoji: "🎨" },
-    { path: "/install", label: "Install", icon: Download, emoji: "📲" },
-    { path: "/admin", label: "Admin", icon: Crown, emoji: "👑" },
+  const allNavItems = [
+    { path: "/", label: "Home", icon: Heart, emoji: "💝", allowTester: true },
+    { path: "/explore", label: "Explore", icon: Compass, emoji: "🗺️", allowTester: true },
+    { path: "/plan", label: "Plan", icon: Calendar, emoji: "📋", allowTester: true },
+    { path: "/quizzes", label: "Quizzes", icon: Brain, emoji: "🧠", allowTester: false },
+    { path: "/period-tracker", label: "Peripod", icon: Calendar, emoji: "📅", allowTester: false },
+    { path: "/teefeeme", label: "TeeFee Me", icon: Palette, emoji: "🎨", allowTester: true },
+    { path: "/install", label: "Install", icon: Download, emoji: "📲", allowTester: false },
+    { path: "/admin", label: "Admin", icon: Crown, emoji: "👑", allowTester: false, adminOnly: true },
   ];
+  
+  const navItems = allNavItems.filter(item => {
+    if (item.adminOnly && !isAdmin) return false;
+    if (isTester && !item.allowTester) return false;
+    return true;
+  });
   
   return (
     <>
