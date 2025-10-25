@@ -44,6 +44,7 @@ export const Header = () => {
   
   const allNavItems = [
     { path: "/", label: "Home", icon: Heart, emoji: "💝", allowTester: true },
+    { path: "/okc-legend", label: "Legend Forge", icon: Brain, emoji: "🔥", allowTester: true },
     { path: "/quizzes", label: "Quizzes", icon: Brain, emoji: "🧠", allowTester: false },
     { path: "/period-tracker", label: "Peripod", icon: Calendar, emoji: "📅", allowTester: false },
     { path: "/teefeeme", label: "TeeFee Me", icon: Palette, emoji: "🎨", allowTester: true },

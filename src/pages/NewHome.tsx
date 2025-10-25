@@ -325,30 +325,72 @@ export default function NewHome() {
           </div>
         </TabsContent>
 
-        {/* Updates Tab */}
+        {/* OKC Legend Forge Tab */}
         <TabsContent value="updates" className="space-y-6">
-          <Card className="border-2 border-primary/30">
-            <CardHeader>
-              <CardTitle className="text-3xl gradient-text">Coming Soon</CardTitle>
-              <CardDescription>Exciting new features in development</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="p-4 rounded-lg bg-gradient-to-r from-primary/10 to-accent/10 border-2 border-primary/20">
-                <h3 className="font-bold text-lg mb-2">🌟 Social Feed & Reviews</h3>
-                <p className="text-sm text-muted-foreground">Share your date experiences and see what the community loves</p>
-              </div>
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-1 shadow-2xl animate-fade-in">
+            <div className="relative overflow-hidden rounded-3xl bg-background/95 backdrop-blur-xl">
+              <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-40" />
               
-              <div className="p-4 rounded-lg bg-gradient-to-r from-accent/10 to-primary/10 border-2 border-accent/20">
-                <h3 className="font-bold text-lg mb-2">💰 Budget Tracker</h3>
-                <p className="text-sm text-muted-foreground">Track dating expenses and manage your budget together</p>
+              <div className="relative z-10 p-8 sm:p-12 text-center space-y-6">
+                <Badge className="px-8 py-3 text-lg bg-gradient-to-r from-red-500 via-orange-500 to-red-500 border-0 text-white shadow-glow font-black animate-pulse">
+                  🔥 NEW: OKC LEGEND FORGE
+                </Badge>
+                
+                <h2 className="text-4xl sm:text-5xl md:text-6xl font-black bg-gradient-to-r from-slate-200 via-orange-400 to-slate-200 bg-clip-text text-transparent drop-shadow-2xl">
+                  Adrenaline Capital Map
+                </h2>
+                
+                <p className="text-lg sm:text-xl font-bold text-muted-foreground max-w-2xl mx-auto">
+                  Interactive adventure map with 8 epic categories • Route planner • 70+ adrenaline spots across OKC
+                </p>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl mx-auto py-4">
+                  <div className="p-4 rounded-xl bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-2 border-blue-500/30">
+                    <div className="text-3xl mb-2">🪂</div>
+                    <div className="text-xs font-bold text-blue-400">Sky Reavers</div>
+                  </div>
+                  <div className="p-4 rounded-xl bg-gradient-to-br from-red-500/10 to-red-500/5 border-2 border-red-500/30">
+                    <div className="text-3xl mb-2">🔫</div>
+                    <div className="text-xs font-bold text-red-400">OKC Rambo</div>
+                  </div>
+                  <div className="p-4 rounded-xl bg-gradient-to-br from-cyan-500/10 to-cyan-500/5 border-2 border-cyan-500/30">
+                    <div className="text-3xl mb-2">🌊</div>
+                    <div className="text-xs font-bold text-cyan-400">Water Surf</div>
+                  </div>
+                  <div className="p-4 rounded-xl bg-gradient-to-br from-orange-500/10 to-orange-500/5 border-2 border-orange-500/30">
+                    <div className="text-3xl mb-2">🚜</div>
+                    <div className="text-xs font-bold text-orange-400">Iron Titans</div>
+                  </div>
+                  <div className="p-4 rounded-xl bg-gradient-to-br from-green-500/10 to-green-500/5 border-2 border-green-500/30">
+                    <div className="text-3xl mb-2">🐪</div>
+                    <div className="text-xs font-bold text-green-400">Beast Coliseum</div>
+                  </div>
+                  <div className="p-4 rounded-xl bg-gradient-to-br from-purple-500/10 to-purple-500/5 border-2 border-purple-500/30">
+                    <div className="text-3xl mb-2">☢️</div>
+                    <div className="text-xs font-bold text-purple-400">Nuclear Paintball</div>
+                  </div>
+                  <div className="p-4 rounded-xl bg-gradient-to-br from-slate-500/10 to-slate-500/5 border-2 border-slate-500/30">
+                    <div className="text-3xl mb-2">🤖</div>
+                    <div className="text-xs font-bold text-slate-400">Robot Arena</div>
+                  </div>
+                  <div className="p-4 rounded-xl bg-gradient-to-br from-yellow-500/10 to-yellow-500/5 border-2 border-yellow-500/30">
+                    <div className="text-3xl mb-2">🛡</div>
+                    <div className="text-xs font-bold text-yellow-400">Post-Apoc</div>
+                  </div>
+                </div>
+
+                <Link to="/okc-legend">
+                  <Button size="lg" className="h-16 px-10 text-xl font-black bg-gradient-to-r from-red-500 via-orange-500 to-red-500 hover:opacity-90 shadow-2xl shadow-red-500/30 hover:shadow-red-500/50 hover:scale-110 transition-all duration-300">
+                    🔥 Enter Legend Forge
+                  </Button>
+                </Link>
+
+                <p className="text-sm text-muted-foreground font-bold">
+                  Code protected • Expert map build • Route optimizer • Zero fake data
+                </p>
               </div>
-              
-              <div className="p-4 rounded-lg bg-gradient-to-r from-purple/10 to-pink/10 border-2 border-purple/20">
-                <h3 className="font-bold text-lg mb-2">🎮 More Gamification</h3>
-                <p className="text-sm text-muted-foreground">Challenges, leaderboards, and exclusive rewards</p>
-              </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </TabsContent>
 
         {/* Auth Tab */}
