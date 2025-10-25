@@ -48,67 +48,77 @@ export default function Install() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6 animate-fade-in p-4">
-      <Card className="shadow-glow border-2 border-primary/30 overflow-hidden">
+    <div className="max-w-2xl mx-auto space-y-8 animate-fade-in p-4">
+      <Card className="shadow-2xl shadow-primary/10 border-2 border-primary/40 overflow-hidden hover:shadow-primary/20 transition-all duration-500 bg-gradient-to-br from-card/95 to-card/80 backdrop-blur-md">
         <div className="h-3 bg-gradient-to-r from-primary via-accent to-primary animate-gradient bg-[length:200%_100%]" />
         
-        <CardHeader className="text-center space-y-4">
-          <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg">
-            <Smartphone className="w-10 h-10 text-white" />
+        <CardHeader className="text-center space-y-6 pb-8">
+          <div className="relative inline-block mx-auto">
+            <div className="absolute inset-0 animate-ping opacity-30">
+              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary to-accent" />
+            </div>
+            <div className="relative w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-2xl shadow-primary/50 animate-pulse">
+              <Smartphone className="w-12 h-12 text-white drop-shadow-xl" />
+            </div>
           </div>
-          <CardTitle className="text-3xl font-black gradient-text animate-pulse">
-            ✨ Install FELICIA.TLC ✨
+          <CardTitle className="text-4xl md:text-5xl font-black gradient-text drop-shadow-xl animate-pulse">
+            ✨ Install Queen Felicia's App ✨
           </CardTitle>
-          <CardDescription className="text-lg font-semibold">
-            👑 Get Queen Felicia's full royal app experience! 👑
+          <CardDescription className="text-xl font-bold bg-gradient-to-r from-rose-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+            👑 Experience the full royal FELICIA.TLC magic! 👑
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-8 p-6">
           {isInstalled ? (
-            <div className="p-6 bg-success/10 border-2 border-success/30 rounded-xl space-y-3">
-              <div className="flex items-center gap-3 justify-center">
-                <Check className="w-8 h-8 text-success" />
-                <h3 className="text-xl font-bold text-success">Already Installed! 🎉</h3>
+            <div className="p-8 bg-gradient-to-br from-success/10 to-success/5 border-2 border-success/40 rounded-2xl space-y-4 shadow-xl animate-scale-in">
+              <div className="flex items-center gap-4 justify-center">
+                <div className="relative">
+                  <div className="absolute inset-0 animate-ping opacity-30">
+                    <Check className="w-10 h-10 text-success" />
+                  </div>
+                  <Check className="w-10 h-10 text-success relative" />
+                </div>
+                <h3 className="text-2xl font-black text-success drop-shadow-lg">Already Installed! 🎉</h3>
               </div>
-              <p className="text-center text-muted-foreground font-semibold">
-                ✨ Queen Felicia's FELICIA.TLC is installed! Look for the royal app icon on your home screen! 👑
+              <p className="text-center text-muted-foreground text-lg font-bold">
+                ✨ Queen Felicia's FELICIA.TLC is ready! Look for the royal crown icon on your home screen! 👑
               </p>
             </div>
           ) : (
             <>
               <div className="space-y-4">
-                <div className="flex items-start gap-4 p-4 bg-card border-2 border-border rounded-xl">
-                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                    <span className="text-primary font-bold">1</span>
+                <div className="flex items-start gap-4 p-5 bg-gradient-to-br from-card to-card/50 border-2 border-primary/30 rounded-2xl hover:border-primary/50 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center flex-shrink-0 shadow-lg">
+                    <span className="text-white font-black text-lg">1</span>
                   </div>
                   <div>
-                    <h4 className="font-bold mb-1">Works Offline</h4>
-                    <p className="text-sm text-muted-foreground">
+                    <h4 className="font-black mb-2 text-lg">Works Offline</h4>
+                    <p className="text-sm text-muted-foreground font-medium leading-relaxed">
                       Access your saved date plans even without internet
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4 p-4 bg-card border-2 border-border rounded-xl">
-                  <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
-                    <span className="text-accent font-bold">2</span>
+                <div className="flex items-start gap-4 p-5 bg-gradient-to-br from-card to-card/50 border-2 border-accent/30 rounded-2xl hover:border-accent/50 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent to-accent/70 flex items-center justify-center flex-shrink-0 shadow-lg">
+                    <span className="text-white font-black text-lg">2</span>
                   </div>
                   <div>
-                    <h4 className="font-bold mb-1">Like a Real App</h4>
-                    <p className="text-sm text-muted-foreground">
+                    <h4 className="font-black mb-2 text-lg">Like a Real App</h4>
+                    <p className="text-sm text-muted-foreground font-medium leading-relaxed">
                       Full-screen experience without browser navigation
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4 p-4 bg-card border-2 border-border rounded-xl">
-                  <div className="w-8 h-8 rounded-full bg-success/20 flex items-center justify-center flex-shrink-0">
-                    <span className="text-success font-bold">3</span>
+                <div className="flex items-start gap-4 p-5 bg-gradient-to-br from-card to-card/50 border-2 border-success/30 rounded-2xl hover:border-success/50 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-success to-success/70 flex items-center justify-center flex-shrink-0 shadow-lg">
+                    <span className="text-white font-black text-lg">3</span>
                   </div>
                   <div>
-                    <h4 className="font-bold mb-1">Quick Access</h4>
-                    <p className="text-sm text-muted-foreground">
+                    <h4 className="font-black mb-2 text-lg">Quick Access</h4>
+                    <p className="text-sm text-muted-foreground font-medium leading-relaxed">
                       Launch instantly from your home screen
                     </p>
                   </div>
@@ -117,18 +127,27 @@ export default function Install() {
 
               <Button
                 onClick={handleInstall}
-                className="w-full h-16 text-xl font-bold bg-gradient-to-r from-primary to-accent hover:opacity-90 shadow-glow"
+                className="w-full h-20 text-2xl font-black bg-gradient-to-r from-primary via-accent to-primary hover:opacity-90 shadow-2xl shadow-primary/30 hover:shadow-primary/50 hover:scale-105 transition-all duration-300"
               >
-                <Download className="w-6 h-6 mr-2" />
-                Install App
+                <Download className="w-7 h-7 mr-3 animate-bounce" />
+                Install Queen Felicia's App
               </Button>
 
-              <div className="p-4 bg-muted/50 rounded-xl">
-                <h4 className="font-semibold mb-2 text-sm">How to Install (iOS/Android):</h4>
-                <ol className="text-xs text-muted-foreground space-y-1 list-decimal list-inside">
-                  <li><strong>iPhone:</strong> Tap Share → Add to Home Screen</li>
-                  <li><strong>Android:</strong> Tap Menu (⋮) → Install App or Add to Home Screen</li>
-                  <li><strong>Desktop:</strong> Look for the install icon in your browser's address bar</li>
+              <div className="p-6 bg-gradient-to-br from-muted/80 to-muted/50 rounded-2xl border-2 border-border/50 shadow-inner">
+                <h4 className="font-black mb-4 text-base">📲 How to Install:</h4>
+                <ol className="text-sm text-muted-foreground space-y-2 font-medium">
+                  <li className="flex items-start gap-3">
+                    <span className="font-black text-primary">iPhone:</span>
+                    <span>Tap Share → Add to Home Screen</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="font-black text-accent">Android:</span>
+                    <span>Tap Menu (⋮) → Install App or Add to Home Screen</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="font-black text-success">Desktop:</span>
+                    <span>Look for the install icon in your browser's address bar</span>
+                  </li>
                 </ol>
               </div>
             </>

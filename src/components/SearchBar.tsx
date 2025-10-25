@@ -64,41 +64,41 @@ export const SearchBar = ({
   };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {/* Compact Location Selector */}
       {onLocationModeChange && (
-        <div className="flex gap-2 p-3 bg-card/50 backdrop-blur-sm rounded-xl border border-border/50">
+        <div className="flex gap-2 p-3 bg-gradient-to-br from-card/80 to-card/60 backdrop-blur-md rounded-2xl border-2 border-border/40 shadow-lg animate-fade-in">
           <button
             onClick={() => handleLocationModeChange("tlc")}
-            className={`flex-1 p-2 rounded-lg text-sm font-semibold transition-all ${
+            className={`flex-1 p-3 rounded-xl text-sm font-bold transition-all duration-300 ${
               locationMode === "tlc"
-                ? "bg-gradient-to-r from-primary to-accent text-white shadow-md"
-                : "hover:bg-accent/20"
+                ? "bg-gradient-to-r from-primary to-accent text-white shadow-xl scale-105"
+                : "hover:bg-accent/20 hover:scale-105"
             }`}
           >
-            <MapPin className="w-4 h-4 mx-auto mb-1" />
+            <MapPin className="w-5 h-5 mx-auto mb-1" />
             TLC
           </button>
           <button
             onClick={() => handleLocationModeChange("felicia")}
-            className={`flex-1 p-2 rounded-lg text-sm font-semibold transition-all ${
+            className={`flex-1 p-3 rounded-xl text-sm font-bold transition-all duration-300 ${
               locationMode === "felicia"
-                ? "bg-gradient-to-r from-primary to-accent text-white shadow-md animate-pulse"
-                : "hover:bg-accent/20"
+                ? "bg-gradient-to-r from-primary to-accent text-white shadow-xl shadow-primary/30 animate-pulse scale-105"
+                : "hover:bg-accent/20 hover:scale-105"
             }`}
           >
-            <Heart className="w-4 h-4 mx-auto mb-1 fill-current" />
+            <Heart className="w-5 h-5 mx-auto mb-1 fill-current" />
             👑 Queen Felicia 👑
           </button>
           <button
             onClick={() => handleLocationModeChange("middle")}
-            className={`flex-1 p-2 rounded-lg text-sm font-semibold transition-all ${
+            className={`flex-1 p-3 rounded-xl text-sm font-bold transition-all duration-300 ${
               locationMode === "middle"
-                ? "bg-gradient-to-r from-primary to-accent text-white shadow-md"
-                : "hover:bg-accent/20"
+                ? "bg-gradient-to-r from-primary to-accent text-white shadow-xl scale-105"
+                : "hover:bg-accent/20 hover:scale-105"
             }`}
           >
-            <Scale className="w-4 h-4 mx-auto mb-1" />
+            <Scale className="w-5 h-5 mx-auto mb-1" />
             Middle
           </button>
         </div>
@@ -108,7 +108,7 @@ export const SearchBar = ({
       <div className="flex gap-2">
         {onCategoryTypeChange && (
           <Select value={categoryType} onValueChange={onCategoryTypeChange} disabled={disabled || loading}>
-            <SelectTrigger className="w-[140px] h-11 shadow-sm">
+            <SelectTrigger className="w-[140px] h-12 shadow-md font-semibold border-2 border-border/50 hover:border-primary/50 transition-all">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -120,7 +120,7 @@ export const SearchBar = ({
         )}
 
         <Select value={radius} onValueChange={onRadiusChange} disabled={disabled || loading}>
-          <SelectTrigger className="w-[120px] h-11 shadow-sm">
+          <SelectTrigger className="w-[120px] h-12 shadow-md font-semibold border-2 border-border/50 hover:border-primary/50 transition-all">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -137,18 +137,18 @@ export const SearchBar = ({
             variant="outline"
             size="icon"
             onClick={() => setFiltersOpen(!filtersOpen)}
-            className="h-11 w-11 shadow-sm"
+            className="h-12 w-12 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 border-2 border-border/50 hover:border-primary/50"
           >
-            <SlidersHorizontal className="w-4 h-4" />
+            <SlidersHorizontal className="w-5 h-5" />
           </Button>
         )}
 
         <Button 
           onClick={onSearch} 
           disabled={disabled || loading}
-          className="flex-1 h-11 shadow-md hover:shadow-lg transition-all font-semibold gradient-primary"
+          className="flex-1 h-12 shadow-xl hover:shadow-2xl hover:shadow-primary/20 transition-all duration-300 font-bold gradient-primary hover:scale-105 text-base"
         >
-          <Search className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+          <Search className={`w-5 h-5 mr-2 ${loading ? 'animate-spin' : ''}`} />
           {loading ? "Searching..." : "Search"}
         </Button>
       </div>
@@ -157,8 +157,8 @@ export const SearchBar = ({
       {onCategoryToggle && (
         <Collapsible open={filtersOpen} onOpenChange={setFiltersOpen}>
           <CollapsibleContent>
-            <div className="p-3 bg-card/50 backdrop-blur-sm rounded-xl border border-border/50 space-y-2">
-              <p className="text-xs font-semibold text-muted-foreground mb-2">REFINE SEARCH</p>
+            <div className="p-4 bg-gradient-to-br from-card/80 to-card/60 backdrop-blur-md rounded-2xl border-2 border-border/40 shadow-lg space-y-3 animate-fade-in">
+              <p className="text-sm font-bold text-muted-foreground mb-2 tracking-wide">🎯 REFINE SEARCH</p>
               
               {categoryType === "both" ? (
                 <div className="grid grid-cols-2 gap-2">
