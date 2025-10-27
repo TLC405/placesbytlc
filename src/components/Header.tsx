@@ -48,7 +48,6 @@ export const Header = () => {
     { path: "/quizzes", label: "Quizzes", icon: Brain, emoji: "🧠", allowTester: false },
     { path: "/period-tracker", label: "Peripod", icon: Calendar, emoji: "📅", allowTester: false },
     { path: "/teefeeme", label: "TeeFee Me", icon: Palette, emoji: "🎨", allowTester: true },
-    { path: "/install", label: "Install", icon: Download, emoji: "📲", allowTester: false },
     { path: "/admin", label: "Admin", icon: Crown, emoji: "👑", allowTester: false, adminOnly: true },
   ];
   

@@ -9,6 +9,9 @@ import { LoadingScreen } from "@/components/LoadingScreen";
 import { ActivityTracker } from "@/components/ActivityTracker";
 import { DetailedCupid } from "@/components/DetailedCupid";
 import { useSessionTracker } from "@/hooks/useSessionTracker";
+import { AppAuthGate } from "@/components/AppAuthGate";
+import { CodeGate } from "@/components/CodeGate";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import Home from "./pages/NewHome";
 import NotFound from "./pages/NotFound";
 
@@ -18,7 +21,6 @@ const QuizLove = lazy(() => import("./pages/QuizLove"));
 const QuizMBTI = lazy(() => import("./pages/QuizMBTI"));
 const TeeFeeMeCartoonifier = lazy(() => import("./pages/TeeFeeMeCartoonifier"));
 const PeriodTracker = lazy(() => import("./pages/PeriodTracker"));
-const Install = lazy(() => import("./pages/Install"));
 const FeliciaModPanel = lazy(() => import("./components/FeliciaModPanel"));
 const CodeViewer = lazy(() => import("./pages/CodeViewer"));
 const AdminPanel = lazy(() => import("./pages/AdminPanel"));
@@ -29,7 +31,6 @@ const Gamification = lazy(() => import("./pages/Gamification"));
 const OKCLegendForge = lazy(() => import("./pages/OKCLegendForge"));
 
 import { useGoogleMaps } from "@/hooks/useGoogleMaps";
-import { AppAuthGate } from "@/components/AppAuthGate";
 
 const queryClient = new QueryClient();
 
@@ -51,7 +52,6 @@ const AppRoutes = () => {
         <Route path="/teefeeme" element={<TeeFeeMeCartoonifier />} />
         <Route path="/teefeeme-cartoonifier" element={<TeeFeeMeCartoonifier />} />
         <Route path="/cartoon-generator" element={<TeeFeeMeCartoonifier />} />
-        <Route path="/install" element={<Install />} />
         <Route path="/code" element={<CodeViewer />} />
         <Route path="/felicia-mod" element={<FeliciaModPanel />} />
         <Route path="/admin" element={<AdminPanel />} />
@@ -84,23 +84,27 @@ const App = () => {
   const { isReady: isMapsReady } = useGoogleMaps();
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        {showLoader && <LoadingScreen onComplete={handleLoadingComplete} />}
-        <BrowserRouter>
-          <AppAuthGate>
-            <ActivityTracker />
-            <DetailedCupid />
-            {!showLoader && <Header />}
-            <main className="max-w-7xl mx-auto px-4 py-6">
-              <AppRoutes />
-            </main>
-          </AppAuthGate>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          {showLoader && <LoadingScreen onComplete={handleLoadingComplete} />}
+          <BrowserRouter>
+            <CodeGate>
+              <AppAuthGate>
+                <ActivityTracker />
+                <DetailedCupid />
+                {!showLoader && <Header />}
+                <main className="max-w-7xl mx-auto px-4 py-6">
+                  <AppRoutes />
+                </main>
+              </AppAuthGate>
+            </CodeGate>
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 };
 

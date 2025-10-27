@@ -8,7 +8,7 @@ interface AppAuthGateProps {
   children: React.ReactNode;
 }
 
-const PUBLIC_ROUTES = ["/install", "/code"];
+const PUBLIC_ROUTES = ["/code"];
 
 export const AppAuthGate = ({ children }: AppAuthGateProps) => {
   const [loading, setLoading] = useState(true);
