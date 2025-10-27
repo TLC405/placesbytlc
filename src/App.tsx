@@ -29,6 +29,7 @@ const Gamification = lazy(() => import("./pages/Gamification"));
 const OKCLegendForge = lazy(() => import("./pages/OKCLegendForge"));
 
 import { useGoogleMaps } from "@/hooks/useGoogleMaps";
+import { AppAuthGate } from "@/components/AppAuthGate";
 
 const queryClient = new QueryClient();
 
@@ -89,12 +90,14 @@ const App = () => {
         <Sonner />
         {showLoader && <LoadingScreen onComplete={handleLoadingComplete} />}
         <BrowserRouter>
-          <ActivityTracker />
-          <DetailedCupid />
-          {!showLoader && <Header />}
-          <main className="max-w-7xl mx-auto px-4 py-6">
-            <AppRoutes />
-          </main>
+          <AppAuthGate>
+            <ActivityTracker />
+            <DetailedCupid />
+            {!showLoader && <Header />}
+            <main className="max-w-7xl mx-auto px-4 py-6">
+              <AppRoutes />
+            </main>
+          </AppAuthGate>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>

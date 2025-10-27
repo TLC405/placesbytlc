@@ -58,29 +58,33 @@ export const AuthPanel = () => {
   };
 
   return (
-    <Card className="relative overflow-hidden border-2 border-primary/20 shadow-2xl backdrop-blur-md bg-gradient-to-br from-background via-background/95 to-background/90">
-      <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 via-purple-500/5 to-rose-500/5" />
-      <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -z-10" />
-      <div className="absolute bottom-0 left-0 w-64 h-64 bg-accent/10 rounded-full blur-3xl -z-10" />
+    <Card className="relative overflow-hidden border-4 border-primary/30 shadow-2xl backdrop-blur-xl bg-gradient-to-br from-background via-background/95 to-background/90 animate-fade-in">
+      <div className="absolute inset-0 bg-gradient-to-br from-pink-500/10 via-purple-500/10 to-rose-500/10 animate-pulse" />
+      <div className="absolute top-0 right-0 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-float" />
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-accent/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }} />
+      <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-background/80" />
       
-      <CardHeader className="relative z-10 text-center space-y-4 pb-6">
-        <div className="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-pink-500 via-purple-500 to-rose-600 flex items-center justify-center shadow-2xl shadow-primary/30 ring-4 ring-primary/20 backdrop-blur">
-          <Heart className="w-10 h-10 text-white animate-pulse drop-shadow-lg" />
+      <CardHeader className="relative z-10 text-center space-y-6 pb-8 pt-8">
+        <div className="relative w-24 h-24 mx-auto">
+          <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-pink-500 via-purple-500 to-rose-600 flex items-center justify-center shadow-2xl shadow-primary/50 ring-8 ring-primary/20 backdrop-blur-xl animate-float">
+            <Heart className="w-12 h-12 text-white animate-pulse drop-shadow-2xl" fill="currentColor" />
+          </div>
+          <div className="absolute -inset-2 rounded-3xl bg-gradient-to-r from-pink-500 via-purple-500 to-rose-600 opacity-20 blur-xl animate-pulse" />
         </div>
-        <div>
-          <CardTitle className="text-4xl font-bold bg-gradient-to-r from-pink-500 via-purple-500 to-rose-500 bg-clip-text text-transparent mb-2">
-            {isLogin ? "Welcome Back" : "Join Places by TLC"}
+        <div className="space-y-3">
+          <CardTitle className="text-5xl font-black bg-gradient-to-r from-pink-500 via-purple-500 to-rose-500 bg-clip-text text-transparent mb-2 tracking-tight animate-gradient bg-[length:200%_auto]">
+            {isLogin ? "👑 Welcome Back" : "✨ Join FELICIA.TLC"}
           </CardTitle>
-          <CardDescription className="text-base text-muted-foreground/80">
+          <CardDescription className="text-lg text-muted-foreground/90 font-medium max-w-md mx-auto leading-relaxed">
             {isLogin 
-              ? "Sign in to access your saved places and continue your journey" 
-              : "Create your account to start discovering the best date spots in OKC"}
+              ? "Sign in to access your saved places and continue your romantic journey through OKC" 
+              : "Create your account to unlock AI-powered date planning and exclusive features"}
           </CardDescription>
         </div>
       </CardHeader>
 
-      <CardContent className="relative z-10 px-6 pb-6">
-        <form onSubmit={handleAuth} className="space-y-5">
+      <CardContent className="relative z-10 px-8 pb-8">
+        <form onSubmit={handleAuth} className="space-y-6">
           {!isLogin && (
             <>
               <div className="space-y-2">
@@ -161,7 +165,7 @@ export const AuthPanel = () => {
 
           <Button 
             type="submit" 
-            className="w-full gap-2 shadow-xl h-11 bg-gradient-to-r from-pink-500 via-purple-500 to-rose-600 hover:from-pink-600 hover:via-purple-600 hover:to-rose-700 text-white font-semibold transition-all hover:scale-[1.02] active:scale-[0.98]" 
+            className="w-full gap-2 shadow-2xl h-14 text-lg bg-gradient-to-r from-pink-500 via-purple-500 to-rose-600 hover:from-pink-600 hover:via-purple-600 hover:to-rose-700 text-white font-bold transition-all hover:scale-105 active:scale-95 animate-gradient bg-[length:200%_auto]" 
             disabled={loading}
           >
             {loading ? (
@@ -205,9 +209,14 @@ export const AuthPanel = () => {
               : "Already have an account? Sign in →"}
           </Button>
 
-          <p className="text-xs text-center text-muted-foreground mt-4">
-            Secure authentication powered by Lovable Cloud
-          </p>
+          <div className="pt-4 border-t border-border/50">
+            <p className="text-xs text-center text-muted-foreground/70">
+              🔒 Enterprise-grade security powered by Lovable Cloud
+            </p>
+            <p className="text-xs text-center text-muted-foreground/60 mt-1">
+              Your data is encrypted and protected
+            </p>
+          </div>
         </form>
       </CardContent>
     </Card>

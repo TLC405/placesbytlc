@@ -193,7 +193,26 @@ const AdminPanel = () => {
       
       if (error) throw error;
       
-      toast.success("Source code download initiated");
+      // Create README file
+      const readme = data?.readme || 'FELICIA.TLC Source Code';
+      const readmeBlob = new Blob([readme], { type: 'text/markdown' });
+      const readmeUrl = URL.createObjectURL(readmeBlob);
+      
+      // Download README
+      const readmeLink = document.createElement('a');
+      readmeLink.href = readmeUrl;
+      readmeLink.download = 'FELICIA-TLC-README.md';
+      document.body.appendChild(readmeLink);
+      readmeLink.click();
+      document.body.removeChild(readmeLink);
+      URL.revokeObjectURL(readmeUrl);
+      
+      // Open GitHub download in new tab
+      if (data?.download_url) {
+        window.open(data.download_url, '_blank');
+      }
+      
+      toast.success("📦 Source code package downloaded! Check your downloads folder for README.md and the ZIP file.");
     } catch (error: any) {
       console.error("Download error:", error);
       toast.error(error.message || "Failed to download source");
