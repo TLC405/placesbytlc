@@ -4,7 +4,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Header } from "@/components/Header";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { ActivityTracker } from "@/components/ActivityTracker";
 import { DetailedCupid } from "@/components/DetailedCupid";
@@ -110,8 +109,7 @@ const App = () => {
           <BrowserRouter>
             <ActivityTracker />
             <DetailedCupid />
-            {!showLoader && <Header />}
-            <main className="max-w-7xl mx-auto px-4 py-6" style={{ marginTop: '5rem' }}>
+            <main className="max-w-7xl mx-auto px-4 py-6">
               <AppRoutes />
             </main>
           </BrowserRouter>

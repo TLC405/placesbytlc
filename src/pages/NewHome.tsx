@@ -3,8 +3,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Heart, Sparkles, Crown, Calendar, Users, TrendingUp, Zap } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Heart, Sparkles, Crown, Calendar, Users, TrendingUp, Zap, Settings, LogOut, Save, Palette } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { PlaceItem } from "@/types";
 import { storage } from "@/lib/storage";
 import { toast } from "sonner";
@@ -16,8 +16,13 @@ import { useGeolocation } from "@/hooks/useGeolocation";
 import { trackPlaceView, trackPlaceSave, trackSearch } from "@/components/ActivityTracker";
 import { AuthPanel } from "@/components/AuthPanel";
 import { supabase } from "@/integrations/supabase/client";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
+import { DarkModeToggle } from "@/components/DarkModeToggle";
+import feliciaCrownImage from "@/assets/felicia-crown.png";
+import { AppRole } from "@/utils/rbac";
 
 export default function NewHome() {
+  const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
@@ -25,6 +30,7 @@ export default function NewHome() {
   const [error, setError] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [categoryType, setCategoryType] = useState<"food" | "activity" | "both">("both");
+  const [userRole, setUserRole] = useState<AppRole | null>(null);
 
   const { location, setCustomLocation } = useGeolocation();
   const { results, isSearching, search } = usePlacesSearch({
@@ -37,12 +43,37 @@ export default function NewHome() {
       setLoading(false);
     });
 
+    const role = localStorage.getItem('tlc_app_role') as AppRole | null;
+    setUserRole(role);
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });
 
-    return () => subscription.unsubscribe();
+    const handleStorageChange = () => {
+      const newRole = localStorage.getItem('tlc_app_role') as AppRole | null;
+      setUserRole(newRole);
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      subscription.unsubscribe();
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('tlc_app_role');
+    localStorage.removeItem('tlc_user_id');
+    localStorage.removeItem('tlc_username');
+    toast.success("Logged out successfully!");
+    window.location.href = '/';
+  };
+
+  const handleSaveProfile = () => {
+    toast.info("Coming soon!");
+  };
 
   const handleAddToPlan = useCallback((place: PlaceItem) => {
     const existing = storage.getPlan();
@@ -104,6 +135,56 @@ export default function NewHome() {
 
   return (
     <div className="min-h-screen space-y-8 pb-12 px-2 sm:px-4">
+      {/* Top Navigation Bar */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-primary/20">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="flex items-center gap-2 hover:bg-primary/10">
+                <img src={feliciaCrownImage} alt="FELICIA.TLC" className="w-8 h-8" />
+                <span className="font-bold gradient-text hidden sm:inline">FELICIA.TLC</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56">
+              {(userRole === 'admin' || userRole === 'warlord') && (
+                <>
+                  <DropdownMenuItem onClick={() => navigate('/admin')}>
+                    <Settings className="w-4 h-4 mr-2" />
+                    Admin Panel
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                </>
+              )}
+              <DropdownMenuItem onClick={handleSaveProfile}>
+                <Save className="w-4 h-4 mr-2" />
+                Save Profile
+              </DropdownMenuItem>
+              {userRole && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout}>
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Logout
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <div className="flex items-center gap-4">
+            <Link to="/teefeeme">
+              <Button variant="outline" size="sm" className="gap-2">
+                <Palette className="w-4 h-4" />
+                <span className="hidden sm:inline">Cartoon Gen</span>
+              </Button>
+            </Link>
+            <DarkModeToggle />
+          </div>
+        </div>
+      </div>
+
+      {/* Add top padding to account for fixed nav */}
+      <div className="h-16" />
       {/* Hero Section */}
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-pink-500 via-purple-500 to-rose-600 p-1 animate-fade-in shadow-2xl">
         <div className="relative overflow-hidden rounded-3xl bg-background/95 backdrop-blur-xl">

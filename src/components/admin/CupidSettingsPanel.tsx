@@ -54,18 +54,42 @@ export default function CupidSettingsPanel() {
 
   const saveSettings = async () => {
     try {
-      const { error } = await supabase
+      // First check if setting exists
+      const { data: existing } = await supabase
         .from('app_settings')
-        .update({ 
-          setting_value: { 
-            enabled: cupidEnabled,
-            settings 
-          } 
-        })
-        .eq('setting_key', 'cupid_visible');
+        .select('id')
+        .eq('setting_key', 'cupid_visible')
+        .maybeSingle();
 
-      if (error) throw error;
-      toast.success("Settings saved! 🎯");
+      if (existing) {
+        // Update existing
+        const { error } = await supabase
+          .from('app_settings')
+          .update({ 
+            setting_value: { 
+              enabled: cupidEnabled,
+              settings 
+            } 
+          })
+          .eq('setting_key', 'cupid_visible');
+
+        if (error) throw error;
+      } else {
+        // Insert new
+        const { error } = await supabase
+          .from('app_settings')
+          .insert({
+            setting_key: 'cupid_visible',
+            setting_value: { 
+              enabled: cupidEnabled,
+              settings 
+            }
+          });
+
+        if (error) throw error;
+      }
+      
+      toast.success("Settings saved! Refresh to see changes. 🎯");
     } catch (error) {
       console.error('Failed to save settings:', error);
       toast.error("Failed to save settings");
