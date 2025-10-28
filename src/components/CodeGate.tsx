@@ -19,14 +19,14 @@ export const CodeGate = ({ children }: CodeGateProps) => {
   const [selectedMode, setSelectedMode] = useState<"warlord" | "admin" | null>(null);
 
   useEffect(() => {
-    const appUnlocked = sessionStorage.getItem("app_unlocked");
-    const accessLevel = sessionStorage.getItem("access_level");
-    if (appUnlocked === "true" && (accessLevel === "tester" || accessLevel === "admin")) {
+    const role = localStorage.getItem("pin_role");
+    const expiry = parseInt(localStorage.getItem("pin_expiry") || "0");
+    if (role && Date.now() < expiry) {
       setUnlocked(true);
     } else {
-      // Clear any invalid sessions
-      sessionStorage.removeItem("app_unlocked");
-      sessionStorage.removeItem("access_level");
+      // Clear expired or invalid sessions
+      localStorage.removeItem("pin_role");
+      localStorage.removeItem("pin_expiry");
     }
     setLoading(false);
   }, []);
@@ -37,37 +37,18 @@ export const CodeGate = ({ children }: CodeGateProps) => {
 
     // Warlord/Tester code
     if (normalizedCode === "CRIP4LYFE" || normalizedCode === "CRIP") {
-      sessionStorage.setItem("app_unlocked", "true");
-      sessionStorage.setItem("access_level", "tester");
+      localStorage.setItem("pin_role", "tester");
+      localStorage.setItem("pin_expiry", String(Date.now() + 900000)); // 15 min
       setUnlocked(true);
-      toast.success("🎮 WARLORD ACCESS GRANTED");
+      toast.success("🎮 TESTER ACCESS GRANTED");
       navigate("/hacker");
       return;
     }
 
-    // Admin code
+    // Admin code - no Supabase auth required
     if (normalizedCode === "1309") {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        toast.error("⚠️ Admin access requires authentication - Please sign in first");
-        return;
-      }
-
-      const { data: roles } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', user.id);
-
-      const isAdmin = roles?.some(r => r.role === 'admin');
-
-      if (!isAdmin) {
-        toast.error("❌ Admin privileges required");
-        return;
-      }
-
-      sessionStorage.setItem("app_unlocked", "true");
-      sessionStorage.setItem("access_level", "admin");
+      localStorage.setItem("pin_role", "admin");
+      localStorage.setItem("pin_expiry", String(Date.now() + 900000)); // 15 min
       setUnlocked(true);
       toast.success("👑 ADMIN ACCESS GRANTED");
       navigate("/hacker");

@@ -4,6 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { getStoredRole, type AppRole } from "@/utils/rbac";
+import { toast } from "sonner";
 
 export const Header = () => {
   const location = useLocation();
@@ -31,13 +32,14 @@ export const Header = () => {
     { path: "/admin", label: "Admin", icon: Shield, emoji: "⚙️", requiredRole: ['admin', 'warlord'] },
   ];
   
-  const navItems = allNavItems.filter(item => {
-    if (!role) return false;
-    return item.requiredRole.includes(role);
-  });
+  // Show all tabs but mark some as disabled for testers
+  const navItems = allNavItems.map(item => ({
+    ...item,
+    disabled: role === 'tester' && !['/', '/teefeeme'].includes(item.path)
+  }));
   
-  // Hide header on login and hacker pages
-  if (location.pathname === '/login-pin' || location.pathname === '/hacker') return null;
+  // Hide header on hacker page
+  if (location.pathname === '/hacker') return null;
   
   return (
     <>
@@ -77,11 +79,24 @@ export const Header = () => {
               {navItems.map((item) => {
                 const Icon = item.icon;
                 return (
-                  <Link key={item.path} to={item.path} className="flex-shrink-0">
+                  <Link 
+                    key={item.path} 
+                    to={item.path} 
+                    className="flex-shrink-0"
+                    onClick={(e) => {
+                      if (item.disabled) {
+                        e.preventDefault();
+                        toast.info("🔒 Testers can only access Places and TeeFeeMe");
+                      }
+                    }}
+                  >
                     <Button 
                       variant={isActive(item.path) ? "default" : "outline"} 
                       size="sm"
+                      disabled={item.disabled}
                       className={`gap-1 sm:gap-2 font-semibold transition-all duration-300 text-xs sm:text-sm ${
+                        item.disabled ? "opacity-50 cursor-not-allowed" : ""
+                      } ${
                         isActive(item.path) 
                           ? "shadow-glow scale-105" 
                           : "hover:scale-105 hover:shadow-soft"

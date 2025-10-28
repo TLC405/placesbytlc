@@ -44,11 +44,19 @@ export const getStoredRole = (): AppRole | null => {
   
   // Check if expired
   if (!role || Date.now() > expiry) {
+    console.log('Role expired or missing, clearing storage');
     clearStoredRole();
     return null;
   }
   
   return role;
+};
+
+// Helper to check time remaining
+export const getTimeRemaining = (): number => {
+  const expiry = parseInt(localStorage.getItem('pin_expiry') || '0');
+  const remaining = Math.max(0, expiry - Date.now());
+  return Math.floor(remaining / 1000); // Return seconds
 };
 
 export const clearStoredRole = () => {

@@ -108,7 +108,7 @@ const AdminPanel = () => {
         // Check if PIN token expired
         if (!role || Date.now() > expiry) {
           toast.error("Please log in to access admin panel");
-          navigate('/login-pin');
+          navigate('/');
           return;
         }
         

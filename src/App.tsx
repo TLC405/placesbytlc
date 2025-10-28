@@ -9,7 +9,6 @@ import { LoadingScreen } from "@/components/LoadingScreen";
 import { ActivityTracker } from "@/components/ActivityTracker";
 import { DetailedCupid } from "@/components/DetailedCupid";
 import { useSessionTracker } from "@/hooks/useSessionTracker";
-import { AppAuthGate } from "@/components/AppAuthGate";
 import { CodeGate } from "@/components/CodeGate";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import Home from "./pages/NewHome";
@@ -99,14 +98,12 @@ const App = () => {
           {showLoader && <LoadingScreen onComplete={handleLoadingComplete} />}
           <BrowserRouter>
             <CodeGate>
-              <AppAuthGate>
-                <ActivityTracker />
-                <DetailedCupid />
-                {!showLoader && <Header />}
-                <main className="max-w-7xl mx-auto px-4 py-6" style={{ marginTop: '5rem' }}>
-                  <AppRoutes />
-                </main>
-              </AppAuthGate>
+              <ActivityTracker />
+              <DetailedCupid />
+              {!showLoader && <Header />}
+              <main className="max-w-7xl mx-auto px-4 py-6" style={{ marginTop: '5rem' }}>
+                <AppRoutes />
+              </main>
             </CodeGate>
           </BrowserRouter>
         </TooltipProvider>

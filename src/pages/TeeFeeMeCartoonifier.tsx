@@ -191,6 +191,11 @@ const TeeFeeMeCartoonifier = () => {
       setCurrentMessageIndex((prev) => (prev + 1) % funnyMessages.length);
     }, 2000);
 
+    // TIMEOUT WRAPPER - 60 second max
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Request timed out after 60 seconds')), 60000);
+    });
+
     try {
       // Convert image to base64
       const reader = new FileReader();
@@ -201,15 +206,39 @@ const TeeFeeMeCartoonifier = () => {
       
       const imageData = await imageDataPromise;
 
-      // Call AI edge function
-      const { data, error } = await supabase.functions.invoke('teefeeme-cartoonify', {
-        body: {
-          imageData,
-          style: selectedStyle
-        }
-      });
+      // Race between API call and timeout
+      const result: any = await Promise.race([
+        supabase.functions.invoke('teefeeme-cartoonify', {
+          body: { imageData, style: selectedStyle }
+        }),
+        timeoutPromise
+      ]);
 
-      if (error) throw error;
+      const { data, error } = result;
+
+      if (error) {
+        // Handle specific error codes
+        if (error.message?.includes('429')) {
+          toast.error('⏰ Too many requests! Please wait 30 seconds and try again.');
+        } else if (error.message?.includes('402')) {
+          toast.error('💳 AI credits depleted. Please contact admin to add credits.');
+        } else {
+          throw error;
+        }
+        return;
+      }
+
+      if (data?.error) {
+        // Handle edge function errors
+        if (data.code === 429) {
+          toast.error('⏰ Too many requests! Please wait 30 seconds and try again.');
+        } else if (data.code === 402) {
+          toast.error('💳 AI credits depleted. Please contact admin to add credits.');
+        } else {
+          toast.error(`❌ ${data.error}`);
+        }
+        return;
+      }
 
       if (data?.cartoonImage) {
         setCartoonUrl(data.cartoonImage);
@@ -220,8 +249,12 @@ const TeeFeeMeCartoonifier = () => {
       }
     } catch (error) {
       console.error('Cartoonify error:', error);
-      const errorMessage = error instanceof Error ? error.message : "Oops! The magic didn't work. Try again!";
-      toast.error(errorMessage);
+      if (error instanceof Error && error.message === 'Request timed out after 60 seconds') {
+        toast.error('⏱️ Request timed out. The AI is taking too long. Please try again!');
+      } else {
+        const errorMessage = error instanceof Error ? error.message : "Oops! The magic didn't work. Try again!";
+        toast.error(errorMessage);
+      }
     } finally {
       setIsProcessing(false);
       clearInterval(messageInterval);
