@@ -8,3 +8,9 @@ verify_jwt = true
 
 [functions.period-tracker-setup]
 verify_jwt = true
+
+[functions.send-admin-sms]
+verify_jwt = true
+
+[functions.ai-prompt-processor]
+verify_jwt = true
