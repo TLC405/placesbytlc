@@ -4,7 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { LoadingScreen } from "@/components/LoadingScreen";
+import { AppAuthGate } from "@/components/AppAuthGate";
 import { ActivityTracker } from "@/components/ActivityTracker";
 import { DetailedCupid } from "@/components/DetailedCupid";
 import { useSessionTracker } from "@/hooks/useSessionTracker";
@@ -71,31 +71,6 @@ const AppRoutes = () => {
 };
 
 const App = () => {
-  const [showLoader, setShowLoader] = useState(true);
-  const [shouldRedirect, setShouldRedirect] = useState<string | null>(null);
-
-  const handleLoadingComplete = () => {
-    setShowLoader(false);
-  };
-
-  const handleAuthenticated = (role: 'tester' | 'admin') => {
-    // Set flag to redirect after loading completes
-    setShouldRedirect('/hacker');
-  };
-
-  // Handle redirect after loading screen is done
-  useEffect(() => {
-    if (!showLoader && shouldRedirect) {
-      window.location.href = shouldRedirect;
-    }
-  }, [showLoader, shouldRedirect]);
-
-  // Safety fallback: ensure loader hides even if onComplete doesn't fire
-  useEffect(() => {
-    const t = setTimeout(() => setShowLoader(false), 6000);
-    return () => clearTimeout(t);
-  }, []);
-
   // Ensure Google Maps Places API is loaded once globally
   const { isReady: isMapsReady } = useGoogleMaps();
 
@@ -105,14 +80,15 @@ const App = () => {
         <TooltipProvider>
           <Toaster />
           <Sonner />
-          {showLoader && <LoadingScreen onComplete={handleLoadingComplete} onAuthenticated={handleAuthenticated} />}
-          <BrowserRouter>
-            <ActivityTracker />
-            <DetailedCupid />
-            <main className="max-w-7xl mx-auto px-4 py-6">
-              <AppRoutes />
-            </main>
-          </BrowserRouter>
+          <AppAuthGate>
+            <BrowserRouter>
+              <ActivityTracker />
+              <DetailedCupid />
+              <main className="max-w-7xl mx-auto px-4 py-6">
+                <AppRoutes />
+              </main>
+            </BrowserRouter>
+          </AppAuthGate>
         </TooltipProvider>
       </QueryClientProvider>
     </ErrorBoundary>

@@ -19,7 +19,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import feliciaCrownImage from "@/assets/felicia-crown.png";
-import { AppRole } from "@/utils/rbac";
+import { useUserRole, type AppRole } from "@/hooks/useUserRole";
 
 export default function NewHome() {
   const navigate = useNavigate();
@@ -30,7 +30,7 @@ export default function NewHome() {
   const [error, setError] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [categoryType, setCategoryType] = useState<"food" | "activity" | "both">("both");
-  const [userRole, setUserRole] = useState<AppRole | null>(null);
+  const { role: userRole } = useUserRole();
 
   const { location, setCustomLocation } = useGeolocation();
   const { results, isSearching, search } = usePlacesSearch({
@@ -43,23 +43,12 @@ export default function NewHome() {
       setLoading(false);
     });
 
-    const role = localStorage.getItem('tlc_app_role') as AppRole | null;
-    setUserRole(role);
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });
 
-    const handleStorageChange = () => {
-      const newRole = localStorage.getItem('tlc_app_role') as AppRole | null;
-      setUserRole(newRole);
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-
     return () => {
       subscription.unsubscribe();
-      window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
 
@@ -146,7 +135,7 @@ export default function NewHome() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-56">
-              {(userRole === 'admin' || userRole === 'warlord') && (
+              {(userRole === 'admin' || userRole === 'moderator') && (
                 <>
                   <DropdownMenuItem onClick={() => navigate('/admin')}>
                     <Settings className="w-4 h-4 mr-2" />

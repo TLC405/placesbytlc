@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
 import { Heart, Sparkles, Palette, Shield, LogOut, User, Settings } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
-import { getStoredRole, type AppRole } from "@/utils/rbac";
+import { useUserRole } from "@/hooks/useUserRole";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
   DropdownMenu,
@@ -16,36 +16,20 @@ import {
 export const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [role, setRole] = useState<AppRole | null>(null);
-  
-  useEffect(() => {
-    // Check role from localStorage
-    const currentRole = getStoredRole();
-    setRole(currentRole);
-    
-    // Listen for role changes
-    const handleStorageChange = () => {
-      setRole(getStoredRole());
-    };
-    
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
+  const { role, loading } = useUserRole();
 
-  const handleLogout = () => {
-    localStorage.removeItem('pin_role');
-    localStorage.removeItem('pin_expiry');
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     toast.success('👋 Logged out successfully');
     navigate('/');
-    window.location.reload();
   };
   
   const isActive = (path: string) => location.pathname === path;
   
   const allNavItems = [
-    { path: "/", label: "Places by TLC", icon: Heart, emoji: "📍", requiredRole: ['tester', 'admin', 'warlord'] },
-    { path: "/teefeeme", label: "TeeFee Me", icon: Palette, emoji: "🎨", requiredRole: ['tester', 'admin', 'warlord'] },
-    { path: "/admin", label: "Admin", icon: Shield, emoji: "⚙️", requiredRole: ['admin', 'warlord'] },
+    { path: "/", label: "Places by TLC", icon: Heart, emoji: "📍", requiredRole: ['tester', 'admin', 'moderator'] },
+    { path: "/teefeeme", label: "TeeFee Me", icon: Palette, emoji: "🎨", requiredRole: ['tester', 'admin', 'moderator'] },
+    { path: "/admin", label: "Admin", icon: Shield, emoji: "⚙️", requiredRole: ['admin', 'moderator'] },
   ];
   
   // Show all tabs but mark some as disabled for testers
@@ -96,11 +80,11 @@ export const Header = () => {
                 <div className="px-3 py-2">
                   <p className="text-sm font-semibold">Quick Actions</p>
                   <p className="text-xs text-muted-foreground">
-                    {role === 'admin' || role === 'warlord' ? 'Admin' : 'Tester'} • {role}
+                    {role === 'admin' || role === 'moderator' ? 'Admin' : role === 'tester' ? 'Tester' : 'User'} • {role}
                   </p>
                 </div>
                 <DropdownMenuSeparator />
-                {(role === 'admin' || role === 'warlord') && (
+                {(role === 'admin' || role === 'moderator') && (
                   <DropdownMenuItem onClick={() => navigate('/admin')}>
                     <Settings className="w-4 h-4 mr-2" />
                     Admin Panel
@@ -125,14 +109,13 @@ export const Header = () => {
                 variant="outline" 
                 size="sm"
                 onClick={() => {
-                  if (role === 'tester') {
+                  if (role === 'admin' || role === 'moderator') {
+                    navigate('/admin');
+                  } else {
                     toast.error("🚫 ADMIN ACCESS RESTRICTED", {
                       description: "Contact administrator for access upgrade.",
                       duration: 4000,
                     });
-                  } else {
-                    navigate('/');
-                    window.location.reload();
                   }
                 }}
                 className={`gap-1 sm:gap-2 font-semibold transition-all duration-300 text-xs sm:text-sm ${
