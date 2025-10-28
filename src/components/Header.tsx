@@ -1,14 +1,17 @@
 import { useState, useEffect } from "react";
-import { Heart, Calendar, Brain, Palette, Download, Crown, Sparkles } from "lucide-react";
+import { Heart, Calendar, Brain, Palette, Download, Crown, Sparkles, UserPlus } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { supabase } from "@/integrations/supabase/client";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { AuthPanel } from "./AuthPanel";
 
 export const Header = () => {
   const location = useLocation();
   const [isTester, setIsTester] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [showSignup, setShowSignup] = useState(false);
   
   useEffect(() => {
     const checkUserRole = async () => {
@@ -114,10 +117,27 @@ export const Header = () => {
               <div className="flex-shrink-0">
                 <DarkModeToggle />
               </div>
+              <div className="flex-shrink-0">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowSignup(true)}
+                  className="gap-1 sm:gap-2 text-xs sm:text-sm"
+                >
+                  <UserPlus className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline">Sign Up</span>
+                </Button>
+              </div>
             </nav>
           </div>
         </div>
       </header>
+
+      <Dialog open={showSignup} onOpenChange={setShowSignup}>
+        <DialogContent className="max-w-md">
+          <AuthPanel />
+        </DialogContent>
+      </Dialog>
     </>
   );
 };

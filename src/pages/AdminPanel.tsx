@@ -53,6 +53,34 @@ const AdminPanel = () => {
   const [codeInput, setCodeInput] = useState("");
   const [showCodeDialog, setShowCodeDialog] = useState(true);
 
+  // Setup realtime subscription for analytics
+  useEffect(() => {
+    if (!codeUnlocked) return;
+
+    const channel = supabase
+      .channel('admin-analytics-updates')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'profiles' },
+        () => fetchUserAnalytics()
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'user_activity_log' },
+        () => fetchUserAnalytics()
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'user_analytics' },
+        () => fetchUserAnalytics()
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [codeUnlocked]);
+
   // Check admin access on mount
   useEffect(() => {
     const checkAdminAccess = async () => {
@@ -216,6 +244,250 @@ const AdminPanel = () => {
     } catch (error: any) {
       console.error("Download error:", error);
       toast.error(error.message || "Failed to download source");
+    }
+  };
+
+  const handleDownloadAIPrompt = async () => {
+    try {
+      const promptText = `# FELICIA.TLC - Complete App Blueprint for AI Reconstruction
+
+## App Overview
+**Name**: FELICIA.TLC — Your Personalized Love Journey
+**Purpose**: Oklahoma City date spot discovery platform with AI-powered recommendations
+**Stack**: React 18 + Vite + TypeScript + Tailwind CSS + Supabase (Lovable Cloud)
+**Theme**: Romantic, playful, feminine aesthetic with pink/purple gradients
+
+## Core Features
+
+### 1. Authentication System
+- **Code Gate**: Entry requires case-insensitive code "crip" (military/tactical theme)
+- **Admin Code**: "1309" for admin access
+- **User Auth**: Email/password signup and login via Supabase Auth
+- **Tester Code**: "405" grants tester role with extra features
+- Auto-confirm email enabled for faster testing
+
+### 2. Main Tabs
+- **Home**: Place discovery with search, filters, map integration
+- **Saved**: User's favorited places (auth required)
+- **Quizzes**: Love Language & MBTI personality tests
+- **Account**: User profile, theme toggle, logout
+
+### 3. Place Discovery
+- Google Maps integration for location search
+- Filter by: distance, price level ($-$$$), rating, open now
+- Quick chips: Outdoors, Indoors, Rain-safe, Low-energy, First date
+- Real-time search with debouncing
+- Save favorites to Supabase
+- Place details modal with full information
+
+### 4. AI Features (Tester Access)
+- **Cupid AI**: Date planning with 3-stop itineraries
+- **AI Recommendations**: Personalized place suggestions based on user activity
+- **Event Discovery**: Oklahoma City events scraping and caching
+- **Cartoon Editor (TeeFeeMee)**: Upload photos, apply Ren & Stimpy and other cartoon styles
+
+### 5. Couple Mode Features
+- **Pairing System**: Generate unique pairing codes
+- **Shared Data**: Couple preferences and favorites
+- **Period Tracker**: For couples (code "666" to access)
+- **Midpoint Calculator**: Find meetup spots between partners
+
+### 6. Admin Portal (Code: 1309)
+- **Dashboard**: User analytics, session tracking, engagement metrics
+- **Command Station**: Feature management and app settings
+- **User Analytics**: Real-time user activity monitoring
+- **Source Download**: Export entire codebase with README
+- **AI Prompt Download**: This comprehensive blueprint
+- **SMS Debug Panel**: Test messaging features
+- **Updates Management**: Track and publish app updates
+
+### 7. Gamification
+- User engagement tracking
+- Activity logging (page visits, searches, place views)
+- Session duration metrics
+- IP history and location tracking
+
+## Database Schema (Supabase)
+
+### Tables
+1. **profiles**: User info (display_name, avatar_url, email, gender)
+2. **user_roles**: Role assignment (user, tester, admin)
+3. **user_activity_log**: Activity tracking (activity_type, activity_data)
+4. **user_analytics**: Aggregated stats (sessions, time_spent, engagement_score)
+5. **user_sessions**: Session tracking (ip_address, device_info, duration)
+6. **ip_history**: IP tracking (location_data, visit_count)
+7. **user_preferences**: Learned preferences (place types, price levels)
+8. **ai_recommendations**: AI-generated suggestions
+9. **couples**: Pairing data (partner_1_id, partner_2_id, pairing_code)
+10. **shared_data**: Couple shared preferences
+11. **discovered_places**: Cached place data from Google
+12. **okc_events_cache**: Local events database
+13. **app_updates**: Version history and changelog
+14. **custom_themes**: Theme configurations
+15. **app_settings**: Global app settings
+16. **sms_usage**: SMS sending logs
+17. **phone_rate_limits**: Rate limiting for SMS
+
+### Edge Functions
+1. **admin-portal-data**: Fetch analytics for admin panel
+2. **track-activity**: Log user activity
+3. **ai-recommender**: Generate AI recommendations
+4. **discover-date-spots**: Find and cache places
+5. **event-discovery**: Scrape OKC events
+6. **download-source**: Package and download codebase
+7. **period-tracker-setup**: Initialize period tracking
+8. **session-tracker**: Manage user sessions
+9. **teefeeme-cartoonify**: AI image transformation using Lovable AI
+
+## Visual Design
+
+### Color Palette
+- Primary: Pink to purple gradients (hsl values in index.css)
+- Accent: Rose/purple combinations
+- Background: Light/dark mode support
+- Code Gate: Military green (#1a3d1a), tactical orange (#ff6b00)
+
+### Components
+- Floating hearts animation
+- Gradient cards with backdrop blur
+- Animated loading states
+- Toast notifications (Sonner)
+- Responsive mobile-first design
+- Dark mode toggle in header
+
+### Typography
+- Headers: Bold, gradient text
+- Body: Clean sans-serif
+- Code elements: Monospace
+- Icons: Lucide React
+
+## Key User Flows
+
+1. **New User**:
+   - Enter code "crip" → Navigate to homepage → Browse places → Sign up to save favorites
+
+2. **Tester**:
+   - Enter code "crip" → Sign up with code "405" → Access Cupid AI, Cartoon Editor, Event Discovery
+
+3. **Admin**:
+   - Enter code "1309" → Redirected to admin panel → View realtime analytics, download source
+
+4. **Couple**:
+   - Create couple pairing → Share code with partner → Partner enters code → Access shared features
+
+## Environment Variables
+\`\`\`
+VITE_SUPABASE_URL
+VITE_SUPABASE_PUBLISHABLE_KEY
+VITE_SUPABASE_PROJECT_ID
+VITE_GOOGLE_MAPS_KEY
+LOVABLE_API_KEY (auto-provided)
+\`\`\`
+
+## API Integrations
+- **Google Maps**: Places API, Geocoding, Maps embed
+- **Lovable AI**: google/gemini-2.5-flash for recommendations and image generation
+- **Supabase**: Auth, Database, Edge Functions, Realtime
+
+## Security Features
+- Row Level Security (RLS) on all tables
+- User-specific data access policies
+- Admin role verification
+- Code-based feature gating
+- Session-based access control
+- Rate limiting on SMS features
+
+## Performance Optimizations
+- Lazy loading for maps and heavy components
+- Debounced search inputs
+- Optimistic UI updates for favorites
+- Image lazy loading
+- Route-based code splitting
+- Service worker for offline support
+
+## Testing Access Codes
+- App Access: "crip" (case-insensitive)
+- Admin Panel: "1309"
+- Tester Features: "405" (during signup)
+- Period Tracker: "666"
+
+## Deployment
+- Platform: Lovable Cloud (auto-deployment)
+- Build: Vite production build
+- Database: Supabase (managed by Lovable Cloud)
+- CDN: Auto-configured
+- SSL: Auto-enabled
+
+## File Structure
+\`\`\`
+src/
+├── components/
+│   ├── ui/ (shadcn components)
+│   ├── admin/ (admin-specific)
+│   ├── CodeGate.tsx (access control)
+│   ├── AuthPanel.tsx (login/signup)
+│   ├── Header.tsx (navigation)
+│   ├── PlaceCard.tsx (place display)
+│   └── ... (30+ components)
+├── pages/
+│   ├── Home.tsx
+│   ├── AdminPanel.tsx
+│   ├── CoupleMode.tsx
+│   ├── Quizzes.tsx
+│   └── ... (10+ pages)
+├── hooks/
+│   ├── useGeolocation.ts
+│   ├── useGoogleMaps.ts
+│   ├── usePlacesSearch.ts
+│   └── useSessionTracker.ts
+├── lib/
+│   ├── supabase.ts (client)
+│   ├── googleMaps.ts
+│   ├── utils.ts
+│   └── storage.ts
+├── data/
+│   ├── loveLanguageQuiz.ts
+│   └── mbtiQuiz.ts
+├── index.css (design system)
+└── main.tsx
+\`\`\`
+
+## Implementation Notes
+- All colors use HSL semantic tokens from index.css
+- Never use direct color values in components
+- Always use Lovable AI for AI features (don't ask for API keys)
+- Realtime subscriptions for live data updates
+- Mobile-first responsive design
+- Accessibility: ARIA labels, focus states, keyboard navigation
+- Error boundaries catch and display friendly errors
+- Toast notifications for user feedback
+
+## Future Enhancements (Planned)
+- Photo galleries for places
+- Advanced AI recommendations
+- Social sharing features
+- Calendar integration
+- Push notifications
+- More cartoon styles
+- Event RSVP system
+
+---
+This blueprint provides everything needed to reconstruct the FELICIA.TLC app identically using AI tools like Claude, ChatGPT, or Lovable.`;
+
+      const blob = new Blob([promptText], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'FELICIA-TLC-AI-Prompt.txt';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      toast.success("📝 AI Prompt downloaded! Use this to rebuild the app with any AI tool.");
+    } catch (error: any) {
+      console.error("Download error:", error);
+      toast.error(error.message || "Failed to download AI prompt");
     }
   };
 
@@ -456,6 +728,19 @@ const AdminPanel = () => {
                   </div>
                   <Button onClick={handleDownloadSource} className="gap-2">
                     <Download className="h-4 w-4" />
+                    Download
+                  </Button>
+                </div>
+
+                <div className="flex items-center justify-between p-4 rounded-lg border border-border">
+                  <div>
+                    <p className="font-medium">Download AI Prompt</p>
+                    <p className="text-sm text-muted-foreground">
+                      Complete app blueprint for AI reconstruction
+                    </p>
+                  </div>
+                  <Button onClick={handleDownloadAIPrompt} className="gap-2">
+                    <Code className="h-4 w-4" />
                     Download
                   </Button>
                 </div>
