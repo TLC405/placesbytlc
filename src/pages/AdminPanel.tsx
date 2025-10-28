@@ -161,7 +161,14 @@ const AdminPanel = () => {
       
       if (error) {
         console.error('Edge function error:', error);
-        throw error;
+        toast.error('Failed to load analytics data');
+        return;
+      }
+
+      if (!data) {
+        console.warn('No data returned from edge function');
+        setUsers([]);
+        return;
       }
 
       console.log('Admin portal data received:', data);
@@ -231,14 +238,14 @@ const AdminPanel = () => {
       if (error) throw error;
       
       // Create README file
-      const readme = data?.readme || 'FELICIA.TLC Source Code';
+      const readme = data?.readme || 'INPERSON.TLC Source Code';
       const readmeBlob = new Blob([readme], { type: 'text/markdown' });
       const readmeUrl = URL.createObjectURL(readmeBlob);
       
       // Download README
       const readmeLink = document.createElement('a');
       readmeLink.href = readmeUrl;
-      readmeLink.download = 'FELICIA-TLC-README.md';
+      readmeLink.download = 'INPERSON-TLC-README.md';
       document.body.appendChild(readmeLink);
       readmeLink.click();
       document.body.removeChild(readmeLink);
@@ -258,10 +265,10 @@ const AdminPanel = () => {
 
   const handleDownloadAIPrompt = async () => {
     try {
-      const promptText = `# FELICIA.TLC - Complete App Blueprint for AI Reconstruction
+      const promptText = `# INPERSON.TLC - Complete App Blueprint for AI Reconstruction
 
 ## App Overview
-**Name**: FELICIA.TLC — Your Personalized Love Journey
+**Name**: INPERSON.TLC — Your Personalized Love Journey
 **Purpose**: Oklahoma City date spot discovery platform with AI-powered recommendations
 **Stack**: React 18 + Vite + TypeScript + Tailwind CSS + Supabase (Lovable Cloud)
 **Theme**: Romantic, playful, feminine aesthetic with pink/purple gradients
@@ -481,13 +488,13 @@ src/
 - Event RSVP system
 
 ---
-This blueprint provides everything needed to reconstruct the FELICIA.TLC app identically using AI tools like Claude, ChatGPT, or Lovable.`;
+This blueprint provides everything needed to reconstruct the INPERSON.TLC app identically using AI tools like Claude, ChatGPT, or Lovable.`;
 
       const blob = new Blob([promptText], { type: 'text/plain' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = 'FELICIA-TLC-AI-Prompt.txt';
+      link.download = 'INPERSON-TLC-AI-Prompt.txt';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -604,11 +611,11 @@ This blueprint provides everything needed to reconstruct the FELICIA.TLC app ide
             })}
           </TabsList>
 
-          <TabsContent value="checklist" className="space-y-6">
+          <TabsContent value="overview" className="space-y-6">
+            {/* App Readiness Checklist */}
             <AppReadinessChecklist />
-          </TabsContent>
-
-          <TabsContent value="dashboard" className="space-y-6">
+            
+            {/* Quick Stats Dashboard */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <Card className="p-6">
                 <div className="flex items-center justify-between mb-2">
@@ -670,11 +677,11 @@ This blueprint provides everything needed to reconstruct the FELICIA.TLC app ide
             </Card>
           </TabsContent>
 
-          <TabsContent value="command">
+          <TabsContent value="management" className="space-y-6">
+            {/* Command Station */}
             <CommandStation />
-          </TabsContent>
-
-          <TabsContent value="users" className="space-y-6">
+            
+            {/* User Management */}
             <Card className="p-6">
               <h3 className="text-lg font-semibold mb-4">User List</h3>
               <div className="space-y-2 max-h-[600px] overflow-y-auto">
@@ -716,29 +723,25 @@ This blueprint provides everything needed to reconstruct the FELICIA.TLC app ide
                 ))}
               </div>
             </Card>
-          </TabsContent>
-
-          <TabsContent value="analytics">
+            
+            {/* Analytics Dashboard */}
             <UserAnalyticsDashboard />
-          </TabsContent>
-
-          <TabsContent value="sms" className="space-y-6">
+            
+            {/* SMS Panel */}
             <SMSNotificationPanel />
-          </TabsContent>
-
-          <TabsContent value="ai" className="space-y-6">
-            <AIPromptInterface />
-          </TabsContent>
-
-          <TabsContent value="wifi" className="space-y-6">
-            <WiFiAnalyzer />
-          </TabsContent>
-
-          <TabsContent value="updates">
+            
+            {/* Recent Updates */}
             <RecentUpdates />
           </TabsContent>
 
-          <TabsContent value="tools" className="space-y-6">
+          <TabsContent value="developer" className="space-y-6">
+            {/* AI Prompt Interface */}
+            <AIPromptInterface />
+            
+            {/* WiFi Analyzer */}
+            <WiFiAnalyzer />
+            
+            {/* Code Export & Tools */}
             <CodeExportSystem />
             
             <Card className="p-6">

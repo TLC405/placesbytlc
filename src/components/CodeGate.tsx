@@ -46,7 +46,7 @@ export const CodeGate = ({ children }: CodeGateProps) => {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
-        toast.error("⚠️ Admin requires authentication");
+        toast.error("⚠️ Admin access requires authentication - Please sign in first");
         return;
       }
 

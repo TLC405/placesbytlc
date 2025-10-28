@@ -85,12 +85,12 @@ export const Header = () => {
               
               <div className="leading-tight">
                 <div className="text-xl sm:text-3xl font-black gradient-text tracking-tight drop-shadow-lg animate-pulse">
-                  ✨ FELICIA.TLC ✨
+                  ✨ INPERSON.TLC ✨
                 </div>
                 <div className="text-xs sm:text-sm font-bold tracking-widest hidden sm:block bg-gradient-to-r from-amber-400 via-rose-400 to-amber-400 bg-clip-text text-transparent animate-gradient-shift" style={{ backgroundSize: '200% 200%' }}>
                   <span className="inline-block animate-pulse">👑</span>
                   <span className="mx-1">
-                    QUEEN FELICIA'S LOVE HUB
+                    ONE NEW ADVENTURE
                   </span>
                   <span className="inline-block animate-pulse delay-75">👑</span>
                 </div>

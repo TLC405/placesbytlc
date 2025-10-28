@@ -15,11 +15,11 @@ export default function ComingSoon() {
         </div>
 
         <div className="space-y-4">
-          <h1 className="text-6xl font-black bg-gradient-to-r from-pink-500 via-purple-500 to-rose-500 bg-clip-text text-transparent">
-            BOO MODE
+          <h1 className="text-6xl font-black bg-gradient-to-r from-pink-500 via-purple-500 to-rose-500 bg-clip-text text-transparent animate-pulse">
+            👻 BOO MODE 👻
           </h1>
-          <p className="text-2xl font-bold text-muted-foreground">
-            Coming Soon
+          <p className="text-2xl font-bold text-primary/80 animate-pulse">
+            COMING SOON
           </p>
         </div>
 
