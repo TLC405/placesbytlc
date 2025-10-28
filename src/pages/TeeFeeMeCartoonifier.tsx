@@ -1,10 +1,9 @@
 import { useState, useRef } from "react";
-import { Upload, Sparkles, Download, RefreshCw, Camera, Wand2, ImageIcon } from "lucide-react";
+import { Upload, Download, RefreshCw, Camera, Sparkles, ImageIcon, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { CupidSwatGame } from "@/components/CupidSwatGame";
 
 type CartoonStyle = "simpsons" | "flintstones" | "trump" | "elon" | "familyguy" | "renandstimpy" | "southpark" | "anime" | "disney" | "marvel" | "pixar" | "rickmorty";
 
@@ -16,133 +15,104 @@ const TeeFeeMeCartoonifier = () => {
   const [selectedStyle, setSelectedStyle] = useState<CartoonStyle>("simpsons");
   const [showResult, setShowResult] = useState(false);
   const [dragActive, setDragActive] = useState(false);
-  const [elapsedTime, setElapsedTime] = useState(0);
-  const [estimatedTime] = useState(30); // 30 seconds estimated
-  const [gameScore, setGameScore] = useState(0);
-  const [showCountdown, setShowCountdown] = useState(false);
-  const [countdown, setCountdown] = useState(3);
+  const [progress, setProgress] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const styles = [
     { 
       id: "simpsons" as CartoonStyle, 
-      name: "The Simpsons", 
-      emoji: "💛",
-      gradient: "from-yellow-400 to-yellow-600",
-      borderColor: "border-yellow-500",
+      name: "Simpsons", 
+      icon: "🍩",
+      color: "bg-yellow-500",
       available: true
     },
     { 
       id: "flintstones" as CartoonStyle, 
       name: "Flintstones", 
-      emoji: "🦴",
-      gradient: "from-orange-400 to-red-500",
-      borderColor: "border-orange-500",
+      icon: "🦴",
+      color: "bg-orange-500",
       available: true
     },
     { 
       id: "trump" as CartoonStyle, 
-      name: "Trump Style", 
-      emoji: "🎩",
-      gradient: "from-red-500 to-blue-600",
-      borderColor: "border-blue-500",
+      name: "Trump", 
+      icon: "🎩",
+      color: "bg-blue-600",
       available: true
     },
     { 
       id: "elon" as CartoonStyle, 
-      name: "Elon Musk", 
-      emoji: "🚀",
-      gradient: "from-blue-500 to-purple-600",
-      borderColor: "border-purple-500",
+      name: "Elon", 
+      icon: "🚀",
+      color: "bg-purple-600",
       available: true
     },
     { 
       id: "familyguy" as CartoonStyle, 
       name: "Family Guy", 
-      emoji: "🍺",
-      gradient: "from-green-400 to-blue-500",
-      borderColor: "border-teal-500",
+      icon: "🍺",
+      color: "bg-teal-500",
       available: true
     },
     { 
       id: "renandstimpy" as CartoonStyle, 
       name: "Ren & Stimpy", 
-      emoji: "😵",
-      gradient: "from-pink-500 to-red-600",
-      borderColor: "border-red-500",
+      icon: "😵",
+      color: "bg-red-500",
       available: true
     },
-    // Coming Soon Styles
     { 
       id: "southpark" as CartoonStyle, 
       name: "South Park", 
-      emoji: "🎿",
-      gradient: "from-cyan-400 to-blue-500",
-      borderColor: "border-cyan-500",
+      icon: "🎿",
+      color: "bg-cyan-500",
       available: false
     },
     { 
       id: "anime" as CartoonStyle, 
-      name: "Anime Style", 
-      emoji: "⚡",
-      gradient: "from-purple-400 to-pink-500",
-      borderColor: "border-purple-500",
+      name: "Anime", 
+      icon: "⚡",
+      color: "bg-pink-500",
       available: false
     },
     { 
       id: "disney" as CartoonStyle, 
-      name: "Disney Classic", 
-      emoji: "✨",
-      gradient: "from-blue-400 to-purple-500",
-      borderColor: "border-blue-500",
+      name: "Disney", 
+      icon: "✨",
+      color: "bg-blue-400",
       available: false
     },
     { 
       id: "marvel" as CartoonStyle, 
-      name: "Marvel Comics", 
-      emoji: "💥",
-      gradient: "from-red-500 to-yellow-500",
-      borderColor: "border-red-500",
+      name: "Marvel", 
+      icon: "💥",
+      color: "bg-red-600",
       available: false
     },
     { 
       id: "pixar" as CartoonStyle, 
-      name: "Pixar 3D", 
-      emoji: "🎬",
-      gradient: "from-teal-400 to-blue-600",
-      borderColor: "border-teal-500",
+      name: "Pixar", 
+      icon: "🎬",
+      color: "bg-teal-600",
       available: false
     },
     { 
       id: "rickmorty" as CartoonStyle, 
       name: "Rick & Morty", 
-      emoji: "🧪",
-      gradient: "from-green-500 to-blue-600",
-      borderColor: "border-green-500",
+      icon: "🧪",
+      color: "bg-green-600",
       available: false
     },
   ];
 
-  const funnyMessages = [
-    "🎨 Adding cartoon magic...",
-    "✨ Transforming your face into art...",
-    "🎭 Applying legendary style...",
-    "🌟 Making you absolutely fabulous...",
-    "💫 Almost ready... perfecting details...",
-    "🎪 Creating cartoon masterpiece...",
-  ];
-
-  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
-
   const handleFileSelect = (file: File) => {
     if (!file.type.startsWith("image/")) {
-      toast.error("Please upload an image file!");
+      toast.error("Please upload an image file");
       return;
     }
 
     if (file.size > 10 * 1024 * 1024) {
-      toast.error("File too large! Please upload an image under 10MB.");
+      toast.error("File too large - max 10MB");
       return;
     }
 
@@ -180,39 +150,17 @@ const TeeFeeMeCartoonifier = () => {
   };
 
   const handleCartoonify = async () => {
-    if (!previewUrl) return;
+    if (!selectedFile || !previewUrl) return;
 
-    // Show 3-2-1 countdown
-    setShowCountdown(true);
-    setCountdown(3);
-    
-    for (let i = 3; i > 0; i--) {
-      setCountdown(i);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-    }
-    
-    setShowCountdown(false);
     setIsProcessing(true);
-    setElapsedTime(0);
-    setCurrentMessageIndex(0);
-    setGameScore(0);
-    
-    // Start timer
-    timerRef.current = setInterval(() => {
-      setElapsedTime(prev => prev + 0.1);
-    }, 100);
+    setProgress(0);
+    setCartoonUrl("");
 
-    const messageInterval = setInterval(() => {
-      setCurrentMessageIndex((prev) => (prev + 1) % funnyMessages.length);
-    }, 2000);
-
-    // TIMEOUT WRAPPER - 60 second max
-    const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error('Request timed out after 60 seconds')), 60000);
-    });
+    const progressInterval = setInterval(() => {
+      setProgress(prev => Math.min(prev + 2, 95));
+    }, 300);
 
     try {
-      // Convert image to base64
       const reader = new FileReader();
       const imageDataPromise = new Promise<string>((resolve) => {
         reader.onloadend = () => resolve(reader.result as string);
@@ -221,22 +169,17 @@ const TeeFeeMeCartoonifier = () => {
       
       const imageData = await imageDataPromise;
 
-      // Race between API call and timeout
-      const result: any = await Promise.race([
-        supabase.functions.invoke('teefeeme-cartoonify', {
-          body: { imageData, style: selectedStyle }
-        }),
-        timeoutPromise
-      ]);
+      const { data, error } = await supabase.functions.invoke('teefeeme-cartoonify', {
+        body: { imageData, style: selectedStyle }
+      });
 
-      const { data, error } = result;
+      clearInterval(progressInterval);
 
       if (error) {
-        // Handle specific error codes
         if (error.message?.includes('429')) {
-          toast.error('⏰ Too many requests! Please wait 30 seconds and try again.');
+          toast.error('Too many requests - wait 30 seconds');
         } else if (error.message?.includes('402')) {
-          toast.error('💳 AI credits depleted. Please contact admin to add credits.');
+          toast.error('AI credits depleted - contact admin');
         } else {
           throw error;
         }
@@ -244,44 +187,32 @@ const TeeFeeMeCartoonifier = () => {
       }
 
       if (data?.error) {
-        // Handle edge function errors
         if (data.code === 429) {
-          toast.error('⏰ Too many requests! Please wait 30 seconds and try again.');
+          toast.error('Too many requests - wait 30 seconds');
         } else if (data.code === 402) {
-          toast.error('💳 AI credits depleted. Please contact admin to add credits.');
+          toast.error('AI credits depleted - contact admin');
         } else {
-          toast.error(`❌ ${data.error}`);
+          toast.error(`Error: ${data.error}`);
         }
         return;
       }
 
       if (data?.cartoonImage) {
+        setProgress(100);
         setCartoonUrl(data.cartoonImage);
         setShowResult(true);
-        toast.success(`🎉 Your TeeFee cartoon is ready! Game Score: ${gameScore} 🎮`);
+        toast.success('TeeFee transformation complete!');
       } else {
-        throw new Error('No cartoon image returned');
+        throw new Error('No image returned');
       }
     } catch (error) {
       console.error('Cartoonify error:', error);
-      if (error instanceof Error && error.message === 'Request timed out after 60 seconds') {
-        toast.error('⏱️ Request timed out. The AI is taking too long. Please try again!');
-      } else {
-        const errorMessage = error instanceof Error ? error.message : "Oops! The magic didn't work. Try again!";
-        toast.error(errorMessage);
-      }
+      const errorMessage = error instanceof Error ? error.message : "Failed to transform image";
+      toast.error(errorMessage);
     } finally {
       setIsProcessing(false);
-      clearInterval(messageInterval);
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
+      clearInterval(progressInterval);
     }
-  };
-
-  const handleGameScore = (score: number) => {
-    setGameScore(score);
   };
 
   const handleDownload = () => {
@@ -290,7 +221,7 @@ const TeeFeeMeCartoonifier = () => {
     link.href = cartoonUrl;
     link.download = `teefeeme-${selectedStyle}-${Date.now()}.png`;
     link.click();
-    toast.success("🎁 Your cartoon downloaded!");
+    toast.success("Downloaded!");
   };
 
   const handleReset = () => {
@@ -310,37 +241,23 @@ const TeeFeeMeCartoonifier = () => {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Festive Animated Background */}
-      <div className="fixed inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/20 via-pink-500/20 to-purple-600/20 animate-gradient-shift" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,215,0,0.15),transparent_50%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(255,0,255,0.15),transparent_50%)]" />
-        
-        {/* Floating Sparkles */}
-        <div className="absolute top-20 left-20 animate-float">✨</div>
-        <div className="absolute top-40 right-32 animate-float" style={{ animationDelay: "0.5s" }}>🎨</div>
-        <div className="absolute bottom-32 left-40 animate-float" style={{ animationDelay: "1s" }}>💫</div>
-        <div className="absolute bottom-20 right-20 animate-float" style={{ animationDelay: "1.5s" }}>⭐</div>
-      </div>
-
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Hero Section */}
         {!selectedFile && (
           <div className="text-center mb-12 animate-fade-in">
-            <div className="text-8xl mb-6 animate-float">🎨</div>
+            <div className="text-8xl mb-6">🎨</div>
             
-            <h1 className="text-5xl md:text-7xl font-bold mb-4 gradient-text drop-shadow-2xl">
+            <h1 className="text-5xl md:text-7xl font-black mb-4">
               TeeFee Me
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
               Transform your photos into legendary cartoon styles
             </p>
 
-            {/* Upload Zone */}
             <Card
-              className={`p-12 border-2 border-dashed transition-all duration-300 cursor-pointer glass ${
-                dragActive ? "border-primary bg-primary/10 scale-105" : "border-muted-foreground/30"
+              className={`p-12 border-2 border-dashed transition-all duration-300 cursor-pointer ${
+                dragActive ? "border-primary bg-primary/5 scale-105" : "border-border"
               }`}
               onDragEnter={handleDrag}
               onDragLeave={handleDrag}
@@ -349,11 +266,11 @@ const TeeFeeMeCartoonifier = () => {
               onClick={() => fileInputRef.current?.click()}
             >
               <div className="flex flex-col items-center space-y-4">
-                <div className="p-6 rounded-full bg-gradient-to-br from-yellow-500 via-pink-500 to-purple-600 shadow-glow animate-pulse-subtle">
-                  <Upload className="w-12 h-12 text-white" />
+                <div className="p-6 rounded-full bg-primary/10">
+                  <Upload className="w-12 h-12 text-primary" />
                 </div>
                 <div>
-                  <p className="text-xl font-semibold mb-2">Drop your photo here or click to browse</p>
+                  <p className="text-xl font-semibold mb-2">Drop photo here or click to browse</p>
                   <p className="text-sm text-muted-foreground">
                     JPG, PNG, or WEBP • Max 10MB
                   </p>
@@ -381,28 +298,28 @@ const TeeFeeMeCartoonifier = () => {
               }}
             >
               <Camera className="mr-2" />
-              Take a Selfie
+              Take Selfie
             </Button>
           </div>
         )}
 
-        {/* Style Selection */}
+        {/* Style Selection & Processing */}
         {selectedFile && !showResult && (
           <div className="space-y-8 animate-fade-in">
             <div className="text-center">
-              <h2 className="text-4xl font-bold mb-3 gradient-text">
-                Pick Your Style 🎭
+              <h2 className="text-4xl font-black mb-3">
+                Pick Your Style
               </h2>
-              <p className="text-lg text-muted-foreground">Choose your legendary transformation</p>
+              <p className="text-lg text-muted-foreground">Choose your transformation</p>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
               {styles.map((style) => (
                 <Button
                   key={style.id}
                   onClick={() => {
                     if (!style.available) {
-                      toast.info(`${style.name} coming soon! 🎉`);
+                      toast.info(`${style.name} coming soon!`);
                       return;
                     }
                     setSelectedStyle(style.id);
@@ -412,112 +329,86 @@ const TeeFeeMeCartoonifier = () => {
                     }
                   }}
                   disabled={!style.available}
-                  className={`h-32 flex flex-col gap-2 transition-all duration-300 border-4 rounded-2xl relative ${
-                    !style.available
-                      ? `bg-muted/30 border-muted-foreground/20 opacity-70 cursor-not-allowed`
-                      : selectedStyle === style.id 
-                      ? `bg-gradient-to-br ${style.gradient} ${style.borderColor} text-white shadow-glow scale-110 animate-bounce-in` 
-                      : `bg-muted/50 border-muted hover:border-primary/50 hover:scale-105 hover:shadow-lg`
+                  variant={selectedStyle === style.id ? "default" : "outline"}
+                  className={`h-24 flex flex-col gap-2 relative ${
+                    !style.available ? "opacity-50 cursor-not-allowed" : ""
                   }`}
-                  style={{
-                    transform: selectedStyle === style.id ? 'rotate(-2deg)' : 'rotate(0deg)',
-                    fontFamily: selectedStyle === style.id ? '"Comic Sans MS", cursive' : 'inherit'
-                  }}
                 >
                   {!style.available && (
-                    <div className="absolute top-2 right-2 bg-yellow-500 text-black text-xs px-2 py-1 rounded-full font-bold animate-pulse">
+                    <div className="absolute top-1 right-1 bg-primary text-primary-foreground text-xs px-2 py-0.5 rounded-full font-bold">
                       SOON
                     </div>
                   )}
-                  <span className="text-4xl drop-shadow-lg">{style.emoji}</span>
-                  <span className="font-bold text-lg">{style.name}</span>
+                  <span className="text-3xl">{style.icon}</span>
+                  <span className="font-bold text-sm">{style.name}</span>
                 </Button>
               ))}
             </div>
 
-            <Card className="p-8 glass">
-              <div className="flex flex-col md:flex-row gap-8 items-center">
-                <div className="flex-1 w-full">
+            <Card className="p-6">
+              <div className="grid md:grid-cols-2 gap-6 items-center">
+                <div>
+                  <h3 className="text-xl font-bold mb-4">Your Photo</h3>
                   <img
                     src={previewUrl}
                     alt="Preview"
-                    className="w-full h-auto rounded-xl shadow-elegant max-h-96 object-contain border-4 border-primary/20"
+                    className="w-full h-auto rounded-lg border-2 border-border"
                   />
                 </div>
-                <div className="flex flex-col gap-4">
-                  <Button
-                    size="lg"
-                    onClick={handleCartoonify}
-                    disabled={isProcessing}
-                    className="bg-gradient-to-r from-yellow-500 via-pink-500 to-purple-600 hover:opacity-90 shadow-glow text-lg py-6"
-                  >
-                    {isProcessing ? (
-                      <>
-                        <Wand2 className="mr-2 animate-spin" />
-                        Creating Magic...
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="mr-2 animate-bounce" />
-                        TeeFee Me!
-                      </>
-                    )}
-                  </Button>
-                  <Button variant="outline" size="lg" onClick={handleNewPhoto}>
-                    <RefreshCw className="mr-2" />
-                    Different Photo
-                  </Button>
-                </div>
-              </div>
-
-              {isProcessing && (
-                <div className="mt-8 relative animate-fade-in space-y-6">
-                  {/* Countdown overlay before game starts */}
-                  {showCountdown && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/80 backdrop-blur-lg z-50 rounded-2xl">
-                      <div className="text-center">
-                        <div className="text-9xl font-black gradient-text animate-pulse mb-4">
-                          {countdown}
-                        </div>
-                        <p className="text-2xl text-muted-foreground">
-                          Get Ready to Swat Cupid!
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Cupid Swat Mini-Game */}
-                  {!showCountdown && (
+                
+                <div className="space-y-4">
+                  {!isProcessing && !cartoonUrl && (
                     <>
-                      <CupidSwatGame isActive={isProcessing && !showCountdown} onScore={handleGameScore} />
-
-                      {/* Progress Info Below Game */}
-                      <div className="mt-6 space-y-4">
-                        <div className="flex justify-between items-center text-sm font-medium">
-                          <span className="flex items-center gap-2">
-                            🎮 <span className="font-black text-lg text-primary">{gameScore} points</span>
-                          </span>
-                          <span>{Math.min(100, Math.round((elapsedTime / estimatedTime) * 100))}% Complete</span>
-                        </div>
-                        <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-gradient-to-r from-yellow-500 via-pink-500 to-purple-600 transition-all duration-300 relative overflow-hidden"
-                            style={{ width: `${Math.min(100, (elapsedTime / estimatedTime) * 100)}%` }}
-                          >
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer" />
-                          </div>
-                        </div>
-                        <p className="text-lg font-semibold text-muted-foreground animate-pulse text-center">
-                          {funnyMessages[currentMessageIndex]}
-                        </p>
-                        <div className="text-4xl font-black text-primary animate-pulse text-center">
-                          ⏱️ {Math.max(0, Math.ceil(estimatedTime - elapsedTime))}s
-                        </div>
-                      </div>
+                      <Button
+                        size="lg"
+                        onClick={handleCartoonify}
+                        className="w-full text-lg py-6"
+                      >
+                        <Sparkles className="mr-2" />
+                        TeeFee Me!
+                      </Button>
+                      <Button variant="outline" size="lg" onClick={handleNewPhoto} className="w-full">
+                        <RefreshCw className="mr-2" />
+                        Different Photo
+                      </Button>
                     </>
                   )}
+
+                  {isProcessing && (
+                    <div className="space-y-4">
+                      <div className="text-center">
+                        <Zap className="w-12 h-12 mx-auto mb-4 text-primary animate-pulse" />
+                        <p className="text-lg font-semibold mb-2">Creating Magic...</p>
+                        <p className="text-sm text-muted-foreground">This may take 20-40 seconds</p>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span>Progress</span>
+                          <span>{progress}%</span>
+                        </div>
+                        <div className="h-3 bg-muted rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-primary transition-all duration-300"
+                            style={{ width: `${progress}%` }}
+                          />
+                        </div>
+                      </div>
+
+                      {cartoonUrl && (
+                        <div className="animate-fade-in">
+                          <h3 className="text-lg font-bold mb-3 text-center">Preview</h3>
+                          <img
+                            src={cartoonUrl}
+                            alt="Generating..."
+                            className="w-full h-auto rounded-lg border-2 border-primary"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
             </Card>
           </div>
         )}
@@ -526,30 +417,30 @@ const TeeFeeMeCartoonifier = () => {
         {showResult && cartoonUrl && (
           <div className="space-y-8 animate-fade-in">
             <div className="text-center">
-              <h2 className="text-5xl font-bold mb-3 gradient-text">
-                You've Been TeeFeed! 🎉
+              <h2 className="text-5xl font-black mb-3">
+                You've Been TeeFeed!
               </h2>
               <p className="text-lg text-muted-foreground">Transformation complete</p>
             </div>
 
-            <Card className="p-8 glass">
-              <div className="grid md:grid-cols-2 gap-8">
+            <Card className="p-6">
+              <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <h3 className="text-xl font-bold mb-4 text-center">Before</h3>
                   <img
                     src={previewUrl}
                     alt="Original"
-                    className="w-full h-auto rounded-xl shadow-elegant border-4 border-muted-foreground/20"
+                    className="w-full h-auto rounded-lg border-2 border-border"
                   />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold mb-4 text-center bg-gradient-to-r from-yellow-500 via-pink-500 to-purple-600 bg-clip-text text-transparent">
-                    After - {styles.find(s => s.id === selectedStyle)?.name} ✨
+                  <h3 className="text-xl font-bold mb-4 text-center">
+                    After - {styles.find(s => s.id === selectedStyle)?.name}
                   </h3>
                   <img
                     src={cartoonUrl}
                     alt="Cartoon"
-                    className="w-full h-auto rounded-xl shadow-glow border-4 border-primary animate-pulse-subtle"
+                    className="w-full h-auto rounded-lg border-2 border-primary"
                   />
                 </div>
               </div>
@@ -558,14 +449,14 @@ const TeeFeeMeCartoonifier = () => {
                 <Button
                   size="lg"
                   onClick={handleDownload}
-                  className="bg-gradient-to-r from-yellow-500 via-pink-500 to-purple-600 hover:opacity-90 text-lg py-6"
+                  className="text-lg py-6"
                 >
                   <Download className="mr-2" />
-                  Download Cartoon
+                  Download
                 </Button>
                 <Button variant="outline" size="lg" onClick={handleReset}>
                   <Sparkles className="mr-2" />
-                  Try Another Style!
+                  Try Another Style
                 </Button>
                 <Button variant="secondary" size="lg" onClick={handleNewPhoto}>
                   <ImageIcon className="mr-2" />
@@ -576,49 +467,6 @@ const TeeFeeMeCartoonifier = () => {
           </div>
         )}
       </div>
-
-      <style>{`
-        @keyframes gradient-shift {
-          0%, 100% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-        }
-        .animate-gradient-shift {
-          background-size: 200% 200%;
-          animation: gradient-shift 15s ease infinite;
-        }
-        @keyframes float {
-          0%, 100% { transform: translateY(0px) rotate(0deg); }
-          50% { transform: translateY(-30px) rotate(10deg); }
-        }
-        .animate-float {
-          animation: float 4s ease-in-out infinite;
-          font-size: 2rem;
-        }
-        @keyframes pulse-subtle {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.8; }
-        }
-        .animate-pulse-subtle {
-          animation: pulse-subtle 2s ease-in-out infinite;
-        }
-        @keyframes car {
-          0% { transform: translateX(-100vw); }
-          100% { transform: translateX(100vw); }
-        }
-        .animate-car {
-          animation: car 3s linear infinite;
-        }
-        @keyframes shimmer {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(100%); }
-        }
-        .animate-shimmer {
-          animation: shimmer 2s linear infinite;
-        }
-        .drop-shadow-glow {
-          filter: drop-shadow(0 0 20px currentColor);
-        }
-      `}</style>
     </div>
   );
 };

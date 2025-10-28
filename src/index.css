@@ -108,15 +108,11 @@
 
   /* Shadows */
   .shadow-soft {
-    box-shadow: 0 4px 12px rgba(236, 72, 153, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   }
   
-  .shadow-glow {
-    box-shadow: 0 8px 32px rgba(236, 72, 153, 0.25);
-  }
-  
-  .shadow-romantic {
-    box-shadow: 0 12px 48px rgba(236, 72, 153, 0.35);
+  .shadow-elegant {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
   }
 
   /* Interactive States */
@@ -125,7 +121,7 @@
   }
   
   .hover-lift:hover {
-    @apply -translate-y-1 shadow-glow;
+    @apply -translate-y-1 shadow-elegant;
   }
 
   /* Animations */
@@ -179,7 +175,7 @@
            border-2 border-primary/20 backdrop-blur-sm
            font-medium text-sm text-foreground
            transition-all duration-300
-           hover:shadow-glow hover:scale-105 hover:border-primary/40
+           hover:shadow-elegant hover:scale-105 hover:border-primary/40
            active:scale-95;
     background: linear-gradient(to right, 
       hsl(var(--primary) / 0.1), 
@@ -193,7 +189,7 @@
 
   /* Card Variants */
   .glass-card {
-    @apply bg-card/50 backdrop-blur-xl border-2 border-border/50 rounded-2xl shadow-soft;
+    @apply bg-card/80 backdrop-blur-sm border border-border rounded-2xl shadow-soft;
   }
 
   /* Text Utilities */
@@ -283,23 +279,12 @@
 }
 
 /* Additional Utilities */
-.text-glow {
-  text-shadow: 0 0 20px hsla(var(--primary), 0.6),
-                  0 0 40px hsla(var(--primary), 0.4);
-}
-
-.border-glow {
-  box-shadow: 0 0 0 1px hsl(var(--primary)),
-                  0 0 20px hsla(var(--primary), 0.3);
-}
-
 .text-stroke {
   -webkit-text-stroke: 1px hsl(var(--background));
   text-shadow: 2px 2px 0 hsl(var(--background)), 
                   -2px -2px 0 hsl(var(--background)), 
                   2px -2px 0 hsl(var(--background)), 
-                  -2px 2px 0 hsl(var(--background)),
-                  0 0 10px hsla(var(--primary), 0.8);
+                  -2px 2px 0 hsl(var(--background));
 }
 
 @layer utilities {
