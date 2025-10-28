@@ -63,14 +63,14 @@ export default function Landing() {
 
   const handleFeatureClick = (feature: string, route: string) => {
     if (accessLevel === "admin") {
-      navigate(route);
+      navigate('/hacker'); // Go through hacker screen first
     } else if (accessLevel === "tester") {
-      navigate(route);
-      // Show feedback after 5 seconds
+      navigate('/hacker'); // Go through hacker screen first
+      // Show feedback after navigating back
       setTimeout(() => {
         setCurrentFeature(feature);
         setShowFeedback(true);
-      }, 5000);
+      }, 6000);
     } else {
       toast.info(`🔒 ${feature} - Coming Soon! Enter access code to test.`);
     }
@@ -170,52 +170,6 @@ export default function Landing() {
                 <span className="text-xs px-2 py-1 bg-pink-500/20 text-pink-300 rounded border border-pink-500/30">Art</span>
                 <span className="text-xs px-2 py-1 bg-purple-500/20 text-purple-300 rounded border border-purple-500/30">AI</span>
                 <span className="text-xs px-2 py-1 bg-slate-500/20 text-slate-300 rounded border border-slate-500/30">Fun</span>
-              </div>
-            </div>
-          </Card>
-
-          {/* Places Search Mission */}
-          <Card className="group relative overflow-hidden border-2 border-slate-700 hover:border-orange-500/50 bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-sm transition-all duration-500 hover:shadow-2xl hover:shadow-orange-500/20 cursor-pointer"
-            onClick={() => handleFeatureClick("Places by TLC", "/")}>
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500 via-orange-500 to-red-500" />
-            <div className="p-8 space-y-4">
-              <div className="flex justify-between items-start">
-                <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-red-600 to-orange-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                  <span className="text-3xl">📍</span>
-                </div>
-                {accessLevel && <Activity className="w-5 h-5 text-green-400 animate-pulse" />}
-              </div>
-              <div>
-                <h3 className="text-2xl font-black text-white mb-2">PLACES BY TLC</h3>
-                <p className="text-slate-400 text-sm">Strategic Location Discovery • Find perfect date spots • Bring couples together</p>
-              </div>
-              <div className="flex gap-2 flex-wrap">
-                <span className="text-xs px-2 py-1 bg-red-500/20 text-red-300 rounded border border-red-500/30">Search</span>
-                <span className="text-xs px-2 py-1 bg-orange-500/20 text-orange-300 rounded border border-orange-500/30">Discovery</span>
-                <span className="text-xs px-2 py-1 bg-pink-500/20 text-pink-300 rounded border border-pink-500/30">Love</span>
-              </div>
-            </div>
-          </Card>
-
-          {/* Quizzes Mission */}
-          <Card className="group relative overflow-hidden border-2 border-slate-700 hover:border-orange-500/50 bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-sm transition-all duration-500 hover:shadow-2xl hover:shadow-orange-500/20 cursor-pointer"
-            onClick={() => handleFeatureClick("Quizzes", "/quizzes")}>
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-cyan-500 to-blue-500" />
-            <div className="p-8 space-y-4">
-              <div className="flex justify-between items-start">
-                <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-blue-600 to-cyan-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                  <span className="text-3xl">🧠</span>
-                </div>
-                {accessLevel && <Activity className="w-5 h-5 text-green-400 animate-pulse" />}
-              </div>
-              <div>
-                <h3 className="text-2xl font-black text-white mb-2">QUIZZES</h3>
-                <p className="text-slate-400 text-sm">Personality Assessment • Discover your love language & compatibility</p>
-              </div>
-              <div className="flex gap-2 flex-wrap">
-                <span className="text-xs px-2 py-1 bg-blue-500/20 text-blue-300 rounded border border-blue-500/30">MBTI</span>
-                <span className="text-xs px-2 py-1 bg-cyan-500/20 text-cyan-300 rounded border border-cyan-500/30">Love</span>
-                <span className="text-xs px-2 py-1 bg-slate-500/20 text-slate-300 rounded border border-slate-500/30">Test</span>
               </div>
             </div>
           </Card>

@@ -13,9 +13,6 @@ export const Header = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
   
-  // Hide header on landing page
-  if (location.pathname === '/landing') return null;
-  
   useEffect(() => {
     const checkUserRole = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -63,6 +60,9 @@ export const Header = () => {
     if (isTester && !item.allowTester) return false;
     return true;
   });
+  
+  // Hide header on landing and hacker pages
+  if (location.pathname === '/landing' || location.pathname === '/hacker') return null;
   
   return (
     <>
