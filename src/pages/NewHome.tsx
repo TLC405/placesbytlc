@@ -1,9 +1,9 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Heart, Sparkles, Crown, Calendar, Users, TrendingUp, Zap, Settings, LogOut, Save, Palette } from "lucide-react";
+import { Heart, Sparkles, Crown, Calendar, Users, TrendingUp, Zap } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { PlaceItem } from "@/types";
 import { storage } from "@/lib/storage";
@@ -14,55 +14,20 @@ import { EmptyState } from "@/components/EmptyState";
 import { usePlacesSearch } from "@/hooks/usePlacesSearch";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { trackPlaceView, trackPlaceSave, trackSearch } from "@/components/ActivityTracker";
-import { AuthPanel } from "@/components/AuthPanel";
-import { supabase } from "@/integrations/supabase/client";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
-import feliciaCrownImage from "@/assets/felicia-crown.png";
-import { useUserRole, type AppRole } from "@/hooks/useUserRole";
 
 export default function NewHome() {
   const navigate = useNavigate();
-  const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
   const [radius, setRadius] = useState("8047");
   const [error, setError] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [categoryType, setCategoryType] = useState<"food" | "activity" | "both">("both");
-  const { role: userRole } = useUserRole();
 
   const { location, setCustomLocation } = useGeolocation();
   const { results, isSearching, search } = usePlacesSearch({
     onError: (message) => setError(message),
   });
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem('tlc_app_role');
-    localStorage.removeItem('tlc_user_id');
-    localStorage.removeItem('tlc_username');
-    toast.success("Logged out successfully!");
-    window.location.href = '/';
-  };
-
-  const handleSaveProfile = () => {
-    toast.info("Coming soon!");
-  };
 
   const handleAddToPlan = useCallback((place: PlaceItem) => {
     const existing = storage.getPlan();
@@ -114,51 +79,15 @@ export default function NewHome() {
     trackSearch(searchQuery, { radius, location, categoryType });
   }, [query, selectedCategories, location, radius, search, categoryType]);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[50vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent" />
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen space-y-8 pb-12 px-2 sm:px-4">
       {/* Top Navigation Bar */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-primary/20">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="flex items-center gap-2 hover:bg-primary/10">
-                <img src={feliciaCrownImage} alt="Places" className="w-8 h-8" />
-                <span className="font-bold gradient-text hidden sm:inline">PLACES</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-56">
-              {(userRole === 'admin' || userRole === 'moderator') && (
-                <>
-                  <DropdownMenuItem onClick={() => navigate('/admin')}>
-                    <Settings className="w-4 h-4 mr-2" />
-                    Admin Panel
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                </>
-              )}
-              <DropdownMenuItem onClick={handleSaveProfile}>
-                <Save className="w-4 h-4 mr-2" />
-                Save Profile
-              </DropdownMenuItem>
-              {userRole && (
-                <>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout}>
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Logout
-                  </DropdownMenuItem>
-                </>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <span className="text-2xl">📍</span>
+            <span className="font-bold gradient-text hidden sm:inline">PLACES</span>
+          </Link>
 
           <div className="flex items-center gap-4">
             <DarkModeToggle />
@@ -190,25 +119,14 @@ export default function NewHome() {
             <p className="text-lg sm:text-xl font-bold bg-gradient-to-r from-rose-400 via-purple-400 to-pink-400 bg-clip-text text-transparent max-w-2xl mx-auto animate-fade-in drop-shadow-lg" style={{ animationDelay: '0.2s' }}>
               ✨ Your AI-Powered Guide to Unforgettable Moments ✨
             </p>
-
-            {!user && (
-              <div className="flex gap-4 justify-center animate-fade-in" style={{ animationDelay: '0.4s' }}>
-                <Link to="#auth">
-                  <Button size="lg" className="h-16 px-10 text-lg gradient-primary shadow-2xl hover:shadow-glow font-bold hover:scale-110 transition-all duration-300">
-                    Get Started Free
-                    <Sparkles className="w-6 h-6 ml-2 animate-pulse" />
-                  </Button>
-                </Link>
-              </div>
-            )}
           </div>
         </div>
       </div>
 
       {/* Main Content Tabs */}
-      <Tabs defaultValue={user ? "discover" : "auth"} className="w-full animate-fade-in" style={{ animationDelay: '0.3s' }}>
-        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto p-1.5 gap-2 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 backdrop-blur-xl border-2 border-primary/30 rounded-2xl shadow-xl">
-          <TabsTrigger 
+      <Tabs defaultValue="discover" className="w-full animate-fade-in" style={{ animationDelay: '0.3s' }}>
+        <TabsList className="grid w-full grid-cols-3 h-auto p-1.5 gap-2 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 backdrop-blur-xl border-2 border-primary/30 rounded-2xl shadow-xl">
+          <TabsTrigger
             value="discover" 
             className="data-[state=active]:gradient-primary data-[state=active]:text-white data-[state=active]:shadow-glow h-14 rounded-xl font-semibold transition-all duration-300 hover:scale-105"
           >
@@ -435,15 +353,6 @@ export default function NewHome() {
             </div>
           </div>
         </TabsContent>
-
-        {/* Auth Tab */}
-        {!user && (
-          <TabsContent value="auth" id="auth">
-            <div className="max-w-2xl mx-auto">
-              <AuthPanel />
-            </div>
-          </TabsContent>
-        )}
       </Tabs>
     </div>
   );

@@ -4,13 +4,14 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AppAuthGate } from "@/components/AppAuthGate";
+import { EntryGate } from "@/components/EntryGate";
+import { PINProvider } from "@/contexts/PINContext";
 import { ActivityTracker } from "@/components/ActivityTracker";
 import { DetailedCupid } from "@/components/DetailedCupid";
 import { useSessionTracker } from "@/hooks/useSessionTracker";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { initializeConfig } from "@/lib/pinAuth";
 import Home from "./pages/NewHome";
-import Landing from "./pages/Landing";
 import NotFound from "./pages/NotFound";
 
 // Lazy load quiz pages and special features
@@ -43,7 +44,6 @@ const AppRoutes = () => {
       </div>
     }>
       <Routes>
-        <Route path="/landing" element={<Landing />} />
         <Route path="/hacker" element={<HackerScreen />} />
         <Route path="/" element={<Home />} />
         <Route path="/quizzes" element={<Quizzes />} />
@@ -51,7 +51,6 @@ const AppRoutes = () => {
         <Route path="/quiz/mbti" element={<QuizMBTI />} />
         <Route path="/period-tracker" element={<PeriodTracker />} />
         <Route path="/code" element={<CodeViewer />} />
-        <Route path="/felicia-mod" element={<FeliciaModPanel />} />
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="/tester" element={<TesterDashboard />} />
         <Route path="/ai-recommender" element={<AIRecommender />} />
@@ -67,25 +66,32 @@ const AppRoutes = () => {
 };
 
 const App = () => {
+  // Initialize PIN auth config on app start
+  useEffect(() => {
+    initializeConfig();
+  }, []);
+
   // Ensure Google Maps Places API is loaded once globally
   const { isReady: isMapsReady } = useGoogleMaps();
 
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <AppAuthGate>
-              <ActivityTracker />
-              <DetailedCupid />
-              <main className="max-w-7xl mx-auto px-4 py-6">
-                <AppRoutes />
-              </main>
-            </AppAuthGate>
-          </BrowserRouter>
-        </TooltipProvider>
+        <PINProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <EntryGate>
+                <ActivityTracker />
+                <DetailedCupid />
+                <main className="max-w-7xl mx-auto px-4 py-6">
+                  <AppRoutes />
+                </main>
+              </EntryGate>
+            </BrowserRouter>
+          </TooltipProvider>
+        </PINProvider>
       </QueryClientProvider>
     </ErrorBoundary>
   );
