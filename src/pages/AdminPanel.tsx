@@ -21,7 +21,8 @@ import {
   Sparkles,
   MessageSquare,
   Wifi,
-  FileCode
+  FileCode,
+  Rocket
 } from "lucide-react";
 import { CommandStation } from "@/components/admin/CommandStation";
 import { UserAnalyticsDashboard } from "@/components/admin/UserAnalyticsDashboard";
@@ -30,6 +31,7 @@ import { CodeExportSystem } from "@/components/admin/CodeExportSystem";
 import { SMSNotificationPanel } from "@/components/admin/SMSNotificationPanel";
 import { AIPromptInterface } from "@/components/admin/AIPromptInterface";
 import { WiFiAnalyzer } from "@/components/admin/WiFiAnalyzer";
+import { AppReadinessChecklist } from "@/components/admin/AppReadinessChecklist";
 import { FileUploadManager } from "@/components/FileUploadManager";
 import { RecentUpdates } from "@/components/RecentUpdates";
 
@@ -52,7 +54,7 @@ const AdminPanel = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [users, setUsers] = useState<UserAnalytics[]>([]);
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState('checklist');
   const [allActivities, setAllActivities] = useState<any[]>([]);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
@@ -540,6 +542,7 @@ This blueprint provides everything needed to reconstruct the FELICIA.TLC app ide
   }
 
   const tabItems = [
+    { id: 'checklist', label: 'Checklist', icon: Rocket },
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
     { id: 'command', label: 'Command', icon: Terminal },
     { id: 'users', label: 'Users', icon: Users },
@@ -590,7 +593,7 @@ This blueprint provides everything needed to reconstruct the FELICIA.TLC app ide
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-8 lg:w-auto lg:inline-grid">
+          <TabsList className="grid w-full grid-cols-9 lg:w-auto lg:inline-grid">
             {tabItems.map((item) => {
               const Icon = item.icon;
               return (
@@ -605,6 +608,10 @@ This blueprint provides everything needed to reconstruct the FELICIA.TLC app ide
               );
             })}
           </TabsList>
+
+          <TabsContent value="checklist" className="space-y-6">
+            <AppReadinessChecklist />
+          </TabsContent>
 
           <TabsContent value="dashboard" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
