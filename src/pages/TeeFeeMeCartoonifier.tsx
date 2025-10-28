@@ -16,6 +16,7 @@ const TeeFeeMeCartoonifier = () => {
   const [showResult, setShowResult] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [statusMessage, setStatusMessage] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const styles = [
@@ -155,9 +156,21 @@ const TeeFeeMeCartoonifier = () => {
     setIsProcessing(true);
     setProgress(0);
     setCartoonUrl("");
+    setStatusMessage("Analyzing your image...");
 
     const progressInterval = setInterval(() => {
-      setProgress(prev => Math.min(prev + 2, 95));
+      setProgress(prev => {
+        const newProgress = Math.min(prev + 2, 95);
+        // Update status messages based on progress
+        if (newProgress >= 20 && newProgress < 40) {
+          setStatusMessage("Applying style transformation...");
+        } else if (newProgress >= 40 && newProgress < 70) {
+          setStatusMessage("Processing artistic effects...");
+        } else if (newProgress >= 70) {
+          setStatusMessage("Finalizing your cartoon...");
+        }
+        return newProgress;
+      });
     }, 300);
 
     try {
@@ -198,10 +211,13 @@ const TeeFeeMeCartoonifier = () => {
       }
 
       if (data?.cartoonImage) {
+        setStatusMessage("Complete! 🎉");
         setProgress(100);
         setCartoonUrl(data.cartoonImage);
-        setShowResult(true);
-        toast.success('TeeFee transformation complete!');
+        setTimeout(() => {
+          setShowResult(true);
+          toast.success('TeeFee transformation complete!');
+        }, 500);
       } else {
         throw new Error('No image returned');
       }
@@ -211,6 +227,7 @@ const TeeFeeMeCartoonifier = () => {
       toast.error(errorMessage);
     } finally {
       setIsProcessing(false);
+      setStatusMessage("");
       clearInterval(progressInterval);
     }
   };
@@ -346,68 +363,65 @@ const TeeFeeMeCartoonifier = () => {
             </div>
 
             <Card className="p-6">
-              <div className="grid md:grid-cols-2 gap-6 items-center">
-                <div>
-                  <h3 className="text-xl font-bold mb-4">Your Photo</h3>
+              <div className="relative">
+                <h3 className="text-xl font-bold mb-4 text-center">
+                  {isProcessing ? 'Processing...' : 'Your Photo'}
+                </h3>
+                
+                <div className="relative">
                   <img
                     src={previewUrl}
                     alt="Preview"
-                    className="w-full h-auto rounded-lg border-2 border-border"
+                    className={`w-full h-auto rounded-lg border-2 transition-opacity duration-300 ${
+                      isProcessing ? 'opacity-50 border-primary' : 'border-border'
+                    }`}
                   />
-                </div>
-                
-                <div className="space-y-4">
-                  {!isProcessing && !cartoonUrl && (
-                    <>
-                      <Button
-                        size="lg"
-                        onClick={handleCartoonify}
-                        className="w-full text-lg py-6"
-                      >
-                        <Sparkles className="mr-2" />
-                        TeeFee Me!
-                      </Button>
-                      <Button variant="outline" size="lg" onClick={handleNewPhoto} className="w-full">
-                        <RefreshCw className="mr-2" />
-                        Different Photo
-                      </Button>
-                    </>
-                  )}
-
+                  
+                  {/* Processing Overlay */}
                   {isProcessing && (
-                    <div className="space-y-4">
-                      <div className="text-center">
-                        <Zap className="w-12 h-12 mx-auto mb-4 text-primary animate-pulse" />
-                        <p className="text-lg font-semibold mb-2">Creating Magic...</p>
-                        <p className="text-sm text-muted-foreground">This may take 20-40 seconds</p>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-primary/10 to-accent/10 rounded-lg">
+                      <div className="text-center space-y-4 p-6">
+                        <Zap className="w-16 h-16 mx-auto text-primary animate-pulse" />
+                        <p className="text-lg font-bold animate-pulse">{statusMessage}</p>
+                        
+                        <div className="w-full max-w-xs space-y-2">
+                          <div className="flex justify-between text-sm font-medium">
+                            <span>Progress</span>
+                            <span>{progress}%</span>
+                          </div>
+                          <div className="h-3 bg-background/50 rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-primary transition-all duration-300"
+                              style={{ width: `${progress}%` }}
+                            />
+                          </div>
+                        </div>
+                        
+                        <p className="text-xs text-muted-foreground">
+                          This may take 20-40 seconds
+                        </p>
                       </div>
-                      
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span>Progress</span>
-                          <span>{progress}%</span>
-                        </div>
-                        <div className="h-3 bg-muted rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-primary transition-all duration-300"
-                            style={{ width: `${progress}%` }}
-                          />
-                        </div>
-                      </div>
-
-                      {cartoonUrl && (
-                        <div className="animate-fade-in">
-                          <h3 className="text-lg font-bold mb-3 text-center">Preview</h3>
-                          <img
-                            src={cartoonUrl}
-                            alt="Generating..."
-                            className="w-full h-auto rounded-lg border-2 border-primary"
-                          />
-                        </div>
-                      )}
                     </div>
                   )}
                 </div>
+
+                {/* Action Buttons */}
+                {!isProcessing && (
+                  <div className="flex flex-col gap-3 mt-6">
+                    <Button
+                      size="lg"
+                      onClick={handleCartoonify}
+                      className="w-full text-lg py-6"
+                    >
+                      <Sparkles className="mr-2" />
+                      TeeFee Me!
+                    </Button>
+                    <Button variant="outline" size="lg" onClick={handleNewPhoto} className="w-full">
+                      <RefreshCw className="mr-2" />
+                      Different Photo
+                    </Button>
+                  </div>
+                )}
               </div>
             </Card>
           </div>

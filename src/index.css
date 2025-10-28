@@ -46,25 +46,25 @@
   }
 
   .dark {
-    --background: 240 8% 12%;
-    --foreground: 0 0% 98%;
-    --card: 240 8% 15%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 8% 15%;
-    --popover-foreground: 0 0% 98%;
+    --background: 222.2 40% 14%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 40% 16%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 40% 16%;
+    --popover-foreground: 210 40% 98%;
     --primary: 338.57 83.05% 62.16%;
     --primary-variant: 280 70% 60%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 5% 25%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 5% 20%;
-    --muted-foreground: 240 5% 70%;
-    --accent: 240 5% 22%;
-    --accent-foreground: 0 0% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 28%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 28%;
+    --muted-foreground: 215 20.2% 72%;
+    --accent: 217.2 32.6% 28%;
+    --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 45%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5% 25%;
-    --input: 240 5% 22%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 28%;
+    --input: 217.2 32.6% 28%;
     --ring: 338.57 83.05% 62.16%;
     
     /* Chart Colors */
@@ -108,11 +108,11 @@
 
   /* Shadows */
   .shadow-soft {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   }
   
   .shadow-elegant {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 4px 14px -4px rgba(0, 0, 0, 0.08);
   }
 
   /* Interactive States */
