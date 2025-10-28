@@ -35,6 +35,7 @@ import { AppReadinessChecklist } from "@/components/admin/AppReadinessChecklist"
 import { RecentUpdates } from "@/components/RecentUpdates";
 import CupidSettingsPanel from "@/components/admin/CupidSettingsPanel";
 import ActivityLogViewer from "@/components/admin/ActivityLogViewer";
+import ComprehensiveExportSystem from "@/components/admin/ComprehensiveExportSystem";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface UserAnalytics {
@@ -443,63 +444,7 @@ const AdminPanel = () => {
 
               {/* Dev Tools Tab */}
               <TabsContent value="tools" className="mt-0 space-y-4">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Download className="w-5 h-5" />
-                        Code Export
-                      </CardTitle>
-                      <CardDescription>Download source code and documentation</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      <Button onClick={handleDownloadSource} className="w-full">
-                        <Download className="w-4 h-4 mr-2" />
-                        Download Source Package
-                      </Button>
-                      <CodeExportSystem />
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <MessageSquare className="w-5 h-5" />
-                        SMS Notifications
-                      </CardTitle>
-                      <CardDescription>Send SMS alerts to admins</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <SMSNotificationPanel />
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Rocket className="w-5 h-5" />
-                        App Readiness
-                      </CardTitle>
-                      <CardDescription>Pre-launch checklist</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <AppReadinessChecklist />
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Sparkles className="w-5 h-5" />
-                        AI Tools
-                      </CardTitle>
-                      <CardDescription>AI-powered features</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <AIPromptInterface />
-                    </CardContent>
-                  </Card>
-                </div>
+                <ComprehensiveExportSystem />
               </TabsContent>
 
             </div>
