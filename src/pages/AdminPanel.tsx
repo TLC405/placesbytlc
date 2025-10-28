@@ -21,7 +21,8 @@ import {
   FileCode,
   Rocket,
   Shield,
-  Zap
+  Zap,
+  Heart
 } from "lucide-react";
 import { CommandStation } from "@/components/admin/CommandStation";
 import { UserAnalyticsDashboard } from "@/components/admin/UserAnalyticsDashboard";
@@ -32,6 +33,9 @@ import { AIPromptInterface } from "@/components/admin/AIPromptInterface";
 import { WiFiAnalyzer } from "@/components/admin/WiFiAnalyzer";
 import { AppReadinessChecklist } from "@/components/admin/AppReadinessChecklist";
 import { RecentUpdates } from "@/components/RecentUpdates";
+import CupidSettingsPanel from "@/components/admin/CupidSettingsPanel";
+import ActivityLogViewer from "@/components/admin/ActivityLogViewer";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface UserAnalytics {
   id: string;
@@ -326,7 +330,7 @@ const AdminPanel = () => {
               <div>
                 <h1 className="text-2xl font-black text-primary flex items-center gap-2">
                   <Sparkles className="w-5 h-5" />
-                  ADMIN COMMAND CENTER
+                  ADMIN COMMAND CENTER V2
                 </h1>
               </div>
             </div>
@@ -338,134 +342,169 @@ const AdminPanel = () => {
         </div>
       </div>
 
-      {/* Main Content - No Scroll Grid */}
+      {/* Main Content - Tabbed Interface */}
       <div className="flex-1 overflow-hidden">
-        <div className="h-full max-w-7xl mx-auto px-6 py-4">
-          <div className="grid grid-cols-3 gap-4 h-full">
-            
-            {/* Column 1: Analytics */}
-            <Card className="bg-card border-2 overflow-hidden flex flex-col">
-              <CardHeader className="bg-muted/50 border-b flex-shrink-0 py-3">
-                <CardTitle className="flex items-center gap-2 text-primary text-lg">
-                  <BarChart3 className="w-5 h-5" />
-                  Analytics
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-4 overflow-auto flex-1">
-                <UserAnalyticsDashboard />
-              </CardContent>
-            </Card>
-
-            {/* Column 2: System & Network */}
-            <div className="flex flex-col gap-4">
-              <Card className="bg-card border-2 flex-1 overflow-hidden flex flex-col">
-                <CardHeader className="bg-muted/50 border-b flex-shrink-0 py-3">
-                  <CardTitle className="flex items-center gap-2 text-primary text-lg">
-                    <Terminal className="w-4 h-4" />
-                    Command Station
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-3 overflow-auto flex-1">
-                  <CommandStation />
-                </CardContent>
-              </Card>
-
-              <Card className="bg-card border-2 flex-1 overflow-hidden flex flex-col">
-                <CardHeader className="bg-muted/50 border-b flex-shrink-0 py-3">
-                  <CardTitle className="flex items-center gap-2 text-primary text-lg">
-                    <Wifi className="w-4 h-4" />
-                    Network
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-3 overflow-auto flex-1">
-                  <WiFiAnalyzer />
-                </CardContent>
-              </Card>
+        <Tabs defaultValue="overview" className="h-full flex flex-col">
+          <div className="border-b bg-card/30">
+            <div className="max-w-7xl mx-auto px-6">
+              <TabsList className="bg-transparent">
+                <TabsTrigger value="overview">
+                  <BarChart3 className="w-4 h-4 mr-2" />
+                  Overview
+                </TabsTrigger>
+                <TabsTrigger value="cupid">
+                  <Heart className="w-4 h-4 mr-2" />
+                  Cupid Settings
+                </TabsTrigger>
+                <TabsTrigger value="logs">
+                  <Activity className="w-4 h-4 mr-2" />
+                  Activity Logs
+                </TabsTrigger>
+                <TabsTrigger value="tools">
+                  <Code className="w-4 h-4 mr-2" />
+                  Dev Tools
+                </TabsTrigger>
+              </TabsList>
             </div>
-
-            {/* Column 3: Developer Tools */}
-            <Card className="bg-card border-2 overflow-hidden flex flex-col">
-              <CardHeader className="bg-muted/50 border-b flex-shrink-0 py-3">
-                <CardTitle className="flex items-center gap-2 text-primary text-lg">
-                  <Code className="w-5 h-5" />
-                  Developer Tools
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-4 overflow-auto flex-1 space-y-4">
-                <div className="grid grid-cols-2 gap-2">
-                  <Button 
-                    onClick={handleDownloadSource}
-                    className="h-16 flex flex-col items-center justify-center gap-1 text-xs"
-                    variant="outline"
-                  >
-                    <Download className="w-4 h-4" />
-                    <span>Download</span>
-                  </Button>
-                  
-                  <Button 
-                    onClick={() => trackAdminAction('view_code_export', 'developer')}
-                    className="h-16 flex flex-col items-center justify-center gap-1 text-xs"
-                    variant="outline"
-                  >
-                    <FileCode className="w-4 h-4" />
-                    <span>Export</span>
-                  </Button>
-                  
-                  <Button 
-                    onClick={() => trackAdminAction('view_ai_tools', 'developer')}
-                    className="h-16 flex flex-col items-center justify-center gap-1 text-xs"
-                    variant="outline"
-                  >
-                    <Sparkles className="w-4 h-4" />
-                    <span>AI Tools</span>
-                  </Button>
-                  
-                  <Button 
-                    onClick={() => trackAdminAction('view_updates', 'developer')}
-                    className="h-16 flex flex-col items-center justify-center gap-1 text-xs"
-                    variant="outline"
-                  >
-                    <Zap className="w-4 h-4" />
-                    <span>Updates</span>
-                  </Button>
-                </div>
-
-                <div className="space-y-3">
-                  <Collapsible>
-                    <CollapsibleTrigger className="flex items-center gap-2 font-semibold text-sm w-full hover:text-primary">
-                      <MessageSquare className="w-4 h-4" />
-                      SMS Notifications
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="mt-2">
-                      <SMSNotificationPanel />
-                    </CollapsibleContent>
-                  </Collapsible>
-
-                  <Collapsible>
-                    <CollapsibleTrigger className="flex items-center gap-2 font-semibold text-sm w-full hover:text-primary">
-                      <Rocket className="w-4 h-4" />
-                      App Readiness
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="mt-2">
-                      <AppReadinessChecklist />
-                    </CollapsibleContent>
-                  </Collapsible>
-
-                  <Collapsible defaultOpen>
-                    <CollapsibleTrigger className="flex items-center gap-2 font-semibold text-sm w-full hover:text-primary">
-                      <Activity className="w-4 h-4" />
-                      Recent Updates
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="mt-2">
-                      <RecentUpdates />
-                    </CollapsibleContent>
-                  </Collapsible>
-                </div>
-              </CardContent>
-            </Card>
-
           </div>
-        </div>
+
+          {/* Tab Content */}
+          <div className="flex-1 overflow-auto">
+            <div className="max-w-7xl mx-auto px-6 py-4">
+              
+              {/* Overview Tab */}
+              <TabsContent value="overview" className="mt-0 space-y-4">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                  {/* Analytics */}
+                  <Card className="lg:col-span-2">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <BarChart3 className="w-5 h-5" />
+                        User Analytics
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <UserAnalyticsDashboard />
+                    </CardContent>
+                  </Card>
+
+                  {/* Network */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Wifi className="w-5 h-5" />
+                        Network Status
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <WiFiAnalyzer />
+                    </CardContent>
+                  </Card>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  {/* Command Station */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Terminal className="w-5 h-5" />
+                        Command Station
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <CommandStation />
+                    </CardContent>
+                  </Card>
+
+                  {/* Recent Updates */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Zap className="w-5 h-5" />
+                        Recent Updates
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <RecentUpdates />
+                    </CardContent>
+                  </Card>
+                </div>
+              </TabsContent>
+
+              {/* Cupid Settings Tab */}
+              <TabsContent value="cupid" className="mt-0">
+                <CupidSettingsPanel />
+              </TabsContent>
+
+              {/* Activity Logs Tab */}
+              <TabsContent value="logs" className="mt-0">
+                <ActivityLogViewer />
+              </TabsContent>
+
+              {/* Dev Tools Tab */}
+              <TabsContent value="tools" className="mt-0 space-y-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Download className="w-5 h-5" />
+                        Code Export
+                      </CardTitle>
+                      <CardDescription>Download source code and documentation</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <Button onClick={handleDownloadSource} className="w-full">
+                        <Download className="w-4 h-4 mr-2" />
+                        Download Source Package
+                      </Button>
+                      <CodeExportSystem />
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <MessageSquare className="w-5 h-5" />
+                        SMS Notifications
+                      </CardTitle>
+                      <CardDescription>Send SMS alerts to admins</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <SMSNotificationPanel />
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Rocket className="w-5 h-5" />
+                        App Readiness
+                      </CardTitle>
+                      <CardDescription>Pre-launch checklist</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <AppReadinessChecklist />
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Sparkles className="w-5 h-5" />
+                        AI Tools
+                      </CardTitle>
+                      <CardDescription>AI-powered features</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <AIPromptInterface />
+                    </CardContent>
+                  </Card>
+                </div>
+              </TabsContent>
+
+            </div>
+          </div>
+        </Tabs>
       </div>
 
       {/* User Profile Modal */}
