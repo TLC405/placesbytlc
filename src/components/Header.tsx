@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Heart, Calendar, Brain, Palette, Download, Crown, Sparkles, UserPlus } from "lucide-react";
+import { Heart, Calendar, Brain, Palette, Download, Crown, Sparkles, UserPlus, Shield } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
@@ -12,6 +12,9 @@ export const Header = () => {
   const [isTester, setIsTester] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
+  
+  // Hide header on landing page
+  if (location.pathname === '/landing') return null;
   
   useEffect(() => {
     const checkUserRole = async () => {
@@ -46,12 +49,13 @@ export const Header = () => {
   const isActive = (path: string) => location.pathname === path;
   
   const allNavItems = [
-    { path: "/", label: "Home", icon: Heart, emoji: "💝", allowTester: true },
-    { path: "/okc-legend", label: "Legend Forge", icon: Brain, emoji: "🔥", allowTester: true },
+    { path: "/landing", label: "Home", icon: Heart, emoji: "🏠", allowTester: true },
+    { path: "/", label: "Places by TLC", icon: Heart, emoji: "📍", allowTester: true },
+    { path: "/teefeeme", label: "TeeFee Me", icon: Palette, emoji: "🎨", allowTester: true },
+    { path: "/okc-legend", label: "Legend", icon: Brain, emoji: "🔥", allowTester: true },
     { path: "/quizzes", label: "Quizzes", icon: Brain, emoji: "🧠", allowTester: false },
     { path: "/period-tracker", label: "Peripod", icon: Calendar, emoji: "📅", allowTester: false },
-    { path: "/teefeeme", label: "TeeFee Me", icon: Palette, emoji: "🎨", allowTester: true },
-    { path: "/admin", label: "Admin", icon: Crown, emoji: "👑", allowTester: false, adminOnly: true },
+    { path: "/admin", label: "Admin", icon: Shield, emoji: "⚙️", allowTester: false, adminOnly: true },
   ];
   
   const navItems = allNavItems.filter(item => {
@@ -62,7 +66,8 @@ export const Header = () => {
   
   return (
     <>
-      <header className="sticky top-0 z-50 glass shadow-glow border-b-2 border-primary/30 backdrop-blur-xl overflow-hidden">
+      <header className="fixed top-0 left-0 right-0 z-50 glass shadow-glow border-b-2 border-primary/30 backdrop-blur-xl"
+        style={{ overflowX: 'hidden', overflowY: 'visible' }}>
         {/* Animated background gradient */}
         <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 opacity-50 animate-gradient-shift" />
         

@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import crownImage from "@/assets/felicia-crown.png";
 
 type CartoonStyle = "simpsons" | "flintstones" | "trump" | "elon" | "familyguy" | "renandstimpy";
 
@@ -221,29 +220,13 @@ const TeeFeeMeCartoonifier = () => {
         {/* Hero Section */}
         {!selectedFile && (
           <div className="text-center mb-12 animate-fade-in">
-            <div className="relative inline-block mb-6">
-              <img
-                src={crownImage}
-                alt="TeeFee Crown"
-                className="w-72 h-auto mx-auto animate-float cursor-pointer hover:scale-110 transition-transform duration-300 drop-shadow-2xl"
-                onClick={() => fileInputRef.current?.click()}
-                loading="lazy"
-                decoding="async"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-yellow-400/30 to-transparent blur-3xl animate-pulse-subtle" />
-            </div>
+            <div className="text-8xl mb-6 animate-float">🎨</div>
             
-            <div className="mb-4 inline-block px-8 py-3 bg-gradient-to-r from-pink-500 via-purple-500 to-rose-500 rounded-full text-white font-black text-xl shadow-glow animate-pulse">
-              👑 QUEEN FELICIA'S ROYAL CARTOONIFIER 👑
-            </div>
-            <h1 className="text-6xl md:text-8xl font-bold mb-3 bg-gradient-to-r from-yellow-500 via-pink-500 to-purple-600 bg-clip-text text-transparent animate-pulse-subtle drop-shadow-2xl">
-              ✨ TeeFee Me ✨
+            <h1 className="text-5xl md:text-7xl font-bold mb-4 gradient-text drop-shadow-2xl">
+              TeeFee Me
             </h1>
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-rose-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-              Legendary Cartoon Transformer 🎨
-            </h2>
-            <p className="text-xl md:text-2xl font-bold bg-gradient-to-r from-amber-400 via-orange-400 to-amber-400 bg-clip-text text-transparent mb-8 drop-shadow-lg">
-              Transform into legendary cartoon styles! Touch Queen Felicia's crown to begin your magical journey! ✨👑
+            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
+              Transform your photos into legendary cartoon styles
             </p>
 
             {/* Upload Zone */}
@@ -299,10 +282,10 @@ const TeeFeeMeCartoonifier = () => {
         {selectedFile && !showResult && (
           <div className="space-y-8 animate-fade-in">
             <div className="text-center">
-              <h2 className="text-5xl font-bold mb-3 bg-gradient-to-r from-yellow-500 via-pink-500 to-purple-600 bg-clip-text text-transparent">
-                Pick Your Legendary Style! 🎭
+              <h2 className="text-4xl font-bold mb-3 gradient-text">
+                Pick Your Style 🎭
               </h2>
-              <p className="text-xl text-muted-foreground">Choose wisely... or try them all!</p>
+              <p className="text-lg text-muted-foreground">Choose your legendary transformation</p>
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -395,10 +378,10 @@ const TeeFeeMeCartoonifier = () => {
         {showResult && cartoonUrl && (
           <div className="space-y-8 animate-fade-in">
             <div className="text-center">
-              <h2 className="text-6xl font-bold mb-3 bg-gradient-to-r from-yellow-500 via-pink-500 to-purple-600 bg-clip-text text-transparent animate-pulse-subtle">
+              <h2 className="text-5xl font-bold mb-3 gradient-text">
                 You've Been TeeFeed! 🎉
               </h2>
-              <p className="text-xl text-muted-foreground">Legendary transformation complete!</p>
+              <p className="text-lg text-muted-foreground">Transformation complete</p>
             </div>
 
             <Card className="p-8 glass">

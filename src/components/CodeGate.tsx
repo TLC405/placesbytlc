@@ -69,7 +69,7 @@ export const CodeGate = ({ children }: CodeGateProps) => {
       sessionStorage.setItem("app_unlocked", "true");
       setUnlocked(true);
       toast.success("✅ ACCESS GRANTED");
-      navigate("/");
+      navigate("/landing");
       return;
     }
 

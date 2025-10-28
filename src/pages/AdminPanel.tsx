@@ -23,6 +23,7 @@ import {
 import { CommandStation } from "@/components/admin/CommandStation";
 import { UserAnalyticsDashboard } from "@/components/admin/UserAnalyticsDashboard";
 import { UserProfileViewer } from "@/components/admin/UserProfileViewer";
+import { CodeExportSystem } from "@/components/admin/CodeExportSystem";
 import { FileUploadManager } from "@/components/FileUploadManager";
 import { RecentUpdates } from "@/components/RecentUpdates";
 
@@ -581,7 +582,7 @@ This blueprint provides everything needed to reconstruct the FELICIA.TLC app ide
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 lg:w-auto lg:inline-grid">
+          <TabsList className="grid w-full grid-cols-7 lg:w-auto lg:inline-grid">
             {tabItems.map((item) => {
               const Icon = item.icon;
               return (
@@ -716,6 +717,8 @@ This blueprint provides everything needed to reconstruct the FELICIA.TLC app ide
           </TabsContent>
 
           <TabsContent value="tools" className="space-y-6">
+            <CodeExportSystem />
+            
             <Card className="p-6">
               <h3 className="text-lg font-semibold mb-4">Developer Tools</h3>
               <div className="space-y-4">

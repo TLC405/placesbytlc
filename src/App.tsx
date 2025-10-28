@@ -13,6 +13,7 @@ import { AppAuthGate } from "@/components/AppAuthGate";
 import { CodeGate } from "@/components/CodeGate";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import Home from "./pages/NewHome";
+import Landing from "./pages/Landing";
 import NotFound from "./pages/NotFound";
 
 // Lazy load quiz pages and special features
@@ -44,6 +45,7 @@ const AppRoutes = () => {
       </div>
     }>
       <Routes>
+        <Route path="/landing" element={<Landing />} />
         <Route path="/" element={<Home />} />
         <Route path="/quizzes" element={<Quizzes />} />
         <Route path="/quiz/love" element={<QuizLove />} />
@@ -96,7 +98,7 @@ const App = () => {
                 <ActivityTracker />
                 <DetailedCupid />
                 {!showLoader && <Header />}
-                <main className="max-w-7xl mx-auto px-4 py-6">
+                <main className="max-w-7xl mx-auto px-4 py-6" style={{ marginTop: '5rem' }}>
                   <AppRoutes />
                 </main>
               </AppAuthGate>
