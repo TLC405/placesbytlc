@@ -80,10 +80,10 @@ export default function NewHome() {
     setSelectedCategories([category]);
   }, []);
 
-  const handleLocationModeChange = (mode: "tlc" | "felicia" | "middle") => {
+  const handleLocationModeChange = (mode: "tlc" | "partner" | "middle") => {
     const modeLabels = {
       tlc: "TLC Place",
-      felicia: "Felicia Place", 
+      partner: "Partner Place", 
       middle: "Middle Ground"
     };
     toast.success(`🎯 Searching from ${modeLabels[mode]}!`);
