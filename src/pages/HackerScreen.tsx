@@ -63,7 +63,7 @@ export default function HackerScreen() {
   }, [currentLine, hackerLines]);
 
   useEffect(() => {
-    // Progress bar
+    // Progress bar - slower progression (8 seconds total)
     const progressTimer = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
@@ -72,9 +72,9 @@ export default function HackerScreen() {
           setTimeout(() => navigate("/"), 800);
           return 100;
         }
-        return prev + 2;
+        return prev + 1.25; // Slower increment
       });
-    }, 50);
+    }, 100); // Check more frequently for smoother animation
 
     return () => clearInterval(progressTimer);
   }, [navigate]);
