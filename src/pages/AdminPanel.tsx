@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { 
   Users, 
   BarChart3, 
@@ -313,14 +314,13 @@ const AdminPanel = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Hero Header with Cupid */}
-      <div className="relative bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50 border-b-4 border-primary/20">
-        <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="h-screen overflow-hidden bg-gradient-to-br from-background via-muted/20 to-background flex flex-col">
+      {/* Compact Header */}
+      <div className="flex-shrink-0 border-b bg-card/50 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              {/* Cupid Icon */}
-              <div className="w-20 h-20 rounded-full bg-white shadow-lg p-2 border-4 border-primary/30">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-primary/10 p-2">
                 <img 
                   src="/src/assets/cupid-tlc-transparent.png" 
                   alt="TLC Cupid" 
@@ -331,14 +331,13 @@ const AdminPanel = () => {
                 />
               </div>
               <div>
-                <h1 className="text-4xl font-black text-primary flex items-center gap-2">
-                  <Sparkles className="w-8 h-8" />
+                <h1 className="text-2xl font-black text-primary flex items-center gap-2">
+                  <Sparkles className="w-5 h-5" />
                   ADMIN COMMAND CENTER
                 </h1>
-                <p className="text-muted-foreground mt-1">Full system access granted</p>
               </div>
             </div>
-            <Badge variant="outline" className="text-lg px-4 py-2 bg-white border-primary/30">
+            <Badge variant="outline" className="bg-card border-primary/30">
               <Shield className="w-4 h-4 mr-2" />
               Admin
             </Badge>
@@ -346,116 +345,134 @@ const AdminPanel = () => {
         </div>
       </div>
 
-      {/* Main Content - Single Page Layout */}
-      <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
-        
-        {/* Section 1: Analytics & Monitoring */}
-        <Card className="bg-white border-2 border-rose-200 shadow-sm">
-          <CardHeader className="bg-gradient-to-r from-rose-50 to-pink-50 border-b-2 border-rose-200">
-            <CardTitle className="flex items-center gap-2 text-primary">
-              <BarChart3 className="w-6 h-6" />
-              Analytics & User Monitoring
-            </CardTitle>
-            <CardDescription>Real-time user analytics, sessions, and behavior tracking</CardDescription>
-          </CardHeader>
-          <CardContent className="p-6">
-            <UserAnalyticsDashboard />
-          </CardContent>
-        </Card>
+      {/* Main Content - No Scroll Grid */}
+      <div className="flex-1 overflow-hidden">
+        <div className="h-full max-w-7xl mx-auto px-6 py-4">
+          <div className="grid grid-cols-3 gap-4 h-full">
+            
+            {/* Column 1: Analytics */}
+            <Card className="bg-card border-2 overflow-hidden flex flex-col">
+              <CardHeader className="bg-muted/50 border-b flex-shrink-0 py-3">
+                <CardTitle className="flex items-center gap-2 text-primary text-lg">
+                  <BarChart3 className="w-5 h-5" />
+                  Analytics
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-4 overflow-auto flex-1">
+                <UserAnalyticsDashboard />
+              </CardContent>
+            </Card>
 
-        {/* Section 2: System Management */}
-        <div className="grid md:grid-cols-2 gap-6">
-          <Card className="bg-white border-2 border-purple-200 shadow-sm">
-            <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50 border-b-2 border-purple-200">
-              <CardTitle className="flex items-center gap-2 text-primary">
-                <Terminal className="w-5 h-5" />
-                Command Station
-              </CardTitle>
-              <CardDescription>Feature management & app settings</CardDescription>
-            </CardHeader>
-            <CardContent className="p-4">
-              <CommandStation />
-            </CardContent>
-          </Card>
+            {/* Column 2: System & Network */}
+            <div className="flex flex-col gap-4">
+              <Card className="bg-card border-2 flex-1 overflow-hidden flex flex-col">
+                <CardHeader className="bg-muted/50 border-b flex-shrink-0 py-3">
+                  <CardTitle className="flex items-center gap-2 text-primary text-lg">
+                    <Terminal className="w-4 h-4" />
+                    Command Station
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-3 overflow-auto flex-1">
+                  <CommandStation />
+                </CardContent>
+              </Card>
 
-          <Card className="bg-white border-2 border-blue-200 shadow-sm">
-            <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50 border-b-2 border-blue-200">
-              <CardTitle className="flex items-center gap-2 text-primary">
-                <Wifi className="w-5 h-5" />
-                Network & IP Analyzer
-              </CardTitle>
-              <CardDescription>Real-time network monitoring</CardDescription>
-            </CardHeader>
-            <CardContent className="p-4">
-              <WiFiAnalyzer />
-            </CardContent>
-          </Card>
+              <Card className="bg-card border-2 flex-1 overflow-hidden flex flex-col">
+                <CardHeader className="bg-muted/50 border-b flex-shrink-0 py-3">
+                  <CardTitle className="flex items-center gap-2 text-primary text-lg">
+                    <Wifi className="w-4 h-4" />
+                    Network
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-3 overflow-auto flex-1">
+                  <WiFiAnalyzer />
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Column 3: Developer Tools */}
+            <Card className="bg-card border-2 overflow-hidden flex flex-col">
+              <CardHeader className="bg-muted/50 border-b flex-shrink-0 py-3">
+                <CardTitle className="flex items-center gap-2 text-primary text-lg">
+                  <Code className="w-5 h-5" />
+                  Developer Tools
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-4 overflow-auto flex-1 space-y-4">
+                <div className="grid grid-cols-2 gap-2">
+                  <Button 
+                    onClick={handleDownloadSource}
+                    className="h-16 flex flex-col items-center justify-center gap-1 text-xs"
+                    variant="outline"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span>Download</span>
+                  </Button>
+                  
+                  <Button 
+                    onClick={() => trackAdminAction('view_code_export', 'developer')}
+                    className="h-16 flex flex-col items-center justify-center gap-1 text-xs"
+                    variant="outline"
+                  >
+                    <FileCode className="w-4 h-4" />
+                    <span>Export</span>
+                  </Button>
+                  
+                  <Button 
+                    onClick={() => trackAdminAction('view_ai_tools', 'developer')}
+                    className="h-16 flex flex-col items-center justify-center gap-1 text-xs"
+                    variant="outline"
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    <span>AI Tools</span>
+                  </Button>
+                  
+                  <Button 
+                    onClick={() => trackAdminAction('view_updates', 'developer')}
+                    className="h-16 flex flex-col items-center justify-center gap-1 text-xs"
+                    variant="outline"
+                  >
+                    <Zap className="w-4 h-4" />
+                    <span>Updates</span>
+                  </Button>
+                </div>
+
+                <div className="space-y-3">
+                  <Collapsible>
+                    <CollapsibleTrigger className="flex items-center gap-2 font-semibold text-sm w-full hover:text-primary">
+                      <MessageSquare className="w-4 h-4" />
+                      SMS Notifications
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="mt-2">
+                      <SMSNotificationPanel />
+                    </CollapsibleContent>
+                  </Collapsible>
+
+                  <Collapsible>
+                    <CollapsibleTrigger className="flex items-center gap-2 font-semibold text-sm w-full hover:text-primary">
+                      <Rocket className="w-4 h-4" />
+                      App Readiness
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="mt-2">
+                      <AppReadinessChecklist />
+                    </CollapsibleContent>
+                  </Collapsible>
+
+                  <Collapsible defaultOpen>
+                    <CollapsibleTrigger className="flex items-center gap-2 font-semibold text-sm w-full hover:text-primary">
+                      <Activity className="w-4 h-4" />
+                      Recent Updates
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="mt-2">
+                      <RecentUpdates />
+                    </CollapsibleContent>
+                  </Collapsible>
+                </div>
+              </CardContent>
+            </Card>
+
+          </div>
         </div>
-
-        {/* Section 3: Developer Tools */}
-        <Card className="bg-white border-2 border-emerald-200 shadow-sm">
-          <CardHeader className="bg-gradient-to-r from-emerald-50 to-teal-50 border-b-2 border-emerald-200">
-            <CardTitle className="flex items-center gap-2 text-primary">
-              <Code className="w-6 h-6" />
-              Developer Tools
-            </CardTitle>
-            <CardDescription>Source code export, AI tools, and system utilities</CardDescription>
-          </CardHeader>
-          <CardContent className="p-6 space-y-6">
-            <div className="grid md:grid-cols-3 gap-4">
-              <Button 
-                onClick={handleDownloadSource}
-                className="h-24 flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
-              >
-                <Download className="w-6 h-6" />
-                <span>Download Source</span>
-              </Button>
-              
-              <Button 
-                onClick={() => trackAdminAction('view_code_export', 'developer')}
-                className="h-24 flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600"
-              >
-                <FileCode className="w-6 h-6" />
-                <span>Code Export</span>
-              </Button>
-              
-              <Button 
-                onClick={() => trackAdminAction('view_ai_tools', 'developer')}
-                className="h-24 flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600"
-              >
-                <Sparkles className="w-6 h-6" />
-                <span>AI Tools</span>
-              </Button>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-6 mt-6">
-              <div>
-                <h3 className="font-semibold mb-3 flex items-center gap-2">
-                  <MessageSquare className="w-4 h-4" />
-                  SMS Notifications
-                </h3>
-                <SMSNotificationPanel />
-              </div>
-              
-              <div>
-                <h3 className="font-semibold mb-3 flex items-center gap-2">
-                  <Rocket className="w-4 h-4" />
-                  App Readiness
-                </h3>
-                <AppReadinessChecklist />
-              </div>
-            </div>
-
-            <div className="mt-6">
-              <h3 className="font-semibold mb-3 flex items-center gap-2">
-                <Zap className="w-4 h-4" />
-                Recent Updates
-              </h3>
-              <RecentUpdates />
-            </div>
-          </CardContent>
-        </Card>
-
       </div>
 
       {/* User Profile Modal */}
