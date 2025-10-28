@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -61,6 +61,17 @@ const AdminPanel = () => {
   const [codeUnlocked, setCodeUnlocked] = useState(false);
   const [codeInput, setCodeInput] = useState("");
   const [showCodeDialog, setShowCodeDialog] = useState(true);
+
+  // Track admin actions
+  const trackAdminAction = useCallback(async (action: string, section: string, details?: any) => {
+    try {
+      await supabase.functions.invoke('track-admin-activity', {
+        body: { action, section, details }
+      });
+    } catch (error) {
+      console.error('Failed to track admin action:', error);
+    }
+  }, []);
 
   // Setup realtime subscription for analytics
   useEffect(() => {
@@ -611,7 +622,7 @@ This blueprint provides everything needed to reconstruct the INPERSON.TLC app id
             })}
           </TabsList>
 
-          <TabsContent value="overview" className="space-y-6">
+          <TabsContent value="overview" className="space-y-6" onClick={() => trackAdminAction('view', 'overview')}>
             {/* App Readiness Checklist */}
             <AppReadinessChecklist />
             
@@ -734,15 +745,21 @@ This blueprint provides everything needed to reconstruct the INPERSON.TLC app id
             <RecentUpdates />
           </TabsContent>
 
-          <TabsContent value="developer" className="space-y-6">
+          <TabsContent value="developer" className="space-y-6" onClick={() => trackAdminAction('view', 'developer')}>
             {/* AI Prompt Interface */}
-            <AIPromptInterface />
+            <div onClick={() => trackAdminAction('interact', 'ai_prompt')}>
+              <AIPromptInterface />
+            </div>
             
             {/* WiFi Analyzer */}
-            <WiFiAnalyzer />
+            <div onClick={() => trackAdminAction('interact', 'wifi_analyzer')}>
+              <WiFiAnalyzer />
+            </div>
             
             {/* Code Export & Tools */}
-            <CodeExportSystem />
+            <div onClick={() => trackAdminAction('interact', 'code_export')}>
+              <CodeExportSystem />
+            </div>
             
             <Card className="p-6">
               <h3 className="text-lg font-semibold mb-4">Developer Tools</h3>
@@ -754,7 +771,10 @@ This blueprint provides everything needed to reconstruct the INPERSON.TLC app id
                       Export the entire codebase as a ZIP file
                     </p>
                   </div>
-                  <Button onClick={handleDownloadSource} className="gap-2">
+                  <Button onClick={() => {
+                    trackAdminAction('download', 'developer', { type: 'source_code' });
+                    handleDownloadSource();
+                  }} className="gap-2">
                     <Download className="h-4 w-4" />
                     Download
                   </Button>
@@ -767,7 +787,10 @@ This blueprint provides everything needed to reconstruct the INPERSON.TLC app id
                       Complete app blueprint for AI reconstruction
                     </p>
                   </div>
-                  <Button onClick={handleDownloadAIPrompt} className="gap-2">
+                  <Button onClick={() => {
+                    trackAdminAction('download', 'developer', { type: 'ai_prompt' });
+                    handleDownloadAIPrompt();
+                  }} className="gap-2">
                     <Code className="h-4 w-4" />
                     Download
                   </Button>
@@ -780,7 +803,10 @@ This blueprint provides everything needed to reconstruct the INPERSON.TLC app id
                       View and browse the codebase
                     </p>
                   </div>
-                  <Button onClick={() => navigate('/code')} variant="outline" className="gap-2">
+                  <Button onClick={() => {
+                    trackAdminAction('navigate', 'developer', { destination: '/code' });
+                    navigate('/code');
+                  }} variant="outline" className="gap-2">
                     <Code className="h-4 w-4" />
                     Open Browser
                   </Button>
