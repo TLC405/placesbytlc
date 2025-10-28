@@ -151,29 +151,6 @@ export default function Landing() {
         {/* Main Command Grid */}
         <div className="grid lg:grid-cols-3 gap-6 mb-12">
           
-          {/* TeeFee Me Mission */}
-          <Card className="group relative overflow-hidden border-2 border-slate-700 hover:border-orange-500/50 bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-sm transition-all duration-500 hover:shadow-2xl hover:shadow-orange-500/20 cursor-pointer"
-            onClick={() => handleFeatureClick("TeeFee Me", "/teefeeme")}>
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-pink-500 via-purple-500 to-pink-500" />
-            <div className="p-8 space-y-4">
-              <div className="flex justify-between items-start">
-                <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-pink-600 to-purple-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                  <span className="text-3xl">🎨</span>
-                </div>
-                {accessLevel && <Activity className="w-5 h-5 text-green-400 animate-pulse" />}
-              </div>
-              <div>
-                <h3 className="text-2xl font-black text-white mb-2">TEEFEE ME</h3>
-                <p className="text-slate-400 text-sm">AI Cartoonification Mission • Transform photos into epic art</p>
-              </div>
-              <div className="flex gap-2 flex-wrap">
-                <span className="text-xs px-2 py-1 bg-pink-500/20 text-pink-300 rounded border border-pink-500/30">Art</span>
-                <span className="text-xs px-2 py-1 bg-purple-500/20 text-purple-300 rounded border border-purple-500/30">AI</span>
-                <span className="text-xs px-2 py-1 bg-slate-500/20 text-slate-300 rounded border border-slate-500/30">Fun</span>
-              </div>
-            </div>
-          </Card>
-
           {/* Places Search Mission */}
           <Card className="group relative overflow-hidden border-2 border-slate-700 hover:border-orange-500/50 bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-sm transition-all duration-500 hover:shadow-2xl hover:shadow-orange-500/20 cursor-pointer"
             onClick={() => handleFeatureClick("Places by TLC", "/")}>

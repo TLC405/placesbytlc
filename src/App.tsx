@@ -18,7 +18,6 @@ const HackerScreen = lazy(() => import("./pages/HackerScreen"));
 const Quizzes = lazy(() => import("./pages/Quizzes"));
 const QuizLove = lazy(() => import("./pages/QuizLove"));
 const QuizMBTI = lazy(() => import("./pages/QuizMBTI"));
-const TeeFeeMeCartoonifier = lazy(() => import("./pages/TeeFeeMeCartoonifier"));
 const PeriodTracker = lazy(() => import("./pages/PeriodTracker"));
 const FeliciaModPanel = lazy(() => import("./components/FeliciaModPanel"));
 const CodeViewer = lazy(() => import("./pages/CodeViewer"));
@@ -51,9 +50,6 @@ const AppRoutes = () => {
         <Route path="/quiz/love" element={<QuizLove />} />
         <Route path="/quiz/mbti" element={<QuizMBTI />} />
         <Route path="/period-tracker" element={<PeriodTracker />} />
-        <Route path="/teefeeme" element={<TeeFeeMeCartoonifier />} />
-        <Route path="/teefeeme-cartoonifier" element={<TeeFeeMeCartoonifier />} />
-        <Route path="/cartoon-generator" element={<TeeFeeMeCartoonifier />} />
         <Route path="/code" element={<CodeViewer />} />
         <Route path="/felicia-mod" element={<FeliciaModPanel />} />
         <Route path="/admin" element={<AdminPanel />} />
@@ -80,15 +76,15 @@ const App = () => {
         <TooltipProvider>
           <Toaster />
           <Sonner />
-          <AppAuthGate>
-            <BrowserRouter>
+          <BrowserRouter>
+            <AppAuthGate>
               <ActivityTracker />
               <DetailedCupid />
               <main className="max-w-7xl mx-auto px-4 py-6">
                 <AppRoutes />
               </main>
-            </BrowserRouter>
-          </AppAuthGate>
+            </AppAuthGate>
+          </BrowserRouter>
         </TooltipProvider>
       </QueryClientProvider>
     </ErrorBoundary>

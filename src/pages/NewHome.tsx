@@ -161,12 +161,6 @@ export default function NewHome() {
           </DropdownMenu>
 
           <div className="flex items-center gap-4">
-            <Link to="/teefeeme">
-              <Button variant="outline" size="sm" className="gap-2">
-                <Palette className="w-4 h-4" />
-                <span className="hidden sm:inline">Cartoon Gen</span>
-              </Button>
-            </Link>
             <DarkModeToggle />
           </div>
         </div>
@@ -185,16 +179,16 @@ export default function NewHome() {
             <div className="inline-block animate-scale-in">
               <Badge className="px-8 py-3 text-lg bg-gradient-to-r from-pink-500 via-purple-500 to-rose-500 border-0 text-white shadow-glow animate-pulse font-bold">
                 <Crown className="w-6 h-6 mr-2 animate-bounce" />
-                ✨ FELICIA'S ROYAL DATE FINDER ✨
+                ✨ PLACES BY TLC ✨
               </Badge>
             </div>
             
             <h1 className="text-4xl sm:text-6xl md:text-7xl font-black gradient-text drop-shadow-2xl animate-fade-in leading-tight">
-              Queen Felicia's Perfect Date Spots 👑
+              Discover Perfect Date Spots 💝
             </h1>
             
             <p className="text-lg sm:text-xl font-bold bg-gradient-to-r from-rose-400 via-purple-400 to-pink-400 bg-clip-text text-transparent max-w-2xl mx-auto animate-fade-in drop-shadow-lg" style={{ animationDelay: '0.2s' }}>
-              ✨ Your Royal AI-Powered Guide to Unforgettable Moments in OKC ✨
+              ✨ Your AI-Powered Guide to Unforgettable Moments ✨
             </p>
 
             {!user && (
@@ -353,19 +347,6 @@ export default function NewHome() {
                   </CardTitle>
                   <CardDescription className="text-base">
                     Love language & personality insights
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-            </Link>
-
-            <Link to="/teefeeme-cartoonifier">
-              <Card className="hover-lift cursor-pointer group h-full border-2 border-primary/20">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 group-hover:text-primary text-2xl">
-                    🎨 Cartoon Generator
-                  </CardTitle>
-                  <CardDescription className="text-base">
-                    Transform photos into cute cartoons
                   </CardDescription>
                 </CardHeader>
               </Card>
