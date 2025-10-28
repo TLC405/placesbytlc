@@ -9,7 +9,6 @@ import { LoadingScreen } from "@/components/LoadingScreen";
 import { ActivityTracker } from "@/components/ActivityTracker";
 import { DetailedCupid } from "@/components/DetailedCupid";
 import { useSessionTracker } from "@/hooks/useSessionTracker";
-import { CodeGate } from "@/components/CodeGate";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import Home from "./pages/NewHome";
 import Landing from "./pages/Landing";
@@ -97,14 +96,12 @@ const App = () => {
           <Sonner />
           {showLoader && <LoadingScreen onComplete={handleLoadingComplete} />}
           <BrowserRouter>
-            <CodeGate>
-              <ActivityTracker />
-              <DetailedCupid />
-              {!showLoader && <Header />}
-              <main className="max-w-7xl mx-auto px-4 py-6" style={{ marginTop: '5rem' }}>
-                <AppRoutes />
-              </main>
-            </CodeGate>
+            <ActivityTracker />
+            <DetailedCupid />
+            {!showLoader && <Header />}
+            <main className="max-w-7xl mx-auto px-4 py-6" style={{ marginTop: '5rem' }}>
+              <AppRoutes />
+            </main>
           </BrowserRouter>
         </TooltipProvider>
       </QueryClientProvider>

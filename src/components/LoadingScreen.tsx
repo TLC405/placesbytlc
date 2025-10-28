@@ -1,17 +1,42 @@
 import { useEffect, useState } from 'react';
-import { Shield, Crosshair, Target } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Shield, Crosshair, Target, Lock } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 interface LoadingScreenProps {
   onComplete: () => void;
 }
 
 export const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
+  const navigate = useNavigate();
   const [isVisible, setIsVisible] = useState(true);
   const [showText, setShowText] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(0);
+  const [showPinInput, setShowPinInput] = useState(false);
+  const [pinCode, setPinCode] = useState('');
+  const [selectedMode, setSelectedMode] = useState<'tester' | 'admin' | null>(null);
+  const [isUnlocking, setIsUnlocking] = useState(false);
 
   useEffect(() => {
-    // Progress animation
+    // Check if already logged in
+    const role = localStorage.getItem('pin_role');
+    const expiry = parseInt(localStorage.getItem('pin_expiry') || '0');
+    
+    if (role && Date.now() < expiry) {
+      // Already logged in, proceed with loading
+      startLoadingSequence();
+    } else {
+      // Show PIN input after initial animation
+      const pinTimer = setTimeout(() => {
+        setShowPinInput(true);
+      }, 2000);
+      return () => clearTimeout(pinTimer);
+    }
+  }, []);
+
+  const startLoadingSequence = () => {
     const progressInterval = setInterval(() => {
       setLoadingProgress(prev => {
         if (prev >= 100) {
@@ -30,13 +55,37 @@ export const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
       setIsVisible(false);
       setTimeout(onComplete, 600);
     }, 4500);
+  };
 
-    return () => {
-      clearInterval(progressInterval);
-      clearTimeout(textTimer);
-      clearTimeout(hideTimer);
-    };
-  }, [onComplete]);
+  const handlePinSubmit = async () => {
+    const normalizedCode = pinCode.trim().toUpperCase();
+    setIsUnlocking(true);
+
+    // Simulate unlock animation
+    await new Promise(resolve => setTimeout(resolve, 800));
+
+    // Tester code
+    if (normalizedCode === 'CRIP4LYFE' || normalizedCode === 'CRIP') {
+      localStorage.setItem('pin_role', 'tester');
+      localStorage.setItem('pin_expiry', String(Date.now() + 900000));
+      toast.success('🎮 TESTER ACCESS GRANTED');
+      navigate('/hacker');
+      return;
+    }
+
+    // Admin code
+    if (normalizedCode === '1309') {
+      localStorage.setItem('pin_role', 'admin');
+      localStorage.setItem('pin_expiry', String(Date.now() + 900000));
+      toast.success('👑 ADMIN ACCESS GRANTED');
+      navigate('/hacker');
+      return;
+    }
+
+    toast.error('❌ INVALID CODE - ACCESS DENIED');
+    setPinCode('');
+    setIsUnlocking(false);
+  };
 
   if (!isVisible) return null;
 
@@ -123,8 +172,8 @@ export const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
             <Crosshair className="w-8 h-8 text-[#FF6B35] animate-pulse" style={{ animationDelay: '0.5s' }} />
           </div>
 
-          {/* Subtitle */}
-          {showText && (
+          {/* PIN Input or Progress */}
+          {showText && !showPinInput && (
             <div className="space-y-6 animate-fade-in">
               <p 
                 className="text-xl md:text-3xl font-bold tracking-wide"
@@ -151,7 +200,6 @@ export const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
                       boxShadow: '0 0 20px rgba(107, 142, 35, 0.8)',
                     }}
                   />
-                  {/* Animated scan line */}
                   <div 
                     className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
                     style={{ animation: 'scan-horizontal 2s linear infinite' }}
@@ -159,7 +207,6 @@ export const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
                 </div>
               </div>
 
-              {/* Loading messages */}
               <div className="mt-6 space-y-2">
                 <div className="text-[#C8D5B9] font-mono text-sm">
                   {loadingProgress < 30 && "⚡ INITIALIZING COMBAT SYSTEMS..."}
@@ -167,6 +214,92 @@ export const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
                   {loadingProgress >= 60 && loadingProgress < 90 && "💥 DEPLOYING DATE NIGHT PROTOCOLS..."}
                   {loadingProgress >= 90 && "✅ MISSION READY - STANDING BY..."}
                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* PIN Authentication Panel */}
+          {showPinInput && (
+            <div className="space-y-8 animate-fade-in max-w-2xl mx-auto">
+              <div 
+                className="border-4 border-[#FF6B35] bg-black/90 backdrop-blur-xl p-12 relative overflow-hidden group"
+                style={{
+                  boxShadow: '0 0 60px rgba(255, 107, 53, 0.4), inset 0 0 60px rgba(255, 107, 53, 0.1)',
+                }}
+              >
+                {/* Animated corner accents */}
+                <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-[#00D9FF] animate-pulse" />
+                <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-[#00D9FF] animate-pulse" style={{ animationDelay: '0.5s' }} />
+                <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-[#00D9FF] animate-pulse" style={{ animationDelay: '1s' }} />
+                <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-[#00D9FF] animate-pulse" style={{ animationDelay: '1.5s' }} />
+
+                <Lock className="w-20 h-20 mx-auto mb-6 text-[#FF6B35] drop-shadow-[0_0_20px_rgba(255,107,53,0.8)] animate-pulse" />
+
+                <h2 
+                  className="text-5xl font-black text-center mb-2 tracking-wider"
+                  style={{
+                    color: '#00D9FF',
+                    textShadow: '0 0 20px rgba(0, 217, 255, 0.8)',
+                    fontFamily: 'Impact, "Arial Black", sans-serif',
+                  }}
+                >
+                  AUTHORIZATION REQUIRED
+                </h2>
+
+                <p className="text-[#6B8E23] text-center font-mono mb-8 text-sm tracking-wide">
+                  [ENTER SECURITY CODE TO PROCEED]
+                </p>
+
+                <div className="space-y-6">
+                  <Input
+                    type="password"
+                    value={pinCode}
+                    onChange={(e) => setPinCode(e.target.value.toUpperCase())}
+                    onKeyDown={(e) => e.key === 'Enter' && !isUnlocking && handlePinSubmit()}
+                    placeholder="_ _ _ _"
+                    disabled={isUnlocking}
+                    className="text-center text-6xl font-black tracking-[0.8em] bg-black/70 backdrop-blur-xl border-[#6B8E23] text-[#00D9FF] border-4 h-32 rounded-xl focus:border-[#FF6B35] focus:shadow-[0_0_40px_rgba(255,107,53,0.6)] transition-all duration-300"
+                    style={{
+                      textShadow: '0 0 10px rgba(0, 217, 255, 0.8)',
+                    }}
+                    autoFocus
+                  />
+
+                  <Button
+                    onClick={handlePinSubmit}
+                    disabled={isUnlocking || !pinCode}
+                    className="w-full h-20 text-3xl font-black bg-gradient-to-r from-[#FF6B35] to-[#6B8E23] hover:from-[#6B8E23] hover:to-[#FF6B35] border-4 border-[#00D9FF] shadow-[0_0_40px_rgba(0,217,255,0.4)] hover:shadow-[0_0_60px_rgba(0,217,255,0.8)] transition-all duration-300 disabled:opacity-50"
+                  >
+                    {isUnlocking ? (
+                      <div className="flex items-center gap-4">
+                        <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin" />
+                        <span>AUTHORIZING...</span>
+                      </div>
+                    ) : (
+                      '⚡ INITIATE ACCESS'
+                    )}
+                  </Button>
+                </div>
+
+                <div className="mt-8 pt-8 border-t-2 border-[#4A5D23] space-y-3">
+                  <div className="text-center text-[#6B8E23] font-mono text-xs tracking-wide">
+                    <div className="flex items-center justify-center gap-2 mb-2">
+                      <div className="w-2 h-2 bg-[#FF6B35] rounded-full animate-pulse" />
+                      <span>SECURE CONNECTION ESTABLISHED</span>
+                    </div>
+                    <div>ENCRYPTION: AES-256 | PROTOCOL: TLS 1.3</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Hint panel */}
+              <div className="border-2 border-[#4A5D23] bg-black/80 p-6 text-center">
+                <p className="text-[#6B8E23] font-mono text-sm mb-2">
+                  🎮 TESTERS: Use your access code
+                </p>
+                <p className="text-[#FF6B35] font-mono text-sm">
+                  👑 ADMINS: Use tactical override code
+                </p>
               </div>
             </div>
           )}
