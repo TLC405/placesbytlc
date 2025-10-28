@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Shield, Crosshair, Target, Lock } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -7,10 +6,10 @@ import { toast } from 'sonner';
 
 interface LoadingScreenProps {
   onComplete: () => void;
+  onAuthenticated?: (role: 'tester' | 'admin') => void;
 }
 
-export const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
-  const navigate = useNavigate();
+export const LoadingScreen = ({ onComplete, onAuthenticated }: LoadingScreenProps) => {
   const [isVisible, setIsVisible] = useState(true);
   const [showText, setShowText] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(0);
@@ -69,7 +68,8 @@ export const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
       localStorage.setItem('pin_role', 'tester');
       localStorage.setItem('pin_expiry', String(Date.now() + 900000));
       toast.success('🎮 TESTER ACCESS GRANTED');
-      navigate('/hacker');
+      if (onAuthenticated) onAuthenticated('tester');
+      startLoadingSequence();
       return;
     }
 
@@ -78,7 +78,8 @@ export const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
       localStorage.setItem('pin_role', 'admin');
       localStorage.setItem('pin_expiry', String(Date.now() + 900000));
       toast.success('👑 ADMIN ACCESS GRANTED');
-      navigate('/hacker');
+      if (onAuthenticated) onAuthenticated('admin');
+      startLoadingSequence();
       return;
     }
 

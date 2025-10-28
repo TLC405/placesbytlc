@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { CupidSwatGame } from "@/components/CupidSwatGame";
 
 type CartoonStyle = "simpsons" | "flintstones" | "trump" | "elon" | "familyguy" | "renandstimpy" | "southpark" | "anime" | "disney" | "marvel" | "pixar" | "rickmorty";
 
@@ -17,6 +18,9 @@ const TeeFeeMeCartoonifier = () => {
   const [dragActive, setDragActive] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [estimatedTime] = useState(30); // 30 seconds estimated
+  const [gameScore, setGameScore] = useState(0);
+  const [showCountdown, setShowCountdown] = useState(false);
+  const [countdown, setCountdown] = useState(3);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -178,9 +182,20 @@ const TeeFeeMeCartoonifier = () => {
   const handleCartoonify = async () => {
     if (!previewUrl) return;
 
+    // Show 3-2-1 countdown
+    setShowCountdown(true);
+    setCountdown(3);
+    
+    for (let i = 3; i > 0; i--) {
+      setCountdown(i);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+    
+    setShowCountdown(false);
     setIsProcessing(true);
     setElapsedTime(0);
     setCurrentMessageIndex(0);
+    setGameScore(0);
     
     // Start timer
     timerRef.current = setInterval(() => {
@@ -243,7 +258,7 @@ const TeeFeeMeCartoonifier = () => {
       if (data?.cartoonImage) {
         setCartoonUrl(data.cartoonImage);
         setShowResult(true);
-        toast.success("🎉 Your TeeFee cartoon is ready!");
+        toast.success(`🎉 Your TeeFee cartoon is ready! Game Score: ${gameScore} 🎮`);
       } else {
         throw new Error('No cartoon image returned');
       }
@@ -263,6 +278,10 @@ const TeeFeeMeCartoonifier = () => {
         timerRef.current = null;
       }
     }
+  };
+
+  const handleGameScore = (score: number) => {
+    setGameScore(score);
   };
 
   const handleDownload = () => {
@@ -452,59 +471,51 @@ const TeeFeeMeCartoonifier = () => {
               </div>
 
               {isProcessing && (
-                <div className="mt-8 text-center animate-fade-in space-y-6">
-                  {/* Loading Car Animation */}
-                  <div className="relative h-24 bg-gradient-to-r from-slate-700 to-slate-800 rounded-lg overflow-hidden">
-                    <div className="absolute bottom-2 w-full flex justify-center">
-                      <div className="text-6xl animate-car">
-                        🚗💨
+                <div className="mt-8 relative animate-fade-in space-y-6">
+                  {/* Countdown overlay before game starts */}
+                  {showCountdown && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/80 backdrop-blur-lg z-50 rounded-2xl">
+                      <div className="text-center">
+                        <div className="text-9xl font-black gradient-text animate-pulse mb-4">
+                          {countdown}
+                        </div>
+                        <p className="text-2xl text-muted-foreground">
+                          Get Ready to Swat Cupid!
+                        </p>
                       </div>
                     </div>
-                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-yellow-500/30">
-                      <div 
-                        className="h-full bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 transition-all duration-300"
-                        style={{ width: `${(elapsedTime / estimatedTime) * 100}%` }}
-                      />
-                    </div>
-                  </div>
+                  )}
 
-                  {/* Progress Bar */}
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm font-medium">
-                      <span>Processing...</span>
-                      <span>{Math.min(100, Math.round((elapsedTime / estimatedTime) * 100))}%</span>
-                    </div>
-                    <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-gradient-to-r from-yellow-500 via-pink-500 to-purple-600 transition-all duration-300 relative overflow-hidden"
-                        style={{ width: `${Math.min(100, (elapsedTime / estimatedTime) * 100)}%` }}
-                      >
-                        <div className="absolute inset-0 bg-white/20 animate-shimmer" />
+                  {/* Cupid Swat Mini-Game */}
+                  {!showCountdown && (
+                    <>
+                      <CupidSwatGame isActive={isProcessing && !showCountdown} onScore={handleGameScore} />
+
+                      {/* Progress Info Below Game */}
+                      <div className="mt-6 space-y-4">
+                        <div className="flex justify-between items-center text-sm font-medium">
+                          <span className="flex items-center gap-2">
+                            🎮 <span className="font-black text-lg text-primary">{gameScore} points</span>
+                          </span>
+                          <span>{Math.min(100, Math.round((elapsedTime / estimatedTime) * 100))}% Complete</span>
+                        </div>
+                        <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-gradient-to-r from-yellow-500 via-pink-500 to-purple-600 transition-all duration-300 relative overflow-hidden"
+                            style={{ width: `${Math.min(100, (elapsedTime / estimatedTime) * 100)}%` }}
+                          >
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer" />
+                          </div>
+                        </div>
+                        <p className="text-lg font-semibold text-muted-foreground animate-pulse text-center">
+                          {funnyMessages[currentMessageIndex]}
+                        </p>
+                        <div className="text-4xl font-black text-primary animate-pulse text-center">
+                          ⏱️ {Math.max(0, Math.ceil(estimatedTime - elapsedTime))}s
+                        </div>
                       </div>
-                    </div>
-                  </div>
-
-                  {/* Bouncing Dots */}
-                  <div className="flex items-center justify-center space-x-3 mb-4">
-                    <div className="w-4 h-4 bg-yellow-500 rounded-full animate-bounce" style={{ animationDelay: "0s" }} />
-                    <div className="w-4 h-4 bg-pink-500 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }} />
-                    <div className="w-4 h-4 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: "0.4s" }} />
-                  </div>
-
-                  {/* Message */}
-                  <p className="text-2xl font-bold bg-gradient-to-r from-yellow-500 via-pink-500 to-purple-600 bg-clip-text text-transparent animate-pulse-subtle">
-                    {funnyMessages[currentMessageIndex]}
-                  </p>
-
-                  {/* Countdown */}
-                  <div className="space-y-2">
-                    <div className="text-6xl font-black text-primary animate-pulse drop-shadow-glow">
-                      {Math.max(0, Math.ceil(estimatedTime - elapsedTime))}s
-                    </div>
-                    <p className="text-sm text-muted-foreground font-semibold">
-                      Time remaining
-                    </p>
-                  </div>
+                    </>
+                  )}
                 </div>
               )}
             </Card>

@@ -72,12 +72,24 @@ const AppRoutes = () => {
 };
 
 const App = () => {
-  // Show loading screen on every page refresh
   const [showLoader, setShowLoader] = useState(true);
+  const [shouldRedirect, setShouldRedirect] = useState<string | null>(null);
 
   const handleLoadingComplete = () => {
     setShowLoader(false);
   };
+
+  const handleAuthenticated = (role: 'tester' | 'admin') => {
+    // Set flag to redirect after loading completes
+    setShouldRedirect('/hacker');
+  };
+
+  // Handle redirect after loading screen is done
+  useEffect(() => {
+    if (!showLoader && shouldRedirect) {
+      window.location.href = shouldRedirect;
+    }
+  }, [showLoader, shouldRedirect]);
 
   // Safety fallback: ensure loader hides even if onComplete doesn't fire
   useEffect(() => {
@@ -94,7 +106,7 @@ const App = () => {
         <TooltipProvider>
           <Toaster />
           <Sonner />
-          {showLoader && <LoadingScreen onComplete={handleLoadingComplete} />}
+          {showLoader && <LoadingScreen onComplete={handleLoadingComplete} onAuthenticated={handleAuthenticated} />}
           <BrowserRouter>
             <ActivityTracker />
             <DetailedCupid />
