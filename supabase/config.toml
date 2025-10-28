@@ -17,3 +17,12 @@ verify_jwt = true
 
 [functions.track-admin-activity]
 verify_jwt = true
+
+[functions.pin-auth]
+verify_jwt = false
+
+[functions.analytics-track]
+verify_jwt = false
+
+[functions.analytics-query]
+verify_jwt = false

@@ -1,68 +1,43 @@
 import { useState, useEffect } from "react";
-import { Heart, Calendar, Brain, Palette, Download, Crown, Sparkles, UserPlus, Shield } from "lucide-react";
+import { Heart, Sparkles, Palette, Shield } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
-import { supabase } from "@/integrations/supabase/client";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { AuthPanel } from "./AuthPanel";
+import { getStoredRole, type AppRole } from "@/utils/rbac";
 
 export const Header = () => {
   const location = useLocation();
-  const [isTester, setIsTester] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [showSignup, setShowSignup] = useState(false);
+  const [role, setRole] = useState<AppRole | null>(null);
   
   useEffect(() => {
-    const checkUserRole = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        setIsTester(false);
-        setIsAdmin(false);
-        return;
-      }
-      
-      const { data: roles } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', user.id);
-      
-      const hasAdminRole = roles?.some(r => (r.role as string) === 'admin') ?? false;
-      const hasTesterRole = roles?.some(r => (r.role as string) === 'tester') ?? false;
-      
-      setIsAdmin(hasAdminRole);
-      setIsTester(hasTesterRole);
+    // Check role from localStorage
+    const currentRole = getStoredRole();
+    setRole(currentRole);
+    
+    // Listen for role changes
+    const handleStorageChange = () => {
+      setRole(getStoredRole());
     };
     
-    checkUserRole();
-    
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-      checkUserRole();
-    });
-    
-    return () => subscription.unsubscribe();
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
   
   const isActive = (path: string) => location.pathname === path;
   
   const allNavItems = [
-    { path: "/landing", label: "Home", icon: Heart, emoji: "🏠", allowTester: true },
-    { path: "/", label: "Places by TLC", icon: Heart, emoji: "📍", allowTester: true },
-    { path: "/teefeeme", label: "TeeFee Me", icon: Palette, emoji: "🎨", allowTester: true },
-    { path: "/okc-legend", label: "Legend", icon: Brain, emoji: "🔥", allowTester: true },
-    { path: "/quizzes", label: "Quizzes", icon: Brain, emoji: "🧠", allowTester: false },
-    { path: "/period-tracker", label: "Peripod", icon: Calendar, emoji: "📅", allowTester: false },
-    { path: "/admin", label: "Admin", icon: Shield, emoji: "⚙️", allowTester: false, adminOnly: true },
+    { path: "/", label: "Places by TLC", icon: Heart, emoji: "📍", requiredRole: ['tester', 'admin', 'warlord'] },
+    { path: "/teefeeme", label: "TeeFee Me", icon: Palette, emoji: "🎨", requiredRole: ['tester', 'admin', 'warlord'] },
+    { path: "/admin", label: "Admin", icon: Shield, emoji: "⚙️", requiredRole: ['admin', 'warlord'] },
   ];
   
   const navItems = allNavItems.filter(item => {
-    if (item.adminOnly && !isAdmin) return false;
-    if (isTester && !item.allowTester) return false;
-    return true;
+    if (!role) return false;
+    return item.requiredRole.includes(role);
   });
   
-  // Hide header on landing and hacker pages
-  if (location.pathname === '/landing' || location.pathname === '/hacker') return null;
+  // Hide header on login and hacker pages
+  if (location.pathname === '/login-pin' || location.pathname === '/hacker') return null;
   
   return (
     <>

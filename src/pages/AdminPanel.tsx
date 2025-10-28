@@ -100,27 +100,20 @@ const AdminPanel = () => {
 
   // Check admin access on mount
   useEffect(() => {
-    const checkAdminAccess = async () => {
+    const checkAdminAccess = () => {
       try {
-        const { data: { user: currentUser } } = await supabase.auth.getUser();
+        const role = localStorage.getItem('pin_role');
+        const expiry = parseInt(localStorage.getItem('pin_expiry') || '0');
         
-        if (!currentUser) {
+        // Check if PIN token expired
+        if (!role || Date.now() > expiry) {
           toast.error("Please log in to access admin panel");
-          navigate('/');
+          navigate('/login-pin');
           return;
         }
-
-        setUser(currentUser);
-
-        // Check if user has admin role
-        const { data: roles } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', currentUser.id);
         
-        const hasAdminRole = roles?.some(r => r.role === 'admin');
-        
-        if (!hasAdminRole) {
+        // Check if user has admin or warlord role
+        if (role !== 'admin' && role !== 'warlord') {
           toast.error("Admin access required");
           navigate('/');
           return;
