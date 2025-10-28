@@ -30,14 +30,12 @@ export const CodeGate = ({ children }: CodeGateProps) => {
     e.preventDefault();
     const normalizedCode = code.trim().toLowerCase();
 
-    // Admin code: instant admin access
+    // Warlord Admin Code
     if (normalizedCode === "1309") {
       try {
-        // Check if user is already logged in as admin
         const { data: { session } } = await supabase.auth.getSession();
         
         if (session?.user) {
-          // Check if already admin
           const { data: roleData } = await supabase
             .from("user_roles")
             .select("role")
@@ -46,11 +44,11 @@ export const CodeGate = ({ children }: CodeGateProps) => {
             .single();
 
           if (roleData) {
-            // Already admin, just unlock
             sessionStorage.setItem("app_unlocked", "true");
+            sessionStorage.setItem("access_level", "admin");
             setUnlocked(true);
-            toast.success("🎖️ ADMIN ACCESS GRANTED");
-            navigate("/admin");
+            toast.success("🎖️ WARLORD ACCESS GRANTED - FULL COMMAND");
+            navigate("/landing?access=admin");
             return;
           }
         }
@@ -64,12 +62,13 @@ export const CodeGate = ({ children }: CodeGateProps) => {
       }
     }
 
-    // Regular access code
-    if (normalizedCode === "crip") {
+    // Alpha Tester Code
+    if (normalizedCode === "crip4lyfe") {
       sessionStorage.setItem("app_unlocked", "true");
+      sessionStorage.setItem("access_level", "tester");
       setUnlocked(true);
-      toast.success("✅ ACCESS GRANTED");
-      navigate("/landing");
+      toast.success("✅ ALPHA TESTER ACCESS GRANTED");
+      navigate("/landing?access=tester");
       return;
     }
 
