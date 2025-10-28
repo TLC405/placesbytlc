@@ -17,6 +17,7 @@ export const CodeGate = ({ children }: CodeGateProps) => {
   const [unlocked, setUnlocked] = useState(false);
   const [loading, setLoading] = useState(true);
   const [selectedMode, setSelectedMode] = useState<"warlord" | "admin" | null>(null);
+  const [inputFocused, setInputFocused] = useState(false);
 
   useEffect(() => {
     const appUnlocked = sessionStorage.getItem("app_unlocked");
@@ -83,113 +84,117 @@ export const CodeGate = ({ children }: CodeGateProps) => {
 
   if (!unlocked) {
     return (
-      <div className="min-h-screen bg-black text-green-400 font-mono overflow-hidden relative">
-        {/* Matrix-style background */}
-        <div className="absolute inset-0 opacity-10">
+      <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black overflow-hidden relative flex items-center justify-center">
+        {/* Animated grid background */}
+        <div className="absolute inset-0 opacity-20">
           <div className="absolute inset-0" 
             style={{
-              backgroundImage: `linear-gradient(0deg, transparent 24%, rgba(0, 255, 0, .05) 25%, rgba(0, 255, 0, .05) 26%, transparent 27%, transparent 74%, rgba(0, 255, 0, .05) 75%, rgba(0, 255, 0, .05) 76%, transparent 77%, transparent),
-                linear-gradient(90deg, transparent 24%, rgba(0, 255, 0, .05) 25%, rgba(0, 255, 0, .05) 26%, transparent 27%, transparent 74%, rgba(0, 255, 0, .05) 75%, rgba(0, 255, 0, .05) 76%, transparent 77%, transparent)`,
-              backgroundSize: '50px 50px',
+              backgroundImage: `linear-gradient(0deg, transparent 24%, rgba(34, 197, 94, .08) 25%, rgba(34, 197, 94, .08) 26%, transparent 27%, transparent 74%, rgba(34, 197, 94, .08) 75%, rgba(34, 197, 94, .08) 76%, transparent 77%, transparent),
+                linear-gradient(90deg, transparent 24%, rgba(34, 197, 94, .08) 25%, rgba(34, 197, 94, .08) 26%, transparent 27%, transparent 74%, rgba(34, 197, 94, .08) 75%, rgba(34, 197, 94, .08) 76%, transparent 77%, transparent)`,
+              backgroundSize: '80px 80px',
             }}
           />
         </div>
 
-        {/* Scanline effect */}
+        {/* Scanning lines */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-green-500/5 to-transparent animate-scan" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-green-500/10 to-transparent animate-scan" />
         </div>
 
-        <div className="relative z-10 min-h-screen flex items-center justify-center p-4">
-          <div className="max-w-2xl w-full space-y-8">
-            {/* Header */}
-            <div className="text-center space-y-4">
-              <div className="flex justify-center">
-                <Shield className="w-24 h-24 text-green-500 animate-pulse" />
-              </div>
-              <h1 className="text-6xl font-bold text-green-500 tracking-wider animate-pulse-border">
-                COMMAND CENTER
-              </h1>
-              <div className="h-1 w-32 bg-green-500 mx-auto animate-pulse" />
-            </div>
+        {/* Glowing orbs */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-green-500/20 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-red-500/20 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '1s' }} />
 
-            {/* Mode Selection or Code Input */}
-            {!selectedMode ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card
-                  className="p-8 bg-black/80 border-2 border-green-500 hover:border-yellow-500 cursor-pointer transition-all hover:scale-105 hover:shadow-[0_0_30px_rgba(34,197,94,0.5)]"
+        <div className="relative z-10 w-full max-w-6xl px-6">
+          {!selectedMode ? (
+            <div className="space-y-12 animate-fade-in">
+              {/* Minimal Header */}
+              <div className="text-center space-y-4">
+                <Shield className="w-32 h-32 mx-auto text-green-500 animate-pulse drop-shadow-[0_0_30px_rgba(34,197,94,0.6)]" />
+                <h1 className="text-8xl font-black text-green-500 tracking-widest animate-pulse-glow">
+                  ACCESS
+                </h1>
+              </div>
+
+              {/* Mode Selection - Minimal Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <button
                   onClick={() => setSelectedMode("warlord")}
+                  className="group relative p-12 bg-black/60 backdrop-blur-xl border-4 border-yellow-500/50 rounded-2xl hover:border-yellow-500 transition-all duration-500 hover:scale-105 hover:shadow-[0_0_60px_rgba(234,179,8,0.4)]"
                 >
-                  <div className="text-center space-y-4">
-                    <Swords className="w-16 h-16 mx-auto text-yellow-500" />
-                    <h2 className="text-3xl font-bold text-yellow-500">WARLORD</h2>
-                    <p className="text-sm text-green-400">TESTING ACCESS</p>
-                  </div>
-                </Card>
+                  <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <Swords className="w-24 h-24 mx-auto mb-6 text-yellow-500 group-hover:scale-110 transition-transform duration-500" />
+                  <h2 className="text-6xl font-black text-yellow-500 tracking-wider">WARLORD</h2>
+                </button>
 
-                <Card
-                  className="p-8 bg-black/80 border-2 border-red-500 hover:border-orange-500 cursor-pointer transition-all hover:scale-105 hover:shadow-[0_0_30px_rgba(239,68,68,0.5)]"
+                <button
                   onClick={() => setSelectedMode("admin")}
+                  className="group relative p-12 bg-black/60 backdrop-blur-xl border-4 border-red-500/50 rounded-2xl hover:border-red-500 transition-all duration-500 hover:scale-105 hover:shadow-[0_0_60px_rgba(239,68,68,0.4)]"
                 >
-                  <div className="text-center space-y-4">
-                    <Terminal className="w-16 h-16 mx-auto text-red-500" />
-                    <h2 className="text-3xl font-bold text-red-500">ADMIN</h2>
-                    <p className="text-sm text-green-400">FULL CONTROL</p>
-                  </div>
-                </Card>
-              </div>
-            ) : (
-              <Card className="p-8 bg-black/80 border-2 border-green-500">
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="text-center space-y-2">
-                    <h2 className="text-2xl font-bold text-green-500">
-                      {selectedMode === "warlord" ? "WARLORD CODE" : "ADMIN CODE"}
-                    </h2>
-                    <div className="h-0.5 w-24 bg-green-500 mx-auto" />
-                  </div>
-
-                  <Input
-                    type="text"
-                    value={code}
-                    onChange={(e) => setCode(e.target.value)}
-                    placeholder="ENTER CODE"
-                    className="text-center text-4xl font-bold tracking-widest bg-black/50 border-green-500 text-green-400 focus:border-green-400 h-20"
-                    autoFocus
-                  />
-
-                  <div className="flex gap-4">
-                    <Button
-                      type="button"
-                      onClick={() => {
-                        setSelectedMode(null);
-                        setCode("");
-                      }}
-                      variant="outline"
-                      className="flex-1 h-14 text-lg border-red-500 text-red-500 hover:bg-red-500/10"
-                    >
-                      BACK
-                    </Button>
-                    <Button
-                      type="submit"
-                      className="flex-1 h-14 text-lg bg-green-500 hover:bg-green-600 text-black font-bold"
-                    >
-                      AUTHENTICATE
-                    </Button>
-                  </div>
-                </form>
-              </Card>
-            )}
-
-            {/* System Info */}
-            <div className="text-center text-xs text-green-600 space-y-1">
-              <div>SYSTEM STATUS: ACTIVE</div>
-              <div>ENCRYPTION: AES-256</div>
-              <div className="flex items-center justify-center gap-2">
-                <span>SESSION:</span>
-                <span className="text-green-400">{Math.random().toString(16).substr(2, 8).toUpperCase()}</span>
+                  <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <Terminal className="w-24 h-24 mx-auto mb-6 text-red-500 group-hover:scale-110 transition-transform duration-500" />
+                  <h2 className="text-6xl font-black text-red-500 tracking-wider">ADMIN</h2>
+                </button>
               </div>
             </div>
-          </div>
+          ) : (
+            <div className="space-y-8 animate-fade-in max-w-2xl mx-auto">
+              {/* Code Input Section - Minimal */}
+              <div className="text-center space-y-6">
+                <div className={`w-32 h-32 mx-auto rounded-full ${selectedMode === "warlord" ? "bg-yellow-500/20" : "bg-red-500/20"} backdrop-blur-xl flex items-center justify-center border-4 ${selectedMode === "warlord" ? "border-yellow-500" : "border-red-500"} shadow-[0_0_60px_rgba(234,179,8,0.4)]`}>
+                  {selectedMode === "warlord" ? (
+                    <Swords className="w-20 h-20 text-yellow-500" />
+                  ) : (
+                    <Terminal className="w-20 h-20 text-red-500" />
+                  )}
+                </div>
+                
+                <h2 className={`text-7xl font-black tracking-wider ${selectedMode === "warlord" ? "text-yellow-500" : "text-red-500"}`}>
+                  {selectedMode === "warlord" ? "WARLORD" : "ADMIN"}
+                </h2>
+              </div>
+
+              {/* Input */}
+              <div className="relative">
+                <Input
+                  type="password"
+                  value={code}
+                  onChange={(e) => setCode(e.target.value.toUpperCase())}
+                  onFocus={() => setInputFocused(true)}
+                  onBlur={() => setInputFocused(false)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSubmit(e)}
+                  placeholder="_ _ _ _"
+                  className={`text-center text-6xl font-black tracking-[0.5em] bg-black/50 backdrop-blur-xl ${selectedMode === "warlord" ? "border-yellow-500 text-yellow-500 focus:border-yellow-400" : "border-red-500 text-red-500 focus:border-red-400"} border-4 h-32 rounded-2xl focus:shadow-[0_0_60px_rgba(234,179,8,0.3)] transition-all duration-300`}
+                  autoFocus
+                />
+                {inputFocused && (
+                  <div className="absolute -bottom-8 left-0 right-0 text-center text-sm text-gray-500 animate-pulse">
+                    ENTER CODE
+                  </div>
+                )}
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-6">
+                <Button
+                  onClick={() => {
+                    setSelectedMode(null);
+                    setCode("");
+                  }}
+                  variant="outline"
+                  className="flex-1 h-20 text-2xl border-4 border-gray-700 text-gray-400 hover:bg-gray-900/50 hover:text-gray-300 hover:border-gray-600 font-black tracking-wider transition-all duration-300"
+                >
+                  BACK
+                </Button>
+                <Button
+                  onClick={handleSubmit}
+                  className={`flex-1 h-20 text-2xl font-black tracking-wider ${selectedMode === "warlord" ? "bg-yellow-500 hover:bg-yellow-600 border-yellow-600" : "bg-red-500 hover:bg-red-600 border-red-600"} text-black border-4 shadow-[0_0_30px_rgba(234,179,8,0.3)] hover:shadow-[0_0_60px_rgba(234,179,8,0.5)] transition-all duration-300`}
+                >
+                  ACCESS
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
 
         <style>{`
@@ -198,14 +203,21 @@ export const CodeGate = ({ children }: CodeGateProps) => {
             100% { transform: translateY(100%); }
           }
           .animate-scan {
-            animation: scan 4s linear infinite;
+            animation: scan 6s linear infinite;
           }
-          @keyframes pulse-border {
-            0%, 100% { text-shadow: 0 0 10px #22c55e; }
-            50% { text-shadow: 0 0 20px #22c55e, 0 0 30px #22c55e; }
+          @keyframes pulse-glow {
+            0%, 100% { text-shadow: 0 0 20px #22c55e, 0 0 40px #22c55e; }
+            50% { text-shadow: 0 0 30px #22c55e, 0 0 60px #22c55e, 0 0 80px #22c55e; }
           }
-          .animate-pulse-border {
-            animation: pulse-border 2s ease-in-out infinite;
+          .animate-pulse-glow {
+            animation: pulse-glow 3s ease-in-out infinite;
+          }
+          @keyframes fade-in {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+          }
+          .animate-fade-in {
+            animation: fade-in 0.6s ease-out;
           }
         `}</style>
       </div>

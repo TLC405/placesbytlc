@@ -54,7 +54,7 @@ const AdminPanel = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [users, setUsers] = useState<UserAnalytics[]>([]);
-  const [activeTab, setActiveTab] = useState('checklist');
+  const [activeTab, setActiveTab] = useState('overview');
   const [allActivities, setAllActivities] = useState<any[]>([]);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
@@ -541,16 +541,11 @@ This blueprint provides everything needed to reconstruct the FELICIA.TLC app ide
     );
   }
 
+  // Three main sections only
   const tabItems = [
-    { id: 'checklist', label: 'Checklist', icon: Rocket },
-    { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
-    { id: 'command', label: 'Command', icon: Terminal },
-    { id: 'users', label: 'Users', icon: Users },
-    { id: 'analytics', label: 'Analytics', icon: Activity },
-    { id: 'sms', label: 'SMS', icon: MessageSquare },
-    { id: 'ai', label: 'AI Prompt', icon: Sparkles },
-    { id: 'wifi', label: 'WiFi', icon: Wifi },
-    { id: 'tools', label: 'Tools', icon: FileCode },
+    { id: 'overview', label: 'Overview', icon: Activity },
+    { id: 'management', label: 'Management', icon: Settings },
+    { id: 'developer', label: 'Developer', icon: Code },
   ];
 
   const totalUsers = users.length;
@@ -593,17 +588,17 @@ This blueprint provides everything needed to reconstruct the FELICIA.TLC app ide
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-9 lg:w-auto lg:inline-grid">
+          <TabsList className="grid w-full grid-cols-3">
             {tabItems.map((item) => {
               const Icon = item.icon;
               return (
                 <TabsTrigger
                   key={item.id}
                   value={item.id}
-                  className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  className="gap-2 text-lg py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                 >
-                  <Icon className="h-4 w-4" />
-                  <span className="hidden sm:inline">{item.label}</span>
+                  <Icon className="h-5 w-5" />
+                  {item.label}
                 </TabsTrigger>
               );
             })}
