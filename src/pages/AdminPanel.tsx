@@ -36,6 +36,7 @@ import { RecentUpdates } from "@/components/RecentUpdates";
 import CupidSettingsPanel from "@/components/admin/CupidSettingsPanel";
 import ActivityLogViewer from "@/components/admin/ActivityLogViewer";
 import ComprehensiveExportSystem from "@/components/admin/ComprehensiveExportSystem";
+import { UpdateLogger } from "@/components/admin/UpdateLogger";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface UserAnalytics {
@@ -444,7 +445,19 @@ const AdminPanel = () => {
 
               {/* Dev Tools Tab */}
               <TabsContent value="tools" className="mt-0 space-y-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>📋 Update Changelog Manager</CardTitle>
+                    <CardDescription>Log new updates for the changelog</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <UpdateLogger />
+                  </CardContent>
+                </Card>
                 <ComprehensiveExportSystem />
+                <AIPromptInterface />
+                <SMSNotificationPanel />
+                <AppReadinessChecklist />
               </TabsContent>
 
             </div>

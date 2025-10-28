@@ -1,279 +1,221 @@
-import React, { useEffect, useState } from "react";
-import { Heart, Sparkles } from "lucide-react";
+import { useEffect, useState } from 'react';
+import { Shield, Crosshair, Target } from 'lucide-react';
 
-export const LoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
+interface LoadingScreenProps {
+  onComplete: () => void;
+}
+
+export const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
   const [isVisible, setIsVisible] = useState(true);
-  const [textVisible, setTextVisible] = useState(false);
+  const [showText, setShowText] = useState(false);
+  const [loadingProgress, setLoadingProgress] = useState(0);
 
   useEffect(() => {
-    // Show text after a short delay
-    const textTimer = setTimeout(() => {
-      setTextVisible(true);
-    }, 300);
+    // Progress animation
+    const progressInterval = setInterval(() => {
+      setLoadingProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(progressInterval);
+          return 100;
+        }
+        return prev + 2.5;
+      });
+    }, 50);
 
-    // Hide everything after ~2 seconds
-    const timer = setTimeout(() => {
+    const textTimer = setTimeout(() => {
+      setShowText(true);
+    }, 500);
+
+    const hideTimer = setTimeout(() => {
       setIsVisible(false);
-      setTimeout(onComplete, 300);
-    }, 2000);
+      setTimeout(onComplete, 600);
+    }, 4500);
 
     return () => {
+      clearInterval(progressInterval);
       clearTimeout(textTimer);
-      clearTimeout(timer);
+      clearTimeout(hideTimer);
     };
   }, [onComplete]);
 
+  if (!isVisible) return null;
+
   return (
-    <div
-      className={`fixed inset-0 z-50 flex items-center justify-center transition-all duration-700 overflow-hidden ${
-        isVisible ? "opacity-100" : "opacity-0 pointer-events-none"
-      }`}
-    >
-      {/* Enhanced Gradient Background with multiple layers */}
-      <div 
-        className="absolute inset-0 animate-fade-in"
-        style={{
-          background: 'radial-gradient(circle at 30% 40%, rgba(255, 107, 157, 0.95) 0%, rgba(219, 112, 147, 0.85) 25%, rgba(194, 57, 179, 0.9) 50%, rgba(138, 43, 226, 0.95) 75%, rgba(147, 51, 234, 1) 100%)',
-          backgroundSize: '150% 150%',
-          backgroundPosition: 'center',
-          animation: 'gentle-zoom 15s ease-in-out infinite'
-        }}
-      />
-      
-      {/* Secondary animated layer */}
-      <div 
-        className="absolute inset-0"
-        style={{
-          background: 'radial-gradient(ellipse at 70% 60%, rgba(236, 72, 153, 0.6) 0%, transparent 60%)',
-          animation: 'gentle-zoom 12s ease-in-out infinite reverse'
-        }}
-      />
-      
-      {/* Clay/Frosted Glass Overlay */}
-      <div 
-        className="absolute inset-0"
-        style={{
-          background: 'linear-gradient(135deg, rgba(255, 107, 157, 0.6) 0%, rgba(194, 57, 179, 0.7) 50%, rgba(255, 107, 157, 0.6) 100%)',
-          backgroundSize: '200% 200%',
-          animation: 'gradient-shift 4s ease infinite',
-          backdropFilter: 'blur(10px) saturate(200%)',
-          mixBlendMode: 'overlay'
-        }}
-      />
-      
-      {/* Shimmer effect */}
-      <div 
-        className="absolute inset-0"
-        style={{
-          background: 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.15) 50%, transparent 100%)',
-          backgroundSize: '200% 100%',
-          animation: 'shimmer 3s ease-in-out infinite'
-        }}
-      />
-      
-      {/* Additional Clay Texture Layer */}
-      <div 
-        className="absolute inset-0 opacity-20"
-        style={{
-          background: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.08) 10px, rgba(255,255,255,0.08) 20px)',
-          animation: 'texture-shift 8s linear infinite'
-        }}
-      />
-
-      {/* Enhanced floating sparkles */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(40)].map((_, i) => (
-          <Sparkles
-            key={`sparkle-${i}`}
-            className="absolute text-white/40 animate-pulse"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              width: `${15 + Math.random() * 35}px`,
-              height: `${15 + Math.random() * 35}px`,
-              animationDelay: `${Math.random() * 3}s`,
-              animationDuration: `${2 + Math.random() * 3}s`,
-              filter: `blur(${Math.random() * 2}px)`,
-            }}
-          />
-        ))}
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden bg-black">
+      {/* COD-style hexagon grid background */}
+      <div className="absolute inset-0 opacity-10">
+        <div 
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `
+              linear-gradient(30deg, #4A5D23 12%, transparent 12.5%, transparent 87%, #4A5D23 87.5%, #4A5D23),
+              linear-gradient(150deg, #4A5D23 12%, transparent 12.5%, transparent 87%, #4A5D23 87.5%, #4A5D23),
+              linear-gradient(30deg, #4A5D23 12%, transparent 12.5%, transparent 87%, #4A5D23 87.5%, #4A5D23),
+              linear-gradient(150deg, #4A5D23 12%, transparent 12.5%, transparent 87%, #4A5D23 87.5%, #4A5D23)
+            `,
+            backgroundSize: '80px 140px',
+            backgroundPosition: '0 0, 0 0, 40px 70px, 40px 70px',
+          }}
+        />
       </div>
 
-      {/* Enhanced floating hearts */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(20)].map((_, i) => (
-          <Heart
-            key={`heart-${i}`}
-            className="absolute text-rose-200/50 animate-bounce"
-            fill="currentColor"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              width: `${20 + Math.random() * 40}px`,
-              height: `${20 + Math.random() * 40}px`,
-              animationDelay: `${Math.random() * 3}s`,
-              animationDuration: `${1.5 + Math.random() * 2}s`,
-              opacity: 0.3 + Math.random() * 0.4,
-            }}
-          />
-        ))}
+      {/* Animated scanline effect */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#6B8E23]/20 to-transparent animate-scan" />
       </div>
 
-      {/* Enhanced animated text with particles */}
-      <div
-        className={`fixed inset-0 flex items-center justify-center z-30 transition-all duration-1000 pointer-events-none ${
-          textVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-        }`}
-      >
-        {/* Multiple layered glows */}
-        <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
-          <div className={`w-[600px] h-[600px] rounded-full bg-gradient-to-r from-pink-400/50 via-purple-400/50 to-rose-400/50 blur-3xl transition-all duration-1000 ${
-            textVisible ? 'scale-100 opacity-100' : 'scale-50 opacity-0'
-          }`} 
-          style={{ animation: 'gentle-zoom 4s ease-in-out infinite' }}
-          />
-          <div className={`absolute w-[500px] h-[500px] rounded-full bg-gradient-to-br from-violet-400/40 to-fuchsia-400/40 blur-2xl transition-all duration-1200 ${
-            textVisible ? 'scale-100 opacity-100' : 'scale-50 opacity-0'
-          }`}
-          style={{ animation: 'gentle-zoom 5s ease-in-out infinite reverse' }}
-          />
+      {/* Radial spotlight effects */}
+      <div className="absolute inset-0">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-[#FF6B35]/10 rounded-full blur-[150px] animate-pulse" />
+        <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-[#00D9FF]/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '1s' }} />
+      </div>
+
+      {/* Tactical grid lines */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="h-full w-full" style={{
+          backgroundImage: `
+            linear-gradient(0deg, transparent 24%, rgba(107, 142, 35, 0.5) 25%, rgba(107, 142, 35, 0.5) 26%, transparent 27%, transparent 74%, rgba(107, 142, 35, 0.5) 75%, rgba(107, 142, 35, 0.5) 76%, transparent 77%, transparent),
+            linear-gradient(90deg, transparent 24%, rgba(107, 142, 35, 0.5) 25%, rgba(107, 142, 35, 0.5) 26%, transparent 27%, transparent 74%, rgba(107, 142, 35, 0.5) 75%, rgba(107, 142, 35, 0.5) 76%, transparent 77%, transparent)
+          `,
+          backgroundSize: '80px 80px',
+        }} />
+      </div>
+
+      {/* Main content */}
+      <div className="relative z-10 text-center px-8 max-w-6xl">
+        {/* COD-style header with tactical elements */}
+        <div className="mb-12 space-y-8">
+          {/* Top tactical bar */}
+          <div className="flex items-center justify-center gap-4 mb-8">
+            <div className="h-px w-32 bg-gradient-to-r from-transparent via-[#6B8E23] to-transparent" />
+            <Shield className="w-12 h-12 text-[#FF6B35] drop-shadow-[0_0_20px_rgba(255,107,53,0.8)] animate-pulse" />
+            <div className="h-px w-32 bg-gradient-to-r from-transparent via-[#6B8E23] to-transparent" />
+          </div>
+
+          {/* Mission label */}
+          <div className="text-[#00D9FF] text-sm md:text-base font-mono tracking-[0.3em] uppercase mb-4 drop-shadow-[0_0_10px_rgba(0,217,255,0.8)]">
+            [OPERATION: LOVEBIRD]
+          </div>
+
+          {/* Main heading - COD style */}
+          <h1 
+            className="text-6xl md:text-8xl font-black tracking-wider mb-6"
+            style={{
+              color: '#C8D5B9',
+              textShadow: `
+                0 0 10px rgba(107, 142, 35, 0.8),
+                0 0 20px rgba(107, 142, 35, 0.6),
+                0 0 30px rgba(107, 142, 35, 0.4),
+                2px 2px 0 #4A5D23,
+                -2px -2px 0 #4A5D23
+              `,
+              fontFamily: 'Impact, "Arial Black", sans-serif',
+              letterSpacing: '0.1em',
+            }}
+          >
+            DAMN YOU LOOK GOOD
+          </h1>
+
+          {/* Crosshair decoration */}
+          <div className="flex items-center justify-center gap-8 my-8">
+            <Crosshair className="w-8 h-8 text-[#FF6B35] animate-pulse" />
+            <Target className="w-10 h-10 text-[#6B8E23] animate-spin" style={{ animationDuration: '8s' }} />
+            <Crosshair className="w-8 h-8 text-[#FF6B35] animate-pulse" style={{ animationDelay: '0.5s' }} />
+          </div>
+
+          {/* Subtitle */}
+          {showText && (
+            <div className="space-y-6 animate-fade-in">
+              <p 
+                className="text-xl md:text-3xl font-bold tracking-wide"
+                style={{
+                  color: '#00D9FF',
+                  textShadow: '0 0 20px rgba(0, 217, 255, 0.8)',
+                  fontFamily: '"Courier New", monospace',
+                }}
+              >
+                PREPARING TO INFILTRATE... DATE NIGHT OPERATIONS
+              </p>
+
+              {/* Progress bar - COD style */}
+              <div className="max-w-2xl mx-auto mt-8">
+                <div className="flex justify-between text-[#6B8E23] text-sm font-mono mb-2">
+                  <span>[LOADING ASSETS]</span>
+                  <span>{Math.round(loadingProgress)}%</span>
+                </div>
+                <div className="h-3 bg-black/50 border-2 border-[#4A5D23] relative overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-[#6B8E23] via-[#FF6B35] to-[#6B8E23] transition-all duration-300"
+                    style={{ 
+                      width: `${loadingProgress}%`,
+                      boxShadow: '0 0 20px rgba(107, 142, 35, 0.8)',
+                    }}
+                  />
+                  {/* Animated scan line */}
+                  <div 
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                    style={{ animation: 'scan-horizontal 2s linear infinite' }}
+                  />
+                </div>
+              </div>
+
+              {/* Loading messages */}
+              <div className="mt-6 space-y-2">
+                <div className="text-[#C8D5B9] font-mono text-sm">
+                  {loadingProgress < 30 && "⚡ INITIALIZING COMBAT SYSTEMS..."}
+                  {loadingProgress >= 30 && loadingProgress < 60 && "🎯 LOADING TACTICAL MAP DATA..."}
+                  {loadingProgress >= 60 && loadingProgress < 90 && "💥 DEPLOYING DATE NIGHT PROTOCOLS..."}
+                  {loadingProgress >= 90 && "✅ MISSION READY - STANDING BY..."}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Sparkle particles around text */}
-        {textVisible && (
-          <>
-            {[...Array(30)].map((_, i) => (
-              <Sparkles
-                key={`sparkle-text-${i}`}
-                className="absolute text-white/70"
-                style={{
-                  width: `${Math.random() * 14 + 10}px`,
-                  height: `${Math.random() * 14 + 10}px`,
-                  left: `${38 + Math.random() * 24}%`,
-                  top: `${38 + Math.random() * 24}%`,
-                  animation: `float ${Math.random() * 3 + 3}s ease-in-out infinite`,
-                  animationDelay: `${Math.random() * 2}s`,
-                  filter: `blur(${Math.random() * 2}px)`,
-                }}
-              />
-            ))}
-          </>
-        )}
-        
-        {/* Text with enhanced styling */}
-        <div className="relative z-10 text-center px-4">
-          <h1
-            className="text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-black relative leading-tight pb-6"
-            style={{
-              background: 'linear-gradient(135deg, #ec4899, #a855f7, #f472b6, #c084fc, #ec4899)',
-              backgroundSize: '300% 300%',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              animation: 'wave-color 4s ease-in-out infinite',
-              textShadow: '0 0 60px rgba(236, 72, 153, 0.6)',
-              filter: 'drop-shadow(0 6px 30px rgba(168, 85, 247, 0.5))',
-            }}
-          >
-            Hello gorgeous
-          </h1>
-          
-          {/* Subtitle */}
-          <p 
-            className="text-lg md:text-2xl font-bold mt-4 animate-pulse"
-            style={{
-              background: 'linear-gradient(90deg, #fbbf24, #f59e0b, #fbbf24)',
-              backgroundSize: '200% 200%',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              animation: 'gradient-shift 3s ease-in-out infinite',
-              filter: 'drop-shadow(0 2px 10px rgba(251, 191, 36, 0.6))',
-            }}
-          >
-            exploring a new city together. one date at a time ✨
-          </p>
+        {/* Bottom status bar */}
+        <div className="absolute bottom-8 left-0 right-0 px-8">
+          <div className="border-2 border-[#4A5D23] bg-black/80 p-4 max-w-4xl mx-auto">
+            <div className="flex items-center justify-between text-xs font-mono text-[#6B8E23]">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-[#6B8E23] rounded-full animate-pulse" />
+                <span>SYSTEM ONLINE</span>
+              </div>
+              <div>CLEARANCE: ALPHA</div>
+              <div>STATUS: AUTHORIZED</div>
+            </div>
+          </div>
         </div>
       </div>
 
       <style>{`
-        :root {
-          --wave-color-0: #FF69B4;
-          --wave-color-1: #FF1493;
-          --wave-color-2: #DA70D6;
-          --wave-color-3: #BA55D3;
-          --wave-color-4: #9370DB;
-          --wave-color-5: #8A2BE2;
-          --wave-color-6: #FF69B4;
-        }
-        
-        @keyframes gradient-shift {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-        
-        @keyframes shimmer {
-          0% { background-position: -200% 0; }
-          100% { background-position: 200% 0; }
-        }
-        
-        @keyframes gentle-zoom {
-          0%, 100% { 
-            transform: scale(1); 
-          }
-          50% { 
-            transform: scale(1.08); 
-          }
-        }
-        
-        @keyframes texture-shift {
-          0% { 
-            transform: translateX(0) translateY(0); 
-          }
-          100% { 
-            transform: translateX(20px) translateY(20px); 
-          }
-        }
-        
-        @keyframes float {
-          0%, 100% {
-            transform: perspective(1000px) rotateX(5deg) translateY(0px);
-          }
-          50% {
-            transform: perspective(1000px) rotateX(5deg) translateY(-15px);
-          }
-        }
-        
-        @keyframes wave-color {
-          0%, 100% {
-            filter: brightness(1.3) saturate(1.4) drop-shadow(0 0 20px currentColor) hue-rotate(0deg);
-            transform: translateY(0) scale(1);
-          }
-          25% {
-            filter: brightness(1.5) saturate(1.6) drop-shadow(0 0 25px currentColor) hue-rotate(30deg);
-            transform: translateY(-8px) scale(1.05);
-          }
-          50% {
-            filter: brightness(1.3) saturate(1.4) drop-shadow(0 0 20px currentColor) hue-rotate(60deg);
-            transform: translateY(0) scale(1);
-          }
-          75% {
-            filter: brightness(1.5) saturate(1.6) drop-shadow(0 0 25px currentColor) hue-rotate(90deg);
-            transform: translateY(-8px) scale(1.05);
-          }
-        }
-        
-        .wave-letter {
-          animation: wave-color 3s ease-in-out infinite;
+        @keyframes scan {
+          0% { transform: translateY(-100%); }
+          100% { transform: translateY(100%); }
         }
 
-        /* Performance & A11y: Respect reduced motion */
+        @keyframes scan-horizontal {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+
+        @keyframes fade-in {
+          from {
+            opacity: 0;
+            transform: scale(0.95);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+
         @media (prefers-reduced-motion: reduce) {
-          * {
-            animation-duration: 0.001ms !important;
+          *,
+          *::before,
+          *::after {
+            animation-duration: 0.01ms !important;
             animation-iteration-count: 1 !important;
-            transition-duration: 0.001ms !important;
+            transition-duration: 0.01ms !important;
           }
         }
       `}</style>

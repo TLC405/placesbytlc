@@ -86,7 +86,12 @@ export const Header = () => {
                     onClick={(e) => {
                       if (item.disabled) {
                         e.preventDefault();
-                        toast.info("🔒 Testers can only access Places and TeeFeeMe");
+                        e.stopPropagation();
+                        toast.info("🚫 OPERATION RESTRICTED", {
+                          description: `Access Level: TESTER. Upgrade required for ${item.label}.`,
+                          duration: 4000,
+                        });
+                        return false;
                       }
                     }}
                   >

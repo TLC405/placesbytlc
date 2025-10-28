@@ -108,15 +108,24 @@ export const CodeGate = ({ children }: CodeGateProps) => {
 
               {/* Mode Selection - Large Buttons */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                {/* BETA TESTERS */}
+                {/* COUPLES MODE */}
                 <button
-                  onClick={() => setSelectedMode("warlord")}
+                  onClick={() => {
+                    toast.info("💕 COUPLES MODE - COMING SOON FOR TESTERS", {
+                      description: "This epic feature is being crafted with love!",
+                      duration: 5000,
+                    });
+                  }}
                   className="group relative p-16 bg-black/80 backdrop-blur-xl border-8 border-yellow-500/70 rounded-3xl hover:border-yellow-400 transition-all duration-500 hover:scale-105 hover:shadow-[0_0_100px_rgba(234,179,8,0.6)]"
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/20 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="absolute top-6 right-6 bg-red-500 text-white text-xl px-6 py-3 rounded-full font-black animate-pulse shadow-[0_0_30px_rgba(239,68,68,0.8)]">
+                    SOON
+                  </div>
                   <Swords className="w-32 h-32 mx-auto mb-8 text-yellow-500 group-hover:scale-110 transition-transform duration-500 drop-shadow-[0_0_30px_rgba(234,179,8,0.8)]" />
-                  <h2 className="text-8xl font-black text-yellow-500 tracking-wider mb-4" style={{ textShadow: '0 0 20px rgba(234,179,8,0.6)' }}>BETA</h2>
-                  <h3 className="text-6xl font-black text-yellow-400 tracking-wider" style={{ textShadow: '0 0 15px rgba(234,179,8,0.4)' }}>TESTERS</h3>
+                  <h2 className="text-7xl font-black text-yellow-500 tracking-wider mb-4" style={{ textShadow: '0 0 20px rgba(234,179,8,0.6)' }}>COUPLES</h2>
+                  <h3 className="text-6xl font-black text-yellow-400 tracking-wider" style={{ textShadow: '0 0 15px rgba(234,179,8,0.4)' }}>MODE</h3>
+                  <p className="text-2xl text-yellow-300 mt-6 tracking-wide">COMING SOON FOR TESTERS</p>
                 </button>
 
                 {/* ADMIN TLC */}
@@ -144,7 +153,7 @@ export const CodeGate = ({ children }: CodeGateProps) => {
                 </div>
                 
                 <h2 className={`text-9xl font-black tracking-wider text-center mb-12 ${selectedMode === "warlord" ? "text-yellow-500" : "text-red-500"}`} style={{ textShadow: '0 0 30px rgba(234,179,8,0.6)' }}>
-                  {selectedMode === "warlord" ? "BETA" : "ADMIN"}
+                  {selectedMode === "warlord" ? "TESTER" : "ADMIN"}
                 </h2>
 
                 {/* Input */}

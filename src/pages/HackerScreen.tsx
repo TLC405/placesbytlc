@@ -70,14 +70,17 @@ export default function HackerScreen() {
     }
   }, [currentLine, hackerLines, navigate]);
 
+  const [showBriefing, setShowBriefing] = useState(false);
+  const [countdown, setCountdown] = useState(5);
+
   useEffect(() => {
     // Progress bar - slower progression (8 seconds total)
     const progressTimer = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(progressTimer);
-          // Navigate to home after completion
-          setTimeout(() => navigate("/"), 800);
+          // Show briefing when progress complete
+          setShowBriefing(true);
           return 100;
         }
         return prev + 1.25; // Slower increment
@@ -85,7 +88,18 @@ export default function HackerScreen() {
     }, 100); // Check more frequently for smoother animation
 
     return () => clearInterval(progressTimer);
-  }, [navigate]);
+  }, []);
+
+  useEffect(() => {
+    if (showBriefing && countdown > 0) {
+      const countdownTimer = setTimeout(() => {
+        setCountdown(countdown - 1);
+      }, 1000);
+      return () => clearTimeout(countdownTimer);
+    } else if (showBriefing && countdown === 0) {
+      navigate("/");
+    }
+  }, [showBriefing, countdown, navigate]);
 
   return (
     <div className="min-h-screen bg-black text-green-400 font-mono overflow-hidden relative">
@@ -350,11 +364,91 @@ export default function HackerScreen() {
           </div>
         </div>
 
-        {/* Warning message at bottom */}
-        {progress > 95 && (
-          <div className="mt-8 border-2 border-green-500 p-4 bg-green-950/30 animate-pulse">
-            <div className="text-center text-green-400 text-lg font-bold">
-              ✓ ACCESS GRANTED - REDIRECTING TO SECURE PORTAL...
+        {/* Mission Briefing */}
+        {showBriefing && (
+          <div className="mt-8 border-4 border-cyan-500 p-8 bg-black/95 backdrop-blur animate-fade-in">
+            <div className="text-center mb-6">
+              <Shield className="w-16 h-16 mx-auto text-cyan-400 animate-pulse mb-4" />
+              <h2 className="text-3xl font-bold text-cyan-400 mb-2">🎯 MISSION BRIEFING - TESTER ACCESS LEVEL</h2>
+            </div>
+            
+            <div className="grid md:grid-cols-2 gap-8 text-sm">
+              {/* Authorized Operations */}
+              <div className="border border-green-500/30 p-6 bg-green-950/20">
+                <div className="text-green-400 mb-4 font-bold text-xl flex items-center gap-2">
+                  <span>✅</span> AUTHORIZED OPERATIONS:
+                </div>
+                <div className="space-y-3 text-green-300">
+                  <div className="flex items-start gap-3">
+                    <span className="text-green-500">•</span>
+                    <div><strong className="text-green-400">🔍 SEARCH & DISCOVER PLACES</strong><br/>
+                    <span className="text-xs text-green-300/80">Browse date spots and locations</span></div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="text-green-500">•</span>
+                    <div><strong className="text-green-400">🎨 TEEFEEME CARTOONIFIER</strong><br/>
+                    <span className="text-xs text-green-300/80">Transform photos into legendary styles</span></div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="text-green-500">•</span>
+                    <div><strong className="text-green-400">📍 VIEW LOCATION DATA</strong><br/>
+                    <span className="text-xs text-green-300/80">Access map and place details</span></div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="text-green-500">•</span>
+                    <div><strong className="text-green-400">⭐ BROWSE RECOMMENDATIONS</strong><br/>
+                    <span className="text-xs text-green-300/80">Discover curated date ideas</span></div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Restricted Operations */}
+              <div className="border border-red-500/30 p-6 bg-red-950/20">
+                <div className="text-red-400 mb-4 font-bold text-xl flex items-center gap-2">
+                  <span>🚫</span> RESTRICTED OPERATIONS (ADMIN ONLY):
+                </div>
+                <div className="space-y-3 text-red-300">
+                  <div className="flex items-start gap-3">
+                    <span className="text-red-500">✗</span>
+                    <div><strong className="text-red-400">👥 Couple Mode</strong><br/>
+                    <span className="text-xs text-red-300/80">Coming Soon</span></div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="text-red-500">✗</span>
+                    <div><strong className="text-red-400">📊 Analytics Dashboard</strong><br/>
+                    <span className="text-xs text-red-300/80">Requires Admin Clearance</span></div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="text-red-500">✗</span>
+                    <div><strong className="text-red-400">⚙️ Admin Panel</strong><br/>
+                    <span className="text-xs text-red-300/80">Restricted Access</span></div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="text-red-500">✗</span>
+                    <div><strong className="text-red-400">🎮 Gamification Features</strong><br/>
+                    <span className="text-xs text-red-300/80">Admin Only</span></div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="text-red-500">✗</span>
+                    <div><strong className="text-red-400">📝 Period Tracker</strong><br/>
+                    <span className="text-xs text-red-300/80">Coming Soon</span></div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="text-red-500">✗</span>
+                    <div><strong className="text-red-400">🧪 AI Recommender</strong><br/>
+                    <span className="text-xs text-red-300/80">Admin Access Required</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 text-center space-y-4">
+              <div className="text-yellow-400 text-lg font-bold">
+                💡 TIP: Click any tab to see what's available!
+              </div>
+              <div className="text-cyan-400 text-3xl font-black animate-pulse">
+                REDIRECTING TO MAIN TERMINAL IN: [{countdown}s]
+              </div>
             </div>
           </div>
         )}
