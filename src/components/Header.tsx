@@ -120,6 +120,29 @@ export const Header = () => {
             
             {/* All-Screen Navigation - Horizontal scroll on mobile */}
             <nav className="flex items-center gap-1 sm:gap-2 overflow-x-auto scrollbar-hide max-w-[calc(100vw-300px)] sm:max-w-none">
+              {/* Admin Login Button - Always Visible */}
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => {
+                  if (role === 'tester') {
+                    toast.error("🚫 ADMIN ACCESS RESTRICTED", {
+                      description: "Contact administrator for access upgrade.",
+                      duration: 4000,
+                    });
+                  } else {
+                    navigate('/');
+                    window.location.reload();
+                  }
+                }}
+                className={`gap-1 sm:gap-2 font-semibold transition-all duration-300 text-xs sm:text-sm ${
+                  role === 'tester' ? "opacity-60 cursor-not-allowed" : "hover:scale-105 hover:shadow-soft"
+                }`}
+              >
+                <Shield className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden md:inline">Admin</span>
+                <span className="md:hidden">🔐</span>
+              </Button>
               {navItems.map((item) => {
                 const Icon = item.icon;
                 return (

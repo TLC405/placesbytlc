@@ -28,13 +28,9 @@ export const LoadingScreen = ({ onComplete, onAuthenticated }: LoadingScreenProp
     if (role && Date.now() < expiry) {
       startLoadingSequence();
     } else {
-      // Show text and mode selection immediately after brief intro
-      const textTimer = setTimeout(() => setShowText(true), 800);
-      const modeTimer = setTimeout(() => setShowModeSelect(true), 1200);
-      return () => {
-        clearTimeout(textTimer);
-        clearTimeout(modeTimer);
-      };
+      // Show everything immediately
+      setShowText(true);
+      setShowModeSelect(true);
     }
   }, []);
 
@@ -113,14 +109,12 @@ export const LoadingScreen = ({ onComplete, onAuthenticated }: LoadingScreenProp
       </div>
 
       <div className="relative z-10 w-full max-w-2xl px-4">
-        {/* App Logo - Always visible when text shows */}
-        {showText && !loadingProgress && (
-          <div className="mb-8 animate-fade-in">
-            <AppLogo />
-          </div>
-        )}
+        {/* App Logo - Always visible */}
+        <div className="mb-8 animate-fade-in">
+          <AppLogo />
+        </div>
 
-        {/* Mode Selection */}
+        {/* Mode Selection - Show immediately */}
         {showModeSelect && !showPinInput && !loadingProgress && (
           <div className="space-y-6 animate-scale-in">
             <div className="text-center mb-6">

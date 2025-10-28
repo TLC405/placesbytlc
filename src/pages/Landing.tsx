@@ -128,7 +128,7 @@ export default function Landing() {
             <div className="flex items-center justify-center gap-4">
               <div className="h-1 w-24 bg-gradient-to-r from-transparent via-orange-500 to-transparent" />
               <p className="text-orange-400 font-bold text-2xl tracking-widest font-mono">
-                FELICIA.TLC
+                PLACES
               </p>
               <div className="h-1 w-24 bg-gradient-to-r from-transparent via-orange-500 to-transparent" />
             </div>

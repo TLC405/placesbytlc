@@ -141,8 +141,8 @@ export default function NewHome() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="flex items-center gap-2 hover:bg-primary/10">
-                <img src={feliciaCrownImage} alt="FELICIA.TLC" className="w-8 h-8" />
-                <span className="font-bold gradient-text hidden sm:inline">FELICIA.TLC</span>
+                <img src={feliciaCrownImage} alt="Places" className="w-8 h-8" />
+                <span className="font-bold gradient-text hidden sm:inline">PLACES</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-56">
@@ -246,14 +246,6 @@ export default function NewHome() {
             <Zap className="w-5 h-5 mr-2" />
             Updates
           </TabsTrigger>
-          {!user && (
-            <TabsTrigger 
-              value="auth" 
-              className="data-[state=active]:gradient-primary data-[state=active]:text-white h-12 rounded-lg"
-            >
-              Sign Up
-            </TabsTrigger>
-          )}
         </TabsList>
 
         {/* Discover Tab - Search & Results */}

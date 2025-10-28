@@ -40,7 +40,7 @@ export default function Home() {
           <div className="h-3 bg-gradient-to-r from-primary via-accent to-primary animate-gradient bg-[length:200%_100%]" />
           <CardHeader className="pb-4 px-4 sm:px-6">
             <CardTitle className="text-2xl sm:text-4xl md:text-6xl font-black gradient-text text-center tracking-tight">
-              Welcome to FELICIA.TLC
+              Welcome to Places
             </CardTitle>
             <CardDescription className="text-base sm:text-lg md:text-xl leading-relaxed text-center max-w-2xl mx-auto pt-2">
               Your AI-powered love companion for discovering perfect date spots, romance insights, and relationship tools.
@@ -76,7 +76,7 @@ export default function Home() {
               className="text-base font-semibold data-[state=active]:gradient-primary data-[state=active]:text-white data-[state=active]:shadow-glow transition-all"
             >
               <Heart className="w-5 h-5 mr-2" />
-              {user ? "My Account" : "Sign Up"}
+              My Account
             </TabsTrigger>
           </TabsList>
 
