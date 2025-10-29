@@ -10,7 +10,6 @@ export default function ComingSoon() {
   const [customImage, setCustomImage] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const { isAdmin } = useUserRole();
-  const isAdmin = role === 'admin' || role === 'moderator';
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
