@@ -11,70 +11,6 @@ import { FeedbackDialog } from "@/components/FeedbackDialog";
 
 export default function Landing() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const [showAdminDialog, setShowAdminDialog] = useState(false);
-  const [showWarlordDialog, setShowWarlordDialog] = useState(false);
-  const [adminPin, setAdminPin] = useState("");
-  const [warlordCode, setWarlordCode] = useState("");
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [accessLevel, setAccessLevel] = useState<string | null>(null);
-  const [showFeedback, setShowFeedback] = useState(false);
-  const [currentFeature, setCurrentFeature] = useState("");
-
-  useEffect(() => {
-    const level = sessionStorage.getItem("access_level");
-    setAccessLevel(level);
-    
-    const checkAdminStatus = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      
-      const { data: roles } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', user.id);
-      
-      const hasAdminRole = roles?.some(r => (r.role as string) === 'admin') ?? false;
-      setIsAdmin(hasAdminRole);
-    };
-    
-    checkAdminStatus();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-      checkAdminStatus();
-    });
-    
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const handleAdminPinSubmit = () => {
-    if (adminPin === "1309") {
-      if (isAdmin) {
-        toast.success("🎖️ WARLORD ACCESS GRANTED");
-        navigate("/admin");
-      } else {
-        toast.error("Invalid credentials. You don't have admin privileges.");
-      }
-    } else {
-      toast.error("Invalid PIN");
-    }
-    setAdminPin("");
-  };
-
-  const handleFeatureClick = (feature: string, route: string) => {
-    if (accessLevel === "admin") {
-      navigate('/hacker'); // Go through hacker screen first
-    } else if (accessLevel === "tester") {
-      navigate('/hacker'); // Go through hacker screen first
-      // Show feedback after navigating back
-      setTimeout(() => {
-        setCurrentFeature(feature);
-        setShowFeedback(true);
-      }, 6000);
-    } else {
-      toast.info(`🔒 ${feature} - Coming Soon! Enter access code to test.`);
-    }
-  };
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-zinc-900">
@@ -136,54 +72,20 @@ export default function Landing() {
               Strategic Love Operations Platform • Alpha Phase Active
             </p>
           </div>
-
-          {/* Access Level Badge */}
-          {accessLevel && (
-            <div className="inline-flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-orange-600/20 to-red-600/20 border-2 border-orange-500 rounded-full backdrop-blur-sm">
-              <Target className="w-4 h-4 text-orange-400 animate-pulse" />
-              <span className="text-orange-300 font-bold text-sm uppercase tracking-wider">
-                {accessLevel === "admin" ? "WARLORD ACCESS" : "ALPHA TESTER"}
-              </span>
-            </div>
-          )}
         </div>
 
         {/* Main Command Grid */}
-        <div className="grid lg:grid-cols-3 gap-6 mb-12">
+        <div className="grid lg:grid-cols-2 gap-6 mb-12">
           
-          {/* TeeFee Me Mission */}
-          <Card className="group relative overflow-hidden border-2 border-slate-700 hover:border-orange-500/50 bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-sm transition-all duration-500 hover:shadow-2xl hover:shadow-orange-500/20 cursor-pointer"
-            onClick={() => handleFeatureClick("TeeFee Me", "/teefeeme")}>
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-pink-500 via-purple-500 to-pink-500" />
-            <div className="p-8 space-y-4">
-              <div className="flex justify-between items-start">
-                <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-pink-600 to-purple-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                  <span className="text-3xl">🎨</span>
-                </div>
-                {accessLevel && <Activity className="w-5 h-5 text-green-400 animate-pulse" />}
-              </div>
-              <div>
-                <h3 className="text-2xl font-black text-white mb-2">TEEFEE ME</h3>
-                <p className="text-slate-400 text-sm">AI Cartoonification Mission • Transform photos into epic art</p>
-              </div>
-              <div className="flex gap-2 flex-wrap">
-                <span className="text-xs px-2 py-1 bg-pink-500/20 text-pink-300 rounded border border-pink-500/30">Art</span>
-                <span className="text-xs px-2 py-1 bg-purple-500/20 text-purple-300 rounded border border-purple-500/30">AI</span>
-                <span className="text-xs px-2 py-1 bg-slate-500/20 text-slate-300 rounded border border-slate-500/30">Fun</span>
-              </div>
-            </div>
-          </Card>
-
           {/* Places Search Mission */}
           <Card className="group relative overflow-hidden border-2 border-slate-700 hover:border-orange-500/50 bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-sm transition-all duration-500 hover:shadow-2xl hover:shadow-orange-500/20 cursor-pointer"
-            onClick={() => handleFeatureClick("Places by TLC", "/")}>
+            onClick={() => navigate("/")}>
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500 via-orange-500 to-red-500" />
             <div className="p-8 space-y-4">
               <div className="flex justify-between items-start">
                 <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-red-600 to-orange-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                   <span className="text-3xl">📍</span>
                 </div>
-                {accessLevel && <Activity className="w-5 h-5 text-green-400 animate-pulse" />}
               </div>
               <div>
                 <h3 className="text-2xl font-black text-white mb-2">PLACES BY TLC</h3>
@@ -199,14 +101,13 @@ export default function Landing() {
 
           {/* Quizzes Mission */}
           <Card className="group relative overflow-hidden border-2 border-slate-700 hover:border-orange-500/50 bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-sm transition-all duration-500 hover:shadow-2xl hover:shadow-orange-500/20 cursor-pointer"
-            onClick={() => handleFeatureClick("Quizzes", "/quizzes")}>
+            onClick={() => navigate("/quizzes")}>
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-cyan-500 to-blue-500" />
             <div className="p-8 space-y-4">
               <div className="flex justify-between items-start">
                 <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-blue-600 to-cyan-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                   <span className="text-3xl">🧠</span>
                 </div>
-                {accessLevel && <Activity className="w-5 h-5 text-green-400 animate-pulse" />}
               </div>
               <div>
                 <h3 className="text-2xl font-black text-white mb-2">QUIZZES</h3>
@@ -221,28 +122,16 @@ export default function Landing() {
           </Card>
         </div>
 
-        {/* Bottom Command Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+        {/* Get Started Button */}
+        <div className="flex justify-center">
           <Button
             size="lg"
-            onClick={() => setShowWarlordDialog(true)}
-            className="w-full sm:w-auto h-16 px-8 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 border-2 border-orange-400 text-white font-black text-lg shadow-2xl hover:shadow-orange-500/50 transition-all"
+            onClick={() => navigate("/")}
+            className="w-full sm:w-auto h-16 px-12 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 border-2 border-orange-400 text-white font-black text-lg shadow-2xl hover:shadow-orange-500/50 transition-all"
           >
             <Shield className="w-6 h-6 mr-2" />
-            ENTER WARLORD CODE
+            GET STARTED
           </Button>
-
-          {isAdmin && (
-            <Button
-              size="lg"
-              onClick={() => setShowAdminDialog(true)}
-              variant="outline"
-              className="w-full sm:w-auto h-16 px-8 border-2 border-slate-600 hover:border-orange-500 text-slate-300 hover:text-orange-400 font-bold text-lg"
-            >
-              <Zap className="w-5 h-5 mr-2" />
-              ADMIN LOGIN (1309)
-            </Button>
-          )}
         </div>
 
         {/* Status Footer */}
@@ -260,103 +149,6 @@ export default function Landing() {
         </div>
       </div>
 
-      {/* Warlord Code Dialog */}
-      <Dialog open={showWarlordDialog} onOpenChange={setShowWarlordDialog}>
-        <DialogContent className="sm:max-w-md bg-slate-900 border-2 border-orange-500">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-orange-400 text-2xl font-black">
-              <Shield className="w-6 h-6" />
-              ENTER WARLORD CODE
-            </DialogTitle>
-            <DialogDescription className="text-slate-400">
-              Alpha testers use <span className="text-orange-400 font-bold">CRIP4LYFE</span> • Admins use <span className="text-red-400 font-bold">1309</span>
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <Input
-              type="text"
-              placeholder="Enter access code..."
-              value={warlordCode}
-              onChange={(e) => setWarlordCode(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  const code = warlordCode.trim().toLowerCase();
-                  if (code === "crip4lyfe") {
-                    sessionStorage.setItem("access_level", "tester");
-                    setAccessLevel("tester");
-                    toast.success("✅ ALPHA TESTER ACCESS GRANTED");
-                    setShowWarlordDialog(false);
-                  } else if (code === "1309") {
-                    setShowWarlordDialog(false);
-                    setShowAdminDialog(true);
-                  } else {
-                    toast.error("🚫 INVALID CODE");
-                  }
-                  setWarlordCode("");
-                }
-              }}
-              className="text-center text-xl tracking-widest uppercase font-mono bg-slate-800 border-orange-500/50 text-orange-300"
-              autoFocus
-            />
-            <Button
-              onClick={() => {
-                const code = warlordCode.trim().toLowerCase();
-                if (code === "crip4lyfe") {
-                  sessionStorage.setItem("access_level", "tester");
-                  setAccessLevel("tester");
-                  toast.success("✅ ALPHA TESTER ACCESS GRANTED");
-                  setShowWarlordDialog(false);
-                } else if (code === "1309") {
-                  setShowWarlordDialog(false);
-                  setShowAdminDialog(true);
-                } else {
-                  toast.error("🚫 INVALID CODE");
-                }
-                setWarlordCode("");
-              }}
-              className="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500"
-            >
-              AUTHENTICATE
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Admin PIN Dialog */}
-      <Dialog open={showAdminDialog} onOpenChange={setShowAdminDialog}>
-        <DialogContent className="sm:max-w-md bg-slate-900 border-2 border-red-500">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-red-400 text-2xl font-black">
-              <Shield className="w-6 h-6" />
-              ADMIN PIN REQUIRED
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <Input
-              type="password"
-              placeholder="Enter 4-digit PIN"
-              value={adminPin}
-              onChange={(e) => setAdminPin(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleAdminPinSubmit()}
-              maxLength={4}
-              className="text-center text-2xl tracking-widest bg-slate-800 border-red-500/50 text-red-300"
-            />
-            <Button
-              onClick={handleAdminPinSubmit}
-              className="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500"
-              disabled={adminPin.length !== 4}
-            >
-              ACCESS ADMIN
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      <FeedbackDialog
-        open={showFeedback}
-        onOpenChange={setShowFeedback}
-        featureName={currentFeature}
-      />
 
       <style>{`
         @keyframes gridScroll {
