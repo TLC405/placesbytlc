@@ -14,13 +14,13 @@ export default function Quizzes() {
           <div className="absolute inset-0 bg-gradient-to-br from-pink-500/10 via-purple-500/10 to-rose-500/10" />
           <div className="relative z-10 space-y-6">
             <div className="inline-block px-6 py-2 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full text-white font-bold shadow-glow animate-pulse">
-              👑 Queen Felicia's Royal Quiz Palace 👑
+              🎯 Personality Quizzes
             </div>
             <h1 className="text-5xl md:text-7xl font-black bg-gradient-to-r from-pink-500 via-purple-500 to-rose-500 bg-clip-text text-transparent drop-shadow-xl">
               ✨ Epic Couple Quizzes ✨
             </h1>
             <p className="text-xl md:text-2xl font-semibold bg-gradient-to-r from-rose-400 via-purple-400 to-pink-400 bg-clip-text text-transparent max-w-3xl mx-auto">
-              Discover your love language, personality type, and unlock deeper connection with Queen Felicia's magical insights!
+              Discover your love language, personality type, and unlock deeper connections!
             </p>
           </div>
         </div>
