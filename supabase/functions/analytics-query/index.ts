@@ -13,8 +13,8 @@ serve(async (req) => {
 
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-    const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
     
     // Verify admin role from request
     const authHeader = req.headers.get('Authorization');
@@ -24,38 +24,6 @@ serve(async (req) => {
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
-
-    // Create client with user's auth
-    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-      global: { headers: { Authorization: authHeader } },
-    });
-
-    // Get current user and check role
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    if (userError || !user) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // Check if user has admin or moderator role
-    const { data: roles } = await supabase
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', user.id);
-    
-    const hasAccess = roles?.some(r => r.role === 'admin' || r.role === 'moderator');
-    
-    if (!hasAccess) {
-      return new Response(
-        JSON.stringify({ error: 'Forbidden: Admin or moderator access required' }),
-        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // Use service role for data access
-    const adminClient = createClient(supabaseUrl, serviceKey);
     
     const { dashcards } = await req.json();
     
@@ -73,7 +41,7 @@ serve(async (req) => {
     
     // Fetch sessions
     if (dashcards.includes('sessions')) {
-      const { data: sessions } = await adminClient
+      const { data: sessions } = await supabase
         .from('user_sessions')
         .select('*');
       result.totalSessions = sessions?.length || 0;
@@ -82,7 +50,7 @@ serve(async (req) => {
     // Fetch active users (last 7 days)
     if (dashcards.includes('active_users')) {
       const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-      const { data: activeUsers } = await adminClient
+      const { data: activeUsers } = await supabase
         .from('user_analytics')
         .select('user_id')
         .gte('last_seen', sevenDaysAgo);
@@ -91,7 +59,7 @@ serve(async (req) => {
     
     // Fetch uploads and generations
     if (dashcards.includes('uploads') || dashcards.includes('generations')) {
-      const { data: events } = await adminClient
+      const { data: events } = await supabase
         .from('analytics_events')
         .select('event_type')
         .in('event_type', ['photo_upload', 'cartoon_gen']);
@@ -102,7 +70,7 @@ serve(async (req) => {
     
     // Calculate avg time in app
     if (dashcards.includes('time_in_app')) {
-      const { data: analytics } = await adminClient
+      const { data: analytics } = await supabase
         .from('user_analytics')
         .select('average_session_duration');
       
@@ -112,7 +80,7 @@ serve(async (req) => {
     
     // Top tabs
     if (dashcards.includes('top_tabs')) {
-      const { data: tabEvents } = await adminClient
+      const { data: tabEvents } = await supabase
         .from('analytics_events')
         .select('event_data')
         .eq('event_type', 'tab_switch');
@@ -133,7 +101,7 @@ serve(async (req) => {
     
     // Geo data
     if (dashcards.includes('geo_heat')) {
-      const { data: geoEvents } = await adminClient
+      const { data: geoEvents } = await supabase
         .from('analytics_events')
         .select('geo_data')
         .not('geo_data', 'is', null);
@@ -154,7 +122,7 @@ serve(async (req) => {
     
     // Device mix
     if (dashcards.includes('device_mix')) {
-      const { data: deviceEvents } = await adminClient
+      const { data: deviceEvents } = await supabase
         .from('analytics_events')
         .select('device_info')
         .not('device_info', 'is', null);
@@ -171,7 +139,7 @@ serve(async (req) => {
     
     // Security events
     if (dashcards.includes('security_events')) {
-      const { data: securityEvents } = await adminClient
+      const { data: securityEvents } = await supabase
         .from('security_events')
         .select('*')
         .eq('event_type', 'blocked_admin_attempt');
