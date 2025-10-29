@@ -17,7 +17,6 @@ import Landing from "./pages/Landing";
 import NotFound from "./pages/NotFound";
 
 // Lazy load quiz pages and special features
-const HackerScreen = lazy(() => import("./pages/HackerScreen"));
 const Quizzes = lazy(() => import("./pages/Quizzes"));
 const QuizLove = lazy(() => import("./pages/QuizLove"));
 const QuizMBTI = lazy(() => import("./pages/QuizMBTI"));
@@ -47,7 +46,6 @@ const AppRoutes = () => {
     }>
       <Routes>
         <Route path="/landing" element={<Landing />} />
-        <Route path="/hacker" element={<HackerScreen />} />
         <Route path="/" element={<Home />} />
         <Route path="/quizzes" element={<Quizzes />} />
         <Route path="/quiz/love" element={<QuizLove />} />

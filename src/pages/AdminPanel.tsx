@@ -18,18 +18,12 @@ import {
   ChevronLeft,
   Activity,
   Eye,
-  Sparkles,
-  MessageSquare,
-  Wifi,
-  FileCode
+  Sparkles
 } from "lucide-react";
 import { CommandStation } from "@/components/admin/CommandStation";
 import { UserAnalyticsDashboard } from "@/components/admin/UserAnalyticsDashboard";
 import { UserProfileViewer } from "@/components/admin/UserProfileViewer";
 import { CodeExportSystem } from "@/components/admin/CodeExportSystem";
-import { SMSNotificationPanel } from "@/components/admin/SMSNotificationPanel";
-import { AIPromptInterface } from "@/components/admin/AIPromptInterface";
-import { WiFiAnalyzer } from "@/components/admin/WiFiAnalyzer";
 import { FileUploadManager } from "@/components/FileUploadManager";
 import { RecentUpdates } from "@/components/RecentUpdates";
 
@@ -541,13 +535,11 @@ This blueprint provides everything needed to reconstruct the FELICIA.TLC app ide
 
   const tabItems = [
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
-    { id: 'command', label: 'Command', icon: Terminal },
+    { id: 'command', label: 'Command Station', icon: Terminal },
     { id: 'users', label: 'Users', icon: Users },
     { id: 'analytics', label: 'Analytics', icon: Activity },
-    { id: 'sms', label: 'SMS', icon: MessageSquare },
-    { id: 'ai', label: 'AI Prompt', icon: Sparkles },
-    { id: 'wifi', label: 'WiFi', icon: Wifi },
-    { id: 'tools', label: 'Tools', icon: FileCode },
+    { id: 'updates', label: 'Updates', icon: Sparkles },
+    { id: 'tools', label: 'Dev Tools', icon: Settings },
   ];
 
   const totalUsers = users.length;
@@ -590,7 +582,7 @@ This blueprint provides everything needed to reconstruct the FELICIA.TLC app ide
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-8 lg:w-auto lg:inline-grid">
+          <TabsList className="grid w-full grid-cols-7 lg:w-auto lg:inline-grid">
             {tabItems.map((item) => {
               const Icon = item.icon;
               return (
@@ -718,18 +710,6 @@ This blueprint provides everything needed to reconstruct the FELICIA.TLC app ide
 
           <TabsContent value="analytics">
             <UserAnalyticsDashboard />
-          </TabsContent>
-
-          <TabsContent value="sms" className="space-y-6">
-            <SMSNotificationPanel />
-          </TabsContent>
-
-          <TabsContent value="ai" className="space-y-6">
-            <AIPromptInterface />
-          </TabsContent>
-
-          <TabsContent value="wifi" className="space-y-6">
-            <WiFiAnalyzer />
           </TabsContent>
 
           <TabsContent value="updates">
