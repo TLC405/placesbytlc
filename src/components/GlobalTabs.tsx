@@ -1,7 +1,7 @@
 import { useState, useEffect, ReactNode } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { hasPermission, getStoredRole } from '@/utils/rbac';
+import { useUserRole } from '@/hooks/useUserRole';
 import { trackEvent } from '@/utils/analytics';
 
 export interface GlobalTab {
@@ -9,7 +9,7 @@ export interface GlobalTab {
   label: string;
   icon: ReactNode;
   component: ReactNode;
-  requiredScope?: string;
+  requiredResource?: string;
 }
 
 interface GlobalTabsProps {
@@ -18,12 +18,10 @@ interface GlobalTabsProps {
 
 export const GlobalTabs = ({ tabs }: GlobalTabsProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const role = getStoredRole();
+  const { isAdmin } = useUserRole();
   
-  // Filter tabs based on role permissions
-  const visibleTabs = tabs.filter(tab => 
-    !tab.requiredScope || (role && hasPermission(role, tab.requiredScope))
-  );
+  // Filter tabs based on role permissions - show all tabs for now
+  const visibleTabs = tabs;
   
   const [activeTab, setActiveTab] = useState(
     searchParams.get('tab') || visibleTabs[0]?.id || ''

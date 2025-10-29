@@ -63,7 +63,7 @@ export const APIKeyDialog = ({ open, onOpenChange, onSave, currentKey }: APIKeyD
             <DialogTitle className="text-2xl gradient-text">Key to TLC's Heart 🔑💕</DialogTitle>
           </div>
           <DialogDescription className="text-base leading-relaxed">
-            👑 Queen Felicia, you hold the royal key to unlock our magical adventures together! 
+            🗺️ Enter your Google Maps API key to unlock location features! 
             Enter the enchanted key below to discover all the amazing date spots waiting for us. 
             This special key opens up a kingdom of possibilities for our journey together. ✨💕
           </DialogDescription>

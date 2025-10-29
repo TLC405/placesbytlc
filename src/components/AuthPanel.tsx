@@ -9,11 +9,8 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
 export const AuthPanel = () => {
-  const [isLogin, setIsLogin] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [displayName, setDisplayName] = useState("");
-  const [testerCode, setTesterCode] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -22,34 +19,13 @@ export const AuthPanel = () => {
     setLoading(true);
 
     try {
-      if (isLogin) {
-        // Login
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        if (error) throw error;
-        toast.success("Welcome back! 💕");
-        navigate("/");
-      } else {
-        // Sign up - check for tester code
-        const role = testerCode === "405" ? "tester" : "user";
-        
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/`,
-            data: {
-              display_name: displayName,
-              role: role,
-            }
-          }
-        });
-        if (error) throw error;
-        toast.success(role === "tester" ? "Tester Account Created! Welcome to testing 🧪" : "Welcome to Places by TLC! 💕");
-        navigate("/");
-      }
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) throw error;
+      toast.success("Welcome back! 💕");
+      navigate("/");
     } catch (error: any) {
       toast.error(error.message || "Authentication failed");
     } finally {
@@ -73,58 +49,16 @@ export const AuthPanel = () => {
         </div>
         <div className="space-y-3">
           <CardTitle className="text-5xl font-black bg-gradient-to-r from-pink-500 via-purple-500 to-rose-500 bg-clip-text text-transparent mb-2 tracking-tight animate-gradient bg-[length:200%_auto]">
-            {isLogin ? "👑 Welcome Back" : "✨ Join FELICIA.TLC"}
+            👑 Welcome Back
           </CardTitle>
           <CardDescription className="text-lg text-muted-foreground/90 font-medium max-w-md mx-auto leading-relaxed">
-            {isLogin 
-              ? "Sign in to access your saved places and continue your romantic journey through OKC" 
-              : "Create your account to unlock AI-powered date planning and exclusive features"}
+            Enter your credentials to continue your legendary journey
           </CardDescription>
         </div>
       </CardHeader>
 
       <CardContent className="relative z-10 px-8 pb-8">
         <form onSubmit={handleAuth} className="space-y-6">
-          {!isLogin && (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="displayName" className="flex items-center gap-2 text-sm font-medium">
-                  <UserPlus className="w-4 h-4 text-primary" />
-                  Display Name
-                </Label>
-                <Input
-                  id="displayName"
-                  type="text"
-                  placeholder="Your name"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  required={!isLogin}
-                  className="border-primary/20 focus:border-primary/50 transition-all h-11"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="testerCode" className="flex items-center gap-2 text-sm font-medium">
-                  <Key className="w-4 h-4 text-purple-600" />
-                  Tester Code (Optional)
-                </Label>
-                <Input
-                  id="testerCode"
-                  type="text"
-                  placeholder="Enter 405 for tester access"
-                  value={testerCode}
-                  onChange={(e) => setTesterCode(e.target.value)}
-                  className="border-primary/20 focus:border-primary/50 transition-all h-11"
-                />
-                {testerCode === "405" && (
-                  <p className="text-xs text-purple-600 dark:text-purple-400 font-medium">
-                    ✅ Tester Access: Search, Explore, Plan & Cartoon Editor
-                  </p>
-                )}
-              </div>
-            </>
-          )}
-
           <div className="space-y-2">
             <Label htmlFor="email" className="flex items-center gap-2 text-sm font-medium">
               <Mail className="w-4 h-4 text-primary" />
@@ -156,11 +90,6 @@ export const AuthPanel = () => {
               minLength={6}
               className="border-primary/20 focus:border-primary/50 transition-all h-11"
             />
-            {!isLogin && (
-              <p className="text-xs text-muted-foreground">
-                Minimum 6 characters
-              </p>
-            )}
           </div>
 
           <Button 
@@ -171,42 +100,14 @@ export const AuthPanel = () => {
             {loading ? (
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                {isLogin ? "Signing in..." : "Creating Account..."}
+                Signing in...
               </div>
-            ) : isLogin ? (
+            ) : (
               <>
                 <LogIn className="w-5 h-5" />
                 Sign In to Your Account
               </>
-            ) : (
-              <>
-                <UserPlus className="w-5 h-5" />
-                Create Your Account
-              </>
             )}
-          </Button>
-
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-border/50"></div>
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">or</span>
-            </div>
-          </div>
-
-          <Button
-            type="button"
-            variant="ghost"
-            className="w-full hover:bg-primary/5 transition-colors"
-            onClick={() => {
-              setIsLogin(!isLogin);
-              setDisplayName("");
-            }}
-          >
-            {isLogin 
-              ? "Need an account? Sign up →" 
-              : "Already have an account? Sign in →"}
           </Button>
 
           <div className="pt-4 border-t border-border/50">
