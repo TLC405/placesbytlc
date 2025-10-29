@@ -10,35 +10,29 @@ import { SearchBar } from "@/components/SearchBar";
 import { PlaceCard } from "@/components/PlaceCard";
 import { EmptyState } from "@/components/EmptyState";
 import { FilterBar } from "@/components/FilterBar";
+import { FloatingHearts } from "@/components/FloatingHearts";
+import { LoadingScreen } from "@/components/LoadingScreen";
 import { usePlacesSearch } from "@/hooks/usePlacesSearch";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { LocationPresets } from "@/components/LocationPresets";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
-import { EventsFeed } from "@/components/EventsFeed";
-import { UpdatesPanel } from "@/components/UpdatesPanel";
-import { trackPlaceView, trackPlaceSave, trackSearch } from "@/components/ActivityTracker";
-import { WeatherWidget } from "@/components/WeatherWidget";
-import { useWeather } from "@/hooks/useWeather";
 
 export default function Explore() {
   const [showClearConfirm, setShowClearConfirm] = useState(false);
-  const [query, setQuery] = useState("");
+  const [showLoadingScreen, setShowLoadingScreen] = useState(false);
+  const [query, setQuery] = useState("date night");
   const [radius, setRadius] = useState("8047"); // 5 miles in meters
   const [plan, setPlan] = useState<PlaceItem[]>([]);
   const [error, setError] = useState("");
   const [sortBy, setSortBy] = useState("relevance");
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [favorites, setFavorites] = useState<PlaceItem[]>([]);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [categoryType, setCategoryType] = useState<"food" | "activity" | "both">("both");
-  const [showUpdates, setShowUpdates] = useState(false);
 
   // Custom hooks
   const { location, setCustomLocation } = useGeolocation();
   const { results, isSearching, search } = usePlacesSearch({
     onError: (message) => setError(message),
   });
-  const { weather, isLoading: isWeatherLoading } = useWeather(location);
 
   useEffect(() => {
     setPlan(storage.getPlan());
@@ -75,7 +69,6 @@ export default function Explore() {
     
     storage.addToPlan(place);
     setPlan(storage.getPlan());
-    trackPlaceSave(place);
     toast.success(`${place.name} added to plan!`);
   }, []);
 
@@ -84,54 +77,20 @@ export default function Explore() {
     toast.success(isFavorite ? `${place.name} added to favorites!` : `${place.name} removed from favorites`);
   }, []);
 
-  const handleCategoryToggle = useCallback((category: string) => {
-    // Single selection instead of multi-select
-    setSelectedCategories([category]);
-  }, []);
-
-  const handleLocationModeChange = (mode: "tlc" | "felicia" | "middle") => {
-    const modeLabels = {
-      tlc: "TLC Place",
-      felicia: "Felicia Place", 
-      middle: "Middle Ground"
-    };
-    toast.success(`🎯 Searching from ${modeLabels[mode]}!`);
-  };
-
   const handleSearch = useCallback(() => {
-    // Require category type selection first
-    if (!categoryType || categoryType === "both" && !query.trim() && selectedCategories.length === 0) {
-      toast.error("Pick Food, Activity, or Both first! 👆", {
-        duration: 3000,
-      });
-      return;
-    }
-
-    const locationToUse = location;
-    
-    if (!locationToUse) {
-      toast.error("Location not available. Please enable location services.");
-      return;
-    }
-
-    const searchQuery = selectedCategories.length > 0 
-      ? selectedCategories[0] 
-      : categoryType;
-
-    if (!searchQuery) {
-      toast.info("Enter a search term or select categories!");
+    if (!query.trim()) {
+      toast.info("Enter a search term or use quick searches below!");
       return;
     }
 
     setError("");
-    search(searchQuery, locationToUse, parseInt(radius, 10));
-    trackSearch(searchQuery, { radius, location: locationToUse, categoryType });
-    setSortBy("distance");
-  }, [query, selectedCategories, location, radius, search, categoryType]);
+    setShowLoadingScreen(true);
+  }, [query]);
 
   const handleLocationPreset = useCallback((loc: { lat: number; lng: number; name: string }) => {
     setCustomLocation({ lat: loc.lat, lng: loc.lng });
-    toast.success(`Searching near ${loc.name}...`, { duration: 2000 });
+    toast.success(`📍 Searching near ${loc.name}...`, { duration: 2000 });
+    setShowLoadingScreen(true);
   }, [setCustomLocation]);
 
   const handleClearPlan = useCallback(() => {
@@ -144,8 +103,19 @@ export default function Explore() {
     toast.success("Plan cleared!");
   }, []);
 
+  const handleLoadingComplete = useCallback(() => {
+    setShowLoadingScreen(false);
+    search(query, location, parseInt(radius, 10));
+    setSortBy("distance");
+  }, [query, location, radius, search]);
+
+  if (showLoadingScreen) {
+    return <LoadingScreen onComplete={handleLoadingComplete} />;
+  }
+
   return (
     <>
+      <FloatingHearts />
       <div className="grid lg:grid-cols-3 gap-6 animate-fade-in relative z-10">
         <div className="lg:col-span-2 space-y-6">
           {/* Search Card */}
@@ -157,9 +127,9 @@ export default function Explore() {
                   <Sparkles className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <CardTitle>Discover Love Spots — FELICIA.TLC</CardTitle>
+                  <CardTitle>Discover Date Spots</CardTitle>
                   <CardDescription>
-                    Curated romantic destinations near you
+                    Find restaurants, activities, and experiences nearby
                   </CardDescription>
                 </div>
               </div>
@@ -173,11 +143,6 @@ export default function Explore() {
                 onSearch={handleSearch}
                 disabled={isSearching}
                 loading={isSearching}
-                selectedCategories={selectedCategories}
-                onCategoryToggle={handleCategoryToggle}
-                categoryType={categoryType}
-                onCategoryTypeChange={setCategoryType}
-                onLocationModeChange={handleLocationModeChange}
               />
 
               <LocationPresets 
@@ -185,16 +150,6 @@ export default function Explore() {
                 disabled={isSearching}
                 currentLocation={location}
               />
-
-              <WeatherWidget weather={weather} isLoading={isWeatherLoading} />
-
-              <button
-                onClick={() => setShowUpdates(true)}
-                className="pill flex items-center gap-2 hover:shadow-lg transition-all mx-auto"
-              >
-                <Sparkles className="h-4 w-4 text-rose" />
-                <span className="text-sm font-medium">What's New</span>
-              </button>
 
               {error && (
                 <Alert variant="destructive" className="animate-in fade-in">
@@ -206,7 +161,23 @@ export default function Explore() {
           </Card>
 
           {/* Results Grid */}
-          {!isSearching && results.length > 0 && (
+          {isSearching ? (
+            <div className="flex items-center justify-center py-20">
+              <div className="flex flex-col items-center gap-4">
+                <div className="relative">
+                  <div className="animate-spin rounded-full h-16 w-16 border-4 border-muted"></div>
+                  <div className="animate-spin rounded-full h-16 w-16 border-4 border-primary border-t-transparent absolute top-0 left-0"></div>
+                  <div className="absolute inset-0 animate-ping rounded-full bg-primary/20"></div>
+                </div>
+                <div className="text-center animate-pulse">
+                  <p className="text-lg font-semibold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                    Searching for amazing places...
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-1">Finding perfect date spots near you</p>
+                </div>
+              </div>
+            </div>
+          ) : results.length > 0 ? (
             <div className="space-y-4">
               <FilterBar
                 sortBy={sortBy}
@@ -215,19 +186,22 @@ export default function Explore() {
                 onToggleFavorites={() => setShowFavoritesOnly(!showFavoritesOnly)}
                 resultCount={filteredAndSortedResults.length}
               />
+              
               {filteredAndSortedResults.length > 0 ? (
                 <div className="grid sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-5">
                   {filteredAndSortedResults.map((place, index) => (
-                    <div
+                    <div 
                       key={place.id}
-                      style={{ animationDelay: `${index * 50}ms`, animationFillMode: 'backwards' }}
+                      style={{ 
+                        animationDelay: `${index * 50}ms`,
+                        animationFillMode: 'backwards'
+                      }}
                       className="animate-fade-in animate-scale-in"
                     >
-                      <PlaceCard
-                        place={place}
+                      <PlaceCard 
+                        place={place} 
                         onAdd={handleAddToPlan}
                         onFavoriteToggle={handleFavoriteToggle}
-                        onView={() => trackPlaceView(place)}
                       />
                     </div>
                   ))}
@@ -244,16 +218,25 @@ export default function Explore() {
                 </Card>
               )}
             </div>
+          ) : (
+            <Card className="shadow-soft">
+              <CardContent className="pt-6">
+                <EmptyState
+                  icon={Search}
+                  title="Start exploring"
+                  description="Enter a search term and click Search to discover date night spots near you."
+                />
+              </CardContent>
+            </Card>
           )}
-
         </div>
 
-          <PlanSidebar 
-            plan={plan} 
-            onUpdate={() => setPlan(storage.getPlan())}
-            onClearPlan={handleClearPlan}
-          />
-        </div>
+        <PlanSidebar 
+          plan={plan} 
+          onUpdate={() => setPlan(storage.getPlan())}
+          onClearPlan={handleClearPlan}
+        />
+      </div>
 
       <ConfirmDialog
         open={showClearConfirm}
@@ -264,8 +247,6 @@ export default function Explore() {
         confirmText="Yes, Clear Plan"
         cancelText="Keep Plan"
       />
-
-      <UpdatesPanel isOpen={showUpdates} onClose={() => setShowUpdates(false)} />
     </>
   );
 }

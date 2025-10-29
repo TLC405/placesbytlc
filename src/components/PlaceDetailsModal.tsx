@@ -41,14 +41,6 @@ export const PlaceDetailsModal = ({ place, open, onOpenChange, onAddToPlan }: Pl
               src={place.photo}
               alt={place.name}
               className="w-full h-full object-cover"
-              loading="lazy"
-              decoding="async"
-              style={{
-                imageRendering: '-webkit-optimize-contrast',
-                filter: 'contrast(1.08) saturate(1.12) brightness(1.02)',
-                backfaceVisibility: 'hidden',
-                WebkitBackfaceVisibility: 'hidden'
-              }}
             />
           </div>
 
@@ -82,71 +74,13 @@ export const PlaceDetailsModal = ({ place, open, onOpenChange, onAddToPlan }: Pl
 
           <Separator />
 
-          {/* Detailed Information */}
-          <div className="space-y-4">
-            {/* Address */}
-            <div className="space-y-2 p-4 rounded-lg bg-muted/50">
-              <h3 className="font-semibold flex items-center gap-2 text-base">
-                <MapPin className="w-5 h-5 text-primary" />
-                Location
-              </h3>
-              <p className="text-sm leading-relaxed pl-7">{place.address}</p>
-            </div>
-
-            {/* Price Information */}
-            {place.priceLevel && (
-              <div className="space-y-2 p-4 rounded-lg bg-muted/50">
-                <h3 className="font-semibold flex items-center gap-2 text-base">
-                  <span className="text-lg">💰</span>
-                  Price Range
-                </h3>
-                <div className="pl-7 space-y-1">
-                  <p className="text-2xl font-bold text-emerald-600">
-                    {getPriceLevel(place.priceLevel)}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {place.priceLevel === 1 && "Affordable and budget-friendly"}
-                    {place.priceLevel === 2 && "Moderate pricing, good value"}
-                    {place.priceLevel === 3 && "Upscale experience, premium pricing"}
-                    {place.priceLevel === 4 && "Luxury experience, high-end pricing"}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Hours & Status */}
-            {place.openNow !== undefined && (
-              <div className="space-y-2 p-4 rounded-lg bg-muted/50">
-                <h3 className="font-semibold flex items-center gap-2 text-base">
-                  <Clock className="w-5 h-5 text-primary" />
-                  Current Status
-                </h3>
-                <div className="pl-7">
-                  <Badge variant={place.openNow ? "default" : "secondary"} className="text-sm">
-                    {place.openNow ? "✓ Open Now" : "● Closed"}
-                  </Badge>
-                </div>
-              </div>
-            )}
-
-            {/* Rating & Reviews */}
-            {place.rating && (
-              <div className="space-y-2 p-4 rounded-lg bg-muted/50">
-                <h3 className="font-semibold flex items-center gap-2 text-base">
-                  <Star className="w-5 h-5 text-amber-500 fill-amber-500" />
-                  Ratings & Reviews
-                </h3>
-                <div className="pl-7 space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-3xl font-bold">{place.rating}</span>
-                    <span className="text-sm text-muted-foreground">out of 5</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Based on {place.userRatingsTotal?.toLocaleString() || 0} reviews
-                  </p>
-                </div>
-              </div>
-            )}
+          {/* Address */}
+          <div className="space-y-2">
+            <h3 className="font-semibold flex items-center gap-2">
+              <MapPin className="w-4 h-4" />
+              Address
+            </h3>
+            <p className="text-muted-foreground">{place.address}</p>
           </div>
 
           <Separator />
@@ -158,32 +92,29 @@ export const PlaceDetailsModal = ({ place, open, onOpenChange, onAddToPlan }: Pl
                 onAddToPlan(place);
                 onOpenChange(false);
               }}
-              className="gap-2 flex-1"
-              size="lg"
+              className="gap-2"
             >
               <Plus className="w-4 h-4" />
               Add to Plan
             </Button>
             
+            <Button 
+              variant="outline"
+              onClick={() => {
+                const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + " " + place.address)}`;
+                window.open(url, '_blank');
+              }}
+              className="gap-2"
+            >
+              <ExternalLink className="w-4 h-4" />
+              Get Directions
+            </Button>
+
             <ShareButton 
               placeName={place.name}
               placeAddress={place.address}
             />
           </div>
-          
-          {/* External Link - Secondary Action */}
-          <Button 
-            variant="outline"
-            onClick={() => {
-              const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + " " + place.address)}`;
-              window.open(url, '_blank');
-            }}
-            className="gap-2 w-full"
-            size="sm"
-          >
-            <ExternalLink className="w-4 h-4" />
-            View on Google Maps
-          </Button>
         </div>
       </DialogContent>
     </Dialog>

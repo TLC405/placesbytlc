@@ -40,18 +40,9 @@ export const loadGoogleMapsScript = (apiKey: string): Promise<void> => {
 
     const script = document.createElement("script");
     script.id = "google-maps-script";
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&v=weekly&libraries=places&callback=initMap`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&loading=async&callback=initMap`;
     script.async = true;
     script.defer = true;
-
-    // Fallback in case callback doesn't fire
-    script.onload = () => {
-      if (!isLoaded && (window as any).google?.maps?.places) {
-        isLoading = false;
-        isLoaded = true;
-        resolve();
-      }
-    };
 
     // Add global callback
     (window as any).initMap = () => {

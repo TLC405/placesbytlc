@@ -100,8 +100,6 @@ export const PlanSidebar = ({ plan, onUpdate, onClearPlan }: PlanSidebarProps) =
                     src={item.photo}
                     alt={item.name}
                     className="w-20 h-20 object-cover rounded-lg shadow-sm"
-                    loading="lazy"
-                    decoding="async"
                   />
                   {item.rating && (
                     <Badge className="absolute -top-2 -right-2 bg-white/95 text-foreground border-0 shadow-md px-1.5 py-0.5 text-xs">
