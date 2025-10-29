@@ -28,6 +28,7 @@ const CoupleMode = lazy(() => import("./pages/CoupleMode"));
 const Gamification = lazy(() => import("./pages/Gamification"));
 const OKCLegendForge = lazy(() => import("./pages/OKCLegendForge"));
 const ComingSoon = lazy(() => import("./pages/ComingSoon"));
+const TeeFeeMeCartoonifier = lazy(() => import("./pages/TeeFeeMeCartoonifierNew"));
 
 import { useGoogleMaps } from "@/hooks/useGoogleMaps";
 
@@ -58,6 +59,7 @@ const AppRoutes = () => {
         <Route path="/okc-legend" element={<OKCLegendForge />} />
         <Route path="/boo-mode" element={<ComingSoon />} />
         <Route path="/coming-soon" element={<ComingSoon />} />
+        <Route path="/cartoonifier" element={<TeeFeeMeCartoonifier />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>

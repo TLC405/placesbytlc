@@ -52,6 +52,8 @@ export const Header = () => {
   
   const allNavItems = [
     { path: "/", label: "Places", icon: Heart, emoji: "📍" },
+    { path: "/couple-mode", label: "Couple", icon: User, emoji: "💑" },
+    { path: "/cartoonifier", label: "TeeFeeMe", icon: Palette, emoji: "🎨" },
     { path: "/quizzes", label: "Quizzes", icon: Sparkles, emoji: "✨" },
   ];
   

@@ -3,14 +3,24 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Users, Heart, Link as LinkIcon, Calendar, Star } from "lucide-react";
+import { Users, Heart, Link as LinkIcon, Calendar, Star, Brain, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { useTesterCheck } from "@/hooks/useTesterCheck";
+import { CupidTutorial } from "@/components/CupidTutorial";
+import { Link } from "react-router-dom";
 
 export default function CoupleMode() {
   useTesterCheck();
   const [pairingCode, setPairingCode] = useState("");
   const [isPaired, setIsPaired] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(false);
+
+  const tutorialSteps = [
+    "Hey there, lovebirds! 💕 Welcome to Couple Mode!",
+    "This is where you can take fun quizzes together to learn more about each other.",
+    "Discover your love languages, personality types, and what makes you both tick!",
+    "Ready to dive in? Click on the Quizzes section below to get started!",
+  ];
 
   const generateCode = () => {
     const code = Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -126,7 +136,7 @@ export default function CoupleMode() {
                 </p>
               </div>
               
-              <div className="p-4 rounded-lg bg-gradient-to-r from-purple/10 to-pink/10 border-2 border-purple/20">
+          <div className="p-4 rounded-lg bg-gradient-to-r from-purple/10 to-pink/10 border-2 border-purple/20">
                 <h3 className="font-bold text-lg mb-2 flex items-center gap-2">
                   <Star className="w-5 h-5 text-purple-600" />
                   Shared Notes
@@ -135,6 +145,45 @@ export default function CoupleMode() {
                   Add memories and notes to each place you visit together
                 </p>
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Quizzes Section */}
+          <Card className="border-2 border-primary/30 bg-gradient-to-br from-pink-50 to-purple-50 dark:from-pink-950/20 dark:to-purple-950/20">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Brain className="w-6 h-6 text-primary" />
+                Couple Quizzes
+              </CardTitle>
+              <CardDescription>
+                Learn more about each other through fun personality quizzes
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-bold text-lg">Discover Each Other</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Take quizzes to understand your love languages, personalities, and more
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowTutorial(true)}
+                  className="flex-shrink-0"
+                >
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Tutorial
+                </Button>
+              </div>
+
+              <Link to="/quizzes">
+                <Button size="lg" className="w-full">
+                  <Brain className="w-5 h-5 mr-2" />
+                  Start Quizzes
+                </Button>
+              </Link>
             </CardContent>
           </Card>
         </>
@@ -160,6 +209,14 @@ export default function CoupleMode() {
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {showTutorial && (
+        <CupidTutorial
+          steps={tutorialSteps}
+          onComplete={() => setShowTutorial(false)}
+          onClose={() => setShowTutorial(false)}
+        />
       )}
     </div>
   );
