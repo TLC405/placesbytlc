@@ -52,7 +52,14 @@ export const PINProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 export const usePIN = () => {
   const context = useContext(PINContext);
   if (context === undefined) {
-    throw new Error('usePIN must be used within a PINProvider');
+    // Graceful fallback to avoid runtime crashes if provider isn't mounted
+    console.warn('usePIN used outside a PINProvider. Returning safe defaults.');
+    return {
+      isAdmin: false,
+      hasEntry: false,
+      checkAdminAccess: () => false,
+      checkEntryAccess: () => false,
+    } as PINContextType;
   }
   return context;
 };

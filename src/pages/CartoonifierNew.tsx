@@ -5,6 +5,7 @@ import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Upload, Sparkles, Download, RefreshCw, Heart } from "lucide-react";
+import { RoleGuard } from "@/components/RoleGuard";
 
 export default function CartoonifierNew() {
   const [originalImage, setOriginalImage] = useState<string | null>(null);
@@ -96,6 +97,7 @@ export default function CartoonifierNew() {
   };
 
   return (
+    <RoleGuard allowedRoles={['admin','alpha','beta','delta','moderator']} featureName="Cartoonifier">
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-rose-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-pink-900/20 py-8 px-4">
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header with Cupid Theme */}
@@ -242,5 +244,6 @@ export default function CartoonifierNew() {
           </div>
         </div>
       </div>
+    </RoleGuard>
   );
 }
