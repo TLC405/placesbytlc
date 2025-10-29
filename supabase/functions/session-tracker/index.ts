@@ -12,7 +12,8 @@ serve(async (req) => {
   }
 
   try {
-    const supabaseClient = createClient(
+    // Create client for authentication verification
+    const authClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
       {
@@ -22,7 +23,7 @@ serve(async (req) => {
       }
     );
 
-    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+    const { data: { user }, error: authError } = await authClient.auth.getUser();
     
     if (authError || !user) {
       console.log('Authentication failed:', authError?.message || 'No user');
@@ -31,6 +32,12 @@ serve(async (req) => {
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    // Create service role client for database operations (bypasses RLS)
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
 
     let requestData;
     try {
