@@ -31,7 +31,21 @@ export const EntryGate: React.FC<EntryGateProps> = ({ children }) => {
       return;
     }
 
-    const isValid = validateEntryCode(code.trim().toLowerCase());
+    const trimmedCode = code.trim().toLowerCase();
+    
+    // Check for developer mode code (1309)
+    if (trimmedCode === "1309") {
+      sessionStorage.setItem('tlc_dev_mode', 'true');
+      sessionStorage.setItem('tlc_entry_session', 'true');
+      setHasAccess(true);
+      toast.success("🚀 DEVELOPER MODE ACTIVATED!", {
+        description: "Premium features unlocked • All themes available • Enhanced UI",
+        duration: 5000,
+      });
+      return;
+    }
+
+    const isValid = validateEntryCode(trimmedCode);
     
     if (isValid) {
       setHasAccess(true);

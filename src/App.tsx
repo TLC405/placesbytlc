@@ -26,11 +26,13 @@ const TesterDashboard = lazy(() => import("./components/TesterDashboard"));
 const AIRecommender = lazy(() => import("./pages/AIRecommender"));
 const CoupleMode = lazy(() => import("./pages/CoupleMode"));
 const Gamification = lazy(() => import("./pages/Gamification"));
-const OKCLegendForge = lazy(() => import("./pages/OKCLegendForge"));
+const OKCLegendForge = lazy(() => import("./pages/EnhancedOKCLegend"));
 const ComingSoon = lazy(() => import("./pages/ComingSoon"));
 const TeeFeeMeCartoonifier = lazy(() => import("./pages/TeeFeeMeCartoonifierNew"));
 
 import { useGoogleMaps } from "@/hooks/useGoogleMaps";
+import { DevModeProvider } from "@/contexts/DevModeContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 
 const queryClient = new QueryClient();
 
@@ -73,21 +75,25 @@ const App = () => {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <EntryGate>
-              <AppAuthGate>
-                <ActivityTracker />
-                <DetailedCupid />
-                <main className="max-w-7xl mx-auto px-4 py-6">
-                  <AppRoutes />
-                </main>
-              </AppAuthGate>
-            </EntryGate>
-          </BrowserRouter>
-        </TooltipProvider>
+        <ThemeProvider>
+          <DevModeProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <EntryGate>
+                  <AppAuthGate>
+                    <ActivityTracker />
+                    <DetailedCupid />
+                    <main className="max-w-7xl mx-auto px-4 py-6">
+                      <AppRoutes />
+                    </main>
+                  </AppAuthGate>
+                </EntryGate>
+              </BrowserRouter>
+            </TooltipProvider>
+          </DevModeProvider>
+        </ThemeProvider>
       </QueryClientProvider>
     </ErrorBoundary>
   );

@@ -2,6 +2,8 @@ import { Heart, Sparkles, Palette, Shield, LogOut, User, Settings } from "lucide
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
+import { ThemeSelector } from "@/components/ThemeSelector";
+import { DevModeBadge } from "@/components/DevModeBadge";
 import { useState, useEffect } from "react";
 import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
@@ -128,6 +130,7 @@ export const Header = () => {
             
             {/* All-Screen Navigation - Horizontal scroll on mobile */}
             <nav className="flex items-center gap-1 sm:gap-2 overflow-x-auto scrollbar-hide max-w-[calc(100vw-300px)] sm:max-w-none">
+              <DevModeBadge />
               {allNavItems.map((item) => {
                 const Icon = item.icon;
                 return (
@@ -152,7 +155,8 @@ export const Header = () => {
                   </Link>
                 );
               })}
-              <div className="flex-shrink-0">
+              <div className="flex-shrink-0 flex items-center gap-2">
+                <ThemeSelector />
                 <DarkModeToggle />
               </div>
             </nav>

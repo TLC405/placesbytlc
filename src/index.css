@@ -45,6 +45,40 @@
     --sidebar-ring: 338.57 83.05% 62.16%;
   }
 
+  /* ROMANCE MODE (Default) - Soft pink and romantic */
+  [data-theme="romance"] {
+    --primary: 336 72 153;
+    --accent: 244 63 94;
+    --border-radius: 1.5rem;
+  }
+
+  /* MAN MODE - Tactical CoD style with military green */
+  [data-theme="man-mode"] {
+    --background: 10 10 10;
+    --foreground: 34 197 94;
+    --primary: 249 115 22;
+    --accent: 34 197 94;
+    --border-radius: 0.25rem;
+  }
+
+  /* CYBERPUNK MODE - Neon cyan and purple */
+  [data-theme="cyberpunk"] {
+    --background: 2 6 23;
+    --foreground: 6 182 212;
+    --primary: 168 85 247;
+    --accent: 236 72 153;
+    --border-radius: 0.5rem;
+  }
+
+  /* NATURE MODE - Earth tones and organic */
+  [data-theme="nature"] {
+    --background: 249 246 238;
+    --foreground: 92 64 14;
+    --primary: 22 163 74;
+    --accent: 14 165 233;
+    --border-radius: 1rem;
+  }
+
   .dark {
     --background: 222.2 40% 14%;
     --foreground: 210 40% 98%;
