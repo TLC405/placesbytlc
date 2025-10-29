@@ -1,5 +1,6 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,6 +13,54 @@ serve(async (req) => {
   }
 
   try {
+    // Verify authentication
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'Authentication required' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey, {
+      global: { headers: { Authorization: authHeader } }
+    });
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid authentication' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Rate limiting: 10 cartoons per 5 minutes per user
+    const rateLimitKey = `cartoon:${user.id}`;
+    const { data: allowed } = await supabase.rpc('check_rate_limit', {
+      _key: rateLimitKey,
+      _max_requests: 10,
+      _window_minutes: 5
+    });
+
+    if (!allowed) {
+      return new Response(
+        JSON.stringify({ 
+          error: 'Rate limit exceeded. Please wait a few minutes and try again.',
+          retryAfter: 300
+        }),
+        { 
+          status: 429, 
+          headers: { 
+            ...corsHeaders, 
+            'Content-Type': 'application/json',
+            'Retry-After': '300'
+          } 
+        }
+      );
+    }
+
     const { imageData, style } = await req.json();
     const lovableApiKey = Deno.env.get('LOVABLE_API_KEY')!;
 
@@ -85,8 +134,8 @@ Make it festive and fun! Add cartoon sparkles, vibrant background elements, and 
       }
       
       return new Response(JSON.stringify({ 
-        error: 'Failed to generate cartoon',
-        details: errorText 
+        error: 'Failed to generate cartoon. Please try again.',
+        code: 'AI_ERROR'
       }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -99,10 +148,10 @@ Make it festive and fun! Add cartoon sparkles, vibrant background elements, and 
     const generatedImage = aiData.choices?.[0]?.message?.images?.[0]?.image_url?.url;
     
     if (!generatedImage) {
-      console.error('No image in AI response:', JSON.stringify(aiData).substring(0, 200));
+      console.error('No image in AI response');
       return new Response(JSON.stringify({ 
-        error: 'No image generated',
-        details: 'AI did not return an image' 
+        error: 'Failed to generate cartoon. Please try again.',
+        code: 'NO_IMAGE'
       }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -116,11 +165,13 @@ Make it festive and fun! Add cartoon sparkles, vibrant background elements, and 
     });
 
   } catch (error) {
-    console.error('Error:', error);
-    const message = error instanceof Error ? error.message : 'Unknown error';
-    return new Response(JSON.stringify({ error: message }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    console.error('Error in teefeeme-cartoonify:', error);
+    return new Response(
+      JSON.stringify({ 
+        error: 'Failed to generate cartoon image. Please try again.',
+        code: 'GENERATION_ERROR'
+      }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
   }
 });
