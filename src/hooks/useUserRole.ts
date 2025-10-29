@@ -1,56 +1,38 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-
-export type AppRole = 'admin' | 'moderator' | 'tester' | 'user' | null;
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export const useUserRole = () => {
-  const [role, setRole] = useState<AppRole>(null);
-  const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchRole = async () => {
+    const checkRole = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
-        
-        if (!user) {
-          setRole(null);
-          setLoading(false);
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.user) {
+          setIsAdmin(false);
+          setIsLoading(false);
           return;
         }
 
         const { data: roles } = await supabase
           .from('user_roles')
           .select('role')
-          .eq('user_id', user.id)
-          .order('role', { ascending: true }); // admin comes first alphabetically
+          .eq('user_id', session.user.id);
 
-        if (roles && roles.length > 0) {
-          // Return the highest priority role (admin > moderator > tester > user)
-          const roleHierarchy: AppRole[] = ['admin', 'moderator', 'tester', 'user'];
-          const userRole = roleHierarchy.find(r => 
-            roles.some(dbRole => dbRole.role === r)
-          ) || 'user';
-          setRole(userRole);
-        } else {
-          setRole('user');
-        }
+        setIsAdmin(roles?.some(r => r.role === 'admin') || false);
       } catch (error) {
-        console.error('Error fetching role:', error);
-        setRole(null);
+        console.error('Error checking role:', error);
+        setIsAdmin(false);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
 
-    fetchRole();
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-      fetchRole();
-    });
-
+    checkRole();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => checkRole());
     return () => subscription.unsubscribe();
   }, []);
 
-  return { role, loading };
+  return { isAdmin, isLoading };
 };

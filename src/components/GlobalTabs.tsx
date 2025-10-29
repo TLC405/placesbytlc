@@ -18,7 +18,7 @@ interface GlobalTabsProps {
 
 export const GlobalTabs = ({ tabs }: GlobalTabsProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { role } = useUserRole();
+  const { isAdmin } = useUserRole();
   
   // Filter tabs based on role permissions - show all tabs for now
   const visibleTabs = tabs;

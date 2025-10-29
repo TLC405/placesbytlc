@@ -1,7 +1,7 @@
 project_id = "gsonwwqjielejftxghjo"
 
 [functions.discover-date-spots]
-verify_jwt = false
+verify_jwt = true
 
 [functions.admin-portal-data]
 verify_jwt = true
@@ -18,11 +18,8 @@ verify_jwt = true
 [functions.track-admin-activity]
 verify_jwt = true
 
-[functions.pin-auth]
-verify_jwt = false
-
 [functions.analytics-track]
-verify_jwt = false
+verify_jwt = true
 
 [functions.analytics-query]
-verify_jwt = false
+verify_jwt = true

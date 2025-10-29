@@ -2,9 +2,9 @@ import { Heart, Sparkles, Palette, Shield, LogOut, User, Settings } from "lucide
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
-import { useState } from "react";
-import { AdminPINModal } from "@/components/AdminPINModal";
-import { usePIN } from "@/contexts/PINContext";
+import { useState, useEffect } from "react";
+import { useUserRole } from "@/hooks/useUserRole";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
   DropdownMenu,
@@ -17,20 +17,35 @@ import {
 export const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { isAdmin, checkAdminAccess } = usePIN();
-  const [showAdminPIN, setShowAdminPIN] = useState(false);
+  const { isAdmin, isLoading } = useUserRole();
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const handleAdminClick = () => {
-    if (isAdmin) {
+    if (!isLoading && isAdmin) {
       navigate('/admin');
+    } else if (!user) {
+      toast.error("Please sign in to access admin features");
     } else {
-      setShowAdminPIN(true);
+      toast.error("Admin access required");
     }
   };
 
-  const handleAdminPINSuccess = () => {
-    checkAdminAccess();
-    navigate('/admin');
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    toast.success("Signed out successfully");
+    navigate("/");
   };
   
   const isActive = (path: string) => location.pathname === path;
@@ -45,11 +60,6 @@ export const Header = () => {
   
   return (
     <>
-      <AdminPINModal 
-        open={showAdminPIN} 
-        onOpenChange={setShowAdminPIN} 
-        onSuccess={handleAdminPINSuccess}
-      />
       <header className="fixed top-0 left-0 right-0 z-50 glass shadow-glow border-b-2 border-primary/30 backdrop-blur-xl"
         style={{ overflowX: 'hidden', overflowY: 'visible' }}>
         {/* Animated background gradient */}
@@ -104,10 +114,12 @@ export const Header = () => {
                     <Settings className="w-4 h-4 mr-2" />
                     Admin Panel
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => toast.info('Profile features coming soon! 🚀')}>
-                    <User className="w-4 h-4 mr-2" />
-                    Save Profile
-                  </DropdownMenuItem>
+                  {user && (
+                    <DropdownMenuItem onClick={handleLogout}>
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Sign Out
+                    </DropdownMenuItem>
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
