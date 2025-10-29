@@ -37,6 +37,7 @@ import { useGoogleMaps } from "@/hooks/useGoogleMaps";
 import { DevModeProvider } from "@/contexts/DevModeContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { PINProvider } from "@/contexts/PINContext";
 
 const queryClient = new QueryClient();
 
@@ -83,22 +84,24 @@ const App = () => {
         <ThemeProvider>
           <DevModeProvider>
             <AuthProvider>
-              <TooltipProvider>
-                <Toaster />
-                <Sonner />
-                <BrowserRouter>
-                  <EntryGate>
-                    <AppAuthGate>
-                      <ActivityTracker />
-                      <DetailedCupid />
-                      <FloatingEmoji />
-                      <main className="max-w-7xl mx-auto px-4 py-6">
-                        <AppRoutes />
-                      </main>
-                    </AppAuthGate>
-                  </EntryGate>
-                </BrowserRouter>
-              </TooltipProvider>
+              <PINProvider>
+                <TooltipProvider>
+                  <Toaster />
+                  <Sonner />
+                  <BrowserRouter>
+                    <EntryGate>
+                      <AppAuthGate>
+                        <ActivityTracker />
+                        <DetailedCupid />
+                        <FloatingEmoji />
+                        <main className="max-w-7xl mx-auto px-4 py-6">
+                          <AppRoutes />
+                        </main>
+                      </AppAuthGate>
+                    </EntryGate>
+                  </BrowserRouter>
+                </TooltipProvider>
+              </PINProvider>
             </AuthProvider>
           </DevModeProvider>
         </ThemeProvider>
