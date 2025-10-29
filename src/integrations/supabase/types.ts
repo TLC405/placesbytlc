@@ -417,6 +417,30 @@ export type Database = {
         }
         Relationships: []
       }
+      rate_limits: {
+        Row: {
+          count: number | null
+          created_at: string | null
+          id: string
+          key: string
+          window_start: string | null
+        }
+        Insert: {
+          count?: number | null
+          created_at?: string | null
+          id?: string
+          key: string
+          window_start?: string | null
+        }
+        Update: {
+          count?: number | null
+          created_at?: string | null
+          id?: string
+          key?: string
+          window_start?: string | null
+        }
+        Relationships: []
+      }
       shared_data: {
         Row: {
           couple_id: string
@@ -489,6 +513,33 @@ export type Database = {
           sent_at?: string | null
           status?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      tester_feedback: {
+        Row: {
+          created_at: string | null
+          feature_name: string
+          feedback: string | null
+          id: string
+          rating: number
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          feature_name: string
+          feedback?: string | null
+          id?: string
+          rating: number
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          feature_name?: string
+          feedback?: string | null
+          id?: string
+          rating?: number
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -676,6 +727,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_rate_limit: {
+        Args: { _key: string; _max_requests: number; _window_minutes: number }
+        Returns: boolean
+      }
       end_user_session: { Args: { session_id: string }; Returns: undefined }
       has_role: {
         Args: {

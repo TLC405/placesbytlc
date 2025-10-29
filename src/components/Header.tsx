@@ -1,68 +1,62 @@
-import { useState, useEffect } from "react";
-import { Heart, Calendar, Brain, Palette, Download, Crown, Sparkles, UserPlus, Shield } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Heart, Sparkles, Palette, Shield, LogOut, User, Settings } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
+import { useState, useEffect } from "react";
+import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { AuthPanel } from "./AuthPanel";
+import { toast } from "sonner";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export const Header = () => {
   const location = useLocation();
-  const [isTester, setIsTester] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [showSignup, setShowSignup] = useState(false);
-  
-  // Hide header on landing page
-  if (location.pathname === '/landing') return null;
-  
+  const navigate = useNavigate();
+  const { isAdmin, isLoading } = useUserRole();
+  const [user, setUser] = useState<any>(null);
+
   useEffect(() => {
-    const checkUserRole = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        setIsTester(false);
-        setIsAdmin(false);
-        return;
-      }
-      
-      const { data: roles } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', user.id);
-      
-      const hasAdminRole = roles?.some(r => (r.role as string) === 'admin') ?? false;
-      const hasTesterRole = roles?.some(r => (r.role as string) === 'tester') ?? false;
-      
-      setIsAdmin(hasAdminRole);
-      setIsTester(hasTesterRole);
-    };
-    
-    checkUserRole();
-    
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-      checkUserRole();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
     });
-    
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
     return () => subscription.unsubscribe();
   }, []);
+
+  const handleAdminClick = () => {
+    if (!isLoading && isAdmin) {
+      navigate('/admin');
+    } else if (!user) {
+      toast.error("Please sign in to access admin features");
+    } else {
+      toast.error("Admin access required");
+    }
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    toast.success("Signed out successfully");
+    navigate("/");
+  };
   
   const isActive = (path: string) => location.pathname === path;
   
   const allNavItems = [
-    { path: "/landing", label: "Home", icon: Heart, emoji: "🏠", allowTester: true },
-    { path: "/", label: "Places by TLC", icon: Heart, emoji: "📍", allowTester: true },
-    { path: "/teefeeme", label: "TeeFee Me", icon: Palette, emoji: "🎨", allowTester: true },
-    { path: "/okc-legend", label: "Legend", icon: Brain, emoji: "🔥", allowTester: true },
-    { path: "/quizzes", label: "Quizzes", icon: Brain, emoji: "🧠", allowTester: false },
-    { path: "/period-tracker", label: "Peripod", icon: Calendar, emoji: "📅", allowTester: false },
-    { path: "/admin", label: "Admin", icon: Shield, emoji: "⚙️", allowTester: false, adminOnly: true },
+    { path: "/", label: "Places", icon: Heart, emoji: "📍" },
+    { path: "/quizzes", label: "Quizzes", icon: Sparkles, emoji: "✨" },
   ];
   
-  const navItems = allNavItems.filter(item => {
-    if (item.adminOnly && !isAdmin) return false;
-    if (isTester && !item.allowTester) return false;
-    return true;
-  });
+  // Hide header on hacker page
+  if (location.pathname === '/hacker') return null;
   
   return (
     <>
@@ -73,36 +67,73 @@ export const Header = () => {
         
         <div className="relative max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            {/* Enhanced Logo */}
-            <Link to="/" className="flex items-center gap-3 sm:gap-4 group relative">
-              {/* Pulsing glow effect */}
-              <div className="absolute -inset-2 bg-gradient-to-r from-primary/20 to-accent/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500 animate-pulse" />
-              
-              <div className="relative w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center bg-gradient-to-br from-primary via-accent to-primary-glow rounded-2xl shadow-glow group-hover:shadow-[0_0_40px_hsl(var(--primary)/0.6)] transition-all duration-300 group-hover:rotate-12 group-hover:scale-110 border-2 border-white/20">
-                <Heart className="w-6 h-6 sm:w-7 sm:h-7 text-white fill-white heart-pulse" />
-                <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-yellow-300 animate-pulse" />
-              </div>
-              
-              <div className="leading-tight">
-                <div className="text-xl sm:text-3xl font-black gradient-text tracking-tight drop-shadow-lg animate-pulse">
-                  ✨ FELICIA.TLC ✨
-                </div>
-                <div className="text-xs sm:text-sm font-bold tracking-widest hidden sm:block bg-gradient-to-r from-amber-400 via-rose-400 to-amber-400 bg-clip-text text-transparent animate-gradient-shift" style={{ backgroundSize: '200% 200%' }}>
-                  <span className="inline-block animate-pulse">👑</span>
-                  <span className="mx-1">
-                    QUEEN FELICIA'S LOVE HUB
-                  </span>
-                  <span className="inline-block animate-pulse delay-75">👑</span>
-                </div>
-              </div>
-            </Link>
+            {/* Enhanced Logo with Admin Icon */}
+            <div className="flex items-center gap-4">
+              {/* Admin Icon - Always Visible (Top Left) */}
+              <Button
+                onClick={handleAdminClick}
+                variant="outline"
+                size="sm"
+                className="flex-shrink-0 gap-2 hover:bg-primary/10 hover:border-primary transition-all"
+              >
+                <Shield className="w-4 h-4" />
+                <span className="hidden sm:inline">Admin</span>
+              </Button>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="flex items-center gap-3 sm:gap-4 group relative hover:scale-105 transition-transform duration-300">
+                    {/* Pulsing glow effect */}
+                    <div className="absolute -inset-2 bg-gradient-to-r from-primary/20 to-accent/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500 animate-pulse" />
+                    
+                    <div className="relative w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center bg-gradient-to-br from-primary via-accent to-primary rounded-2xl shadow-glow group-hover:shadow-[0_0_40px_hsl(var(--primary)/0.6)] transition-all duration-300 group-hover:rotate-12 border-2 border-white/20">
+                      <Heart className="w-6 h-6 sm:w-7 sm:h-7 text-white fill-white heart-pulse" />
+                      <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-yellow-300 animate-pulse" />
+                    </div>
+                    
+                    <div className="leading-tight">
+                      <div className="text-xl sm:text-3xl font-black gradient-text tracking-tight drop-shadow-lg animate-pulse">
+                        ✨ INPERSON.TLC ✨
+                      </div>
+                      <div className="text-xs sm:text-sm font-bold tracking-widest hidden sm:block bg-gradient-to-r from-amber-400 via-rose-400 to-amber-400 bg-clip-text text-transparent animate-gradient-shift" style={{ backgroundSize: '200% 200%' }}>
+                        <span className="inline-block animate-pulse">💕</span>
+                        <span className="mx-1">
+                          TOGETHER OR AWAY, YOU TWO SHALL PLAY
+                        </span>
+                        <span className="inline-block animate-pulse delay-75">💕</span>
+                      </div>
+                    </div>
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-64 glass border-primary/30">
+                  <div className="px-3 py-2">
+                    <p className="text-sm font-semibold">Quick Actions</p>
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleAdminClick}>
+                    <Settings className="w-4 h-4 mr-2" />
+                    Admin Panel
+                  </DropdownMenuItem>
+                  {user && (
+                    <DropdownMenuItem onClick={handleLogout}>
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Sign Out
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
             
             {/* All-Screen Navigation - Horizontal scroll on mobile */}
             <nav className="flex items-center gap-1 sm:gap-2 overflow-x-auto scrollbar-hide max-w-[calc(100vw-300px)] sm:max-w-none">
-              {navItems.map((item) => {
+              {allNavItems.map((item) => {
                 const Icon = item.icon;
                 return (
-                  <Link key={item.path} to={item.path} className="flex-shrink-0">
+                  <Link 
+                    key={item.path} 
+                    to={item.path} 
+                    className="flex-shrink-0"
+                  >
                     <Button 
                       variant={isActive(item.path) ? "default" : "outline"} 
                       size="sm"
@@ -122,27 +153,10 @@ export const Header = () => {
               <div className="flex-shrink-0">
                 <DarkModeToggle />
               </div>
-              <div className="flex-shrink-0">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowSignup(true)}
-                  className="gap-1 sm:gap-2 text-xs sm:text-sm"
-                >
-                  <UserPlus className="w-3 h-3 sm:w-4 sm:h-4" />
-                  <span className="hidden sm:inline">Sign Up</span>
-                </Button>
-              </div>
             </nav>
           </div>
         </div>
       </header>
-
-      <Dialog open={showSignup} onOpenChange={setShowSignup}>
-        <DialogContent className="max-w-md">
-          <AuthPanel />
-        </DialogContent>
-      </Dialog>
     </>
   );
 };
