@@ -12,33 +12,7 @@ serve(async (req) => {
   }
 
   try {
-    // Create client for authentication verification
-    const authClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      {
-        global: {
-          headers: { Authorization: req.headers.get('Authorization')! },
-        },
-      }
-    );
-
-    const { data: { user }, error: authError } = await authClient.auth.getUser();
-    
-    if (authError || !user) {
-      console.log('Authentication failed:', authError?.message || 'No user');
-      return new Response(
-        JSON.stringify({ error: 'Not authenticated', details: authError?.message }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // Create service role client for database operations (bypasses RLS)
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
-
+    // Parse request data first
     let requestData;
     try {
       requestData = await req.json();
@@ -50,7 +24,47 @@ serve(async (req) => {
       );
     }
 
+    // Try to authenticate, but allow anonymous tracking if auth fails
+    let user = null;
+    const authHeader = req.headers.get('Authorization');
+    
+    if (authHeader) {
+      try {
+        const authClient = createClient(
+          Deno.env.get('SUPABASE_URL') ?? '',
+          Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+          {
+            global: {
+              headers: { Authorization: authHeader },
+            },
+          }
+        );
+
+        const { data: { user: authUser }, error: authError } = await authClient.auth.getUser();
+        
+        if (!authError && authUser) {
+          user = authUser;
+          console.log('Authenticated user:', user.id);
+        } else {
+          console.log('Auth check failed, tracking anonymously:', authError?.message);
+        }
+      } catch (authException) {
+        console.error('Auth exception (tracking anonymously):', authException);
+      }
+    } else {
+      console.log('No auth header, tracking anonymously');
+    }
+
+    // Create service role client for database operations (bypasses RLS)
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
+
     const { action, sessionId, data } = requestData;
+    
+    // Use user ID if authenticated, otherwise use fingerprint for anonymous tracking
+    const trackingId = user?.id || data?.fingerprint || 'anonymous';
 
     // Get IP address and user agent
     const ipAddress = req.headers.get('x-forwarded-for')?.split(',')[0] || 
@@ -71,48 +85,59 @@ serve(async (req) => {
       }
 
       // Create new session
+      const sessionInsert: any = {
+        ip_address: ipAddress,
+        user_agent: userAgent,
+        device_info: data?.deviceInfo || {},
+        location_info: locationData,
+        fingerprint: data?.fingerprint,
+        is_active: true
+      };
+      
+      // Only add user_id if authenticated
+      if (user) {
+        sessionInsert.user_id = user.id;
+      }
+
       const { data: session, error: sessionError } = await supabaseClient
         .from('user_sessions')
-        .insert({
-          user_id: user.id,
-          ip_address: ipAddress,
-          user_agent: userAgent,
-          device_info: data?.deviceInfo || {},
-          location_info: locationData,
-          fingerprint: data?.fingerprint,
-          is_active: true
-        })
+        .insert(sessionInsert)
         .select()
         .single();
 
-      if (sessionError) throw sessionError;
+      if (sessionError) {
+        console.error('Session insert error:', sessionError);
+        throw sessionError;
+      }
 
-      // Update or create IP history
-      const { data: existingIp } = await supabaseClient
-        .from('ip_history')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('ip_address', ipAddress)
-        .single();
+      // Update or create IP history (only if authenticated)
+      if (user) {
+        const { data: existingIp } = await supabaseClient
+          .from('ip_history')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('ip_address', ipAddress)
+          .single();
 
-      if (existingIp) {
-        await supabaseClient
-          .from('ip_history')
-          .update({
-            last_seen: new Date().toISOString(),
-            visit_count: existingIp.visit_count + 1,
-            location_data: locationData
-          })
-          .eq('id', existingIp.id);
-      } else {
-        await supabaseClient
-          .from('ip_history')
-          .insert({
-            user_id: user.id,
-            ip_address: ipAddress,
-            location_data: locationData,
-            visit_count: 1
-          });
+        if (existingIp) {
+          await supabaseClient
+            .from('ip_history')
+            .update({
+              last_seen: new Date().toISOString(),
+              visit_count: existingIp.visit_count + 1,
+              location_data: locationData
+            })
+            .eq('id', existingIp.id);
+        } else {
+          await supabaseClient
+            .from('ip_history')
+            .insert({
+              user_id: user.id,
+              ip_address: ipAddress,
+              location_data: locationData,
+              visit_count: 1
+            });
+        }
       }
 
       return new Response(
@@ -121,14 +146,20 @@ serve(async (req) => {
       );
     } else if (action === 'update') {
       // Update session activity
-      await supabaseClient
+      const updateQuery = supabaseClient
         .from('user_sessions')
         .update({
           last_activity: new Date().toISOString(),
           pages_visited: data?.pagesVisited || 0
         })
-        .eq('id', sessionId)
-        .eq('user_id', user.id);
+        .eq('id', sessionId);
+      
+      // Add user_id filter only if authenticated
+      if (user) {
+        updateQuery.eq('user_id', user.id);
+      }
+      
+      await updateQuery;
 
       return new Response(
         JSON.stringify({ success: true }),
@@ -154,25 +185,27 @@ serve(async (req) => {
           })
           .eq('id', sessionId);
 
-        // Update user analytics
-        const { data: analytics } = await supabaseClient
-          .from('user_analytics')
-          .select('*')
-          .eq('user_id', user.id)
-          .single();
-
-        if (analytics) {
-          const newTotalTime = analytics.total_time_spent + duration;
-          const newAvgDuration = Math.floor(newTotalTime / (analytics.total_sessions + 1));
-          
-          await supabaseClient
+        // Update user analytics (only if authenticated)
+        if (user) {
+          const { data: analytics } = await supabaseClient
             .from('user_analytics')
-            .update({
-              total_time_spent: newTotalTime,
-              average_session_duration: newAvgDuration,
-              total_page_views: analytics.total_page_views + (data?.pagesVisited || 0)
-            })
-            .eq('user_id', user.id);
+            .select('*')
+            .eq('user_id', user.id)
+            .single();
+
+          if (analytics) {
+            const newTotalTime = analytics.total_time_spent + duration;
+            const newAvgDuration = Math.floor(newTotalTime / (analytics.total_sessions + 1));
+            
+            await supabaseClient
+              .from('user_analytics')
+              .update({
+                total_time_spent: newTotalTime,
+                average_session_duration: newAvgDuration,
+                total_page_views: analytics.total_page_views + (data?.pagesVisited || 0)
+              })
+              .eq('user_id', user.id);
+          }
         }
       }
 
