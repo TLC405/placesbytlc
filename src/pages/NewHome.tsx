@@ -1,9 +1,9 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Heart, Sparkles, Crown, Calendar, Users, TrendingUp, Zap } from "lucide-react";
+import { Heart, Sparkles, Crown, Calendar, Users, TrendingUp, Zap, Settings, LogOut, Save, Palette } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { PlaceItem } from "@/types";
 import { storage } from "@/lib/storage";
@@ -14,20 +14,66 @@ import { EmptyState } from "@/components/EmptyState";
 import { usePlacesSearch } from "@/hooks/usePlacesSearch";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { trackPlaceView, trackPlaceSave, trackSearch } from "@/components/ActivityTracker";
+import { AuthPanel } from "@/components/AuthPanel";
+import { supabase } from "@/integrations/supabase/client";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
+import feliciaCrownImage from "@/assets/felicia-crown.png";
+import { AppRole } from "@/utils/rbac";
 
 export default function NewHome() {
   const navigate = useNavigate();
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
   const [radius, setRadius] = useState("8047");
   const [error, setError] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [categoryType, setCategoryType] = useState<"food" | "activity" | "both">("both");
+  const [userRole, setUserRole] = useState<AppRole | null>(null);
 
   const { location, setCustomLocation } = useGeolocation();
   const { results, isSearching, search } = usePlacesSearch({
     onError: (message) => setError(message),
   });
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    const role = localStorage.getItem('tlc_app_role') as AppRole | null;
+    setUserRole(role);
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    const handleStorageChange = () => {
+      const newRole = localStorage.getItem('tlc_app_role') as AppRole | null;
+      setUserRole(newRole);
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      subscription.unsubscribe();
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('tlc_app_role');
+    localStorage.removeItem('tlc_user_id');
+    localStorage.removeItem('tlc_username');
+    toast.success("Logged out successfully!");
+    window.location.href = '/';
+  };
+
+  const handleSaveProfile = () => {
+    toast.info("Coming soon!");
+  };
 
   const handleAddToPlan = useCallback((place: PlaceItem) => {
     const existing = storage.getPlan();
@@ -45,10 +91,10 @@ export default function NewHome() {
     setSelectedCategories([category]);
   }, []);
 
-  const handleLocationModeChange = (mode: "tlc" | "partner" | "middle") => {
+  const handleLocationModeChange = (mode: "tlc" | "felicia" | "middle") => {
     const modeLabels = {
       tlc: "TLC Place",
-      partner: "Partner Place", 
+      felicia: "Felicia Place", 
       middle: "Middle Ground"
     };
     toast.success(`🎯 Searching from ${modeLabels[mode]}!`);
@@ -79,17 +125,59 @@ export default function NewHome() {
     trackSearch(searchQuery, { radius, location, categoryType });
   }, [query, selectedCategories, location, radius, search, categoryType]);
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen space-y-8 pb-12 px-2 sm:px-4">
       {/* Top Navigation Bar */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-primary/20">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <span className="text-2xl">📍</span>
-            <span className="font-bold gradient-text hidden sm:inline">PLACES</span>
-          </Link>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="flex items-center gap-2 hover:bg-primary/10">
+                <img src={feliciaCrownImage} alt="Places" className="w-8 h-8" />
+                <span className="font-bold gradient-text hidden sm:inline">PLACES</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56">
+              {(userRole === 'admin' || userRole === 'warlord') && (
+                <>
+                  <DropdownMenuItem onClick={() => navigate('/admin')}>
+                    <Settings className="w-4 h-4 mr-2" />
+                    Admin Panel
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                </>
+              )}
+              <DropdownMenuItem onClick={handleSaveProfile}>
+                <Save className="w-4 h-4 mr-2" />
+                Save Profile
+              </DropdownMenuItem>
+              {userRole && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout}>
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Logout
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           <div className="flex items-center gap-4">
+            <Link to="/teefeeme">
+              <Button variant="outline" size="sm" className="gap-2">
+                <Palette className="w-4 h-4" />
+                <span className="hidden sm:inline">Cartoon Gen</span>
+              </Button>
+            </Link>
             <DarkModeToggle />
           </div>
         </div>
@@ -108,25 +196,36 @@ export default function NewHome() {
             <div className="inline-block animate-scale-in">
               <Badge className="px-8 py-3 text-lg bg-gradient-to-r from-pink-500 via-purple-500 to-rose-500 border-0 text-white shadow-glow animate-pulse font-bold">
                 <Crown className="w-6 h-6 mr-2 animate-bounce" />
-                ✨ PLACES BY TLC ✨
+                ✨ FELICIA'S ROYAL DATE FINDER ✨
               </Badge>
             </div>
             
             <h1 className="text-4xl sm:text-6xl md:text-7xl font-black gradient-text drop-shadow-2xl animate-fade-in leading-tight">
-              Discover Perfect Date Spots 💝
+              Queen Felicia's Perfect Date Spots 👑
             </h1>
             
             <p className="text-lg sm:text-xl font-bold bg-gradient-to-r from-rose-400 via-purple-400 to-pink-400 bg-clip-text text-transparent max-w-2xl mx-auto animate-fade-in drop-shadow-lg" style={{ animationDelay: '0.2s' }}>
-              ✨ Your AI-Powered Guide to Unforgettable Moments ✨
+              ✨ Your Royal AI-Powered Guide to Unforgettable Moments in OKC ✨
             </p>
+
+            {!user && (
+              <div className="flex gap-4 justify-center animate-fade-in" style={{ animationDelay: '0.4s' }}>
+                <Link to="#auth">
+                  <Button size="lg" className="h-16 px-10 text-lg gradient-primary shadow-2xl hover:shadow-glow font-bold hover:scale-110 transition-all duration-300">
+                    Get Started Free
+                    <Sparkles className="w-6 h-6 ml-2 animate-pulse" />
+                  </Button>
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
       {/* Main Content Tabs */}
-      <Tabs defaultValue="discover" className="w-full animate-fade-in" style={{ animationDelay: '0.3s' }}>
-        <TabsList className="grid w-full grid-cols-3 h-auto p-1.5 gap-2 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 backdrop-blur-xl border-2 border-primary/30 rounded-2xl shadow-xl">
-          <TabsTrigger
+      <Tabs defaultValue={user ? "discover" : "auth"} className="w-full animate-fade-in" style={{ animationDelay: '0.3s' }}>
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto p-1.5 gap-2 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 backdrop-blur-xl border-2 border-primary/30 rounded-2xl shadow-xl">
+          <TabsTrigger 
             value="discover" 
             className="data-[state=active]:gradient-primary data-[state=active]:text-white data-[state=active]:shadow-glow h-14 rounded-xl font-semibold transition-all duration-300 hover:scale-105"
           >
@@ -270,6 +369,19 @@ export default function NewHome() {
               </Card>
             </Link>
 
+            <Link to="/teefeeme-cartoonifier">
+              <Card className="hover-lift cursor-pointer group h-full border-2 border-primary/20">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 group-hover:text-primary text-2xl">
+                    🎨 Cartoon Generator
+                  </CardTitle>
+                  <CardDescription className="text-base">
+                    Transform photos into cute cartoons
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            </Link>
+
             <Link to="/gamification">
               <Card className="hover-lift cursor-pointer group h-full border-2 border-primary/20 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30">
                 <CardHeader>
@@ -353,6 +465,15 @@ export default function NewHome() {
             </div>
           </div>
         </TabsContent>
+
+        {/* Auth Tab */}
+        {!user && (
+          <TabsContent value="auth" id="auth">
+            <div className="max-w-2xl mx-auto">
+              <AuthPanel />
+            </div>
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );

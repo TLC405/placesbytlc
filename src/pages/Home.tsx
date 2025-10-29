@@ -40,13 +40,19 @@ export default function Home() {
           <div className="h-3 bg-gradient-to-r from-primary via-accent to-primary animate-gradient bg-[length:200%_100%]" />
           <CardHeader className="pb-4 px-4 sm:px-6">
             <CardTitle className="text-2xl sm:text-4xl md:text-6xl font-black gradient-text text-center tracking-tight">
-              Places by TLC
+              Welcome to Places
             </CardTitle>
             <CardDescription className="text-base sm:text-lg md:text-xl leading-relaxed text-center max-w-2xl mx-auto pt-2">
-              Your AI-powered companion for discovering perfect date spots and relationship tools.
+              Your AI-powered love companion for discovering perfect date spots, romance insights, and relationship tools.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 sm:space-y-6 px-4 sm:px-6 md:px-12 pb-6 sm:pb-8">
+            <Link to="/teefeeme">
+              <Button size="lg" className="w-full gap-2 sm:gap-3 h-14 sm:h-16 md:h-20 text-base sm:text-lg md:text-xl font-bold shadow-glow hover:shadow-romantic transition-all hover:scale-105 group">
+                <Palette className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 group-hover:scale-110 transition-transform" />
+                Try Cartoon Generator
+              </Button>
+            </Link>
             <div className="text-center text-sm sm:text-base text-muted-foreground font-medium">
               ✨ AI-Powered • 🗺️ Smart Discovery • 💝 Made with Love
             </div>
@@ -105,6 +111,20 @@ export default function Home() {
                   </CardHeader>
                 </Card>
               </Link>
+
+              {/* Cartoon Generator */}
+              <Link to="/teefeeme-cartoonifier">
+                <Card className="hover-lift shadow-soft border-primary/20 h-full cursor-pointer group">
+                  <CardHeader>
+                    <CardTitle className="text-2xl flex items-center gap-2 group-hover:text-primary transition-colors">
+                      🎨 Cartoon Generator
+                    </CardTitle>
+                    <CardDescription className="text-base leading-relaxed pt-2">
+                      Transform your photos into adorable cartoons
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+              </Link>
             </div>
 
           </TabsContent>
@@ -123,6 +143,12 @@ export default function Home() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                  <Link to="/teefeeme">
+                    <Button className="w-full" size="lg">
+                      <Palette className="w-5 h-5 mr-2" />
+                      Try Cartoon Generator
+                    </Button>
+                  </Link>
                   <Button 
                     variant="outline" 
                     className="w-full"

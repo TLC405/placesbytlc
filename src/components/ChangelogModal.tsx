@@ -19,11 +19,11 @@ const versions = [
     type: "feature",
     icon: Sparkles,
     changes: [
-      "✨ NEW: Places by TLC - AI-Powered Date Discovery!",
+      "✨ NEW: Queen Felicia's Royal Crown - AI Photo to Cartoon Generator!",
       "🎨 Transform your photos into stunning cartoon art fit for royalty",
       "👑 Choose from 6 legendary cartoon styles (Simpsons, Flintstones, Trump, Elon, Family Guy, Ren & Stimpy)",
       "📸 Upload or take photos directly from your device",
-      "💫 Beautiful dynamic gradient animations"
+      "💫 Beautiful dynamic gradient animations blessed by Queen Felicia herself"
     ]
   },
   {
@@ -44,9 +44,9 @@ const versions = [
     type: "feature",
     icon: Heart,
     changes: [
-      "💝 Beautiful loading screen with personalized message",
+      "💝 Beautiful loading screen with Queen Felicia's personalized message",
       "🔐 Secure API key management system for royal access",
-      "📍 Location preset system including TLC HQ",
+      "📍 Location preset system including Queen Felicia's Palace",
       "✨ Enhanced place card design with royal favorites"
     ]
   },
@@ -204,7 +204,7 @@ export const ChangelogModal = ({ open, onOpenChange }: ChangelogModalProps) => {
             <div>
               <DialogTitle className="text-2xl">What's New</DialogTitle>
               <DialogDescription>
-                Feature Updates & Improvements 💕
+                Updates to make Queen Felicia smile more 💕👑
               </DialogDescription>
               <p className="text-sm text-muted-foreground/80 mt-1">
                 Every feature here was built with love, just for you ✨
@@ -217,7 +217,7 @@ export const ChangelogModal = ({ open, onOpenChange }: ChangelogModalProps) => {
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="implemented" className="gap-2">
               <Sparkles className="w-4 h-4 animate-pulse" />
-              ✨ Already Implemented ({implementedUpdates.length + versions.length})
+              👑 Made Queen Felicia Smile Already 😊👑 ({implementedUpdates.length + versions.length})
             </TabsTrigger>
             <TabsTrigger value="coming-up" className="gap-2">
               <Rocket className="w-4 h-4" />
@@ -245,7 +245,7 @@ export const ChangelogModal = ({ open, onOpenChange }: ChangelogModalProps) => {
                 ) : (
                   <div className="text-center py-12 text-muted-foreground">
                     <Rocket className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                    <p className="text-lg font-medium">Planning more amazing features 💭✨</p>
+                    <p className="text-lg font-medium">Planning more magical moments for Queen Felicia 💭✨👑</p>
                     <p className="text-sm">Every day is a new opportunity to make you smile, Your Majesty! 💝</p>
                   </div>
                 )}

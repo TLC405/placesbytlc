@@ -431,36 +431,31 @@ const TeeFeeMeCartoonifier = () => {
         {showResult && cartoonUrl && (
           <div className="space-y-8 animate-fade-in">
             <div className="text-center">
-              <h2 className="text-5xl font-black mb-3 gradient-text">
-                You've Been TeeFeed! 🎨
+              <h2 className="text-5xl font-black mb-3">
+                You've Been TeeFeed!
               </h2>
               <p className="text-lg text-muted-foreground">Transformation complete</p>
             </div>
 
-            <Card className="p-6 border-2 border-primary/30 shadow-2xl">
+            <Card className="p-6">
               <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-3">
-                  <h3 className="text-xl font-bold text-center">Before</h3>
-                  <div className="relative group">
-                    <img
-                      src={previewUrl}
-                      alt="Original"
-                      className="w-full h-auto rounded-lg border-2 border-border/50"
-                    />
-                  </div>
+                <div>
+                  <h3 className="text-xl font-bold mb-4 text-center">Before</h3>
+                  <img
+                    src={previewUrl}
+                    alt="Original"
+                    className="w-full h-auto rounded-lg border-2 border-border"
+                  />
                 </div>
-                <div className="space-y-3">
-                  <h3 className="text-xl font-bold text-center gradient-text">
+                <div>
+                  <h3 className="text-xl font-bold mb-4 text-center">
                     After - {styles.find(s => s.id === selectedStyle)?.name}
                   </h3>
-                  <div className="relative group">
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-accent/20 to-primary/20 rounded-lg blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
-                    <img
-                      src={cartoonUrl}
-                      alt="Cartoon"
-                      className="relative w-full h-auto rounded-lg border-4 border-primary/60 shadow-2xl hover:scale-[1.02] transition-all duration-300"
-                    />
-                  </div>
+                  <img
+                    src={cartoonUrl}
+                    alt="Cartoon"
+                    className="w-full h-auto rounded-lg border-2 border-primary"
+                  />
                 </div>
               </div>
 
@@ -468,26 +463,16 @@ const TeeFeeMeCartoonifier = () => {
                 <Button
                   size="lg"
                   onClick={handleDownload}
-                  className="text-lg py-6 gap-2 bg-gradient-to-r from-primary via-accent to-primary hover:opacity-90 shadow-2xl hover:shadow-[0_0_40px_hsl(var(--primary)/0.6)] transition-all duration-300 hover:scale-105"
+                  className="text-lg py-6"
                 >
-                  <Download className="w-5 h-5" />
-                  Download Your Cartoon
+                  <Download className="mr-2" />
+                  Download
                 </Button>
-                <Button 
-                  variant="outline" 
-                  size="lg" 
-                  onClick={handleReset}
-                  className="border-2 border-primary/40 hover:border-primary/60 hover:bg-primary/10 transition-all duration-300"
-                >
+                <Button variant="outline" size="lg" onClick={handleReset}>
                   <Sparkles className="mr-2" />
                   Try Another Style
                 </Button>
-                <Button 
-                  variant="secondary" 
-                  size="lg" 
-                  onClick={handleNewPhoto}
-                  className="hover:bg-accent/20 transition-all duration-300"
-                >
+                <Button variant="secondary" size="lg" onClick={handleNewPhoto}>
                   <ImageIcon className="mr-2" />
                   New Photo
                 </Button>

@@ -3,14 +3,14 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Heart, Link2, Sparkles, Upload, Image as ImageIcon } from "lucide-react";
-import { useUserRole } from "@/hooks/useUserRole";
+import { canModify } from "@/utils/rbac";
 import { toast } from "sonner";
 
 export default function ComingSoon() {
   const [customImage, setCustomImage] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
-  const { role } = useUserRole();
-  const isAdmin = role === 'admin' || role === 'moderator';
+  const role = localStorage.getItem('pin_role') as any;
+  const isAdmin = canModify(role, 'admin');
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

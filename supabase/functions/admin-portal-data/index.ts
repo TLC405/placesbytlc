@@ -31,16 +31,16 @@ serve(async (req) => {
       });
     }
 
-    // Check if user has admin or moderator role
+    // Check if user has admin role
     const { data: roles } = await supabase
       .from('user_roles')
       .select('role')
       .eq('user_id', user.id);
     
-    const hasAccess = roles?.some(r => r.role === 'admin' || r.role === 'moderator');
+    const isAdmin = roles?.some(r => r.role === 'admin');
     
-    if (!hasAccess) {
-      return new Response(JSON.stringify({ error: 'Forbidden: Admin or moderator access required' }), {
+    if (!isAdmin) {
+      return new Response(JSON.stringify({ error: 'Forbidden: Admin access required' }), {
         status: 403,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });

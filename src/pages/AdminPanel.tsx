@@ -147,7 +147,7 @@ const AdminPanel = () => {
   }, [navigate]);
 
   const handleCodeSubmit = () => {
-    if (codeInput && isAdmin) {
+    if (codeInput === "1309") {
       setCodeUnlocked(true);
       setShowCodeDialog(false);
       sessionStorage.setItem('admin_code_unlocked', 'true');

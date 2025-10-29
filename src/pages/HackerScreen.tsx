@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Terminal, Wifi, Shield, Lock, Eye, Database, Zap } from "lucide-react";
+import { getStoredRole } from "@/utils/rbac";
 
 export default function HackerScreen() {
   const navigate = useNavigate();
@@ -53,6 +54,13 @@ export default function HackerScreen() {
   }, []);
 
   useEffect(() => {
+    const role = getStoredRole();
+    if (!role) {
+      console.warn('No role found in HackerScreen, redirecting to CodeGate');
+      navigate('/');
+      return;
+    }
+    
     // Auto-advance lines
     if (currentLine < hackerLines.length) {
       const timer = setTimeout(() => {
