@@ -21,8 +21,7 @@ import {
   FileCode,
   Rocket,
   Shield,
-  Zap,
-  Heart
+  Zap
 } from "lucide-react";
 import { CommandStation } from "@/components/admin/CommandStation";
 import { UserAnalyticsDashboard } from "@/components/admin/UserAnalyticsDashboard";
@@ -33,11 +32,6 @@ import { AIPromptInterface } from "@/components/admin/AIPromptInterface";
 import { WiFiAnalyzer } from "@/components/admin/WiFiAnalyzer";
 import { AppReadinessChecklist } from "@/components/admin/AppReadinessChecklist";
 import { RecentUpdates } from "@/components/RecentUpdates";
-import CupidSettingsPanel from "@/components/admin/CupidSettingsPanel";
-import ActivityLogViewer from "@/components/admin/ActivityLogViewer";
-import ComprehensiveExportSystem from "@/components/admin/ComprehensiveExportSystem";
-import { UpdateLogger } from "@/components/admin/UpdateLogger";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface UserAnalytics {
   id: string;
@@ -106,20 +100,27 @@ const AdminPanel = () => {
 
   // Check admin access on mount
   useEffect(() => {
-    const checkAdminAccess = () => {
+    const checkAdminAccess = async () => {
       try {
-        const role = localStorage.getItem('pin_role');
-        const expiry = parseInt(localStorage.getItem('pin_expiry') || '0');
+        const { data: { user: currentUser } } = await supabase.auth.getUser();
         
-        // Check if PIN token expired
-        if (!role || Date.now() > expiry) {
+        if (!currentUser) {
           toast.error("Please log in to access admin panel");
           navigate('/');
           return;
         }
+
+        setUser(currentUser);
+
+        // Check if user has admin role
+        const { data: roles } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', currentUser.id);
         
-        // Check if user has admin or warlord role
-        if (role !== 'admin' && role !== 'warlord') {
+        const hasAdminRole = roles?.some(r => r.role === 'admin');
+        
+        if (!hasAdminRole) {
           toast.error("Admin access required");
           navigate('/');
           return;
@@ -147,7 +148,7 @@ const AdminPanel = () => {
   }, [navigate]);
 
   const handleCodeSubmit = () => {
-    if (codeInput && isAdmin) {
+    if (codeInput === "1309") {
       setCodeUnlocked(true);
       setShowCodeDialog(false);
       sessionStorage.setItem('admin_code_unlocked', 'true');
@@ -332,7 +333,7 @@ const AdminPanel = () => {
               <div>
                 <h1 className="text-2xl font-black text-primary flex items-center gap-2">
                   <Sparkles className="w-5 h-5" />
-                  ADMIN COMMAND CENTER V2
+                  ADMIN COMMAND CENTER
                 </h1>
               </div>
             </div>
@@ -344,125 +345,134 @@ const AdminPanel = () => {
         </div>
       </div>
 
-      {/* Main Content - Tabbed Interface */}
+      {/* Main Content - No Scroll Grid */}
       <div className="flex-1 overflow-hidden">
-        <Tabs defaultValue="overview" className="h-full flex flex-col">
-          <div className="border-b bg-card/30">
-            <div className="max-w-7xl mx-auto px-6">
-              <TabsList className="bg-transparent">
-                <TabsTrigger value="overview">
-                  <BarChart3 className="w-4 h-4 mr-2" />
-                  Overview
-                </TabsTrigger>
-                <TabsTrigger value="cupid">
-                  <Heart className="w-4 h-4 mr-2" />
-                  Cupid Settings
-                </TabsTrigger>
-                <TabsTrigger value="logs">
-                  <Activity className="w-4 h-4 mr-2" />
-                  Activity Logs
-                </TabsTrigger>
-                <TabsTrigger value="tools">
-                  <Code className="w-4 h-4 mr-2" />
-                  Dev Tools
-                </TabsTrigger>
-              </TabsList>
+        <div className="h-full max-w-7xl mx-auto px-6 py-4">
+          <div className="grid grid-cols-3 gap-4 h-full">
+            
+            {/* Column 1: Analytics */}
+            <Card className="bg-card border-2 overflow-hidden flex flex-col">
+              <CardHeader className="bg-muted/50 border-b flex-shrink-0 py-3">
+                <CardTitle className="flex items-center gap-2 text-primary text-lg">
+                  <BarChart3 className="w-5 h-5" />
+                  Analytics
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-4 overflow-auto flex-1">
+                <UserAnalyticsDashboard />
+              </CardContent>
+            </Card>
+
+            {/* Column 2: System & Network */}
+            <div className="flex flex-col gap-4">
+              <Card className="bg-card border-2 flex-1 overflow-hidden flex flex-col">
+                <CardHeader className="bg-muted/50 border-b flex-shrink-0 py-3">
+                  <CardTitle className="flex items-center gap-2 text-primary text-lg">
+                    <Terminal className="w-4 h-4" />
+                    Command Station
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-3 overflow-auto flex-1">
+                  <CommandStation />
+                </CardContent>
+              </Card>
+
+              <Card className="bg-card border-2 flex-1 overflow-hidden flex flex-col">
+                <CardHeader className="bg-muted/50 border-b flex-shrink-0 py-3">
+                  <CardTitle className="flex items-center gap-2 text-primary text-lg">
+                    <Wifi className="w-4 h-4" />
+                    Network
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-3 overflow-auto flex-1">
+                  <WiFiAnalyzer />
+                </CardContent>
+              </Card>
             </div>
-          </div>
 
-          {/* Tab Content */}
-          <div className="flex-1 overflow-auto">
-            <div className="max-w-7xl mx-auto px-6 py-4">
-              
-              {/* Overview Tab */}
-              <TabsContent value="overview" className="mt-0 space-y-4">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                  {/* Analytics */}
-                  <Card className="lg:col-span-2">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <BarChart3 className="w-5 h-5" />
-                        User Analytics
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <UserAnalyticsDashboard />
-                    </CardContent>
-                  </Card>
-
-                  {/* Network */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Wifi className="w-5 h-5" />
-                        Network Status
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <WiFiAnalyzer />
-                    </CardContent>
-                  </Card>
+            {/* Column 3: Developer Tools */}
+            <Card className="bg-card border-2 overflow-hidden flex flex-col">
+              <CardHeader className="bg-muted/50 border-b flex-shrink-0 py-3">
+                <CardTitle className="flex items-center gap-2 text-primary text-lg">
+                  <Code className="w-5 h-5" />
+                  Developer Tools
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-4 overflow-auto flex-1 space-y-4">
+                <div className="grid grid-cols-2 gap-2">
+                  <Button 
+                    onClick={handleDownloadSource}
+                    className="h-16 flex flex-col items-center justify-center gap-1 text-xs"
+                    variant="outline"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span>Download</span>
+                  </Button>
+                  
+                  <Button 
+                    onClick={() => trackAdminAction('view_code_export', 'developer')}
+                    className="h-16 flex flex-col items-center justify-center gap-1 text-xs"
+                    variant="outline"
+                  >
+                    <FileCode className="w-4 h-4" />
+                    <span>Export</span>
+                  </Button>
+                  
+                  <Button 
+                    onClick={() => trackAdminAction('view_ai_tools', 'developer')}
+                    className="h-16 flex flex-col items-center justify-center gap-1 text-xs"
+                    variant="outline"
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    <span>AI Tools</span>
+                  </Button>
+                  
+                  <Button 
+                    onClick={() => trackAdminAction('view_updates', 'developer')}
+                    className="h-16 flex flex-col items-center justify-center gap-1 text-xs"
+                    variant="outline"
+                  >
+                    <Zap className="w-4 h-4" />
+                    <span>Updates</span>
+                  </Button>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  {/* Command Station */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Terminal className="w-5 h-5" />
-                        Command Station
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <CommandStation />
-                    </CardContent>
-                  </Card>
+                <div className="space-y-3">
+                  <Collapsible>
+                    <CollapsibleTrigger className="flex items-center gap-2 font-semibold text-sm w-full hover:text-primary">
+                      <MessageSquare className="w-4 h-4" />
+                      SMS Notifications
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="mt-2">
+                      <SMSNotificationPanel />
+                    </CollapsibleContent>
+                  </Collapsible>
 
-                  {/* Recent Updates */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Zap className="w-5 h-5" />
-                        Recent Updates
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
+                  <Collapsible>
+                    <CollapsibleTrigger className="flex items-center gap-2 font-semibold text-sm w-full hover:text-primary">
+                      <Rocket className="w-4 h-4" />
+                      App Readiness
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="mt-2">
+                      <AppReadinessChecklist />
+                    </CollapsibleContent>
+                  </Collapsible>
+
+                  <Collapsible defaultOpen>
+                    <CollapsibleTrigger className="flex items-center gap-2 font-semibold text-sm w-full hover:text-primary">
+                      <Activity className="w-4 h-4" />
+                      Recent Updates
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="mt-2">
                       <RecentUpdates />
-                    </CardContent>
-                  </Card>
+                    </CollapsibleContent>
+                  </Collapsible>
                 </div>
-              </TabsContent>
+              </CardContent>
+            </Card>
 
-              {/* Cupid Settings Tab */}
-              <TabsContent value="cupid" className="mt-0">
-                <CupidSettingsPanel />
-              </TabsContent>
-
-              {/* Activity Logs Tab */}
-              <TabsContent value="logs" className="mt-0">
-                <ActivityLogViewer />
-              </TabsContent>
-
-              {/* Dev Tools Tab */}
-              <TabsContent value="tools" className="mt-0 space-y-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>📋 Update Changelog Manager</CardTitle>
-                    <CardDescription>Log new updates for the changelog</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <UpdateLogger />
-                  </CardContent>
-                </Card>
-                <ComprehensiveExportSystem />
-                <AIPromptInterface />
-                <SMSNotificationPanel />
-                <AppReadinessChecklist />
-              </TabsContent>
-
-            </div>
           </div>
-        </Tabs>
+        </div>
       </div>
 
       {/* User Profile Modal */}

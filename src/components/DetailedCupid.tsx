@@ -1,59 +1,52 @@
 import { useEffect, useState, useRef } from "react";
 import cupidImageOriginal from "@/assets/cupid-icon-original.png";
+import { removeBackground, loadImage } from "@/lib/backgroundRemoval";
 import { supabase } from "@/integrations/supabase/client";
 
 export const DetailedCupid = () => {
   const [isVisible, setIsVisible] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false); // No processing needed
+  const [cupidImage, setCupidImage] = useState<string>(cupidImageOriginal);
+  const [isProcessing, setIsProcessing] = useState(true);
   const [isEnabled, setIsEnabled] = useState(true);
-  const [isPopped, setIsPopped] = useState(false); // NEW: Track if cupid was popped
   const [position, setPosition] = useState({ top: '1.5rem', right: '1.5rem', left: 'auto', bottom: 'auto' });
   const [isRunning, setIsRunning] = useState(false);
   const [isPeeking, setIsPeeking] = useState(false);
   const [isDodging, setIsDodging] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [settings, setSettings] = useState({
-    speed: 5000,
-    dodgeDistance: 150,
-    size: 80,
-    hideTime: 8000,
-    floatAnimation: true,
-    evasiveness: 0.7,
-    soundEnabled: true,
-    actionFrequency: 5000,
-    transparency: 1,
-    shadowIntensity: 0.3
-  });
   const cupidRef = useRef<HTMLImageElement>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
 
-  // Check if Cupid is enabled and load settings from database
+  // Process image to remove background
   useEffect(() => {
-    const loadSettings = async () => {
+    const processImage = async () => {
+      try {
+        const img = await loadImage(cupidImageOriginal);
+        const processedImage = await removeBackground(img);
+        setCupidImage(processedImage);
+        setIsProcessing(false);
+      } catch (error) {
+        console.error('Failed to process cupid image:', error);
+        // Fallback to original if processing fails
+        setIsProcessing(false);
+      }
+    };
+    processImage();
+  }, []);
+
+  // Check if Cupid is enabled from database
+  useEffect(() => {
+    const checkEnabled = async () => {
       const { data } = await supabase
         .from('app_settings')
         .select('setting_value')
         .eq('setting_key', 'cupid_visible')
         .single();
       
-      const settingValue = data?.setting_value as any;
+      const settingValue = data?.setting_value as { enabled?: boolean } | null;
       setIsEnabled(settingValue?.enabled ?? true);
-      
-      // Load advanced settings
-      if (settingValue?.settings) {
-        setSettings(prev => ({ ...prev, ...settingValue.settings }));
-      }
     };
     
-    loadSettings();
-    
-    // Check if cupid was permanently popped
-    const popped = localStorage.getItem('cupid_popped');
-    if (popped === 'true') {
-      setIsPopped(true);
-      setIsVisible(true);
-      setPosition({ top: '1.5rem', right: '1.5rem', left: 'auto', bottom: 'auto' });
-    }
+    checkEnabled();
     
     // Subscribe to changes
     const channel = supabase
@@ -61,11 +54,8 @@ export const DetailedCupid = () => {
       .on('postgres_changes', 
         { event: '*', schema: 'public', table: 'app_settings', filter: 'setting_key=eq.cupid_visible' },
         (payload) => {
-          const newValue = (payload.new as any)?.setting_value;
+          const newValue = (payload.new as any)?.setting_value as { enabled?: boolean } | null;
           setIsEnabled(newValue?.enabled ?? true);
-          if (newValue?.settings) {
-            setSettings(prev => ({ ...prev, ...newValue.settings }));
-          }
         }
       )
       .subscribe();
@@ -73,9 +63,9 @@ export const DetailedCupid = () => {
     return () => { supabase.removeChannel(channel); };
   }, []);
 
-  // Show cupid after 3 seconds (unless popped)
+  // Show cupid after processing and 3 seconds
   useEffect(() => {
-    if (!isEnabled || isPopped) return;
+    if (isProcessing || !isEnabled) return;
     
     const checkHidden = localStorage.getItem('cupid_hidden_until');
     if (checkHidden) {
@@ -94,7 +84,7 @@ export const DetailedCupid = () => {
     } else {
       setTimeout(() => setIsVisible(true), 3000);
     }
-  }, [isEnabled, isPopped]);
+  }, [isProcessing, isEnabled]);
 
   // Initialize Audio Context
   useEffect(() => {
@@ -106,7 +96,7 @@ export const DetailedCupid = () => {
 
   // Play fun water drop sound effect
   const playPopSound = () => {
-    if (!audioContextRef.current || !settings.soundEnabled) return;
+    if (!audioContextRef.current) return;
     
     const ctx = audioContextRef.current;
     const oscillator = ctx.createOscillator();
@@ -141,7 +131,7 @@ export const DetailedCupid = () => {
 
   // Evasive behavior - dodge when mouse gets close
   useEffect(() => {
-    if (!isVisible || !cupidRef.current || isDodging || isPopped) return;
+    if (!isVisible || !cupidRef.current || isDodging) return;
 
     const checkDistance = () => {
       const rect = cupidRef.current?.getBoundingClientRect();
@@ -155,8 +145,8 @@ export const DetailedCupid = () => {
         Math.pow(mousePos.y - cupidCenterY, 2)
       );
 
-      // If mouse within threshold, dodge based on evasiveness!
-      if (distance < settings.dodgeDistance && Math.random() > (1 - settings.evasiveness)) {
+      // If mouse within 150px, dodge!
+      if (distance < 150 && Math.random() > 0.3) {
         setIsDodging(true);
         
         // Quick dodge to random position
@@ -182,7 +172,7 @@ export const DetailedCupid = () => {
 
   // Make Cupid do various actions: hop, run, peek
   useEffect(() => {
-    if (!isVisible || isPopped) return;
+    if (!isVisible) return;
 
     const positions = [
       { top: '1.5rem', right: '1.5rem', left: 'auto', bottom: 'auto' },
@@ -242,20 +232,17 @@ export const DetailedCupid = () => {
       }
     };
 
-    const actionInterval = setInterval(performAction, settings.actionFrequency);
+    const actionInterval = setInterval(performAction, 5000);
     return () => clearInterval(actionInterval);
-  }, [isVisible, isPopped, settings.actionFrequency]);
+  }, [isVisible]);
 
   const handleTap = (e: React.MouseEvent) => {
     e.preventDefault();
     
-    // If already popped, do nothing
-    if (isPopped) return;
-    
     // Only catch if not dodging or running
     if (isDodging || isRunning) {
       // Play miss sound
-      if (audioContextRef.current && settings.soundEnabled) {
+      if (audioContextRef.current) {
         const ctx = audioContextRef.current;
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
@@ -270,23 +257,17 @@ export const DetailedCupid = () => {
       return;
     }
     
-    // Success! Play pop sound and transform to icon
+    // Success! Play pop sound
     playPopSound();
     
-    // Permanently pop cupid - transform to small static icon
-    setIsPopped(true);
-    localStorage.setItem('cupid_popped', 'true');
+    const hideUntil = Date.now() + 8000;
+    localStorage.setItem('cupid_hidden_until', hideUntil.toString());
+    setIsVisible(false);
     
-    // Move to top-right corner and shrink
-    setPosition({ top: '1.5rem', right: '1.5rem', left: 'auto', bottom: 'auto' });
-    
-    // Reset after configured time (or never if hideTime is 0)
-    if (settings.hideTime > 0) {
-      setTimeout(() => {
-        localStorage.removeItem('cupid_popped');
-        setIsPopped(false);
-      }, settings.hideTime);
-    }
+    setTimeout(() => {
+      localStorage.removeItem('cupid_hidden_until');
+      setIsVisible(true);
+    }, 8000);
   };
 
   if (!isVisible || !isEnabled) return null;
@@ -302,31 +283,19 @@ export const DetailedCupid = () => {
         
         .cupid-float {
           position: fixed;
-          width: ${settings.size}px;
+          width: 80px;
           height: auto;
           user-select: none;
           -webkit-backface-visibility: hidden;
           backface-visibility: hidden;
           will-change: transform, filter, top, right, left, bottom;
-          animation: ${settings.floatAnimation ? 'tlc-float 3.2s ease-in-out infinite' : 'none'};
-          filter: drop-shadow(0 8px 18px rgba(255, 106, 162, ${settings.shadowIntensity}));
+          animation: tlc-float 3.2s ease-in-out infinite;
+          filter: drop-shadow(0 8px 18px rgba(255, 106, 162, 0.3));
           cursor: pointer;
           z-index: 50;
           image-rendering: auto;
           -webkit-user-drag: none;
           transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
-          opacity: ${settings.transparency};
-          mix-blend-mode: normal;
-          background: transparent;
-        }
-        
-        .cupid-float.popped {
-          width: 40px !important;
-          animation: none !important;
-          filter: grayscale(0.3) drop-shadow(0 2px 8px rgba(255, 106, 162, 0.2));
-          transform: rotate(-90deg) scale(0.8);
-          cursor: default;
-          opacity: 0.7;
         }
         
         .cupid-float.running {
@@ -380,19 +349,14 @@ export const DetailedCupid = () => {
       
       <img
         ref={cupidRef}
-        src={cupidImageOriginal}
+        src={cupidImage}
         alt="Cupid"
-        className={`cupid-float ${isPopped ? 'popped' : ''} ${isRunning ? 'running' : ''} ${isPeeking ? 'peeking' : ''} ${isDodging ? 'dodging' : ''}`}
-        style={{
-          ...position,
-          filter: 'none',
-          background: 'transparent',
-          imageRendering: 'crisp-edges'
-        }}
+        className={`cupid-float ${isRunning ? 'running' : ''} ${isPeeking ? 'peeking' : ''} ${isDodging ? 'dodging' : ''}`}
+        style={position}
         onClick={handleTap}
         onMouseEnter={() => {
-          // Extra evasive on hover (unless popped)
-          if (Math.random() > 0.5 && !isDodging && !isPopped) {
+          // Extra evasive on hover
+          if (Math.random() > 0.5 && !isDodging) {
             const quickDodge = new MouseEvent('mousemove', {
               clientX: mousePos.x + 200,
               clientY: mousePos.y + 200
