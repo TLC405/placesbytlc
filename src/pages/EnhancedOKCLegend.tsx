@@ -56,7 +56,13 @@ export default function EnhancedOKCLegend() {
   useEffect(() => {
     if (!codeUnlocked || !mapContainer.current) return;
 
-    mapboxgl.accessToken = "pk.eyJ1IjoibG92YWJsZSIsImEiOiJjbTRhbWd3cGQwZHc2Mmtzd2YycWkzbmJqIn0.cHg1IiVqb09MshqwG8VlGQ";
+    // Mapbox token must be provided by user - check localStorage
+    const storedToken = localStorage.getItem('mapbox_access_token');
+    if (!storedToken) {
+      toast.error("Mapbox token required. Please add your token in localStorage: mapbox_access_token");
+      return;
+    }
+    mapboxgl.accessToken = storedToken;
     
     map.current = new mapboxgl.Map({
       container: mapContainer.current,

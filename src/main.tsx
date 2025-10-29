@@ -1,7 +1,6 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
-import { apiKeyManager } from "./lib/apiKeyManager";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 
 // Clean up service workers in development to prevent stale cache issues
@@ -15,8 +14,7 @@ if (import.meta.env.DEV || window.location.search.includes('no-sw=1')) {
   });
 }
 
-// Initialize Google Maps API key
-apiKeyManager.initializeAPIKey("AIzaSyAmZ989l5QauVfNqpKkBW-kp3S6byTbBd0");
+// Google Maps API key should be provided by users via APIKeyDialog
 
 createRoot(document.getElementById("root")!).render(
   <ErrorBoundary>
