@@ -2,26 +2,27 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { 
   Users, 
   BarChart3, 
   Terminal, 
+  Settings, 
   Download,
   Code,
+  ChevronLeft,
   Activity,
+  Eye,
   Sparkles,
   MessageSquare,
   Wifi,
   FileCode,
-  Rocket,
-  Shield,
-  Zap
+  Rocket
 } from "lucide-react";
 import { CommandStation } from "@/components/admin/CommandStation";
 import { UserAnalyticsDashboard } from "@/components/admin/UserAnalyticsDashboard";
@@ -31,6 +32,7 @@ import { SMSNotificationPanel } from "@/components/admin/SMSNotificationPanel";
 import { AIPromptInterface } from "@/components/admin/AIPromptInterface";
 import { WiFiAnalyzer } from "@/components/admin/WiFiAnalyzer";
 import { AppReadinessChecklist } from "@/components/admin/AppReadinessChecklist";
+import { FileUploadManager } from "@/components/FileUploadManager";
 import { RecentUpdates } from "@/components/RecentUpdates";
 
 interface UserAnalytics {
@@ -52,6 +54,7 @@ const AdminPanel = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [users, setUsers] = useState<UserAnalytics[]>([]);
+  const [activeTab, setActiveTab] = useState('overview');
   const [allActivities, setAllActivities] = useState<any[]>([]);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
@@ -264,48 +267,291 @@ const AdminPanel = () => {
         window.open(data.download_url, '_blank');
       }
       
-      toast.success("📦 Source code package downloaded!");
-      trackAdminAction('download_source', 'developer');
+      toast.success("📦 Source code package downloaded! Check your downloads folder for README.md and the ZIP file.");
     } catch (error: any) {
       console.error("Download error:", error);
       toast.error(error.message || "Failed to download source");
     }
   };
 
+  const handleDownloadAIPrompt = async () => {
+    try {
+      const promptText = `# INPERSON.TLC - Complete App Blueprint for AI Reconstruction
+
+## App Overview
+**Name**: INPERSON.TLC — Your Personalized Love Journey
+**Purpose**: Oklahoma City date spot discovery platform with AI-powered recommendations
+**Stack**: React 18 + Vite + TypeScript + Tailwind CSS + Supabase (Lovable Cloud)
+**Theme**: Romantic, playful, feminine aesthetic with pink/purple gradients
+
+## Core Features
+
+### 1. Authentication System
+- **Code Gate**: Entry requires case-insensitive code "crip" (military/tactical theme)
+- **Admin Code**: "1309" for admin access
+- **User Auth**: Email/password signup and login via Supabase Auth
+- **Tester Code**: "405" grants tester role with extra features
+- Auto-confirm email enabled for faster testing
+
+### 2. Main Tabs
+- **Home**: Place discovery with search, filters, map integration
+- **Saved**: User's favorited places (auth required)
+- **Quizzes**: Love Language & MBTI personality tests
+- **Account**: User profile, theme toggle, logout
+
+### 3. Place Discovery
+- Google Maps integration for location search
+- Filter by: distance, price level ($-$$$), rating, open now
+- Quick chips: Outdoors, Indoors, Rain-safe, Low-energy, First date
+- Real-time search with debouncing
+- Save favorites to Supabase
+- Place details modal with full information
+
+### 4. AI Features (Tester Access)
+- **Cupid AI**: Date planning with 3-stop itineraries
+- **AI Recommendations**: Personalized place suggestions based on user activity
+- **Event Discovery**: Oklahoma City events scraping and caching
+- **Cartoon Editor (TeeFeeMee)**: Upload photos, apply Ren & Stimpy and other cartoon styles
+
+### 5. Couple Mode Features
+- **Pairing System**: Generate unique pairing codes
+- **Shared Data**: Couple preferences and favorites
+- **Period Tracker**: For couples (code "666" to access)
+- **Midpoint Calculator**: Find meetup spots between partners
+
+### 6. Admin Portal (Code: 1309)
+- **Dashboard**: User analytics, session tracking, engagement metrics
+- **Command Station**: Feature management and app settings
+- **User Analytics**: Real-time user activity monitoring
+- **Source Download**: Export entire codebase with README
+- **AI Prompt Download**: This comprehensive blueprint
+- **SMS Debug Panel**: Test messaging features
+- **Updates Management**: Track and publish app updates
+
+### 7. Gamification
+- User engagement tracking
+- Activity logging (page visits, searches, place views)
+- Session duration metrics
+- IP history and location tracking
+
+## Database Schema (Supabase)
+
+### Tables
+1. **profiles**: User info (display_name, avatar_url, email, gender)
+2. **user_roles**: Role assignment (user, tester, admin)
+3. **user_activity_log**: Activity tracking (activity_type, activity_data)
+4. **user_analytics**: Aggregated stats (sessions, time_spent, engagement_score)
+5. **user_sessions**: Session tracking (ip_address, device_info, duration)
+6. **ip_history**: IP tracking (location_data, visit_count)
+7. **user_preferences**: Learned preferences (place types, price levels)
+8. **ai_recommendations**: AI-generated suggestions
+9. **couples**: Pairing data (partner_1_id, partner_2_id, pairing_code)
+10. **shared_data**: Couple shared preferences
+11. **discovered_places**: Cached place data from Google
+12. **okc_events_cache**: Local events database
+13. **app_updates**: Version history and changelog
+14. **custom_themes**: Theme configurations
+15. **app_settings**: Global app settings
+16. **sms_usage**: SMS sending logs
+17. **phone_rate_limits**: Rate limiting for SMS
+
+### Edge Functions
+1. **admin-portal-data**: Fetch analytics for admin panel
+2. **track-activity**: Log user activity
+3. **ai-recommender**: Generate AI recommendations
+4. **discover-date-spots**: Find and cache places
+5. **event-discovery**: Scrape OKC events
+6. **download-source**: Package and download codebase
+7. **period-tracker-setup**: Initialize period tracking
+8. **session-tracker**: Manage user sessions
+9. **teefeeme-cartoonify**: AI image transformation using Lovable AI
+
+## Visual Design
+
+### Color Palette
+- Primary: Pink to purple gradients (hsl values in index.css)
+- Accent: Rose/purple combinations
+- Background: Light/dark mode support
+- Code Gate: Military green (#1a3d1a), tactical orange (#ff6b00)
+
+### Components
+- Floating hearts animation
+- Gradient cards with backdrop blur
+- Animated loading states
+- Toast notifications (Sonner)
+- Responsive mobile-first design
+- Dark mode toggle in header
+
+### Typography
+- Headers: Bold, gradient text
+- Body: Clean sans-serif
+- Code elements: Monospace
+- Icons: Lucide React
+
+## Key User Flows
+
+1. **New User**:
+   - Enter code "crip" → Navigate to homepage → Browse places → Sign up to save favorites
+
+2. **Tester**:
+   - Enter code "crip" → Sign up with code "405" → Access Cupid AI, Cartoon Editor, Event Discovery
+
+3. **Admin**:
+   - Enter code "1309" → Redirected to admin panel → View realtime analytics, download source
+
+4. **Couple**:
+   - Create couple pairing → Share code with partner → Partner enters code → Access shared features
+
+## Environment Variables
+\`\`\`
+VITE_SUPABASE_URL
+VITE_SUPABASE_PUBLISHABLE_KEY
+VITE_SUPABASE_PROJECT_ID
+VITE_GOOGLE_MAPS_KEY
+LOVABLE_API_KEY (auto-provided)
+\`\`\`
+
+## API Integrations
+- **Google Maps**: Places API, Geocoding, Maps embed
+- **Lovable AI**: google/gemini-2.5-flash for recommendations and image generation
+- **Supabase**: Auth, Database, Edge Functions, Realtime
+
+## Security Features
+- Row Level Security (RLS) on all tables
+- User-specific data access policies
+- Admin role verification
+- Code-based feature gating
+- Session-based access control
+- Rate limiting on SMS features
+
+## Performance Optimizations
+- Lazy loading for maps and heavy components
+- Debounced search inputs
+- Optimistic UI updates for favorites
+- Image lazy loading
+- Route-based code splitting
+- Service worker for offline support
+
+## Testing Access Codes
+- App Access: "crip" (case-insensitive)
+- Admin Panel: "1309"
+- Tester Features: "405" (during signup)
+- Period Tracker: "666"
+
+## Deployment
+- Platform: Lovable Cloud (auto-deployment)
+- Build: Vite production build
+- Database: Supabase (managed by Lovable Cloud)
+- CDN: Auto-configured
+- SSL: Auto-enabled
+
+## File Structure
+\`\`\`
+src/
+├── components/
+│   ├── ui/ (shadcn components)
+│   ├── admin/ (admin-specific)
+│   ├── CodeGate.tsx (access control)
+│   ├── AuthPanel.tsx (login/signup)
+│   ├── Header.tsx (navigation)
+│   ├── PlaceCard.tsx (place display)
+│   └── ... (30+ components)
+├── pages/
+│   ├── Home.tsx
+│   ├── AdminPanel.tsx
+│   ├── CoupleMode.tsx
+│   ├── Quizzes.tsx
+│   └── ... (10+ pages)
+├── hooks/
+│   ├── useGeolocation.ts
+│   ├── useGoogleMaps.ts
+│   ├── usePlacesSearch.ts
+│   └── useSessionTracker.ts
+├── lib/
+│   ├── supabase.ts (client)
+│   ├── googleMaps.ts
+│   ├── utils.ts
+│   └── storage.ts
+├── data/
+│   ├── loveLanguageQuiz.ts
+│   └── mbtiQuiz.ts
+├── index.css (design system)
+└── main.tsx
+\`\`\`
+
+## Implementation Notes
+- All colors use HSL semantic tokens from index.css
+- Never use direct color values in components
+- Always use Lovable AI for AI features (don't ask for API keys)
+- Realtime subscriptions for live data updates
+- Mobile-first responsive design
+- Accessibility: ARIA labels, focus states, keyboard navigation
+- Error boundaries catch and display friendly errors
+- Toast notifications for user feedback
+
+## Future Enhancements (Planned)
+- Photo galleries for places
+- Advanced AI recommendations
+- Social sharing features
+- Calendar integration
+- Push notifications
+- More cartoon styles
+- Event RSVP system
+
+---
+This blueprint provides everything needed to reconstruct the INPERSON.TLC app identically using AI tools like Claude, ChatGPT, or Lovable.`;
+
+      const blob = new Blob([promptText], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'INPERSON-TLC-AI-Prompt.txt';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      toast.success("📝 AI Prompt downloaded! Use this to rebuild the app with any AI tool.");
+    } catch (error: any) {
+      console.error("Download error:", error);
+      toast.error(error.message || "Failed to download AI prompt");
+    }
+  };
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground">Loading admin panel...</p>
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent" />
       </div>
     );
   }
 
-  // Code unlock dialog
+  if (!isAdmin) {
+    return null;
+  }
+
   if (!codeUnlocked) {
     return (
-      <Dialog open={showCodeDialog} onOpenChange={setShowCodeDialog}>
-        <DialogContent className="bg-white border-2 border-primary">
+      <Dialog open={showCodeDialog} onOpenChange={() => navigate('/')}>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-primary">
-              <Shield className="w-6 h-6" />
-              Admin Security Check
-            </DialogTitle>
+            <DialogTitle>Admin Access Code Required</DialogTitle>
+            <DialogDescription>
+              Enter the access code to unlock the admin panel
+            </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
-            <p className="text-muted-foreground">Enter admin code to unlock full access</p>
+          <div className="space-y-4 py-4">
             <Input
               type="password"
+              placeholder="Enter code"
               value={codeInput}
               onChange={(e) => setCodeInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleCodeSubmit()}
-              placeholder="Enter code..."
-              className="text-center text-xl tracking-widest"
+              className="text-center text-2xl tracking-widest"
+              maxLength={4}
             />
             <Button onClick={handleCodeSubmit} className="w-full">
-              Unlock Admin Panel
+              Unlock
             </Button>
           </div>
         </DialogContent>
@@ -313,169 +559,270 @@ const AdminPanel = () => {
     );
   }
 
+  // Three main sections only
+  const tabItems = [
+    { id: 'overview', label: 'Overview', icon: Activity },
+    { id: 'management', label: 'Management', icon: Settings },
+    { id: 'developer', label: 'Developer', icon: Code },
+  ];
+
+  const totalUsers = users.length;
+  const activeUsers = users.filter(u => u.last_visit).length;
+  const totalSessions = users.reduce((sum, u) => sum + (u.visit_count || 0), 0);
+
   return (
-    <div className="h-screen overflow-hidden bg-gradient-to-br from-background via-muted/20 to-background flex flex-col">
-      {/* Compact Header */}
-      <div className="flex-shrink-0 border-b bg-card/50 backdrop-blur-sm">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+      {/* Header */}
+      <div className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-primary/10 p-2">
-                <img 
-                  src="/src/assets/cupid-tlc-transparent.png" 
-                  alt="TLC Cupid" 
-                  className="w-full h-full object-contain"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = "/src/assets/cupid-icon-original.png";
-                  }}
-                />
-              </div>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate('/')}
+                className="gap-2"
+              >
+                <ChevronLeft className="h-4 w-4" />
+                Back
+              </Button>
               <div>
-                <h1 className="text-2xl font-black text-primary flex items-center gap-2">
-                  <Sparkles className="w-5 h-5" />
-                  ADMIN COMMAND CENTER
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+                  Admin Portal
                 </h1>
+                <p className="text-sm text-muted-foreground">
+                  Logged in as {user?.email}
+                </p>
               </div>
             </div>
-            <Badge variant="outline" className="bg-card border-primary/30">
-              <Shield className="w-4 h-4 mr-2" />
-              Admin
+            <Badge variant="outline" className="gap-2">
+              <Users className="h-3 w-3" />
+              {totalUsers} Users
             </Badge>
           </div>
         </div>
       </div>
 
-      {/* Main Content - No Scroll Grid */}
-      <div className="flex-1 overflow-hidden">
-        <div className="h-full max-w-7xl mx-auto px-6 py-4">
-          <div className="grid grid-cols-3 gap-4 h-full">
-            
-            {/* Column 1: Analytics */}
-            <Card className="bg-card border-2 overflow-hidden flex flex-col">
-              <CardHeader className="bg-muted/50 border-b flex-shrink-0 py-3">
-                <CardTitle className="flex items-center gap-2 text-primary text-lg">
-                  <BarChart3 className="w-5 h-5" />
-                  Analytics
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-4 overflow-auto flex-1">
-                <UserAnalyticsDashboard />
-              </CardContent>
-            </Card>
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-3">
+            {tabItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <TabsTrigger
+                  key={item.id}
+                  value={item.id}
+                  className="gap-2 text-lg py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                >
+                  <Icon className="h-5 w-5" />
+                  {item.label}
+                </TabsTrigger>
+              );
+            })}
+          </TabsList>
 
-            {/* Column 2: System & Network */}
-            <div className="flex flex-col gap-4">
-              <Card className="bg-card border-2 flex-1 overflow-hidden flex flex-col">
-                <CardHeader className="bg-muted/50 border-b flex-shrink-0 py-3">
-                  <CardTitle className="flex items-center gap-2 text-primary text-lg">
-                    <Terminal className="w-4 h-4" />
-                    Command Station
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-3 overflow-auto flex-1">
-                  <CommandStation />
-                </CardContent>
+          <TabsContent value="overview" className="space-y-6" onClick={() => trackAdminAction('view', 'overview')}>
+            {/* App Readiness Checklist */}
+            <AppReadinessChecklist />
+            
+            {/* Quick Stats Dashboard */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <Card className="p-6">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-muted-foreground">Total Users</span>
+                  <Users className="h-4 w-4 text-blue-500" />
+                </div>
+                <div className="text-3xl font-bold">{totalUsers}</div>
               </Card>
 
-              <Card className="bg-card border-2 flex-1 overflow-hidden flex flex-col">
-                <CardHeader className="bg-muted/50 border-b flex-shrink-0 py-3">
-                  <CardTitle className="flex items-center gap-2 text-primary text-lg">
-                    <Wifi className="w-4 h-4" />
-                    Network
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-3 overflow-auto flex-1">
-                  <WiFiAnalyzer />
-                </CardContent>
+              <Card className="p-6">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-muted-foreground">Active Users</span>
+                  <Users className="h-4 w-4 text-green-500" />
+                </div>
+                <div className="text-3xl font-bold">{activeUsers}</div>
+              </Card>
+
+              <Card className="p-6">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-muted-foreground">Total Sessions</span>
+                  <BarChart3 className="h-4 w-4 text-purple-500" />
+                </div>
+                <div className="text-3xl font-bold">{totalSessions}</div>
+              </Card>
+
+              <Card className="p-6">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-muted-foreground">Avg. Session</span>
+                  <BarChart3 className="h-4 w-4 text-orange-500" />
+                </div>
+                <div className="text-3xl font-bold">
+                  {totalUsers > 0 ? Math.round(totalSessions / totalUsers) : 0}
+                </div>
               </Card>
             </div>
 
-            {/* Column 3: Developer Tools */}
-            <Card className="bg-card border-2 overflow-hidden flex flex-col">
-              <CardHeader className="bg-muted/50 border-b flex-shrink-0 py-3">
-                <CardTitle className="flex items-center gap-2 text-primary text-lg">
-                  <Code className="w-5 h-5" />
-                  Developer Tools
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-4 overflow-auto flex-1 space-y-4">
-                <div className="grid grid-cols-2 gap-2">
-                  <Button 
-                    onClick={handleDownloadSource}
-                    className="h-16 flex flex-col items-center justify-center gap-1 text-xs"
-                    variant="outline"
+            <Card className="p-6">
+              <h3 className="text-lg font-semibold mb-4">Recent Activity</h3>
+              <div className="space-y-2">
+                {users.slice(0, 10).map((user) => (
+                  <div
+                    key={user.id}
+                    className="flex items-center justify-between p-3 rounded-lg hover:bg-accent/50 transition-colors"
                   >
-                    <Download className="w-4 h-4" />
-                    <span>Download</span>
-                  </Button>
-                  
-                  <Button 
-                    onClick={() => trackAdminAction('view_code_export', 'developer')}
-                    className="h-16 flex flex-col items-center justify-center gap-1 text-xs"
-                    variant="outline"
-                  >
-                    <FileCode className="w-4 h-4" />
-                    <span>Export</span>
-                  </Button>
-                  
-                  <Button 
-                    onClick={() => trackAdminAction('view_ai_tools', 'developer')}
-                    className="h-16 flex flex-col items-center justify-center gap-1 text-xs"
-                    variant="outline"
-                  >
-                    <Sparkles className="w-4 h-4" />
-                    <span>AI Tools</span>
-                  </Button>
-                  
-                  <Button 
-                    onClick={() => trackAdminAction('view_updates', 'developer')}
-                    className="h-16 flex flex-col items-center justify-center gap-1 text-xs"
-                    variant="outline"
-                  >
-                    <Zap className="w-4 h-4" />
-                    <span>Updates</span>
-                  </Button>
-                </div>
-
-                <div className="space-y-3">
-                  <Collapsible>
-                    <CollapsibleTrigger className="flex items-center gap-2 font-semibold text-sm w-full hover:text-primary">
-                      <MessageSquare className="w-4 h-4" />
-                      SMS Notifications
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="mt-2">
-                      <SMSNotificationPanel />
-                    </CollapsibleContent>
-                  </Collapsible>
-
-                  <Collapsible>
-                    <CollapsibleTrigger className="flex items-center gap-2 font-semibold text-sm w-full hover:text-primary">
-                      <Rocket className="w-4 h-4" />
-                      App Readiness
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="mt-2">
-                      <AppReadinessChecklist />
-                    </CollapsibleContent>
-                  </Collapsible>
-
-                  <Collapsible defaultOpen>
-                    <CollapsibleTrigger className="flex items-center gap-2 font-semibold text-sm w-full hover:text-primary">
-                      <Activity className="w-4 h-4" />
-                      Recent Updates
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="mt-2">
-                      <RecentUpdates />
-                    </CollapsibleContent>
-                  </Collapsible>
-                </div>
-              </CardContent>
+                    <div>
+                      <p className="font-medium">{user.display_name || user.email}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {user.last_visit
+                          ? `Last active: ${new Date(user.last_visit).toLocaleDateString()}`
+                          : 'Never visited'}
+                      </p>
+                    </div>
+                    <Badge variant="outline">
+                      {user.visit_count || 0} visits
+                    </Badge>
+                  </div>
+                ))}
+              </div>
             </Card>
+          </TabsContent>
 
-          </div>
-        </div>
+          <TabsContent value="management" className="space-y-6">
+            {/* Command Station */}
+            <CommandStation />
+            
+            {/* User Management */}
+            <Card className="p-6">
+              <h3 className="text-lg font-semibold mb-4">User List</h3>
+              <div className="space-y-2 max-h-[600px] overflow-y-auto">
+                {users.map((user) => (
+                  <div
+                    key={user.id}
+                    className="flex items-center justify-between p-4 rounded-lg border border-border hover:bg-accent/50 transition-colors"
+                  >
+                    <div className="flex-1">
+                      <p className="font-medium">{user.display_name || 'Anonymous'}</p>
+                      <p className="text-sm text-muted-foreground">{user.email}</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Joined: {new Date(user.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="text-right">
+                        <p className="text-sm font-medium">{user.visit_count || 0} visits</p>
+                        <p className="text-xs text-muted-foreground">
+                          {user.last_visit
+                            ? `Last: ${new Date(user.last_visit).toLocaleDateString()}`
+                            : 'Never visited'}
+                        </p>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          setSelectedUserId(user.id);
+                          setProfileDialogOpen(true);
+                        }}
+                        className="gap-2"
+                      >
+                        <Eye className="h-4 w-4" />
+                        View
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+            
+            {/* Analytics Dashboard */}
+            <UserAnalyticsDashboard />
+            
+            {/* SMS Panel */}
+            <SMSNotificationPanel />
+            
+            {/* Recent Updates */}
+            <RecentUpdates />
+          </TabsContent>
+
+          <TabsContent value="developer" className="space-y-6" onClick={() => trackAdminAction('view', 'developer')}>
+            {/* AI Prompt Interface */}
+            <div onClick={() => trackAdminAction('interact', 'ai_prompt')}>
+              <AIPromptInterface />
+            </div>
+            
+            {/* WiFi Analyzer */}
+            <div onClick={() => trackAdminAction('interact', 'wifi_analyzer')}>
+              <WiFiAnalyzer />
+            </div>
+            
+            {/* Code Export & Tools */}
+            <div onClick={() => trackAdminAction('interact', 'code_export')}>
+              <CodeExportSystem />
+            </div>
+            
+            <Card className="p-6">
+              <h3 className="text-lg font-semibold mb-4">Developer Tools</h3>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 rounded-lg border border-border">
+                  <div>
+                    <p className="font-medium">Download Source Code</p>
+                    <p className="text-sm text-muted-foreground">
+                      Export the entire codebase as a ZIP file
+                    </p>
+                  </div>
+                  <Button onClick={() => {
+                    trackAdminAction('download', 'developer', { type: 'source_code' });
+                    handleDownloadSource();
+                  }} className="gap-2">
+                    <Download className="h-4 w-4" />
+                    Download
+                  </Button>
+                </div>
+
+                <div className="flex items-center justify-between p-4 rounded-lg border border-border">
+                  <div>
+                    <p className="font-medium">Download AI Prompt</p>
+                    <p className="text-sm text-muted-foreground">
+                      Complete app blueprint for AI reconstruction
+                    </p>
+                  </div>
+                  <Button onClick={() => {
+                    trackAdminAction('download', 'developer', { type: 'ai_prompt' });
+                    handleDownloadAIPrompt();
+                  }} className="gap-2">
+                    <Code className="h-4 w-4" />
+                    Download
+                  </Button>
+                </div>
+
+                <div className="flex items-center justify-between p-4 rounded-lg border border-border">
+                  <div>
+                    <p className="font-medium">Code Browser</p>
+                    <p className="text-sm text-muted-foreground">
+                      View and browse the codebase
+                    </p>
+                  </div>
+                  <Button onClick={() => {
+                    trackAdminAction('navigate', 'developer', { destination: '/code' });
+                    navigate('/code');
+                  }} variant="outline" className="gap-2">
+                    <Code className="h-4 w-4" />
+                    Open Browser
+                  </Button>
+                </div>
+
+                <div className="p-4 rounded-lg border border-border">
+                  <h4 className="font-medium mb-4">File Upload Manager</h4>
+                  <FileUploadManager />
+                </div>
+              </div>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
 
-      {/* User Profile Modal */}
+      {/* User Profile Viewer Dialog */}
       {selectedUserId && (
         <UserProfileViewer
           userId={selectedUserId}

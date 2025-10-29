@@ -88,11 +88,11 @@ export const Header = () => {
                   ✨ INPERSON.TLC ✨
                 </div>
                 <div className="text-xs sm:text-sm font-bold tracking-widest hidden sm:block bg-gradient-to-r from-amber-400 via-rose-400 to-amber-400 bg-clip-text text-transparent animate-gradient-shift" style={{ backgroundSize: '200% 200%' }}>
-                  <span className="inline-block animate-pulse">💕</span>
+                  <span className="inline-block animate-pulse">👑</span>
                   <span className="mx-1">
-                    TOGETHER OR AWAY, YOU TWO SHALL PLAY
+                    ONE NEW ADVENTURE
                   </span>
-                  <span className="inline-block animate-pulse delay-75">💕</span>
+                  <span className="inline-block animate-pulse delay-75">👑</span>
                 </div>
               </div>
             </Link>
