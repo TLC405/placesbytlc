@@ -33,15 +33,27 @@ export const EntryGate: React.FC<EntryGateProps> = ({ children }) => {
 
     const trimmedCode = code.trim().toLowerCase();
     
-    // Check for developer mode code (1309)
+    // Check for PLATINUM developer mode code (1309)
     if (trimmedCode === "1309") {
       sessionStorage.setItem('tlc_dev_mode', 'true');
       sessionStorage.setItem('tlc_entry_session', 'true');
+      localStorage.setItem('tlc_platinum_activated', Date.now().toString());
       setHasAccess(true);
-      toast.success("🚀 DEVELOPER MODE ACTIVATED!", {
-        description: "Premium features unlocked • All themes available • Enhanced UI",
-        duration: 5000,
+      
+      // Epic platinum mode activation
+      toast.success("💎 PLATINUM MODE ACTIVATED! 💎", {
+        description: "🚀 Super Developer Edition • 4 Premium Themes • Double Options • Admin Powers • Sky Is The Limit!",
+        duration: 8000,
       });
+      
+      // Second toast for extra emphasis
+      setTimeout(() => {
+        toast.info("🎮 Welcome to the Matrix! 🎮", {
+          description: "Check header for theme selector • Enhanced OKC Legend • Admin panel unlocked",
+          duration: 6000,
+        });
+      }, 2000);
+      
       return;
     }
 

@@ -15,6 +15,7 @@ import { usePlacesSearch } from "@/hooks/usePlacesSearch";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { trackPlaceView, trackPlaceSave, trackSearch } from "@/components/ActivityTracker";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
+import { PlatinumFeatures } from "@/components/PlatinumFeatures";
 
 export default function NewHome() {
   const navigate = useNavigate();
@@ -97,6 +98,10 @@ export default function NewHome() {
 
       {/* Add top padding to account for fixed nav */}
       <div className="h-16" />
+      
+      {/* Platinum Features Card - Only shows in dev mode */}
+      <PlatinumFeatures />
+      
       {/* Hero Section */}
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-pink-500 via-purple-500 to-rose-600 p-1 animate-fade-in shadow-2xl">
         <div className="relative overflow-hidden rounded-3xl bg-background/95 backdrop-blur-xl">
