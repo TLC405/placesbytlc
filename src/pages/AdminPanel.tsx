@@ -1,36 +1,29 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { 
   Users, 
   BarChart3, 
   Terminal, 
+  Settings, 
   Download,
   Code,
+  ChevronLeft,
   Activity,
-  Sparkles,
-  MessageSquare,
-  Wifi,
-  FileCode,
-  Rocket,
-  Shield,
-  Zap
+  Eye,
+  Sparkles
 } from "lucide-react";
 import { CommandStation } from "@/components/admin/CommandStation";
 import { UserAnalyticsDashboard } from "@/components/admin/UserAnalyticsDashboard";
 import { UserProfileViewer } from "@/components/admin/UserProfileViewer";
-import { CodeExportSystem } from "@/components/admin/CodeExportSystem";
-import { SMSNotificationPanel } from "@/components/admin/SMSNotificationPanel";
-import { AIPromptInterface } from "@/components/admin/AIPromptInterface";
-import { WiFiAnalyzer } from "@/components/admin/WiFiAnalyzer";
-import { AppReadinessChecklist } from "@/components/admin/AppReadinessChecklist";
+import { FileUploadManager } from "@/components/FileUploadManager";
 import { RecentUpdates } from "@/components/RecentUpdates";
 
 interface UserAnalytics {
@@ -52,6 +45,7 @@ const AdminPanel = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [users, setUsers] = useState<UserAnalytics[]>([]);
+  const [activeTab, setActiveTab] = useState('dashboard');
   const [allActivities, setAllActivities] = useState<any[]>([]);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
@@ -59,61 +53,29 @@ const AdminPanel = () => {
   const [codeInput, setCodeInput] = useState("");
   const [showCodeDialog, setShowCodeDialog] = useState(true);
 
-  // Track admin actions
-  const trackAdminAction = useCallback(async (action: string, section: string, details?: any) => {
-    try {
-      await supabase.functions.invoke('track-admin-activity', {
-        body: { action, section, details }
-      });
-    } catch (error) {
-      console.error('Failed to track admin action:', error);
-    }
-  }, []);
-
-  // Setup realtime subscription for analytics
-  useEffect(() => {
-    if (!codeUnlocked) return;
-
-    const channel = supabase
-      .channel('admin-analytics-updates')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'profiles' },
-        () => fetchUserAnalytics()
-      )
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'user_activity_log' },
-        () => fetchUserAnalytics()
-      )
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'user_analytics' },
-        () => fetchUserAnalytics()
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [codeUnlocked]);
-
   // Check admin access on mount
   useEffect(() => {
-    const checkAdminAccess = () => {
+    const checkAdminAccess = async () => {
       try {
-        const role = localStorage.getItem('pin_role');
-        const expiry = parseInt(localStorage.getItem('pin_expiry') || '0');
+        const { data: { user: currentUser } } = await supabase.auth.getUser();
         
-        // Check if PIN token expired
-        if (!role || Date.now() > expiry) {
+        if (!currentUser) {
           toast.error("Please log in to access admin panel");
-          navigate('/login-pin');
+          navigate('/');
           return;
         }
+
+        setUser(currentUser);
+
+        // Check if user has admin role
+        const { data: roles } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', currentUser.id);
         
-        // Check if user has admin or warlord role
-        if (role !== 'admin' && role !== 'warlord') {
+        const hasAdminRole = roles?.some(r => r.role === 'admin');
+        
+        if (!hasAdminRole) {
           toast.error("Admin access required");
           navigate('/');
           return;
@@ -162,14 +124,7 @@ const AdminPanel = () => {
       
       if (error) {
         console.error('Edge function error:', error);
-        toast.error('Failed to load analytics data');
-        return;
-      }
-
-      if (!data) {
-        console.warn('No data returned from edge function');
-        setUsers([]);
-        return;
+        throw error;
       }
 
       console.log('Admin portal data received:', data);
@@ -238,27 +193,7 @@ const AdminPanel = () => {
       
       if (error) throw error;
       
-      // Create README file
-      const readme = data?.readme || 'INPERSON.TLC Source Code';
-      const readmeBlob = new Blob([readme], { type: 'text/markdown' });
-      const readmeUrl = URL.createObjectURL(readmeBlob);
-      
-      // Download README
-      const readmeLink = document.createElement('a');
-      readmeLink.href = readmeUrl;
-      readmeLink.download = 'INPERSON-TLC-README.md';
-      document.body.appendChild(readmeLink);
-      readmeLink.click();
-      document.body.removeChild(readmeLink);
-      URL.revokeObjectURL(readmeUrl);
-      
-      // Open GitHub download in new tab
-      if (data?.download_url) {
-        window.open(data.download_url, '_blank');
-      }
-      
-      toast.success("📦 Source code package downloaded!");
-      trackAdminAction('download_source', 'developer');
+      toast.success("Source code download initiated");
     } catch (error: any) {
       console.error("Download error:", error);
       toast.error(error.message || "Failed to download source");
@@ -267,38 +202,38 @@ const AdminPanel = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground">Loading admin panel...</p>
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent" />
       </div>
     );
   }
 
-  // Code unlock dialog
+  if (!isAdmin) {
+    return null;
+  }
+
   if (!codeUnlocked) {
     return (
-      <Dialog open={showCodeDialog} onOpenChange={setShowCodeDialog}>
-        <DialogContent className="bg-white border-2 border-primary">
+      <Dialog open={showCodeDialog} onOpenChange={() => navigate('/')}>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-primary">
-              <Shield className="w-6 h-6" />
-              Admin Security Check
-            </DialogTitle>
+            <DialogTitle>Admin Access Code Required</DialogTitle>
+            <DialogDescription>
+              Enter the access code to unlock the admin panel
+            </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
-            <p className="text-muted-foreground">Enter admin code to unlock full access</p>
+          <div className="space-y-4 py-4">
             <Input
               type="password"
+              placeholder="Enter code"
               value={codeInput}
               onChange={(e) => setCodeInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleCodeSubmit()}
-              placeholder="Enter code..."
-              className="text-center text-xl tracking-widest"
+              className="text-center text-2xl tracking-widest"
+              maxLength={4}
             />
             <Button onClick={handleCodeSubmit} className="w-full">
-              Unlock Admin Panel
+              Unlock
             </Button>
           </div>
         </DialogContent>
@@ -306,169 +241,230 @@ const AdminPanel = () => {
     );
   }
 
+  const tabItems = [
+    { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
+    { id: 'command', label: 'Command Station', icon: Terminal },
+    { id: 'users', label: 'Users', icon: Users },
+    { id: 'analytics', label: 'Analytics', icon: Activity },
+    { id: 'updates', label: 'Updates', icon: Sparkles },
+    { id: 'tools', label: 'Dev Tools', icon: Settings },
+  ];
+
+  const totalUsers = users.length;
+  const activeUsers = users.filter(u => u.last_visit).length;
+  const totalSessions = users.reduce((sum, u) => sum + (u.visit_count || 0), 0);
+
   return (
-    <div className="h-screen overflow-hidden bg-gradient-to-br from-background via-muted/20 to-background flex flex-col">
-      {/* Compact Header */}
-      <div className="flex-shrink-0 border-b bg-card/50 backdrop-blur-sm">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+      {/* Header */}
+      <div className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-primary/10 p-2">
-                <img 
-                  src="/src/assets/cupid-tlc-transparent.png" 
-                  alt="TLC Cupid" 
-                  className="w-full h-full object-contain"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = "/src/assets/cupid-icon-original.png";
-                  }}
-                />
-              </div>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate('/')}
+                className="gap-2"
+              >
+                <ChevronLeft className="h-4 w-4" />
+                Back
+              </Button>
               <div>
-                <h1 className="text-2xl font-black text-primary flex items-center gap-2">
-                  <Sparkles className="w-5 h-5" />
-                  ADMIN COMMAND CENTER
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+                  Admin Portal
                 </h1>
+                <p className="text-sm text-muted-foreground">
+                  Logged in as {user?.email}
+                </p>
               </div>
             </div>
-            <Badge variant="outline" className="bg-card border-primary/30">
-              <Shield className="w-4 h-4 mr-2" />
-              Admin
+            <Badge variant="outline" className="gap-2">
+              <Users className="h-3 w-3" />
+              {totalUsers} Users
             </Badge>
           </div>
         </div>
       </div>
 
-      {/* Main Content - No Scroll Grid */}
-      <div className="flex-1 overflow-hidden">
-        <div className="h-full max-w-7xl mx-auto px-6 py-4">
-          <div className="grid grid-cols-3 gap-4 h-full">
-            
-            {/* Column 1: Analytics */}
-            <Card className="bg-card border-2 overflow-hidden flex flex-col">
-              <CardHeader className="bg-muted/50 border-b flex-shrink-0 py-3">
-                <CardTitle className="flex items-center gap-2 text-primary text-lg">
-                  <BarChart3 className="w-5 h-5" />
-                  Analytics
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-4 overflow-auto flex-1">
-                <UserAnalyticsDashboard />
-              </CardContent>
-            </Card>
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-6 lg:w-auto lg:inline-grid">
+            {tabItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <TabsTrigger
+                  key={item.id}
+                  value={item.id}
+                  className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                >
+                  <Icon className="h-4 w-4" />
+                  <span className="hidden sm:inline">{item.label}</span>
+                </TabsTrigger>
+              );
+            })}
+          </TabsList>
 
-            {/* Column 2: System & Network */}
-            <div className="flex flex-col gap-4">
-              <Card className="bg-card border-2 flex-1 overflow-hidden flex flex-col">
-                <CardHeader className="bg-muted/50 border-b flex-shrink-0 py-3">
-                  <CardTitle className="flex items-center gap-2 text-primary text-lg">
-                    <Terminal className="w-4 h-4" />
-                    Command Station
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-3 overflow-auto flex-1">
-                  <CommandStation />
-                </CardContent>
+          <TabsContent value="dashboard" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <Card className="p-6">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-muted-foreground">Total Users</span>
+                  <Users className="h-4 w-4 text-blue-500" />
+                </div>
+                <div className="text-3xl font-bold">{totalUsers}</div>
               </Card>
 
-              <Card className="bg-card border-2 flex-1 overflow-hidden flex flex-col">
-                <CardHeader className="bg-muted/50 border-b flex-shrink-0 py-3">
-                  <CardTitle className="flex items-center gap-2 text-primary text-lg">
-                    <Wifi className="w-4 h-4" />
-                    Network
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-3 overflow-auto flex-1">
-                  <WiFiAnalyzer />
-                </CardContent>
+              <Card className="p-6">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-muted-foreground">Active Users</span>
+                  <Users className="h-4 w-4 text-green-500" />
+                </div>
+                <div className="text-3xl font-bold">{activeUsers}</div>
+              </Card>
+
+              <Card className="p-6">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-muted-foreground">Total Sessions</span>
+                  <BarChart3 className="h-4 w-4 text-purple-500" />
+                </div>
+                <div className="text-3xl font-bold">{totalSessions}</div>
+              </Card>
+
+              <Card className="p-6">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-muted-foreground">Avg. Session</span>
+                  <BarChart3 className="h-4 w-4 text-orange-500" />
+                </div>
+                <div className="text-3xl font-bold">
+                  {totalUsers > 0 ? Math.round(totalSessions / totalUsers) : 0}
+                </div>
               </Card>
             </div>
 
-            {/* Column 3: Developer Tools */}
-            <Card className="bg-card border-2 overflow-hidden flex flex-col">
-              <CardHeader className="bg-muted/50 border-b flex-shrink-0 py-3">
-                <CardTitle className="flex items-center gap-2 text-primary text-lg">
-                  <Code className="w-5 h-5" />
-                  Developer Tools
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-4 overflow-auto flex-1 space-y-4">
-                <div className="grid grid-cols-2 gap-2">
-                  <Button 
-                    onClick={handleDownloadSource}
-                    className="h-16 flex flex-col items-center justify-center gap-1 text-xs"
-                    variant="outline"
+            <Card className="p-6">
+              <h3 className="text-lg font-semibold mb-4">Recent Activity</h3>
+              <div className="space-y-2">
+                {users.slice(0, 10).map((user) => (
+                  <div
+                    key={user.id}
+                    className="flex items-center justify-between p-3 rounded-lg hover:bg-accent/50 transition-colors"
                   >
-                    <Download className="w-4 h-4" />
-                    <span>Download</span>
-                  </Button>
-                  
-                  <Button 
-                    onClick={() => trackAdminAction('view_code_export', 'developer')}
-                    className="h-16 flex flex-col items-center justify-center gap-1 text-xs"
-                    variant="outline"
-                  >
-                    <FileCode className="w-4 h-4" />
-                    <span>Export</span>
-                  </Button>
-                  
-                  <Button 
-                    onClick={() => trackAdminAction('view_ai_tools', 'developer')}
-                    className="h-16 flex flex-col items-center justify-center gap-1 text-xs"
-                    variant="outline"
-                  >
-                    <Sparkles className="w-4 h-4" />
-                    <span>AI Tools</span>
-                  </Button>
-                  
-                  <Button 
-                    onClick={() => trackAdminAction('view_updates', 'developer')}
-                    className="h-16 flex flex-col items-center justify-center gap-1 text-xs"
-                    variant="outline"
-                  >
-                    <Zap className="w-4 h-4" />
-                    <span>Updates</span>
-                  </Button>
-                </div>
-
-                <div className="space-y-3">
-                  <Collapsible>
-                    <CollapsibleTrigger className="flex items-center gap-2 font-semibold text-sm w-full hover:text-primary">
-                      <MessageSquare className="w-4 h-4" />
-                      SMS Notifications
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="mt-2">
-                      <SMSNotificationPanel />
-                    </CollapsibleContent>
-                  </Collapsible>
-
-                  <Collapsible>
-                    <CollapsibleTrigger className="flex items-center gap-2 font-semibold text-sm w-full hover:text-primary">
-                      <Rocket className="w-4 h-4" />
-                      App Readiness
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="mt-2">
-                      <AppReadinessChecklist />
-                    </CollapsibleContent>
-                  </Collapsible>
-
-                  <Collapsible defaultOpen>
-                    <CollapsibleTrigger className="flex items-center gap-2 font-semibold text-sm w-full hover:text-primary">
-                      <Activity className="w-4 h-4" />
-                      Recent Updates
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="mt-2">
-                      <RecentUpdates />
-                    </CollapsibleContent>
-                  </Collapsible>
-                </div>
-              </CardContent>
+                    <div>
+                      <p className="font-medium">{user.display_name || user.email}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {user.last_visit
+                          ? `Last active: ${new Date(user.last_visit).toLocaleDateString()}`
+                          : 'Never visited'}
+                      </p>
+                    </div>
+                    <Badge variant="outline">
+                      {user.visit_count || 0} visits
+                    </Badge>
+                  </div>
+                ))}
+              </div>
             </Card>
+          </TabsContent>
 
-          </div>
-        </div>
+          <TabsContent value="command">
+            <CommandStation />
+          </TabsContent>
+
+          <TabsContent value="users" className="space-y-6">
+            <Card className="p-6">
+              <h3 className="text-lg font-semibold mb-4">User List</h3>
+              <div className="space-y-2 max-h-[600px] overflow-y-auto">
+                {users.map((user) => (
+                  <div
+                    key={user.id}
+                    className="flex items-center justify-between p-4 rounded-lg border border-border hover:bg-accent/50 transition-colors"
+                  >
+                    <div className="flex-1">
+                      <p className="font-medium">{user.display_name || 'Anonymous'}</p>
+                      <p className="text-sm text-muted-foreground">{user.email}</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Joined: {new Date(user.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="text-right">
+                        <p className="text-sm font-medium">{user.visit_count || 0} visits</p>
+                        <p className="text-xs text-muted-foreground">
+                          {user.last_visit
+                            ? `Last: ${new Date(user.last_visit).toLocaleDateString()}`
+                            : 'Never visited'}
+                        </p>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          setSelectedUserId(user.id);
+                          setProfileDialogOpen(true);
+                        }}
+                        className="gap-2"
+                      >
+                        <Eye className="h-4 w-4" />
+                        View
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="analytics">
+            <UserAnalyticsDashboard />
+          </TabsContent>
+
+          <TabsContent value="updates">
+            <RecentUpdates />
+          </TabsContent>
+
+          <TabsContent value="tools" className="space-y-6">
+            <Card className="p-6">
+              <h3 className="text-lg font-semibold mb-4">Developer Tools</h3>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 rounded-lg border border-border">
+                  <div>
+                    <p className="font-medium">Download Source Code</p>
+                    <p className="text-sm text-muted-foreground">
+                      Export the entire codebase as a ZIP file
+                    </p>
+                  </div>
+                  <Button onClick={handleDownloadSource} className="gap-2">
+                    <Download className="h-4 w-4" />
+                    Download
+                  </Button>
+                </div>
+
+                <div className="flex items-center justify-between p-4 rounded-lg border border-border">
+                  <div>
+                    <p className="font-medium">Code Browser</p>
+                    <p className="text-sm text-muted-foreground">
+                      View and browse the codebase
+                    </p>
+                  </div>
+                  <Button onClick={() => navigate('/code')} variant="outline" className="gap-2">
+                    <Code className="h-4 w-4" />
+                    Open Browser
+                  </Button>
+                </div>
+
+                <div className="p-4 rounded-lg border border-border">
+                  <h4 className="font-medium mb-4">File Upload Manager</h4>
+                  <FileUploadManager />
+                </div>
+              </div>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
 
-      {/* User Profile Modal */}
+      {/* User Profile Viewer Dialog */}
       {selectedUserId && (
         <UserProfileViewer
           userId={selectedUserId}

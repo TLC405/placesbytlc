@@ -492,33 +492,6 @@ export type Database = {
         }
         Relationships: []
       }
-      tester_feedback: {
-        Row: {
-          created_at: string | null
-          feature_name: string
-          feedback: string | null
-          id: string
-          rating: number
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          feature_name: string
-          feedback?: string | null
-          id?: string
-          rating: number
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          feature_name?: string
-          feedback?: string | null
-          id?: string
-          rating?: number
-          user_id?: string | null
-        }
-        Relationships: []
-      }
       user_activity_log: {
         Row: {
           activity_data: Json

@@ -1,48 +1,65 @@
 import { useState, useEffect } from "react";
-import { Heart, Sparkles, Palette, Shield } from "lucide-react";
+import { Heart, Calendar, Brain, Palette, Download, Crown, Sparkles } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
-import { getStoredRole, type AppRole } from "@/utils/rbac";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Header = () => {
   const location = useLocation();
-  const [role, setRole] = useState<AppRole | null>(null);
+  const [isTester, setIsTester] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   
   useEffect(() => {
-    // Check role from localStorage
-    const currentRole = getStoredRole();
-    setRole(currentRole);
-    
-    // Listen for role changes
-    const handleStorageChange = () => {
-      setRole(getStoredRole());
+    const checkUserRole = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setIsTester(false);
+        setIsAdmin(false);
+        return;
+      }
+      
+      const { data: roles } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id);
+      
+      const hasAdminRole = roles?.some(r => (r.role as string) === 'admin') ?? false;
+      const hasTesterRole = roles?.some(r => (r.role as string) === 'tester') ?? false;
+      
+      setIsAdmin(hasAdminRole);
+      setIsTester(hasTesterRole);
     };
     
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    checkUserRole();
+    
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+      checkUserRole();
+    });
+    
+    return () => subscription.unsubscribe();
   }, []);
   
   const isActive = (path: string) => location.pathname === path;
   
   const allNavItems = [
-    { path: "/", label: "Places by TLC", icon: Heart, emoji: "📍", requiredRole: ['tester', 'admin', 'warlord'] },
-    { path: "/teefeeme", label: "TeeFee Me", icon: Palette, emoji: "🎨", requiredRole: ['tester', 'admin', 'warlord'] },
-    { path: "/admin", label: "Admin", icon: Shield, emoji: "⚙️", requiredRole: ['admin', 'warlord'] },
+    { path: "/", label: "Home", icon: Heart, emoji: "💝", allowTester: true },
+    { path: "/quizzes", label: "Quizzes", icon: Brain, emoji: "🧠", allowTester: false },
+    { path: "/period-tracker", label: "Peripod", icon: Calendar, emoji: "📅", allowTester: false },
+    { path: "/teefeeme", label: "TeeFee Me", icon: Palette, emoji: "🎨", allowTester: true },
+    { path: "/install", label: "Install", icon: Download, emoji: "📲", allowTester: false },
+    { path: "/admin", label: "Admin", icon: Crown, emoji: "👑", allowTester: false, adminOnly: true },
   ];
   
   const navItems = allNavItems.filter(item => {
-    if (!role) return false;
-    return item.requiredRole.includes(role);
+    if (item.adminOnly && !isAdmin) return false;
+    if (isTester && !item.allowTester) return false;
+    return true;
   });
-  
-  // Hide header on login and hacker pages
-  if (location.pathname === '/login-pin' || location.pathname === '/hacker') return null;
   
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 glass shadow-glow border-b-2 border-primary/30 backdrop-blur-xl"
-        style={{ overflowX: 'hidden', overflowY: 'visible' }}>
+      <header className="sticky top-0 z-50 glass shadow-glow border-b-2 border-primary/30 backdrop-blur-xl overflow-hidden">
         {/* Animated background gradient */}
         <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 opacity-50 animate-gradient-shift" />
         
@@ -60,14 +77,14 @@ export const Header = () => {
               
               <div className="leading-tight">
                 <div className="text-xl sm:text-3xl font-black gradient-text tracking-tight drop-shadow-lg animate-pulse">
-                  ✨ INPERSON.TLC ✨
+                  ✨ FELICIA.TLC ✨
                 </div>
                 <div className="text-xs sm:text-sm font-bold tracking-widest hidden sm:block bg-gradient-to-r from-amber-400 via-rose-400 to-amber-400 bg-clip-text text-transparent animate-gradient-shift" style={{ backgroundSize: '200% 200%' }}>
-                  <span className="inline-block animate-pulse">💕</span>
+                  <span className="inline-block animate-pulse">👑</span>
                   <span className="mx-1">
-                    TOGETHER OR AWAY, YOU TWO SHALL PLAY
+                    QUEEN FELICIA'S LOVE HUB
                   </span>
-                  <span className="inline-block animate-pulse delay-75">💕</span>
+                  <span className="inline-block animate-pulse delay-75">👑</span>
                 </div>
               </div>
             </Link>

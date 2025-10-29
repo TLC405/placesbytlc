@@ -8,21 +8,3 @@ verify_jwt = true
 
 [functions.period-tracker-setup]
 verify_jwt = true
-
-[functions.send-admin-sms]
-verify_jwt = true
-
-[functions.ai-prompt-processor]
-verify_jwt = true
-
-[functions.track-admin-activity]
-verify_jwt = true
-
-[functions.pin-auth]
-verify_jwt = false
-
-[functions.analytics-track]
-verify_jwt = false
-
-[functions.analytics-query]
-verify_jwt = false

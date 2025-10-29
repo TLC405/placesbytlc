@@ -105,34 +105,34 @@ export default function NewHome() {
   return (
     <div className="min-h-screen space-y-8 pb-12 px-2 sm:px-4">
       {/* Hero Section */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-pink-500 via-purple-500 to-rose-600 p-1 animate-fade-in shadow-2xl">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-pink-500 via-purple-500 to-rose-600 p-1">
         <div className="relative overflow-hidden rounded-3xl bg-background/95 backdrop-blur-xl">
-          <div className="absolute inset-0 bg-gradient-to-br from-pink-500/10 via-purple-500/10 to-rose-500/10 animate-gradient" style={{ backgroundSize: '200% 200%' }} />
-          <div className="absolute top-0 right-0 w-96 h-96 bg-primary/30 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-accent/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+          <div className="absolute inset-0 bg-gradient-to-br from-pink-500/10 via-purple-500/10 to-rose-500/10" />
+          <div className="absolute top-0 right-0 w-96 h-96 bg-primary/20 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-accent/20 rounded-full blur-3xl" />
           
           <div className="relative z-10 p-8 sm:p-12 text-center space-y-6">
-            <div className="inline-block animate-scale-in">
-              <Badge className="px-8 py-3 text-lg bg-gradient-to-r from-pink-500 via-purple-500 to-rose-500 border-0 text-white shadow-glow animate-pulse font-bold">
-                <Crown className="w-6 h-6 mr-2 animate-bounce" />
+            <div className="inline-block">
+              <Badge className="px-6 py-2 text-base bg-gradient-to-r from-pink-500 via-purple-500 to-rose-500 border-0 text-white shadow-glow animate-pulse">
+                <Crown className="w-5 h-5 mr-2 animate-bounce" />
                 ✨ FELICIA'S ROYAL DATE FINDER ✨
               </Badge>
             </div>
             
-            <h1 className="text-4xl sm:text-6xl md:text-7xl font-black gradient-text drop-shadow-2xl animate-fade-in leading-tight">
+            <h1 className="text-4xl sm:text-6xl md:text-7xl font-black gradient-text drop-shadow-xl">
               Queen Felicia's Perfect Date Spots 👑
             </h1>
             
-            <p className="text-lg sm:text-xl font-bold bg-gradient-to-r from-rose-400 via-purple-400 to-pink-400 bg-clip-text text-transparent max-w-2xl mx-auto animate-fade-in drop-shadow-lg" style={{ animationDelay: '0.2s' }}>
+            <p className="text-lg sm:text-xl font-semibold bg-gradient-to-r from-rose-400 via-purple-400 to-pink-400 bg-clip-text text-transparent max-w-2xl mx-auto">
               ✨ Your Royal AI-Powered Guide to Unforgettable Moments in OKC ✨
             </p>
 
             {!user && (
-              <div className="flex gap-4 justify-center animate-fade-in" style={{ animationDelay: '0.4s' }}>
+              <div className="flex gap-4 justify-center">
                 <Link to="#auth">
-                  <Button size="lg" className="h-16 px-10 text-lg gradient-primary shadow-2xl hover:shadow-glow font-bold hover:scale-110 transition-all duration-300">
+                  <Button size="lg" className="h-14 px-8 text-lg gradient-primary">
                     Get Started Free
-                    <Sparkles className="w-6 h-6 ml-2 animate-pulse" />
+                    <Sparkles className="w-5 h-5 ml-2" />
                   </Button>
                 </Link>
               </div>
@@ -142,27 +142,27 @@ export default function NewHome() {
       </div>
 
       {/* Main Content Tabs */}
-      <Tabs defaultValue={user ? "discover" : "auth"} className="w-full animate-fade-in" style={{ animationDelay: '0.3s' }}>
-        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto p-1.5 gap-2 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 backdrop-blur-xl border-2 border-primary/30 rounded-2xl shadow-xl">
+      <Tabs defaultValue={user ? "discover" : "auth"} className="w-full">
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto p-1 gap-2 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 backdrop-blur-xl border-2 border-primary/20">
           <TabsTrigger 
             value="discover" 
-            className="data-[state=active]:gradient-primary data-[state=active]:text-white data-[state=active]:shadow-glow h-14 rounded-xl font-semibold transition-all duration-300 hover:scale-105"
+            className="data-[state=active]:gradient-primary data-[state=active]:text-white h-12 rounded-lg"
           >
-            <Heart className="w-5 h-5 mr-2" />
+            <Heart className="w-4 h-4 mr-2" />
             Discover
           </TabsTrigger>
           <TabsTrigger 
             value="features" 
-            className="data-[state=active]:gradient-primary data-[state=active]:text-white data-[state=active]:shadow-glow h-14 rounded-xl font-semibold transition-all duration-300 hover:scale-105"
+            className="data-[state=active]:gradient-primary data-[state=active]:text-white h-12 rounded-lg"
           >
-            <Sparkles className="w-5 h-5 mr-2" />
+            <Sparkles className="w-4 h-4 mr-2" />
             Features
           </TabsTrigger>
           <TabsTrigger 
             value="updates" 
-            className="data-[state=active]:gradient-primary data-[state=active]:text-white data-[state=active]:shadow-glow h-14 rounded-xl font-semibold transition-all duration-300 hover:scale-105"
+            className="data-[state=active]:gradient-primary data-[state=active]:text-white h-12 rounded-lg"
           >
-            <Zap className="w-5 h-5 mr-2" />
+            <Zap className="w-4 h-4 mr-2" />
             Updates
           </TabsTrigger>
           {!user && (
@@ -178,13 +178,13 @@ export default function NewHome() {
         {/* Discover Tab - Search & Results */}
         <TabsContent value="discover" className="space-y-8">
           {/* Search Section */}
-          <Card className="border-2 border-primary/40 shadow-2xl bg-gradient-to-br from-card/95 to-card/80 backdrop-blur-md animate-fade-in">
+          <Card className="border-2 border-primary/30 shadow-xl">
             <CardHeader>
-              <CardTitle className="text-3xl flex items-center gap-3 font-black gradient-text">
-                <Sparkles className="w-7 h-7 text-primary animate-pulse" />
+              <CardTitle className="text-2xl flex items-center gap-2">
+                <Sparkles className="w-6 h-6 text-primary" />
                 Search for Perfect Spots
               </CardTitle>
-              <CardDescription className="text-base font-medium">Find restaurants, activities, and date ideas near you</CardDescription>
+              <CardDescription>Find restaurants, activities, and date ideas near you</CardDescription>
             </CardHeader>
             <CardContent>
               <SearchBar
@@ -206,13 +206,13 @@ export default function NewHome() {
 
           {/* Results Section */}
           {results.length > 0 && (
-            <div className="space-y-6 animate-fade-in">
-              <div className="flex items-center justify-between flex-wrap gap-4">
-                <h2 className="text-3xl sm:text-4xl font-black gradient-text drop-shadow-lg">
-                  {results.length} Amazing Places Found 🎉
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-3xl font-black gradient-text">
+                  {results.length} Amazing Places Found
                 </h2>
-                <Badge className="px-6 py-3 text-lg bg-gradient-to-r from-primary to-accent text-white shadow-glow font-bold animate-pulse">
-                  ✨ Fresh Results
+                <Badge className="px-4 py-2 text-base bg-gradient-to-r from-primary to-accent text-white">
+                  Fresh Results
                 </Badge>
               </div>
               
@@ -240,15 +240,15 @@ export default function NewHome() {
 
         {/* Features Tab */}
         <TabsContent value="features" className="space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <Link to="/ai-recommender">
-              <Card className="cursor-pointer group h-full border-2 border-primary/30 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 hover:-translate-y-2 hover:scale-105 hover:border-primary/60">
+              <Card className="hover-lift cursor-pointer group h-full border-2 border-primary/20 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-3 group-hover:text-primary text-2xl font-bold transition-all duration-300 group-hover:scale-105">
-                    <Sparkles className="w-7 h-7 animate-pulse" />
+                  <CardTitle className="flex items-center gap-2 group-hover:text-primary text-2xl">
+                    <Sparkles className="w-6 h-6" />
                     AI Recommendations
                   </CardTitle>
-                  <CardDescription className="text-base font-medium">
+                  <CardDescription className="text-base">
                     Get personalized date ideas powered by AI
                   </CardDescription>
                 </CardHeader>
@@ -325,72 +325,30 @@ export default function NewHome() {
           </div>
         </TabsContent>
 
-        {/* OKC Legend Forge Tab */}
+        {/* Updates Tab */}
         <TabsContent value="updates" className="space-y-6">
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-1 shadow-2xl animate-fade-in">
-            <div className="relative overflow-hidden rounded-3xl bg-background/95 backdrop-blur-xl">
-              <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-40" />
-              
-              <div className="relative z-10 p-8 sm:p-12 text-center space-y-6">
-                <Badge className="px-8 py-3 text-lg bg-gradient-to-r from-red-500 via-orange-500 to-red-500 border-0 text-white shadow-glow font-black animate-pulse">
-                  🔥 NEW: OKC LEGEND FORGE
-                </Badge>
-                
-                <h2 className="text-4xl sm:text-5xl md:text-6xl font-black bg-gradient-to-r from-slate-200 via-orange-400 to-slate-200 bg-clip-text text-transparent drop-shadow-2xl">
-                  Adrenaline Capital Map
-                </h2>
-                
-                <p className="text-lg sm:text-xl font-bold text-muted-foreground max-w-2xl mx-auto">
-                  Interactive adventure map with 8 epic categories • Route planner • 70+ adrenaline spots across OKC
-                </p>
-
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl mx-auto py-4">
-                  <div className="p-4 rounded-xl bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-2 border-blue-500/30">
-                    <div className="text-3xl mb-2">🪂</div>
-                    <div className="text-xs font-bold text-blue-400">Sky Reavers</div>
-                  </div>
-                  <div className="p-4 rounded-xl bg-gradient-to-br from-red-500/10 to-red-500/5 border-2 border-red-500/30">
-                    <div className="text-3xl mb-2">🔫</div>
-                    <div className="text-xs font-bold text-red-400">OKC Rambo</div>
-                  </div>
-                  <div className="p-4 rounded-xl bg-gradient-to-br from-cyan-500/10 to-cyan-500/5 border-2 border-cyan-500/30">
-                    <div className="text-3xl mb-2">🌊</div>
-                    <div className="text-xs font-bold text-cyan-400">Water Surf</div>
-                  </div>
-                  <div className="p-4 rounded-xl bg-gradient-to-br from-orange-500/10 to-orange-500/5 border-2 border-orange-500/30">
-                    <div className="text-3xl mb-2">🚜</div>
-                    <div className="text-xs font-bold text-orange-400">Iron Titans</div>
-                  </div>
-                  <div className="p-4 rounded-xl bg-gradient-to-br from-green-500/10 to-green-500/5 border-2 border-green-500/30">
-                    <div className="text-3xl mb-2">🐪</div>
-                    <div className="text-xs font-bold text-green-400">Beast Coliseum</div>
-                  </div>
-                  <div className="p-4 rounded-xl bg-gradient-to-br from-purple-500/10 to-purple-500/5 border-2 border-purple-500/30">
-                    <div className="text-3xl mb-2">☢️</div>
-                    <div className="text-xs font-bold text-purple-400">Nuclear Paintball</div>
-                  </div>
-                  <div className="p-4 rounded-xl bg-gradient-to-br from-slate-500/10 to-slate-500/5 border-2 border-slate-500/30">
-                    <div className="text-3xl mb-2">🤖</div>
-                    <div className="text-xs font-bold text-slate-400">Robot Arena</div>
-                  </div>
-                  <div className="p-4 rounded-xl bg-gradient-to-br from-yellow-500/10 to-yellow-500/5 border-2 border-yellow-500/30">
-                    <div className="text-3xl mb-2">🛡</div>
-                    <div className="text-xs font-bold text-yellow-400">Post-Apoc</div>
-                  </div>
-                </div>
-
-                <Link to="/okc-legend">
-                  <Button size="lg" className="h-16 px-10 text-xl font-black bg-gradient-to-r from-red-500 via-orange-500 to-red-500 hover:opacity-90 shadow-2xl shadow-red-500/30 hover:shadow-red-500/50 hover:scale-110 transition-all duration-300">
-                    🔥 Enter Legend Forge
-                  </Button>
-                </Link>
-
-                <p className="text-sm text-muted-foreground font-bold">
-                  Code protected • Expert map build • Route optimizer • Zero fake data
-                </p>
+          <Card className="border-2 border-primary/30">
+            <CardHeader>
+              <CardTitle className="text-3xl gradient-text">Coming Soon</CardTitle>
+              <CardDescription>Exciting new features in development</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="p-4 rounded-lg bg-gradient-to-r from-primary/10 to-accent/10 border-2 border-primary/20">
+                <h3 className="font-bold text-lg mb-2">🌟 Social Feed & Reviews</h3>
+                <p className="text-sm text-muted-foreground">Share your date experiences and see what the community loves</p>
               </div>
-            </div>
-          </div>
+              
+              <div className="p-4 rounded-lg bg-gradient-to-r from-accent/10 to-primary/10 border-2 border-accent/20">
+                <h3 className="font-bold text-lg mb-2">💰 Budget Tracker</h3>
+                <p className="text-sm text-muted-foreground">Track dating expenses and manage your budget together</p>
+              </div>
+              
+              <div className="p-4 rounded-lg bg-gradient-to-r from-purple/10 to-pink/10 border-2 border-purple/20">
+                <h3 className="font-bold text-lg mb-2">🎮 More Gamification</h3>
+                <p className="text-sm text-muted-foreground">Challenges, leaderboards, and exclusive rewards</p>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         {/* Auth Tab */}

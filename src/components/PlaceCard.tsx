@@ -46,7 +46,7 @@ export const PlaceCard = ({ place, onAdd, onFavoriteToggle, onView }: PlaceCardP
   return (
     <>
       <Card 
-        className="group overflow-hidden border-2 border-border/30 hover:border-primary/60 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/10 cursor-pointer bg-gradient-to-br from-card/95 to-card/80 backdrop-blur-md hover:-translate-y-2 hover:scale-[1.02] animate-fade-in"
+        className="group overflow-hidden border border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-xl cursor-pointer bg-card/80 backdrop-blur-sm"
         onClick={() => {
           onView?.();
           setShowDetails(true);
@@ -57,28 +57,27 @@ export const PlaceCard = ({ place, onAdd, onFavoriteToggle, onView }: PlaceCardP
           <img
             src={place.photo}
             alt={place.name}
-            className="w-full h-full object-cover transition-all duration-700 group-hover:scale-125 group-hover:rotate-2 brightness-90 group-hover:brightness-100"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
             loading="lazy"
             onError={(e) => { (e.currentTarget as HTMLImageElement).src = getPlaceholder(place.name); }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent transition-opacity group-hover:opacity-80" />
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/0 to-accent/0 group-hover:from-primary/10 group-hover:to-accent/10 transition-all duration-700" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
           
           {/* Compact Badges */}
-          <div className="absolute top-2 left-2 flex gap-1.5 transition-all duration-300 group-hover:scale-105">
+          <div className="absolute top-2 left-2 flex gap-1.5">
             {place.rating && (
-              <Badge className="bg-white/95 text-foreground border-0 text-xs px-2 py-1 shadow-lg backdrop-blur-sm font-semibold animate-fade-in">
-                <Star className="w-3 h-3 fill-amber-400 text-amber-400 mr-1 animate-pulse" />
+              <Badge className="bg-white/90 text-foreground border-0 text-xs px-2 py-0.5 shadow-md">
+                <Star className="w-3 h-3 fill-amber-400 text-amber-400 mr-1" />
                 {place.rating}
               </Badge>
             )}
             {place.openNow !== undefined && (
-              <Badge className={`text-xs px-2 py-1 shadow-lg backdrop-blur-sm font-semibold animate-fade-in ${
+              <Badge className={`text-xs px-2 py-0.5 shadow-md ${
                 place.openNow 
-                  ? 'bg-emerald-500/95 text-white animate-pulse' 
-                  : 'bg-slate-500/95 text-white'
+                  ? 'bg-emerald-500/90 text-white' 
+                  : 'bg-slate-500/90 text-white'
               }`}>
-                {place.openNow ? '● Open' : '● Closed'}
+                {place.openNow ? 'Open' : 'Closed'}
               </Badge>
             )}
           </div>
@@ -110,8 +109,8 @@ export const PlaceCard = ({ place, onAdd, onFavoriteToggle, onView }: PlaceCardP
         </div>
         
         {/* Compact Content */}
-        <CardHeader className="p-4 pb-2 space-y-2">
-          <h3 className="font-bold text-base line-clamp-1 group-hover:text-primary transition-all duration-300 group-hover:translate-x-1">
+        <CardHeader className="p-3 pb-2 space-y-2">
+          <h3 className="font-bold text-base line-clamp-1 group-hover:text-primary transition-colors">
             {place.name}
           </h3>
           
@@ -145,7 +144,7 @@ export const PlaceCard = ({ place, onAdd, onFavoriteToggle, onView }: PlaceCardP
         </CardHeader>
         
         {/* Compact Actions */}
-        <CardContent className="p-4 pt-0">
+        <CardContent className="p-3 pt-0">
           <div className="flex gap-2">
             <Button 
               size="sm"
@@ -153,16 +152,16 @@ export const PlaceCard = ({ place, onAdd, onFavoriteToggle, onView }: PlaceCardP
                 e.stopPropagation();
                 onAdd(place);
               }}
-              className="flex-1 h-10 shadow-md hover:shadow-xl transition-all duration-300 font-bold gradient-primary text-xs hover:scale-105"
+              className="flex-1 h-9 shadow-sm hover:shadow-md transition-all font-semibold gradient-primary text-xs"
             >
-              <Plus className="w-4 h-4 mr-1.5" />
+              <Plus className="w-3.5 h-3.5 mr-1" />
               Add to Plan
             </Button>
             
             <ShareButton 
               placeName={place.name}
               placeAddress={place.address}
-              className="flex-1 h-10 text-xs font-semibold hover:scale-105 transition-all duration-300"
+              className="flex-1 h-9 text-xs"
             />
           </div>
         </CardContent>

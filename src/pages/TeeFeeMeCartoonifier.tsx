@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import crownImage from "@/assets/felicia-crown.png";
 
-type CartoonStyle = "simpsons" | "flintstones" | "trump" | "elon" | "familyguy" | "renandstimpy" | "southpark" | "anime" | "disney" | "marvel" | "pixar" | "rickmorty";
+type CartoonStyle = "simpsons" | "flintstones" | "trump" | "elon" | "familyguy" | "renandstimpy";
 
 const TeeFeeMeCartoonifier = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -26,97 +27,42 @@ const TeeFeeMeCartoonifier = () => {
       name: "The Simpsons", 
       emoji: "💛",
       gradient: "from-yellow-400 to-yellow-600",
-      borderColor: "border-yellow-500",
-      available: true
+      borderColor: "border-yellow-500"
     },
     { 
       id: "flintstones" as CartoonStyle, 
       name: "Flintstones", 
       emoji: "🦴",
       gradient: "from-orange-400 to-red-500",
-      borderColor: "border-orange-500",
-      available: true
+      borderColor: "border-orange-500"
     },
     { 
       id: "trump" as CartoonStyle, 
       name: "Trump Style", 
       emoji: "🎩",
       gradient: "from-red-500 to-blue-600",
-      borderColor: "border-blue-500",
-      available: true
+      borderColor: "border-blue-500"
     },
     { 
       id: "elon" as CartoonStyle, 
       name: "Elon Musk", 
       emoji: "🚀",
       gradient: "from-blue-500 to-purple-600",
-      borderColor: "border-purple-500",
-      available: true
+      borderColor: "border-purple-500"
     },
     { 
       id: "familyguy" as CartoonStyle, 
       name: "Family Guy", 
       emoji: "🍺",
       gradient: "from-green-400 to-blue-500",
-      borderColor: "border-teal-500",
-      available: true
+      borderColor: "border-teal-500"
     },
     { 
       id: "renandstimpy" as CartoonStyle, 
       name: "Ren & Stimpy", 
       emoji: "😵",
       gradient: "from-pink-500 to-red-600",
-      borderColor: "border-red-500",
-      available: true
-    },
-    // Coming Soon Styles
-    { 
-      id: "southpark" as CartoonStyle, 
-      name: "South Park", 
-      emoji: "🎿",
-      gradient: "from-cyan-400 to-blue-500",
-      borderColor: "border-cyan-500",
-      available: false
-    },
-    { 
-      id: "anime" as CartoonStyle, 
-      name: "Anime Style", 
-      emoji: "⚡",
-      gradient: "from-purple-400 to-pink-500",
-      borderColor: "border-purple-500",
-      available: false
-    },
-    { 
-      id: "disney" as CartoonStyle, 
-      name: "Disney Classic", 
-      emoji: "✨",
-      gradient: "from-blue-400 to-purple-500",
-      borderColor: "border-blue-500",
-      available: false
-    },
-    { 
-      id: "marvel" as CartoonStyle, 
-      name: "Marvel Comics", 
-      emoji: "💥",
-      gradient: "from-red-500 to-yellow-500",
-      borderColor: "border-red-500",
-      available: false
-    },
-    { 
-      id: "pixar" as CartoonStyle, 
-      name: "Pixar 3D", 
-      emoji: "🎬",
-      gradient: "from-teal-400 to-blue-600",
-      borderColor: "border-teal-500",
-      available: false
-    },
-    { 
-      id: "rickmorty" as CartoonStyle, 
-      name: "Rick & Morty", 
-      emoji: "🧪",
-      gradient: "from-green-500 to-blue-600",
-      borderColor: "border-green-500",
-      available: false
+      borderColor: "border-red-500"
     },
   ];
 
@@ -220,8 +166,7 @@ const TeeFeeMeCartoonifier = () => {
       }
     } catch (error) {
       console.error('Cartoonify error:', error);
-      const errorMessage = error instanceof Error ? error.message : "Oops! The magic didn't work. Try again!";
-      toast.error(errorMessage);
+      toast.error("Oops! The magic didn't work. Try again!");
     } finally {
       setIsProcessing(false);
       clearInterval(messageInterval);
@@ -276,13 +221,29 @@ const TeeFeeMeCartoonifier = () => {
         {/* Hero Section */}
         {!selectedFile && (
           <div className="text-center mb-12 animate-fade-in">
-            <div className="text-8xl mb-6 animate-float">🎨</div>
+            <div className="relative inline-block mb-6">
+              <img
+                src={crownImage}
+                alt="TeeFee Crown"
+                className="w-72 h-auto mx-auto animate-float cursor-pointer hover:scale-110 transition-transform duration-300 drop-shadow-2xl"
+                onClick={() => fileInputRef.current?.click()}
+                loading="lazy"
+                decoding="async"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-yellow-400/30 to-transparent blur-3xl animate-pulse-subtle" />
+            </div>
             
-            <h1 className="text-5xl md:text-7xl font-bold mb-4 gradient-text drop-shadow-2xl">
-              TeeFee Me
+            <div className="mb-4 inline-block px-8 py-3 bg-gradient-to-r from-pink-500 via-purple-500 to-rose-500 rounded-full text-white font-black text-xl shadow-glow animate-pulse">
+              👑 QUEEN FELICIA'S ROYAL CARTOONIFIER 👑
+            </div>
+            <h1 className="text-6xl md:text-8xl font-bold mb-3 bg-gradient-to-r from-yellow-500 via-pink-500 to-purple-600 bg-clip-text text-transparent animate-pulse-subtle drop-shadow-2xl">
+              ✨ TeeFee Me ✨
             </h1>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-              Transform your photos into legendary cartoon styles
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-rose-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+              Legendary Cartoon Transformer 🎨
+            </h2>
+            <p className="text-xl md:text-2xl font-bold bg-gradient-to-r from-amber-400 via-orange-400 to-amber-400 bg-clip-text text-transparent mb-8 drop-shadow-lg">
+              Transform into legendary cartoon styles! Touch Queen Felicia's crown to begin your magical journey! ✨👑
             </p>
 
             {/* Upload Zone */}
@@ -338,10 +299,10 @@ const TeeFeeMeCartoonifier = () => {
         {selectedFile && !showResult && (
           <div className="space-y-8 animate-fade-in">
             <div className="text-center">
-              <h2 className="text-4xl font-bold mb-3 gradient-text">
-                Pick Your Style 🎭
+              <h2 className="text-5xl font-bold mb-3 bg-gradient-to-r from-yellow-500 via-pink-500 to-purple-600 bg-clip-text text-transparent">
+                Pick Your Legendary Style! 🎭
               </h2>
-              <p className="text-lg text-muted-foreground">Choose your legendary transformation</p>
+              <p className="text-xl text-muted-foreground">Choose wisely... or try them all!</p>
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -349,21 +310,14 @@ const TeeFeeMeCartoonifier = () => {
                 <Button
                   key={style.id}
                   onClick={() => {
-                    if (!style.available) {
-                      toast.info(`${style.name} coming soon! 🎉`);
-                      return;
-                    }
                     setSelectedStyle(style.id);
                     if (cartoonUrl) {
                       setCartoonUrl("");
                       setShowResult(false);
                     }
                   }}
-                  disabled={!style.available}
-                  className={`h-32 flex flex-col gap-2 transition-all duration-300 border-4 rounded-2xl relative ${
-                    !style.available
-                      ? `bg-muted/30 border-muted-foreground/20 opacity-70 cursor-not-allowed`
-                      : selectedStyle === style.id 
+                  className={`h-32 flex flex-col gap-2 transition-all duration-300 border-4 rounded-2xl ${
+                    selectedStyle === style.id 
                       ? `bg-gradient-to-br ${style.gradient} ${style.borderColor} text-white shadow-glow scale-110 animate-bounce-in` 
                       : `bg-muted/50 border-muted hover:border-primary/50 hover:scale-105 hover:shadow-lg`
                   }`}
@@ -372,11 +326,6 @@ const TeeFeeMeCartoonifier = () => {
                     fontFamily: selectedStyle === style.id ? '"Comic Sans MS", cursive' : 'inherit'
                   }}
                 >
-                  {!style.available && (
-                    <div className="absolute top-2 right-2 bg-yellow-500 text-black text-xs px-2 py-1 rounded-full font-bold animate-pulse">
-                      SOON
-                    </div>
-                  )}
                   <span className="text-4xl drop-shadow-lg">{style.emoji}</span>
                   <span className="font-bold text-lg">{style.name}</span>
                 </Button>
@@ -419,57 +368,21 @@ const TeeFeeMeCartoonifier = () => {
               </div>
 
               {isProcessing && (
-                <div className="mt-8 text-center animate-fade-in space-y-6">
-                  {/* Loading Car Animation */}
-                  <div className="relative h-24 bg-gradient-to-r from-slate-700 to-slate-800 rounded-lg overflow-hidden">
-                    <div className="absolute bottom-2 w-full flex justify-center">
-                      <div className="text-6xl animate-car">
-                        🚗💨
-                      </div>
-                    </div>
-                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-yellow-500/30">
-                      <div 
-                        className="h-full bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 transition-all duration-300"
-                        style={{ width: `${(elapsedTime / estimatedTime) * 100}%` }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Progress Bar */}
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm font-medium">
-                      <span>Processing...</span>
-                      <span>{Math.min(100, Math.round((elapsedTime / estimatedTime) * 100))}%</span>
-                    </div>
-                    <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-gradient-to-r from-yellow-500 via-pink-500 to-purple-600 transition-all duration-300 relative overflow-hidden"
-                        style={{ width: `${Math.min(100, (elapsedTime / estimatedTime) * 100)}%` }}
-                      >
-                        <div className="absolute inset-0 bg-white/20 animate-shimmer" />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Bouncing Dots */}
+                <div className="mt-8 text-center animate-fade-in">
                   <div className="flex items-center justify-center space-x-3 mb-4">
                     <div className="w-4 h-4 bg-yellow-500 rounded-full animate-bounce" style={{ animationDelay: "0s" }} />
                     <div className="w-4 h-4 bg-pink-500 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }} />
                     <div className="w-4 h-4 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: "0.4s" }} />
                   </div>
-
-                  {/* Message */}
                   <p className="text-2xl font-bold bg-gradient-to-r from-yellow-500 via-pink-500 to-purple-600 bg-clip-text text-transparent animate-pulse-subtle">
                     {funnyMessages[currentMessageIndex]}
                   </p>
-
-                  {/* Countdown */}
-                  <div className="space-y-2">
-                    <div className="text-6xl font-black text-primary animate-pulse drop-shadow-glow">
+                  <div className="mt-4 space-y-2">
+                    <div className="text-5xl font-black text-primary animate-pulse">
                       {Math.max(0, Math.ceil(estimatedTime - elapsedTime))}s
                     </div>
                     <p className="text-sm text-muted-foreground font-semibold">
-                      Time remaining
+                      Estimated time remaining
                     </p>
                   </div>
                 </div>
@@ -482,10 +395,10 @@ const TeeFeeMeCartoonifier = () => {
         {showResult && cartoonUrl && (
           <div className="space-y-8 animate-fade-in">
             <div className="text-center">
-              <h2 className="text-5xl font-bold mb-3 gradient-text">
+              <h2 className="text-6xl font-bold mb-3 bg-gradient-to-r from-yellow-500 via-pink-500 to-purple-600 bg-clip-text text-transparent animate-pulse-subtle">
                 You've Been TeeFeed! 🎉
               </h2>
-              <p className="text-lg text-muted-foreground">Transformation complete</p>
+              <p className="text-xl text-muted-foreground">Legendary transformation complete!</p>
             </div>
 
             <Card className="p-8 glass">
@@ -556,23 +469,6 @@ const TeeFeeMeCartoonifier = () => {
         }
         .animate-pulse-subtle {
           animation: pulse-subtle 2s ease-in-out infinite;
-        }
-        @keyframes car {
-          0% { transform: translateX(-100vw); }
-          100% { transform: translateX(100vw); }
-        }
-        .animate-car {
-          animation: car 3s linear infinite;
-        }
-        @keyframes shimmer {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(100%); }
-        }
-        .animate-shimmer {
-          animation: shimmer 2s linear infinite;
-        }
-        .drop-shadow-glow {
-          filter: drop-shadow(0 0 20px currentColor);
         }
       `}</style>
     </div>
