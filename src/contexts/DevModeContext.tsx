@@ -20,8 +20,8 @@ export const DevModeProvider: React.FC<{ children: ReactNode }> = ({ children })
   const enableDevMode = () => {
     setIsDevMode(true);
     sessionStorage.setItem('tlc_dev_mode', 'true');
-    toast.success("🚀 DEVELOPER MODE ACTIVATED", {
-      description: "Premium features unlocked • All themes available • Enhanced UI everywhere",
+    toast.success("✨ Welcome, Developer!", {
+      description: "You've unlocked premium features, all themes, and enhanced UI throughout the app. Enjoy exploring! 💖",
       duration: 5000,
     });
   };
@@ -29,7 +29,7 @@ export const DevModeProvider: React.FC<{ children: ReactNode }> = ({ children })
   const disableDevMode = () => {
     setIsDevMode(false);
     sessionStorage.removeItem('tlc_dev_mode');
-    toast.info("Developer mode deactivated");
+    toast.info("💝 Developer mode turned off. See you soon!");
   };
 
   return (
