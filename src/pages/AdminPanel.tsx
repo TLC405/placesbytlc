@@ -37,6 +37,7 @@ import CupidSettingsPanel from "@/components/admin/CupidSettingsPanel";
 import ActivityLogViewer from "@/components/admin/ActivityLogViewer";
 import ComprehensiveExportSystem from "@/components/admin/ComprehensiveExportSystem";
 import { UpdateLogger } from "@/components/admin/UpdateLogger";
+import { PromptLibrary } from "@/components/admin/PromptLibrary";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface UserAnalytics {
@@ -366,6 +367,10 @@ const AdminPanel = () => {
                   <Code className="w-4 h-4 mr-2" />
                   Dev Tools
                 </TabsTrigger>
+                <TabsTrigger value="prompts">
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Prompts
+                </TabsTrigger>
               </TabsList>
             </div>
           </div>
@@ -458,6 +463,11 @@ const AdminPanel = () => {
                 <AIPromptInterface />
                 <SMSNotificationPanel />
                 <AppReadinessChecklist />
+              </TabsContent>
+
+              {/* Prompts Tab */}
+              <TabsContent value="prompts" className="mt-0">
+                <PromptLibrary />
               </TabsContent>
 
             </div>
