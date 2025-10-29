@@ -16,10 +16,10 @@ interface SearchBarProps {
   onCategoryToggle?: (category: string) => void;
   categoryType?: "food" | "activity" | "both";
   onCategoryTypeChange?: (type: "food" | "activity" | "both") => void;
-  onLocationModeChange?: (mode: "tlc" | "partner" | "middle") => void;
+  onLocationModeChange?: (mode: "tlc" | "felicia" | "middle") => void;
 }
 
-type LocationMode = "tlc" | "partner" | "middle";
+type LocationMode = "tlc" | "felicia" | "middle";
 
 const FOOD_CATEGORIES = [
   { label: "All Food", value: "food" },
@@ -80,15 +80,15 @@ export const SearchBar = ({
             TLC
           </button>
           <button
-            onClick={() => handleLocationModeChange("partner")}
+            onClick={() => handleLocationModeChange("felicia")}
             className={`flex-1 p-3 rounded-xl text-sm font-bold transition-all duration-300 ${
-              locationMode === "partner"
+              locationMode === "felicia"
                 ? "bg-gradient-to-r from-primary to-accent text-white shadow-xl shadow-primary/30 animate-pulse scale-105"
                 : "hover:bg-accent/20 hover:scale-105"
             }`}
           >
             <Heart className="w-5 h-5 mx-auto mb-1 fill-current" />
-            💝 Partner
+            👑 Queen Felicia 👑
           </button>
           <button
             onClick={() => handleLocationModeChange("middle")}

@@ -63,7 +63,7 @@ export default function CodeViewer() {
               </div>
               <div>
                 <CardTitle className="text-2xl font-black gradient-text">
-                  Places Source Code
+                  FELICIA.TLC Source Code
                 </CardTitle>
                 <CardDescription className="text-base">
                   Open source • Built with React, TypeScript & Lovable
@@ -220,7 +220,7 @@ export default function CodeViewer() {
                 <h3 className="font-bold text-lg mb-2">For AI Assistants & Developers</h3>
                 <p className="text-sm text-muted-foreground mb-4">
                   This page is designed to help AI assistants (ChatGPT, Claude, Grok, etc.) understand
-                  and reference the Places codebase. All files are publicly accessible and well-documented.
+                  and reference the FELICIA.TLC codebase. All files are publicly accessible and well-documented.
                 </p>
                 <div className="space-y-1 text-sm">
                   <p>• <strong>GitHub:</strong> <code className="bg-background px-2 py-1 rounded">{repoUrl}</code></p>
