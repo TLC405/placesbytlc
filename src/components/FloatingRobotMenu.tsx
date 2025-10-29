@@ -28,10 +28,16 @@ export const FloatingRobotMenu = ({ isOpen, onClose, position }: FloatingRobotMe
   };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    toast.success("Logged out successfully");
-    navigate("/");
-    onClose();
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      toast.success("✨ Logged out successfully");
+      onClose();
+      window.location.href = "/";
+    } catch (error: any) {
+      console.error("Logout error:", error);
+      toast.error("Failed to logout");
+    }
   };
 
   const handleAuth = () => {

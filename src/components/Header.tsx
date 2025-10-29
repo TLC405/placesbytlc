@@ -48,9 +48,15 @@ export const Header = () => {
   };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    toast.success("Signed out successfully");
-    navigate("/");
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      toast.success("✨ Signed out successfully");
+      window.location.href = "/";
+    } catch (error: any) {
+      console.error("Logout error:", error);
+      toast.error("Failed to sign out");
+    }
   };
   
   const isActive = (path: string) => location.pathname === path;

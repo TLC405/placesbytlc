@@ -38,12 +38,22 @@ const TesterDashboard = () => {
   };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    toast({
-      title: "Logged out",
-      description: "You've been logged out successfully.",
-    });
-    navigate("/");
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      toast({
+        title: "✨ Logged out",
+        description: "You've been logged out successfully.",
+      });
+      window.location.href = "/";
+    } catch (error: any) {
+      console.error("Logout error:", error);
+      toast({
+        title: "Error",
+        description: "Failed to logout",
+        variant: "destructive"
+      });
+    }
   };
 
   const freeSmsUsed = smsUsage.filter(s => s.is_free_message).length;

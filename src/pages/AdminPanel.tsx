@@ -81,15 +81,9 @@ const AdminPanel = () => {
     }
   }, [roleLoading]);
 
-  if (loading || roleLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-gray-900 to-slate-900 flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <Cpu className="w-16 h-16 text-cyan-400 animate-spin mx-auto" />
-          <p className="text-cyan-400 font-mono text-lg">INITIALIZING ADMIN CONSOLE...</p>
-        </div>
-      </div>
-    );
+  // Skip loading screen for faster access
+  if (roleLoading) {
+    return null;
   }
 
   if (!user) {
