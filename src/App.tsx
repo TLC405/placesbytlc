@@ -8,8 +8,9 @@ import { Header } from "@/components/Header";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { ActivityTracker } from "@/components/ActivityTracker";
 import { DetailedCupid } from "@/components/DetailedCupid";
-import { useSessionTracker } from "@/hooks/useSessionTracker";
-import Home from "./pages/NewHome";
+import Home from "./pages/Home";
+import Explore from "./pages/Explore";
+import Plan from "./pages/Plan";
 import NotFound from "./pages/NotFound";
 
 // Lazy load quiz pages and special features
@@ -22,46 +23,10 @@ const Install = lazy(() => import("./pages/Install"));
 const FeliciaModPanel = lazy(() => import("./components/FeliciaModPanel"));
 const CodeViewer = lazy(() => import("./pages/CodeViewer"));
 const AdminPanel = lazy(() => import("./pages/AdminPanel"));
-const TesterDashboard = lazy(() => import("./components/TesterDashboard"));
-const AIRecommender = lazy(() => import("./pages/AIRecommender"));
-const CoupleMode = lazy(() => import("./pages/CoupleMode"));
-const Gamification = lazy(() => import("./pages/Gamification"));
 
 import { useGoogleMaps } from "@/hooks/useGoogleMaps";
 
 const queryClient = new QueryClient();
-
-const AppRoutes = () => {
-  useSessionTracker();
-  
-  return (
-    <Suspense fallback={
-      <div className="flex items-center justify-center min-h-[50vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent" />
-      </div>
-    }>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/quizzes" element={<Quizzes />} />
-        <Route path="/quiz/love" element={<QuizLove />} />
-        <Route path="/quiz/mbti" element={<QuizMBTI />} />
-        <Route path="/period-tracker" element={<PeriodTracker />} />
-        <Route path="/teefeeme" element={<TeeFeeMeCartoonifier />} />
-        <Route path="/teefeeme-cartoonifier" element={<TeeFeeMeCartoonifier />} />
-        <Route path="/cartoon-generator" element={<TeeFeeMeCartoonifier />} />
-        <Route path="/install" element={<Install />} />
-        <Route path="/code" element={<CodeViewer />} />
-        <Route path="/felicia-mod" element={<FeliciaModPanel />} />
-        <Route path="/admin" element={<AdminPanel />} />
-        <Route path="/tester" element={<TesterDashboard />} />
-        <Route path="/ai-recommender" element={<AIRecommender />} />
-        <Route path="/couple-mode" element={<CoupleMode />} />
-        <Route path="/gamification" element={<Gamification />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </Suspense>
-  );
-};
 
 const App = () => {
   // Show loading screen on every page refresh
@@ -91,7 +56,29 @@ const App = () => {
           <DetailedCupid />
           {!showLoader && <Header />}
           <main className="max-w-7xl mx-auto px-4 py-6">
-            <AppRoutes />
+            <Suspense fallback={
+              <div className="flex items-center justify-center min-h-[50vh]">
+                <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent" />
+              </div>
+            }>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/explore" element={<Explore />} />
+                <Route path="/plan" element={<Plan />} />
+                <Route path="/quizzes" element={<Quizzes />} />
+                <Route path="/quiz/love" element={<QuizLove />} />
+                <Route path="/quiz/mbti" element={<QuizMBTI />} />
+                <Route path="/period-tracker" element={<PeriodTracker />} />
+                <Route path="/teefeeme" element={<TeeFeeMeCartoonifier />} />
+                <Route path="/cartoon-generator" element={<TeeFeeMeCartoonifier />} />
+                <Route path="/install" element={<Install />} />
+                <Route path="/code" element={<CodeViewer />} />
+                <Route path="/felicia-mod" element={<FeliciaModPanel />} />
+                <Route path="/admin" element={<AdminPanel />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
           </main>
         </BrowserRouter>
       </TooltipProvider>

@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Palette, Heart, Sparkles } from "lucide-react";
+import { Play } from "lucide-react";
 import { AuthPanel } from "@/components/AuthPanel";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -47,10 +46,10 @@ export default function Home() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 sm:space-y-6 px-4 sm:px-6 md:px-12 pb-6 sm:pb-8">
-            <Link to="/teefeeme">
+            <Link to="/explore">
               <Button size="lg" className="w-full gap-2 sm:gap-3 h-14 sm:h-16 md:h-20 text-base sm:text-lg md:text-xl font-bold shadow-glow hover:shadow-romantic transition-all hover:scale-105 group">
-                <Palette className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 group-hover:scale-110 transition-transform" />
-                Try Cartoon Generator
+                <Play className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 group-hover:scale-110 transition-transform" />
+                Start Your Love Journey
               </Button>
             </Link>
             <div className="text-center text-sm sm:text-base text-muted-foreground font-medium">
@@ -60,110 +59,57 @@ export default function Home() {
         </Card>
       </div>
 
-      {/* Tabbed Interface */}
-      <div className="max-w-6xl mx-auto">
-        <Tabs defaultValue="features" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 h-14 p-1 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 backdrop-blur-xl border-2 border-primary/20">
-            <TabsTrigger 
-              value="features" 
-              className="text-base font-semibold data-[state=active]:gradient-primary data-[state=active]:text-white data-[state=active]:shadow-glow transition-all"
-            >
-              <Sparkles className="w-5 h-5 mr-2" />
-              Features
-            </TabsTrigger>
-            <TabsTrigger 
-              value="account" 
-              className="text-base font-semibold data-[state=active]:gradient-primary data-[state=active]:text-white data-[state=active]:shadow-glow transition-all"
-            >
-              <Heart className="w-5 h-5 mr-2" />
-              {user ? "My Account" : "Sign Up"}
-            </TabsTrigger>
-          </TabsList>
+      {/* Feature Cards Grid */}
+      <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        {/* Explore Card */}
+        <Link to="/explore">
+          <Card className="hover-lift shadow-soft border-primary/20 h-full cursor-pointer group">
+            <CardHeader>
+              <CardTitle className="text-2xl flex items-center gap-2 group-hover:text-primary transition-colors">
+                🗺️ Explore
+              </CardTitle>
+              <CardDescription className="text-base leading-relaxed pt-2">
+                Discover romantic restaurants, fun activities, and perfect date spots nearby.
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        </Link>
 
-          <TabsContent value="features" className="mt-6 space-y-6">
+        {/* Period Tracker Card */}
+        <Link to="/period-tracker">
+          <Card className="hover-lift shadow-soft border-primary/20 h-full cursor-pointer group bg-gradient-to-br from-rose-50 to-purple-50 dark:from-rose-950/20 dark:to-purple-950/20">
+            <CardHeader>
+              <CardTitle className="text-2xl flex items-center gap-2 group-hover:text-primary transition-colors">
+                📅 Peripod Tracker
+              </CardTitle>
+              <CardDescription className="text-base leading-relaxed pt-2">
+                Send him hilarious survival reminders. Because he WILL forget. (BETA)
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        </Link>
 
-            {/* Other Features */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              {/* Period Tracker Card */}
-              <Link to="/period-tracker">
-                <Card className="hover-lift shadow-soft border-primary/20 h-full cursor-pointer group bg-gradient-to-br from-rose-50 to-purple-50 dark:from-rose-950/20 dark:to-purple-950/20">
-                  <CardHeader>
-                    <CardTitle className="text-2xl flex items-center gap-2 group-hover:text-primary transition-colors">
-                      📅 Peripod Tracker
-                    </CardTitle>
-                    <CardDescription className="text-base leading-relaxed pt-2">
-                      Send him hilarious survival reminders. Because he WILL forget. (BETA)
-                    </CardDescription>
-                  </CardHeader>
-                </Card>
-              </Link>
-
-              {/* Quizzes Card */}
-              <Link to="/quizzes">
-                <Card className="hover-lift shadow-soft border-primary/20 h-full cursor-pointer group">
-                  <CardHeader>
-                    <CardTitle className="text-2xl flex items-center gap-2 group-hover:text-primary transition-colors">
-                      🎯 Quizzes
-                    </CardTitle>
-                    <CardDescription className="text-base leading-relaxed pt-2">
-                      Discover your love language, personality type, and compatibility insights.
-                    </CardDescription>
-                  </CardHeader>
-                </Card>
-              </Link>
-
-              {/* Cartoon Generator */}
-              <Link to="/teefeeme-cartoonifier">
-                <Card className="hover-lift shadow-soft border-primary/20 h-full cursor-pointer group">
-                  <CardHeader>
-                    <CardTitle className="text-2xl flex items-center gap-2 group-hover:text-primary transition-colors">
-                      🎨 Cartoon Generator
-                    </CardTitle>
-                    <CardDescription className="text-base leading-relaxed pt-2">
-                      Transform your photos into adorable cartoons
-                    </CardDescription>
-                  </CardHeader>
-                </Card>
-              </Link>
-            </div>
-
-          </TabsContent>
-
-          <TabsContent value="account" className="mt-6">
-            {!user ? (
-              <div className="max-w-2xl mx-auto">
-                <AuthPanel />
-              </div>
-            ) : (
-              <Card className="max-w-2xl mx-auto shadow-glow border-primary/20">
-                <CardHeader>
-                  <CardTitle className="text-2xl gradient-text">Welcome back!</CardTitle>
-                  <CardDescription>
-                    You're signed in as {user.email}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <Link to="/teefeeme">
-                    <Button className="w-full" size="lg">
-                      <Palette className="w-5 h-5 mr-2" />
-                      Try Cartoon Generator
-                    </Button>
-                  </Link>
-                  <Button 
-                    variant="outline" 
-                    className="w-full"
-                    onClick={async () => {
-                      await supabase.auth.signOut();
-                    }}
-                  >
-                    Sign Out
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
-          </TabsContent>
-        </Tabs>
+        {/* Quizzes Card */}
+        <Link to="/quizzes">
+          <Card className="hover-lift shadow-soft border-primary/20 h-full cursor-pointer group">
+            <CardHeader>
+              <CardTitle className="text-2xl flex items-center gap-2 group-hover:text-primary transition-colors">
+                🎯 Quizzes
+              </CardTitle>
+              <CardDescription className="text-base leading-relaxed pt-2">
+                Discover your love language, personality type, and compatibility insights.
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        </Link>
       </div>
+
+      {/* Auth Panel - Full Width if Not Logged In */}
+      {!user && (
+        <div className="max-w-2xl mx-auto">
+          <AuthPanel />
+        </div>
+      )}
     </div>
   );
 }

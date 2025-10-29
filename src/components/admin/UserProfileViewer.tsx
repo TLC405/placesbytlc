@@ -60,58 +60,51 @@ export const UserProfileViewer = ({ userId, activities, open, onOpenChange }: Us
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] bg-gradient-to-br from-slate-950 to-slate-900 border-purple-500/30 text-slate-100">
+      <DialogContent className="max-w-4xl max-h-[90vh]">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 flex-wrap">
-            <div className="p-2 rounded-lg bg-gradient-to-br from-purple-600 to-purple-500">
-              <User className="h-5 w-5 text-white" />
-            </div>
-            <span className="bg-gradient-to-r from-purple-300 to-purple-500 bg-clip-text text-transparent font-bold">
-              User Profile: {userId.slice(0, 12)}...
-            </span>
-            <Badge className={`${segment.color} text-white`}>
+          <DialogTitle className="flex items-center gap-2">
+            <User className="h-5 w-5" />
+            User Profile: {userId.slice(0, 8)}...
+            <Badge className={`${segment.color} text-white ml-2`}>
               {segment.label}
             </Badge>
           </DialogTitle>
         </DialogHeader>
-        <p className="text-xs sm:text-sm text-slate-400 px-6">
-          Comprehensive analytics and behavior patterns for this user including location, device, network, and activity data.
-        </p>
 
         <ScrollArea className="h-[70vh]">
-          <div className="space-y-6 p-2 sm:p-4">
+          <div className="space-y-6 p-4">
             {/* Overview Stats */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-              <div className="p-3 sm:p-4 border border-purple-500/30 rounded-lg bg-gradient-to-br from-purple-950/40 to-purple-900/20">
-                <div className="flex items-center gap-2 text-xs sm:text-sm text-purple-300 mb-1">
-                  <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
+            <div className="grid grid-cols-4 gap-4">
+              <div className="p-4 border rounded-lg">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+                  <Eye className="h-4 w-4" />
                   Total Visits
                 </div>
-                <div className="text-xl sm:text-2xl font-bold text-purple-100">{userActivities.length}</div>
+                <div className="text-2xl font-bold">{userActivities.length}</div>
               </div>
-              <div className="p-3 sm:p-4 border border-blue-500/30 rounded-lg bg-gradient-to-br from-blue-950/40 to-blue-900/20">
-                <div className="flex items-center gap-2 text-xs sm:text-sm text-blue-300 mb-1">
-                  <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4" />
+              <div className="p-4 border rounded-lg">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+                  <TrendingUp className="h-4 w-4" />
                   Visit Count
                 </div>
-                <div className="text-xl sm:text-2xl font-bold text-blue-100">{visitor.visitCount || 1}</div>
+                <div className="text-2xl font-bold">{visitor.visitCount || 1}</div>
               </div>
-              <div className="p-3 sm:p-4 border border-emerald-500/30 rounded-lg bg-gradient-to-br from-emerald-950/40 to-emerald-900/20">
-                <div className="flex items-center gap-2 text-xs sm:text-sm text-emerald-300 mb-1">
-                  <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
+              <div className="p-4 border rounded-lg">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+                  <Clock className="h-4 w-4" />
                   First Visit
                 </div>
-                <div className="text-xs sm:text-sm font-medium text-emerald-100">
+                <div className="text-sm font-medium">
                   {visitor.firstVisit ? new Date(visitor.firstVisit).toLocaleDateString() : 'Today'}
                 </div>
               </div>
-              <div className="p-3 sm:p-4 border border-yellow-500/30 rounded-lg bg-gradient-to-br from-yellow-950/40 to-yellow-900/20">
-                <div className="flex items-center gap-2 text-xs sm:text-sm text-yellow-300 mb-1">
-                  <Zap className="h-3 w-3 sm:h-4 sm:w-4" />
+              <div className="p-4 border rounded-lg">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+                  <Zap className="h-4 w-4" />
                   Network
                 </div>
-                <div className="text-xs sm:text-sm font-bold text-yellow-100">{network.speed || 'Unknown'}</div>
-                <div className="text-xs text-yellow-300/60">{network.latency}ms</div>
+                <div className="text-sm font-bold">{network.speed || 'Unknown'}</div>
+                <div className="text-xs text-muted-foreground">{network.latency}ms</div>
               </div>
             </div>
 

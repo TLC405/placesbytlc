@@ -10,10 +10,8 @@ import { LoveLanguageScores } from "@/types";
 import { storage } from "@/lib/storage";
 import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
-import { useTesterCheck } from "@/hooks/useTesterCheck";
 
 export default function QuizLove() {
-  useTesterCheck();
   const [answers, setAnswers] = useState<Record<number, "A" | "B">>({});
   const [result, setResult] = useState<LoveLanguageScores | null>(null);
 

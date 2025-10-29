@@ -276,42 +276,6 @@ export type Database = {
         }
         Relationships: []
       }
-      ip_history: {
-        Row: {
-          first_seen: string | null
-          id: string
-          ip_address: string
-          last_seen: string | null
-          location_data: Json | null
-          notes: string | null
-          risk_score: number | null
-          user_id: string | null
-          visit_count: number | null
-        }
-        Insert: {
-          first_seen?: string | null
-          id?: string
-          ip_address: string
-          last_seen?: string | null
-          location_data?: Json | null
-          notes?: string | null
-          risk_score?: number | null
-          user_id?: string | null
-          visit_count?: number | null
-        }
-        Update: {
-          first_seen?: string | null
-          id?: string
-          ip_address?: string
-          last_seen?: string | null
-          location_data?: Json | null
-          notes?: string | null
-          risk_score?: number | null
-          user_id?: string | null
-          visit_count?: number | null
-        }
-        Relationships: []
-      }
       okc_events_cache: {
         Row: {
           created_at: string | null
@@ -360,30 +324,6 @@ export type Database = {
           url?: string | null
           venue_address?: string | null
           venue_name?: string | null
-        }
-        Relationships: []
-      }
-      phone_rate_limits: {
-        Row: {
-          created_at: string
-          id: string
-          last_send_at: string
-          phone_number: string
-          send_count: number
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          last_send_at?: string
-          phone_number: string
-          send_count?: number
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          last_send_at?: string
-          phone_number?: string
-          send_count?: number
         }
         Relationships: []
       }
@@ -462,36 +402,6 @@ export type Database = {
           },
         ]
       }
-      sms_usage: {
-        Row: {
-          id: string
-          is_free_message: boolean | null
-          message_type: string
-          phone_number: string
-          sent_at: string | null
-          status: string | null
-          user_id: string
-        }
-        Insert: {
-          id?: string
-          is_free_message?: boolean | null
-          message_type: string
-          phone_number: string
-          sent_at?: string | null
-          status?: string | null
-          user_id: string
-        }
-        Update: {
-          id?: string
-          is_free_message?: boolean | null
-          message_type?: string
-          phone_number?: string
-          sent_at?: string | null
-          status?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
       user_activity_log: {
         Row: {
           activity_data: Json
@@ -513,51 +423,6 @@ export type Database = {
           id?: string
           timestamp?: string | null
           user_id?: string | null
-        }
-        Relationships: []
-      }
-      user_analytics: {
-        Row: {
-          account_created: string | null
-          average_session_duration: number | null
-          engagement_score: number | null
-          last_ip_address: string | null
-          last_seen: string | null
-          total_page_views: number | null
-          total_sessions: number | null
-          total_time_spent: number | null
-          unique_ips_count: number | null
-          updated_at: string | null
-          user_id: string
-          user_segment: string | null
-        }
-        Insert: {
-          account_created?: string | null
-          average_session_duration?: number | null
-          engagement_score?: number | null
-          last_ip_address?: string | null
-          last_seen?: string | null
-          total_page_views?: number | null
-          total_sessions?: number | null
-          total_time_spent?: number | null
-          unique_ips_count?: number | null
-          updated_at?: string | null
-          user_id: string
-          user_segment?: string | null
-        }
-        Update: {
-          account_created?: string | null
-          average_session_duration?: number | null
-          engagement_score?: number | null
-          last_ip_address?: string | null
-          last_seen?: string | null
-          total_page_views?: number | null
-          total_sessions?: number | null
-          total_time_spent?: number | null
-          unique_ips_count?: number | null
-          updated_at?: string | null
-          user_id?: string
-          user_segment?: string | null
         }
         Relationships: []
       }
@@ -623,60 +488,11 @@ export type Database = {
           },
         ]
       }
-      user_sessions: {
-        Row: {
-          device_info: Json | null
-          fingerprint: string | null
-          id: string
-          ip_address: string
-          is_active: boolean | null
-          last_activity: string | null
-          location_info: Json | null
-          pages_visited: number | null
-          session_end: string | null
-          session_start: string | null
-          total_duration: number | null
-          user_agent: string | null
-          user_id: string | null
-        }
-        Insert: {
-          device_info?: Json | null
-          fingerprint?: string | null
-          id?: string
-          ip_address: string
-          is_active?: boolean | null
-          last_activity?: string | null
-          location_info?: Json | null
-          pages_visited?: number | null
-          session_end?: string | null
-          session_start?: string | null
-          total_duration?: number | null
-          user_agent?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          device_info?: Json | null
-          fingerprint?: string | null
-          id?: string
-          ip_address?: string
-          is_active?: boolean | null
-          last_activity?: string | null
-          location_info?: Json | null
-          pages_visited?: number | null
-          session_end?: string | null
-          session_start?: string | null
-          total_duration?: number | null
-          user_agent?: string | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      end_user_session: { Args: { session_id: string }; Returns: undefined }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

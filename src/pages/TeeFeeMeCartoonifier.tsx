@@ -233,17 +233,14 @@ const TeeFeeMeCartoonifier = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-yellow-400/30 to-transparent blur-3xl animate-pulse-subtle" />
             </div>
             
-            <div className="mb-4 inline-block px-8 py-3 bg-gradient-to-r from-pink-500 via-purple-500 to-rose-500 rounded-full text-white font-black text-xl shadow-glow animate-pulse">
-              👑 QUEEN FELICIA'S ROYAL CARTOONIFIER 👑
-            </div>
-            <h1 className="text-6xl md:text-8xl font-bold mb-3 bg-gradient-to-r from-yellow-500 via-pink-500 to-purple-600 bg-clip-text text-transparent animate-pulse-subtle drop-shadow-2xl">
-              ✨ TeeFee Me ✨
+            <h1 className="text-6xl md:text-8xl font-bold mb-3 bg-gradient-to-r from-yellow-500 via-pink-500 to-purple-600 bg-clip-text text-transparent animate-pulse-subtle">
+              TeeFee Me.
             </h1>
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-rose-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-              Legendary Cartoon Transformer 🎨
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 gradient-text">
+              Cartoonifier 🎨
             </h2>
-            <p className="text-xl md:text-2xl font-bold bg-gradient-to-r from-amber-400 via-orange-400 to-amber-400 bg-clip-text text-transparent mb-8 drop-shadow-lg">
-              Transform into legendary cartoon styles! Touch Queen Felicia's crown to begin your magical journey! ✨👑
+            <p className="text-xl md:text-2xl text-muted-foreground mb-8">
+              Transform into legendary cartoon styles! Touch the crown to begin! ✨
             </p>
 
             {/* Upload Zone */}

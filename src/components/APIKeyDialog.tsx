@@ -63,9 +63,9 @@ export const APIKeyDialog = ({ open, onOpenChange, onSave, currentKey }: APIKeyD
             <DialogTitle className="text-2xl gradient-text">Key to TLC's Heart 🔑💕</DialogTitle>
           </div>
           <DialogDescription className="text-base leading-relaxed">
-            👑 Queen Felicia, you hold the royal key to unlock our magical adventures together! 
-            Enter the enchanted key below to discover all the amazing date spots waiting for us. 
-            This special key opens up a kingdom of possibilities for our journey together. ✨💕
+            💝 Felicia, you hold the key to unlock our romantic adventures together! 
+            Enter the magic key below to discover all the amazing date spots waiting for us. 
+            This special key opens up a world of possibilities for our journey together. ✨
           </DialogDescription>
         </DialogHeader>
 
