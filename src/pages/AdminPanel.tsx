@@ -8,6 +8,8 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { useUserRole } from "@/hooks/useUserRole";
+import { useAuth } from "@/contexts/AuthContext";
 import { 
   Users, 
   BarChart3, 
@@ -22,7 +24,9 @@ import {
   Rocket,
   Shield,
   Zap,
-  Heart
+  Heart,
+  Lock,
+  LogIn
 } from "lucide-react";
 import { CommandStation } from "@/components/admin/CommandStation";
 import { UserAnalyticsDashboard } from "@/components/admin/UserAnalyticsDashboard";
@@ -55,16 +59,18 @@ interface UserAnalytics {
 
 const AdminPanel = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { hasRole, isLoading: roleLoading } = useUserRole();
   const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [user, setUser] = useState<any>(null);
   const [users, setUsers] = useState<UserAnalytics[]>([]);
   const [allActivities, setAllActivities] = useState<any[]>([]);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
-  const [codeUnlocked, setCodeUnlocked] = useState(false);
-  const [codeInput, setCodeInput] = useState("");
-  const [showCodeDialog, setShowCodeDialog] = useState(true);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isSigningIn, setIsSigningIn] = useState(false);
+  
+  const isAdmin = hasRole('admin');
 
   // Track admin actions
   const trackAdminAction = useCallback(async (action: string, section: string, details?: any) => {
@@ -77,9 +83,31 @@ const AdminPanel = () => {
     }
   }, []);
 
+  // Handle sign in
+  const handleSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSigningIn(true);
+    
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+      
+      if (error) throw error;
+      
+      toast.success("Signed in successfully!");
+      // Role check will happen automatically via useUserRole
+    } catch (error: any) {
+      toast.error(error.message || "Failed to sign in");
+    } finally {
+      setIsSigningIn(false);
+    }
+  };
+
   // Setup realtime subscription for analytics
   useEffect(() => {
-    if (!codeUnlocked) return;
+    if (!isAdmin || !user) return;
 
     const channel = supabase
       .channel('admin-analytics-updates')
@@ -103,62 +131,19 @@ const AdminPanel = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [codeUnlocked]);
+  }, [isAdmin, user]);
 
-  // Check admin access on mount
+  // Fetch analytics when admin access is confirmed
   useEffect(() => {
-    const checkAdminAccess = () => {
-      try {
-        const role = localStorage.getItem('pin_role');
-        const expiry = parseInt(localStorage.getItem('pin_expiry') || '0');
-        
-        // Check if PIN token expired
-        if (!role || Date.now() > expiry) {
-          toast.error("Please log in to access admin panel");
-          navigate('/');
-          return;
-        }
-        
-        // Check if user has admin or warlord role
-        if (role !== 'admin' && role !== 'warlord') {
-          toast.error("Admin access required");
-          navigate('/');
-          return;
-        }
-
-        setIsAdmin(true);
-        
-        // Check if code was already entered in this session
-        const sessionCode = sessionStorage.getItem('admin_code_unlocked');
-        if (sessionCode === 'true') {
-          setCodeUnlocked(true);
-          setShowCodeDialog(false);
-          fetchUserAnalytics();
-        }
-      } catch (error) {
-        console.error("Admin access check failed:", error);
-        toast.error("Failed to verify admin access");
-        navigate('/');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkAdminAccess();
-  }, [navigate]);
-
-  const handleCodeSubmit = () => {
-    if (codeInput && isAdmin) {
-      setCodeUnlocked(true);
-      setShowCodeDialog(false);
-      sessionStorage.setItem('admin_code_unlocked', 'true');
+    if (isAdmin && user && !roleLoading) {
       fetchUserAnalytics();
-      toast.success("Access granted");
-    } else {
-      toast.error("Incorrect code");
-      setCodeInput("");
+      setLoading(false);
+    } else if (!roleLoading && !isAdmin && user) {
+      setLoading(false);
+    } else if (!roleLoading && !user) {
+      setLoading(false);
     }
-  };
+  }, [isAdmin, user, roleLoading]);
 
   const fetchUserAnalytics = async () => {
     try {
@@ -272,44 +257,123 @@ const AdminPanel = () => {
     }
   };
 
-  if (loading) {
+  if (loading || roleLoading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-black to-pink-900 flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground">Loading admin panel...</p>
+          <p className="text-white/80">Loading admin panel...</p>
         </div>
       </div>
     );
   }
 
-  // Code unlock dialog
-  if (!codeUnlocked) {
+  // Show sign-in form if not authenticated
+  if (!user) {
     return (
-      <Dialog open={showCodeDialog} onOpenChange={setShowCodeDialog}>
-        <DialogContent className="bg-white border-2 border-primary">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-primary">
-              <Shield className="w-6 h-6" />
-              Admin Security Check
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <p className="text-muted-foreground">Enter admin code to unlock full access</p>
-            <Input
-              type="password"
-              value={codeInput}
-              onChange={(e) => setCodeInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleCodeSubmit()}
-              placeholder="Enter code..."
-              className="text-center text-xl tracking-widest"
-            />
-            <Button onClick={handleCodeSubmit} className="w-full">
-              Unlock Admin Panel
+      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-black to-pink-900 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md border-2 border-primary/30 bg-black/50 backdrop-blur-xl">
+          <CardHeader className="text-center space-y-2">
+            <div className="flex justify-center mb-4">
+              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-pink-500 p-4 shadow-lg shadow-primary/50">
+                <Shield className="w-full h-full text-white" />
+              </div>
+            </div>
+            <CardTitle className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary via-pink-500 to-purple-500">
+              Admin Portal
+            </CardTitle>
+            <CardDescription className="text-gray-400">
+              Sign in to access admin features
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSignIn} className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-sm text-gray-400">Email</label>
+                <Input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="admin@example.com"
+                  required
+                  className="bg-black/50 border-primary/30 text-white placeholder:text-gray-600"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm text-gray-400">Password</label>
+                <Input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  className="bg-black/50 border-primary/30 text-white placeholder:text-gray-600"
+                />
+              </div>
+              <Button 
+                type="submit" 
+                disabled={isSigningIn}
+                className="w-full bg-gradient-to-r from-primary to-pink-500 hover:from-primary/90 hover:to-pink-500/90 text-white font-bold py-6"
+              >
+                {isSigningIn ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Signing in...
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <LogIn className="w-5 h-5" />
+                    Sign In to Admin Panel
+                  </div>
+                )}
+              </Button>
+            </form>
+            <div className="mt-6 text-center">
+              <Button
+                variant="ghost"
+                onClick={() => navigate("/")}
+                className="text-gray-400 hover:text-white"
+              >
+                ← Back to Home
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Show access denied if not admin
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-black to-pink-900 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md border-2 border-red-500/30 bg-black/50 backdrop-blur-xl">
+          <CardHeader className="text-center space-y-2">
+            <div className="flex justify-center mb-4">
+              <div className="w-20 h-20 rounded-full bg-red-500/20 p-4 border-2 border-red-500/50">
+                <Lock className="w-full h-full text-red-500" />
+              </div>
+            </div>
+            <CardTitle className="text-3xl font-black text-red-500">
+              Access Denied
+            </CardTitle>
+            <CardDescription className="text-gray-400">
+              You don't have admin privileges
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-center text-gray-300">
+              This area is restricted to administrators only. Please contact support if you need access.
+            </p>
+            <Button
+              onClick={() => navigate("/")}
+              className="w-full bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-600 hover:to-gray-700"
+            >
+              Return to Home
             </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 

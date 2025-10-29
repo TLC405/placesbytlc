@@ -94,7 +94,7 @@ export default function HackerScreen() {
   }, [showBriefing, countdown, navigate]);
 
   return (
-    <div className="min-h-screen bg-black text-green-400 font-mono overflow-hidden relative">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-green-400 font-mono overflow-hidden relative">
       {/* Animated grid background */}
       <div className="absolute inset-0 opacity-20">
         <div className="absolute inset-0" 

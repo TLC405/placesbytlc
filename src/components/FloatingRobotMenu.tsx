@@ -2,8 +2,7 @@ import { useState } from "react";
 import { Shield, Zap, Crown, User, Settings, LogOut, Lock, Home, LogIn } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { usePIN } from "@/contexts/PINContext";
-import { AdminPINModal } from "./AdminPINModal";
+import { useUserRole } from "@/hooks/useUserRole";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -15,26 +14,17 @@ interface FloatingRobotMenuProps {
 
 export const FloatingRobotMenu = ({ isOpen, onClose, position }: FloatingRobotMenuProps) => {
   const navigate = useNavigate();
-  const { user, showLogin } = useAuth();
-  const { isAdmin, checkAdminAccess } = usePIN();
+  const { user } = useAuth();
+  const { hasRole } = useUserRole();
   const [showAdminPIN, setShowAdminPIN] = useState(false);
+  
+  const isAdmin = hasRole('admin');
 
   if (!isOpen) return null;
 
   const handleAdminAccess = () => {
-    if (isAdmin) {
-      navigate("/admin");
-      onClose();
-    } else {
-      setShowAdminPIN(true);
-    }
-  };
-
-  const handleAdminPINSuccess = () => {
-    checkAdminAccess();
     navigate("/admin");
     onClose();
-    toast.success("🔓 Admin access granted!");
   };
 
   const handleLogout = async () => {
@@ -127,16 +117,10 @@ export const FloatingRobotMenu = ({ isOpen, onClose, position }: FloatingRobotMe
 
         <div className="mt-3 pt-3 border-t border-green-500/30 text-center">
           <div className="text-xs text-green-500/50 font-mono">
-            SECURE_MODE • PIN_PROTECTED
+            {isAdmin ? "ADMIN_ACCESS • AUTHORIZED" : "SECURE_MODE • ACTIVE"}
           </div>
         </div>
       </div>
-
-      <AdminPINModal
-        open={showAdminPIN}
-        onOpenChange={setShowAdminPIN}
-        onSuccess={handleAdminPINSuccess}
-      />
     </>
   );
 };
