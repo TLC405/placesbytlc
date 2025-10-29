@@ -145,8 +145,8 @@ const TeeFeeMeCartoonifierNew = () => {
     setCartoonUrl("");
 
     const progressInterval = setInterval(() => {
-      setProgress(prev => Math.min(prev + 2, 95));
-    }, 300);
+      setProgress(prev => Math.min(prev + 1.5, 90));
+    }, 200);
 
     try {
       const reader = new FileReader();
@@ -185,16 +185,26 @@ const TeeFeeMeCartoonifierNew = () => {
       }
 
       if (data?.cartoonImage) {
-        setProgress(100);
         setCartoonUrl(data.cartoonImage);
-        setTimeout(() => {
-          setShowResult(true);
-          if (funMode) {
-            toast.success('🎉 TeeFee transformation complete! Looking good!');
-          } else {
-            toast.success('Transformation complete!');
-          }
-        }, 500);
+        
+        // Smoothly complete progress to 100
+        const completeProgress = setInterval(() => {
+          setProgress(prev => {
+            if (prev >= 100) {
+              clearInterval(completeProgress);
+              setTimeout(() => {
+                setShowResult(true);
+                if (funMode) {
+                  toast.success('🎉 TeeFee transformation complete! Looking good!');
+                } else {
+                  toast.success('✨ Transformation complete!');
+                }
+              }, 300);
+              return 100;
+            }
+            return prev + 5;
+          });
+        }, 100);
       }
     } catch (error) {
       console.error('Cartoonify error:', error);

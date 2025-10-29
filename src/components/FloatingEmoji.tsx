@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
-import { Shield, Zap, Crown } from "lucide-react";
+import { FloatingRobotMenu } from "./FloatingRobotMenu";
 
 export const FloatingEmoji = () => {
   const [position, setPosition] = useState({ x: 20, y: 20 });
   const [isDragging, setIsDragging] = useState(false);
-  const [showTooltip, setShowTooltip] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
 
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
+    setDragStart({ x: e.clientX, y: e.clientY });
     e.preventDefault();
   };
 
@@ -20,7 +22,17 @@ export const FloatingEmoji = () => {
     }
   };
 
-  const handleMouseUp = () => {
+  const handleMouseUp = (e: MouseEvent) => {
+    if (isDragging) {
+      const distance = Math.sqrt(
+        Math.pow(e.clientX - dragStart.x, 2) + Math.pow(e.clientY - dragStart.y, 2)
+      );
+      
+      // If barely moved, treat as click
+      if (distance < 5) {
+        setShowMenu(true);
+      }
+    }
     setIsDragging(false);
   };
 
@@ -33,37 +45,33 @@ export const FloatingEmoji = () => {
         window.removeEventListener("mouseup", handleMouseUp);
       };
     }
-  }, [isDragging]);
+  }, [isDragging, dragStart]);
 
   return (
-    <div
-      className="fixed z-[90] cursor-move select-none transition-transform hover:scale-110"
-      style={{
-        left: `${position.x}px`,
-        top: `${position.y}px`,
-      }}
-      onMouseDown={handleMouseDown}
-      onMouseEnter={() => setShowTooltip(true)}
-      onMouseLeave={() => setShowTooltip(false)}
-    >
-      <div className="relative">
-        <div className="w-14 h-14 rounded-full bg-gradient-to-br from-yellow-500 via-orange-500 to-red-500 flex items-center justify-center shadow-2xl shadow-orange-500/50 animate-pulse border-2 border-white/30">
-          <span className="text-2xl">🤖</span>
-        </div>
-        
-        {showTooltip && (
-          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-black/90 text-white text-xs rounded-lg whitespace-nowrap animate-fade-in">
-            <div className="flex items-center gap-2">
-              <Shield className="w-3 h-3" />
-              <span>Guardian Bot • PIN Protected</span>
-            </div>
-            <div className="flex items-center gap-1 mt-1 text-yellow-400">
-              <Zap className="w-3 h-3" />
-              <span>Drag me anywhere!</span>
-            </div>
+    <>
+      <div
+        className="fixed z-[90] cursor-move select-none transition-transform hover:scale-110"
+        style={{
+          left: `${position.x}px`,
+          top: `${position.y}px`,
+        }}
+        onMouseDown={handleMouseDown}
+      >
+        <div className="relative">
+          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-yellow-500 via-orange-500 to-red-500 flex items-center justify-center shadow-2xl shadow-orange-500/50 animate-pulse border-2 border-white/30">
+            <span className="text-2xl">🤖</span>
           </div>
-        )}
+          
+          {/* Click indicator */}
+          <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-black animate-pulse" />
+        </div>
       </div>
-    </div>
+
+      <FloatingRobotMenu
+        isOpen={showMenu}
+        onClose={() => setShowMenu(false)}
+        position={position}
+      />
+    </>
   );
 };

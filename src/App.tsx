@@ -9,7 +9,6 @@ import { EntryGate } from "@/components/EntryGate";
 import { ActivityTracker } from "@/components/ActivityTracker";
 import { DetailedCupid } from "@/components/DetailedCupid";
 import { FloatingEmoji } from "@/components/FloatingEmoji";
-import { SecretAdminButton } from "@/components/SecretAdminButton";
 import { useSessionTracker } from "@/hooks/useSessionTracker";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import HackerHome from "./pages/HackerHome";
@@ -20,6 +19,7 @@ const HackerScreen = lazy(() => import("./pages/HackerScreen"));
 const Quizzes = lazy(() => import("./pages/Quizzes"));
 const QuizLove = lazy(() => import("./pages/QuizLove"));
 const QuizMBTI = lazy(() => import("./pages/QuizMBTI"));
+const QuizRelationshipStyle = lazy(() => import("./pages/QuizRelationshipStyle"));
 const PeriodTracker = lazy(() => import("./pages/PeriodTracker"));
 const FeliciaModPanel = lazy(() => import("./components/FeliciaModPanel"));
 const CodeViewer = lazy(() => import("./pages/CodeViewer"));
@@ -56,6 +56,7 @@ const AppRoutes = () => {
         <Route path="/quizzes" element={<Quizzes />} />
         <Route path="/quiz/love" element={<QuizLove />} />
         <Route path="/quiz/mbti" element={<QuizMBTI />} />
+        <Route path="/quiz/relationship-style" element={<QuizRelationshipStyle />} />
         <Route path="/period-tracker" element={<PeriodTracker />} />
         <Route path="/code" element={<CodeViewer />} />
         <Route path="/admin" element={<AdminPanel />} />
@@ -89,7 +90,6 @@ const App = () => {
                       <ActivityTracker />
                       <DetailedCupid />
                       <FloatingEmoji />
-                      <SecretAdminButton />
                       <main className="max-w-7xl mx-auto px-4 py-6">
                         <AppRoutes />
                       </main>
