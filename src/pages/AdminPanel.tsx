@@ -61,36 +61,9 @@ const AdminPanel = () => {
   const [allActivities, setAllActivities] = useState<any[]>([]);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
-
-  // Check admin status
-  useEffect(() => {
-    const checkAdmin = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user) {
-        toast.error("Please sign in");
-        navigate("/");
-        return;
-      }
-
-      const { data: roles } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', session.user.id);
-
-      const isUserAdmin = roles?.some(r => r.role === 'admin');
-      if (!isUserAdmin) {
-        toast.error("Admin access required");
-        navigate("/");
-        return;
-      }
-
-      setIsAdmin(true);
-      setUser(session.user);
-      setLoading(false);
-    };
-
-    checkAdmin();
-  }, [navigate]);
+  const [codeUnlocked, setCodeUnlocked] = useState(false);
+  const [codeInput, setCodeInput] = useState("");
+  const [showCodeDialog, setShowCodeDialog] = useState(true);
 
   // Track admin actions
   const trackAdminAction = useCallback(async (action: string, section: string, details?: any) => {
@@ -105,9 +78,7 @@ const AdminPanel = () => {
 
   // Setup realtime subscription for analytics
   useEffect(() => {
-    if (!isAdmin) return;
-
-    fetchUserAnalytics();
+    if (!codeUnlocked) return;
 
     const channel = supabase
       .channel('admin-analytics-updates')
@@ -131,7 +102,62 @@ const AdminPanel = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [isAdmin]);
+  }, [codeUnlocked]);
+
+  // Check admin access on mount
+  useEffect(() => {
+    const checkAdminAccess = () => {
+      try {
+        const role = localStorage.getItem('pin_role');
+        const expiry = parseInt(localStorage.getItem('pin_expiry') || '0');
+        
+        // Check if PIN token expired
+        if (!role || Date.now() > expiry) {
+          toast.error("Please log in to access admin panel");
+          navigate('/');
+          return;
+        }
+        
+        // Check if user has admin or warlord role
+        if (role !== 'admin' && role !== 'warlord') {
+          toast.error("Admin access required");
+          navigate('/');
+          return;
+        }
+
+        setIsAdmin(true);
+        
+        // Check if code was already entered in this session
+        const sessionCode = sessionStorage.getItem('admin_code_unlocked');
+        if (sessionCode === 'true') {
+          setCodeUnlocked(true);
+          setShowCodeDialog(false);
+          fetchUserAnalytics();
+        }
+      } catch (error) {
+        console.error("Admin access check failed:", error);
+        toast.error("Failed to verify admin access");
+        navigate('/');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAdminAccess();
+  }, [navigate]);
+
+  const handleCodeSubmit = () => {
+    if (codeInput && isAdmin) {
+      setCodeUnlocked(true);
+      setShowCodeDialog(false);
+      sessionStorage.setItem('admin_code_unlocked', 'true');
+      fetchUserAnalytics();
+      toast.success("Access granted");
+    } else {
+      toast.error("Incorrect code");
+      setCodeInput("");
+    }
+  };
 
   const fetchUserAnalytics = async () => {
     try {
@@ -256,93 +282,89 @@ const AdminPanel = () => {
     );
   }
 
+  // Code unlock dialog
+  if (!codeUnlocked) {
+    return (
+      <Dialog open={showCodeDialog} onOpenChange={setShowCodeDialog}>
+        <DialogContent className="bg-white border-2 border-primary">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-primary">
+              <Shield className="w-6 h-6" />
+              Admin Security Check
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-muted-foreground">Enter admin code to unlock full access</p>
+            <Input
+              type="password"
+              value={codeInput}
+              onChange={(e) => setCodeInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleCodeSubmit()}
+              placeholder="Enter code..."
+              className="text-center text-xl tracking-widest"
+            />
+            <Button onClick={handleCodeSubmit} className="w-full">
+              Unlock Admin Panel
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
   return (
-    <div className="h-screen overflow-hidden bg-black flex flex-col">
-      <style>{`
-        @keyframes matrix-rain {
-          0% { transform: translateY(-100%); opacity: 0; }
-          10% { opacity: 1; }
-          90% { opacity: 1; }
-          100% { transform: translateY(100vh); opacity: 0; }
-        }
-        .matrix-bg {
-          background: linear-gradient(180deg, #000000 0%, #001a00 100%);
-          position: relative;
-          overflow: hidden;
-        }
-        .matrix-bg::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background-image: 
-            radial-gradient(circle at 20% 50%, rgba(0, 255, 0, 0.05) 0%, transparent 50%),
-            radial-gradient(circle at 80% 80%, rgba(0, 255, 0, 0.03) 0%, transparent 50%);
-          pointer-events: none;
-        }
-      `}</style>
-      {/* Hacker Terminal Header */}
-      <div className="flex-shrink-0 border-b-2 border-green-500/30 bg-black/95 backdrop-blur-xl shadow-lg">
+    <div className="h-screen overflow-hidden bg-gradient-to-br from-background via-muted/20 to-background flex flex-col">
+      {/* Compact Header */}
+      <div className="flex-shrink-0 border-b bg-card/50 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Shield className="w-8 h-8 text-green-500 animate-pulse" />
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-primary/10 p-2">
+                <img 
+                  src="/src/assets/cupid-tlc-transparent.png" 
+                  alt="TLC Cupid" 
+                  className="w-full h-full object-contain"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = "/src/assets/cupid-icon-original.png";
+                  }}
+                />
+              </div>
               <div>
-                <h1 className="text-2xl font-black text-green-500 font-mono tracking-wider">
-                  [✓] ACCESS GRANTED :: ADMIN_TERMINAL
+                <h1 className="text-2xl font-black text-primary flex items-center gap-2">
+                  <Sparkles className="w-5 h-5" />
+                  ADMIN COMMAND CENTER V2
                 </h1>
-                <p className="text-xs text-green-400/70 font-mono">
-                  {user?.email} // CLEARANCE_LEVEL: OMEGA
-                </p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigate('/teefeeme')}
-                className="border-green-500/50 text-green-500 hover:bg-green-500/10 hover:border-green-500 font-mono"
-              >
-                <Sparkles className="w-4 h-4 mr-2" />
-                TEEFEE_LAB
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigate('/')}
-                className="border-green-500/50 text-green-500 hover:bg-green-500/10 hover:border-green-500 font-mono"
-              >
-                <Terminal className="w-4 h-4 mr-2" />
-                EXIT_TERMINAL
-              </Button>
-            </div>
+            <Badge variant="outline" className="bg-card border-primary/30">
+              <Shield className="w-4 h-4 mr-2" />
+              Admin
+            </Badge>
           </div>
         </div>
       </div>
 
       {/* Main Content - Tabbed Interface */}
-      <div className="flex-1 overflow-hidden matrix-bg">
+      <div className="flex-1 overflow-hidden">
         <Tabs defaultValue="overview" className="h-full flex flex-col">
-          <div className="border-b border-green-500/30 bg-black/50 backdrop-blur">
+          <div className="border-b bg-card/30">
             <div className="max-w-7xl mx-auto px-6">
-              <TabsList className="bg-transparent border-none">
-                <TabsTrigger value="overview" className="data-[state=active]:bg-green-500/20 data-[state=active]:text-green-500 text-green-400/70 font-mono border-none">
+              <TabsList className="bg-transparent">
+                <TabsTrigger value="overview">
                   <BarChart3 className="w-4 h-4 mr-2" />
-                  OVERVIEW
+                  Overview
                 </TabsTrigger>
-                <TabsTrigger value="cupid" className="data-[state=active]:bg-green-500/20 data-[state=active]:text-green-500 text-green-400/70 font-mono border-none">
+                <TabsTrigger value="cupid">
                   <Heart className="w-4 h-4 mr-2" />
-                  CUPID_SYS
+                  Cupid Settings
                 </TabsTrigger>
-                <TabsTrigger value="logs" className="data-[state=active]:bg-green-500/20 data-[state=active]:text-green-500 text-green-400/70 font-mono border-none">
+                <TabsTrigger value="logs">
                   <Activity className="w-4 h-4 mr-2" />
-                  ACTIVITY_LOG
+                  Activity Logs
                 </TabsTrigger>
-                <TabsTrigger value="tools" className="data-[state=active]:bg-green-500/20 data-[state=active]:text-green-500 text-green-400/70 font-mono border-none">
+                <TabsTrigger value="tools">
                   <Code className="w-4 h-4 mr-2" />
-                  DEV_TOOLS
+                  Dev Tools
                 </TabsTrigger>
               </TabsList>
             </div>
