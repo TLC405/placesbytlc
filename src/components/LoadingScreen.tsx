@@ -1,245 +1,221 @@
-import { useEffect, useState } from "react";
-import { Heart, Sparkles } from "lucide-react";
-import feliciaPhoto from "@/assets/felicia-photo.jpg";
+import { useEffect, useState } from 'react';
+import { Shield, Crosshair, Target } from 'lucide-react';
 
-export const LoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
+interface LoadingScreenProps {
+  onComplete: () => void;
+}
+
+export const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
   const [isVisible, setIsVisible] = useState(true);
-  const [textVisible, setTextVisible] = useState(false);
+  const [showText, setShowText] = useState(false);
+  const [loadingProgress, setLoadingProgress] = useState(0);
 
   useEffect(() => {
-    // Show text after a short delay
-    const textTimer = setTimeout(() => {
-      setTextVisible(true);
-    }, 300);
+    // Progress animation
+    const progressInterval = setInterval(() => {
+      setLoadingProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(progressInterval);
+          return 100;
+        }
+        return prev + 2.5;
+      });
+    }, 50);
 
-    // Hide everything after 5 seconds
-    const timer = setTimeout(() => {
+    const textTimer = setTimeout(() => {
+      setShowText(true);
+    }, 500);
+
+    const hideTimer = setTimeout(() => {
       setIsVisible(false);
-      setTimeout(onComplete, 500);
-    }, 5000);
+      setTimeout(onComplete, 600);
+    }, 4500);
 
     return () => {
+      clearInterval(progressInterval);
       clearTimeout(textTimer);
-      clearTimeout(timer);
+      clearTimeout(hideTimer);
     };
   }, [onComplete]);
 
+  if (!isVisible) return null;
+
   return (
-    <div
-      className={`fixed inset-0 z-50 flex items-center justify-center transition-all duration-700 overflow-hidden ${
-        isVisible ? "opacity-100" : "opacity-0 pointer-events-none"
-      }`}
-    >
-      {/* Background Image with Clay Filter Effect */}
-      <div 
-        className="absolute inset-0 animate-fade-in"
-        style={{
-          backgroundImage: `url(${feliciaPhoto})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          filter: 'saturate(1.4) contrast(1.1) brightness(0.85)',
-          animation: 'gentle-zoom 20s ease-in-out infinite'
-        }}
-      />
-      
-      {/* Clay/Frosted Glass Overlay */}
-      <div 
-        className="absolute inset-0"
-        style={{
-          background: 'linear-gradient(135deg, rgba(255, 107, 157, 0.7) 0%, rgba(194, 57, 179, 0.8) 50%, rgba(255, 107, 157, 0.7) 100%)',
-          backgroundSize: '200% 200%',
-          animation: 'gradient-shift 3s ease infinite',
-          backdropFilter: 'blur(8px) saturate(180%)',
-          mixBlendMode: 'multiply'
-        }}
-      />
-      
-      {/* Additional Clay Texture Layer */}
-      <div 
-        className="absolute inset-0 opacity-30"
-        style={{
-          background: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.05) 10px, rgba(255,255,255,0.05) 20px)',
-          animation: 'texture-shift 8s linear infinite'
-        }}
-      />
-      {/* Floating sparkles */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(20)].map((_, i) => (
-          <Sparkles
-            key={i}
-            className="absolute text-white/30 animate-pulse"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              width: `${20 + Math.random() * 40}px`,
-              height: `${20 + Math.random() * 40}px`,
-              animationDelay: `${Math.random() * 2}s`,
-              animationDuration: `${2 + Math.random() * 2}s`
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Floating hearts */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(12)].map((_, i) => (
-          <Heart
-            key={i}
-            className="absolute text-rose-300/40 animate-bounce"
-            fill="currentColor"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              width: `${25 + Math.random() * 30}px`,
-              height: `${25 + Math.random() * 30}px`,
-              animationDelay: `${Math.random() * 2}s`,
-              animationDuration: `${1.5 + Math.random() * 1.5}s`
-            }}
-          />
-        ))}
-      </div>
-
-      <div className="relative z-10 text-center space-y-8 px-6 max-w-4xl">
-        {/* Epic Message */}
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden bg-black">
+      {/* COD-style hexagon grid background */}
+      <div className="absolute inset-0 opacity-10">
         <div 
-          className={`transition-all duration-1000 transform ${
-            textVisible ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-10 opacity-0 scale-95'
-          }`}
-        >
-          <div className="space-y-6">
-            {/* Main Message */}
-            <div className="relative inline-block">
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-tight tracking-tight">
-                <div className="animate-fade-in" style={{ animationDelay: '0.1s', animationFillMode: 'backwards' }}>
-                  WELL HELLO
-                </div>
-                <div className="animate-fade-in" style={{ animationDelay: '0.3s', animationFillMode: 'backwards' }}>
-                  YOU&apos;RE LOOKING
-                </div>
-                <div className="relative inline-block">
-                  <div className="animate-fade-in" style={{ animationDelay: '0.5s', animationFillMode: 'backwards' }}>
-                    ABSOLUTELY
-                  </div>
-                  <div className="absolute -inset-4 bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500 blur-2xl opacity-50 animate-pulse" />
-                </div>
-                <div className="relative inline-block">
-                  <div 
-                    className="bg-gradient-to-r from-yellow-300 via-pink-300 to-purple-300 bg-clip-text text-transparent animate-fade-in"
-                    style={{ 
-                      animationDelay: '0.7s', 
-                      animationFillMode: 'backwards',
-                      textShadow: '0 0 30px rgba(255, 255, 255, 0.5)'
-                    }}
-                  >
-                    STUNNING
-                  </div>
-                  <div className="absolute -inset-6 bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500 blur-3xl opacity-60 animate-pulse" />
-                </div>
-                <div 
-                  className="animate-fade-in text-5xl sm:text-6xl md:text-7xl lg:text-8xl" 
-                  style={{ animationDelay: '0.9s', animationFillMode: 'backwards' }}
-                >
-                  TODAY
-                </div>
-              </h1>
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `
+              linear-gradient(30deg, #4A5D23 12%, transparent 12.5%, transparent 87%, #4A5D23 87.5%, #4A5D23),
+              linear-gradient(150deg, #4A5D23 12%, transparent 12.5%, transparent 87%, #4A5D23 87.5%, #4A5D23),
+              linear-gradient(30deg, #4A5D23 12%, transparent 12.5%, transparent 87%, #4A5D23 87.5%, #4A5D23),
+              linear-gradient(150deg, #4A5D23 12%, transparent 12.5%, transparent 87%, #4A5D23 87.5%, #4A5D23)
+            `,
+            backgroundSize: '80px 140px',
+            backgroundPosition: '0 0, 0 0, 40px 70px, 40px 70px',
+          }}
+        />
+      </div>
 
-              {/* Glow effects */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-pulse -z-10" />
-            </div>
+      {/* Animated scanline effect */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#6B8E23]/20 to-transparent animate-scan" />
+      </div>
 
-            {/* Felicia message with 3D clay effect */}
-            <div 
-              className="text-white text-5xl md:text-6xl lg:text-7xl font-black animate-fade-in relative"
-              style={{ 
-                animationDelay: '1.2s', 
-                animationFillMode: 'backwards',
-                textShadow: `
-                  3px 3px 0px rgba(255, 182, 193, 0.4),
-                  6px 6px 0px rgba(255, 105, 180, 0.3),
-                  9px 9px 0px rgba(219, 112, 147, 0.2),
-                  12px 12px 20px rgba(0, 0, 0, 0.3),
-                  0 0 40px rgba(255, 192, 203, 0.5)
-                `,
-                transform: 'perspective(1000px) rotateX(5deg)',
-                animation: 'float 3s ease-in-out infinite, fade-in 0.6s ease-out backwards 1.2s'
-              }}
-            >
-              <span 
-                className="relative inline-block"
-                style={{
-                  background: 'linear-gradient(145deg, #FFE4E1, #FFC0CB, #FFB6C1)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                  filter: 'brightness(1.2) saturate(1.3)'
-                }}
-              >
-                Felicia
-              </span>
-              <span 
-                className="ml-2 inline-block animate-pulse"
-                style={{
-                  color: '#FFE4E1',
-                  textShadow: '0 0 20px rgba(255, 192, 203, 0.8), 0 0 40px rgba(255, 182, 193, 0.6)'
-                }}
-              >
-                *
-              </span>
-              <div className="absolute -inset-8 bg-gradient-to-r from-rose-300 via-pink-300 to-rose-300 blur-3xl opacity-50 animate-pulse -z-10" />
-            </div>
+      {/* Radial spotlight effects */}
+      <div className="absolute inset-0">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-[#FF6B35]/10 rounded-full blur-[150px] animate-pulse" />
+        <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-[#00D9FF]/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '1s' }} />
+      </div>
 
-            {/* Subtitle */}
-            <p 
-              className="text-white/90 text-lg md:text-xl font-medium drop-shadow-lg animate-fade-in"
-              style={{ animationDelay: '1.5s', animationFillMode: 'backwards' }}
-            >
-              Preparing your perfect date night... ✨
-            </p>
+      {/* Tactical grid lines */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="h-full w-full" style={{
+          backgroundImage: `
+            linear-gradient(0deg, transparent 24%, rgba(107, 142, 35, 0.5) 25%, rgba(107, 142, 35, 0.5) 26%, transparent 27%, transparent 74%, rgba(107, 142, 35, 0.5) 75%, rgba(107, 142, 35, 0.5) 76%, transparent 77%, transparent),
+            linear-gradient(90deg, transparent 24%, rgba(107, 142, 35, 0.5) 25%, rgba(107, 142, 35, 0.5) 26%, transparent 27%, transparent 74%, rgba(107, 142, 35, 0.5) 75%, rgba(107, 142, 35, 0.5) 76%, transparent 77%, transparent)
+          `,
+          backgroundSize: '80px 80px',
+        }} />
+      </div>
+
+      {/* Main content */}
+      <div className="relative z-10 text-center px-8 max-w-6xl">
+        {/* COD-style header with tactical elements */}
+        <div className="mb-12 space-y-8">
+          {/* Top tactical bar */}
+          <div className="flex items-center justify-center gap-4 mb-8">
+            <div className="h-px w-32 bg-gradient-to-r from-transparent via-[#6B8E23] to-transparent" />
+            <Shield className="w-12 h-12 text-[#FF6B35] drop-shadow-[0_0_20px_rgba(255,107,53,0.8)] animate-pulse" />
+            <div className="h-px w-32 bg-gradient-to-r from-transparent via-[#6B8E23] to-transparent" />
           </div>
+
+          {/* Mission label */}
+          <div className="text-[#00D9FF] text-sm md:text-base font-mono tracking-[0.3em] uppercase mb-4 drop-shadow-[0_0_10px_rgba(0,217,255,0.8)]">
+            [OPERATION: LOVEBIRD]
+          </div>
+
+          {/* Main heading - COD style */}
+          <h1 
+            className="text-6xl md:text-8xl font-black tracking-wider mb-6"
+            style={{
+              color: '#C8D5B9',
+              textShadow: `
+                0 0 10px rgba(107, 142, 35, 0.8),
+                0 0 20px rgba(107, 142, 35, 0.6),
+                0 0 30px rgba(107, 142, 35, 0.4),
+                2px 2px 0 #4A5D23,
+                -2px -2px 0 #4A5D23
+              `,
+              fontFamily: 'Impact, "Arial Black", sans-serif',
+              letterSpacing: '0.1em',
+            }}
+          >
+            DAMN YOU LOOK GOOD
+          </h1>
+
+          {/* Crosshair decoration */}
+          <div className="flex items-center justify-center gap-8 my-8">
+            <Crosshair className="w-8 h-8 text-[#FF6B35] animate-pulse" />
+            <Target className="w-10 h-10 text-[#6B8E23] animate-spin" style={{ animationDuration: '8s' }} />
+            <Crosshair className="w-8 h-8 text-[#FF6B35] animate-pulse" style={{ animationDelay: '0.5s' }} />
+          </div>
+
+          {/* Subtitle */}
+          {showText && (
+            <div className="space-y-6 animate-fade-in">
+              <p 
+                className="text-xl md:text-3xl font-bold tracking-wide"
+                style={{
+                  color: '#00D9FF',
+                  textShadow: '0 0 20px rgba(0, 217, 255, 0.8)',
+                  fontFamily: '"Courier New", monospace',
+                }}
+              >
+                PREPARING TO INFILTRATE... DATE NIGHT OPERATIONS
+              </p>
+
+              {/* Progress bar - COD style */}
+              <div className="max-w-2xl mx-auto mt-8">
+                <div className="flex justify-between text-[#6B8E23] text-sm font-mono mb-2">
+                  <span>[LOADING ASSETS]</span>
+                  <span>{Math.round(loadingProgress)}%</span>
+                </div>
+                <div className="h-3 bg-black/50 border-2 border-[#4A5D23] relative overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-[#6B8E23] via-[#FF6B35] to-[#6B8E23] transition-all duration-300"
+                    style={{ 
+                      width: `${loadingProgress}%`,
+                      boxShadow: '0 0 20px rgba(107, 142, 35, 0.8)',
+                    }}
+                  />
+                  {/* Animated scan line */}
+                  <div 
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                    style={{ animation: 'scan-horizontal 2s linear infinite' }}
+                  />
+                </div>
+              </div>
+
+              {/* Loading messages */}
+              <div className="mt-6 space-y-2">
+                <div className="text-[#C8D5B9] font-mono text-sm">
+                  {loadingProgress < 30 && "⚡ INITIALIZING COMBAT SYSTEMS..."}
+                  {loadingProgress >= 30 && loadingProgress < 60 && "🎯 LOADING TACTICAL MAP DATA..."}
+                  {loadingProgress >= 60 && loadingProgress < 90 && "💥 DEPLOYING DATE NIGHT PROTOCOLS..."}
+                  {loadingProgress >= 90 && "✅ MISSION READY - STANDING BY..."}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Animated loading dots */}
-        <div 
-          className="flex gap-3 justify-center animate-fade-in"
-          style={{ animationDelay: '1.5s', animationFillMode: 'backwards' }}
-        >
-          <div className="w-4 h-4 rounded-full bg-white shadow-lg shadow-white/50 animate-bounce" style={{ animationDelay: "0ms" }} />
-          <div className="w-4 h-4 rounded-full bg-white shadow-lg shadow-white/50 animate-bounce" style={{ animationDelay: "150ms" }} />
-          <div className="w-4 h-4 rounded-full bg-white shadow-lg shadow-white/50 animate-bounce" style={{ animationDelay: "300ms" }} />
+        {/* Bottom status bar */}
+        <div className="absolute bottom-8 left-0 right-0 px-8">
+          <div className="border-2 border-[#4A5D23] bg-black/80 p-4 max-w-4xl mx-auto">
+            <div className="flex items-center justify-between text-xs font-mono text-[#6B8E23]">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-[#6B8E23] rounded-full animate-pulse" />
+                <span>SYSTEM ONLINE</span>
+              </div>
+              <div>CLEARANCE: ALPHA</div>
+              <div>STATUS: AUTHORIZED</div>
+            </div>
+          </div>
         </div>
       </div>
 
       <style>{`
-        @keyframes gradient-shift {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
+        @keyframes scan {
+          0% { transform: translateY(-100%); }
+          100% { transform: translateY(100%); }
         }
-        
-        @keyframes gentle-zoom {
-          0%, 100% { 
-            transform: scale(1); 
-          }
-          50% { 
-            transform: scale(1.05); 
-          }
+
+        @keyframes scan-horizontal {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
         }
-        
-        @keyframes texture-shift {
-          0% { 
-            transform: translateX(0) translateY(0); 
+
+        @keyframes fade-in {
+          from {
+            opacity: 0;
+            transform: scale(0.95);
           }
-          100% { 
-            transform: translateX(20px) translateY(20px); 
+          to {
+            opacity: 1;
+            transform: scale(1);
           }
         }
-        
-        @keyframes float {
-          0%, 100% {
-            transform: perspective(1000px) rotateX(5deg) translateY(0px);
-          }
-          50% {
-            transform: perspective(1000px) rotateX(5deg) translateY(-10px);
+
+        @media (prefers-reduced-motion: reduce) {
+          *,
+          *::before,
+          *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
           }
         }
       `}</style>

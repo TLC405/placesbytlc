@@ -1,6 +1,6 @@
-# V1 Places by TLC for FeeFee 💖
+# INPERSON.TLC 💖
 
-A romantic date planning app designed to help TLC and Felicia discover amazing date spots together!
+A romantic date planning app designed to help couples discover amazing experiences together!
 
 ## ✨ Features
 
@@ -10,7 +10,8 @@ A romantic date planning app designed to help TLC and Felicia discover amazing d
 - 📋 **Date Planner**: Build the perfect date itinerary
 - 🎯 **Advanced Filtering**: Sort by rating, reviews, or distance
 - 🎨 **Beautiful Design**: Romantic theme with smooth animations
-- 🔐 **Secure**: Protected with a secret access code
+- 🔐 **Secure**: Protected with access control
+- 👻 **Boo Mode**: Link with partner for shared adventures (coming soon)
 
 ## 🚀 Getting Started
 
@@ -49,12 +50,11 @@ See [SETUP_INSTRUCTIONS.md](./SETUP_INSTRUCTIONS.md) for detailed instructions.
 
 ## 📱 How to Use
 
-1. **Enter the secret code** (`tlcinokc`) to unlock features
+1. **Enter access code** at Command Center (WARLORD or ADMIN mode)
 2. **Search** for date ideas using the search bar or category buttons
 3. **Pick a location** from the presets or use your current location
 4. **Browse results** and click on places to see details
 5. **Add to Plan** to build your perfect date
-6. **Check Updates** - Click "Updates" button in header to see changelog
 
 ## 🛠️ Tech Stack
 
@@ -108,10 +108,10 @@ Read more: [Setting up a custom domain](https://docs.lovable.dev/features/custom
 
 ## 📄 License
 
-This project is private and made with love for TLC & Felicia 💕
+This project is private and made with love for an amazing experience 💕
 
 ---
 
-Made with 💖 by TLC for his amazing FeeFee
+Made with 💖 for INPERSON.TLC
 
 **Project URL**: https://lovable.dev/projects/ee2e66a7-1043-4b77-86a2-af77f947ef61

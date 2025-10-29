@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { PlaceItem } from "@/types";
 import { getPlaceholder } from "@/lib/placeholders";
+import { supabase } from "@/integrations/supabase/client";
 
 interface UsePlacesSearchProps {
   onError: (message: string) => void;
@@ -12,80 +13,82 @@ export const usePlacesSearch = ({ onError }: UsePlacesSearchProps) => {
 
   const search = useCallback(
     async (query: string, location: { lat: number; lng: number }, radius: number) => {
-      if (!(window as any).google?.maps?.places) {
-        onError("Google Maps not loaded. Please configure your API key.");
-        return;
-      }
-
       setIsSearching(true);
       setResults([]);
 
       try {
-        const google = (window as any).google;
-        const service = new google.maps.places.PlacesService(document.createElement("div"));
-        
-        const request = {
-          location: new google.maps.LatLng(location.lat, location.lng),
-          radius: radius,
-          query: query.trim() || "date night",
-          type: 'establishment' // Add type to improve results
+        if (!window.google?.maps?.places) {
+          onError("Maps not loaded. Please refresh the page.");
+          setIsSearching(false);
+          return;
+        }
+
+        const service = new window.google.maps.places.PlacesService(
+          document.createElement("div")
+        );
+
+        // Build more specific search request
+        const request: any = {
+          location: new window.google.maps.LatLng(location.lat, location.lng),
+          radius,
         };
 
-        service.textSearch(request, (res: any, status: any) => {
-          setIsSearching(false);
+        // Use type instead of keyword for more accurate results
+        if (query && query !== "food" && query !== "activity") {
+          request.type = query;
+        } else if (query === "food") {
+          request.type = "restaurant";
+        } else if (query === "activity") {
+          request.type = "point_of_interest";
+        }
 
-          if (status !== google.maps.places.PlacesServiceStatus.OK) {
-            if (status === google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {
-              setResults([]);
-              return;
-            }
-            onError(`Search failed: ${status}. Please try a different search.`);
-            return;
-          }
-
-          if (!res || res.length === 0) {
-            setResults([]);
-            return;
-          }
-
-          const userLat = location.lat;
-          const userLng = location.lng;
-
-          const places: PlaceItem[] = res.map((place: any) => {
-            const placeLat = place.geometry?.location?.lat();
-            const placeLng = place.geometry?.location?.lng();
-            
-            // Calculate distance in miles
-            let distance;
-            if (placeLat && placeLng) {
-              const R = 3958.8; // Earth radius in miles
-              const dLat = (placeLat - userLat) * Math.PI / 180;
-              const dLng = (placeLng - userLng) * Math.PI / 180;
+        service.nearbySearch(request, (results, status) => {
+          if (status === window.google.maps.places.PlacesServiceStatus.OK && results) {
+            const calculateDistance = (lat1: number, lng1: number, lat2: number, lng2: number) => {
+              const R = 3958.8;
+              const dLat = (lat2 - lat1) * Math.PI / 180;
+              const dLng = (lng2 - lng1) * Math.PI / 180;
               const a = 
                 Math.sin(dLat/2) * Math.sin(dLat/2) +
-                Math.cos(userLat * Math.PI / 180) * Math.cos(placeLat * Math.PI / 180) *
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
                 Math.sin(dLng/2) * Math.sin(dLng/2);
               const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-              distance = R * c;
-            }
-
-            return {
-              id: place.place_id,
-              name: place.name || "Unnamed",
-              address: place.formatted_address || "",
-              photo: place.photos?.[0]?.getUrl?.({ maxWidth: 1000 }) || getPlaceholder(place.name),
-              rating: place.rating,
-              userRatingsTotal: place.user_ratings_total,
-              priceLevel: place.price_level,
-              openNow: place.opening_hours?.isOpen?.() ?? place.opening_hours?.open_now,
-              types: place.types,
-              distance: distance ? parseFloat(distance.toFixed(1)) : undefined,
-              lat: placeLat,
-              lng: placeLng,
+              return R * c;
             };
-          });
 
-          setResults(places);
+            const places: PlaceItem[] = results.map((place) => {
+              const photoUrl = place.photos?.[0]?.getUrl({ maxWidth: 2400, maxHeight: 2400 }) || getPlaceholder(place.name);
+              const distance = place.geometry?.location
+                ? calculateDistance(
+                    location.lat,
+                    location.lng,
+                    place.geometry.location.lat(),
+                    place.geometry.location.lng()
+                  )
+                : undefined;
+
+              return {
+                id: place.place_id || "",
+                name: place.name || "",
+                address: place.vicinity || "",
+                photo: photoUrl,
+                rating: place.rating,
+                userRatingsTotal: place.user_ratings_total,
+                priceLevel: place.price_level,
+                openNow: place.opening_hours?.isOpen?.(),
+                types: place.types || [],
+                distance: distance ? parseFloat(distance.toFixed(1)) : undefined,
+                lat: place.geometry?.location?.lat(),
+                lng: place.geometry?.location?.lng(),
+              };
+            });
+
+            setResults(places);
+            setIsSearching(false);
+          } else {
+            onError("No results found. Try a different search.");
+            setIsSearching(false);
+          }
         });
       } catch (err) {
         setIsSearching(false);
