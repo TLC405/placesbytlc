@@ -94,7 +94,6 @@ export const CodeExportSystem = () => {
       icon: "🔐",
       files: [
         { name: "CodeGate.tsx", path: "src/components/CodeGate.tsx", category: "auth" },
-        { name: "AppAuthGate.tsx", path: "src/components/AppAuthGate.tsx", category: "auth" },
         { name: "AuthPanel.tsx", path: "src/components/AuthPanel.tsx", category: "auth" },
       ]
     },

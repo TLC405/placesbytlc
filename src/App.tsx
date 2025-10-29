@@ -4,8 +4,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AppAuthGate } from "@/components/AppAuthGate";
-import { EntryGate } from "@/components/EntryGate";
 import { ActivityTracker } from "@/components/ActivityTracker";
 import { DetailedCupid } from "@/components/DetailedCupid";
 import { FloatingEmoji } from "@/components/FloatingEmoji";
@@ -37,7 +35,6 @@ import { useGoogleMaps } from "@/hooks/useGoogleMaps";
 import { DevModeProvider } from "@/contexts/DevModeContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { PINProvider } from "@/contexts/PINContext";
 
 const queryClient = new QueryClient();
 
@@ -84,24 +81,18 @@ const App = () => {
         <ThemeProvider>
           <DevModeProvider>
             <AuthProvider>
-              <PINProvider>
-                <TooltipProvider>
-                  <Toaster />
-                  <Sonner />
-                  <BrowserRouter>
-                    <EntryGate>
-                      <AppAuthGate>
-                        <ActivityTracker />
-                        <DetailedCupid />
-                        <FloatingEmoji />
-                        <main className="max-w-7xl mx-auto px-4 py-6">
-                          <AppRoutes />
-                        </main>
-                      </AppAuthGate>
-                    </EntryGate>
-                  </BrowserRouter>
-                </TooltipProvider>
-              </PINProvider>
+              <TooltipProvider>
+                <Toaster />
+                <Sonner />
+                <BrowserRouter>
+                  <ActivityTracker />
+                  <DetailedCupid />
+                  <FloatingEmoji />
+                  <main className="max-w-7xl mx-auto px-4 py-6">
+                    <AppRoutes />
+                  </main>
+                </BrowserRouter>
+              </TooltipProvider>
             </AuthProvider>
           </DevModeProvider>
         </ThemeProvider>

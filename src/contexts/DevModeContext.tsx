@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { hasEntryAccess } from '@/lib/pinAuth';
 import { toast } from 'sonner';
 
 interface DevModeContextType {
