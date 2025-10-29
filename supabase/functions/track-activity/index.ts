@@ -16,32 +16,49 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
     
+    // Try to get user, but allow anonymous tracking
+    let user = null;
     const authHeader = req.headers.get('Authorization');
-    const token = authHeader?.replace('Bearer ', '');
-    const { data: { user } } = await supabase.auth.getUser(token);
     
-    if (!user) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+    if (authHeader) {
+      try {
+        const token = authHeader.replace('Bearer ', '');
+        const { data: { user: authUser }, error: authError } = await supabase.auth.getUser(token);
+        
+        if (!authError && authUser) {
+          user = authUser;
+          console.log('Tracking for authenticated user:', user.id);
+        } else {
+          console.log('Auth failed, tracking anonymously:', authError?.message);
+        }
+      } catch (e) {
+        console.log('Auth exception, tracking anonymously:', e);
+      }
+    } else {
+      console.log('No auth header, tracking anonymously');
     }
 
     const { activity_type, activity_data } = await req.json();
 
-    // Log activity
-    const { error: logError } = await supabase
-      .from('user_activity_log')
-      .insert({
-        user_id: user.id,
-        activity_type,
-        activity_data,
-      });
+    // Log activity (only if user is authenticated)
+    if (user) {
+      const { error: logError } = await supabase
+        .from('user_activity_log')
+        .insert({
+          user_id: user.id,
+          activity_type,
+          activity_data,
+        });
 
-    if (logError) throw logError;
+      if (logError) {
+        console.error('Activity log error:', logError);
+      }
+    } else {
+      console.log('Anonymous activity:', activity_type);
+    }
 
-    // Update preferences based on activity
-    if (activity_type === 'place_save' || activity_type === 'place_view') {
+    // Update preferences based on activity (only for authenticated users)
+    if (user && (activity_type === 'place_save' || activity_type === 'place_view')) {
       const placeType = activity_data.types?.[0];
       const priceLevel = activity_data.price_level;
 
