@@ -8,9 +8,11 @@ import { AppAuthGate } from "@/components/AppAuthGate";
 import { EntryGate } from "@/components/EntryGate";
 import { ActivityTracker } from "@/components/ActivityTracker";
 import { DetailedCupid } from "@/components/DetailedCupid";
+import { FloatingEmoji } from "@/components/FloatingEmoji";
+import { SecretAdminButton } from "@/components/SecretAdminButton";
 import { useSessionTracker } from "@/hooks/useSessionTracker";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import Home from "./pages/NewHome";
+import HackerHome from "./pages/HackerHome";
 import NotFound from "./pages/NotFound";
 
 // Lazy load quiz pages and special features
@@ -33,11 +35,14 @@ const TeeFeeMeCartoonifier = lazy(() => import("./pages/TeeFeeMeCartoonifierNew"
 import { useGoogleMaps } from "@/hooks/useGoogleMaps";
 import { DevModeProvider } from "@/contexts/DevModeContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 const queryClient = new QueryClient();
 
 const AppRoutes = () => {
   useSessionTracker();
+  // Ensure Google Maps Places API is loaded once globally
+  const { isReady: isMapsReady } = useGoogleMaps();
   
   return (
     <Suspense fallback={
@@ -47,7 +52,7 @@ const AppRoutes = () => {
     }>
       <Routes>
         <Route path="/hacker" element={<HackerScreen />} />
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<HackerHome />} />
         <Route path="/quizzes" element={<Quizzes />} />
         <Route path="/quiz/love" element={<QuizLove />} />
         <Route path="/quiz/mbti" element={<QuizMBTI />} />
@@ -69,29 +74,30 @@ const AppRoutes = () => {
 };
 
 const App = () => {
-  // Ensure Google Maps Places API is loaded once globally
-  const { isReady: isMapsReady } = useGoogleMaps();
-
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
           <DevModeProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              <BrowserRouter>
-                <EntryGate>
-                  <AppAuthGate>
-                    <ActivityTracker />
-                    <DetailedCupid />
-                    <main className="max-w-7xl mx-auto px-4 py-6">
-                      <AppRoutes />
-                    </main>
-                  </AppAuthGate>
-                </EntryGate>
-              </BrowserRouter>
-            </TooltipProvider>
+            <AuthProvider>
+              <TooltipProvider>
+                <Toaster />
+                <Sonner />
+                <BrowserRouter>
+                  <EntryGate>
+                    <AppAuthGate>
+                      <ActivityTracker />
+                      <DetailedCupid />
+                      <FloatingEmoji />
+                      <SecretAdminButton />
+                      <main className="max-w-7xl mx-auto px-4 py-6">
+                        <AppRoutes />
+                      </main>
+                    </AppAuthGate>
+                  </EntryGate>
+                </BrowserRouter>
+              </TooltipProvider>
+            </AuthProvider>
           </DevModeProvider>
         </ThemeProvider>
       </QueryClientProvider>

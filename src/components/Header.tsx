@@ -1,4 +1,4 @@
-import { Heart, Sparkles, Palette, Shield, LogOut, User, Settings } from "lucide-react";
+import { Heart, Sparkles, Palette, Shield, LogOut, User, Settings, LogIn } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
@@ -7,6 +7,7 @@ import { DevModeBadge } from "@/components/DevModeBadge";
 import { useState, useEffect } from "react";
 import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import {
   DropdownMenu,
@@ -20,15 +21,16 @@ export const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { isAdmin, isLoading } = useUserRole();
-  const [user, setUser] = useState<any>(null);
+  const { user, showLogin } = useAuth();
+  const [localUser, setLocalUser] = useState<any>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
+      setLocalUser(session?.user ?? null);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+      setLocalUser(session?.user ?? null);
     });
 
     return () => subscription.unsubscribe();
@@ -37,8 +39,9 @@ export const Header = () => {
   const handleAdminClick = () => {
     if (!isLoading && isAdmin) {
       navigate('/admin');
-    } else if (!user) {
+    } else if (!localUser) {
       toast.error("Please sign in to access admin features");
+      showLogin();
     } else {
       toast.error("Admin access required");
     }
@@ -78,10 +81,10 @@ export const Header = () => {
                 onClick={handleAdminClick}
                 variant="outline"
                 size="sm"
-                className="flex-shrink-0 gap-2 hover:bg-primary/10 hover:border-primary transition-all"
+                className="flex-shrink-0 gap-2 hover:bg-primary/10 hover:border-primary transition-all border-green-500/30 text-green-400 hover:text-green-300"
               >
                 <Shield className="w-4 h-4" />
-                <span className="hidden sm:inline">Admin</span>
+                <span className="hidden sm:inline font-mono">[ADMIN]</span>
               </Button>
 
               <DropdownMenu>
@@ -118,7 +121,12 @@ export const Header = () => {
                     <Settings className="w-4 h-4 mr-2" />
                     Admin Panel
                   </DropdownMenuItem>
-                  {user && (
+                  {!localUser ? (
+                    <DropdownMenuItem onClick={showLogin}>
+                      <LogIn className="w-4 h-4 mr-2" />
+                      Sign In
+                    </DropdownMenuItem>
+                  ) : (
                     <DropdownMenuItem onClick={handleLogout}>
                       <LogOut className="w-4 h-4 mr-2" />
                       Sign Out
