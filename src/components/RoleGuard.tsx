@@ -7,7 +7,8 @@ import { useAuth } from "@/contexts/AuthContext";
 
 interface RoleGuardProps {
   children: ReactNode;
-  requiredRoles: UserRole[];
+  requiredRoles?: UserRole[];
+  allowedRoles?: UserRole[];
   fallbackMessage?: string;
   featureName?: string;
 }
@@ -23,12 +24,15 @@ const roleInfo: Record<UserRole, { icon: React.ReactNode; color: string; name: s
 
 export const RoleGuard = ({ 
   children, 
-  requiredRoles, 
+  requiredRoles,
+  allowedRoles,
   fallbackMessage,
   featureName = "This feature"
 }: RoleGuardProps) => {
   const { hasAnyRole, isLoading, userId } = useUserRole();
   const { showLogin } = useAuth();
+  
+  const roles = allowedRoles || requiredRoles || [];
 
   if (isLoading) {
     return (
@@ -60,7 +64,7 @@ export const RoleGuard = ({
                 REQUIRED CLEARANCE LEVELS:
               </p>
               <div className="flex flex-wrap gap-2 justify-center">
-                {requiredRoles.map(role => {
+                {roles.map(role => {
                   const info = roleInfo[role];
                   return (
                     <div key={role} className={`flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/50 border border-green-500/20 ${info.color}`}>
@@ -84,7 +88,7 @@ export const RoleGuard = ({
   }
 
   // Logged in but insufficient role
-  if (!hasAnyRole(requiredRoles)) {
+  if (!hasAnyRole(roles)) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-950 via-slate-900 to-black">
         <Card className="max-w-md w-full p-8 bg-slate-900/50 border-2 border-red-500/30 shadow-2xl backdrop-blur">
@@ -105,7 +109,7 @@ export const RoleGuard = ({
                 REQUIRED CLEARANCE LEVELS:
               </p>
               <div className="flex flex-wrap gap-2 justify-center">
-                {requiredRoles.map(role => {
+                {roles.map(role => {
                   const info = roleInfo[role];
                   return (
                     <div key={role} className={`flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/50 border border-red-500/20 ${info.color}`}>

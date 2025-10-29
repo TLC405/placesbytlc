@@ -30,7 +30,8 @@ const CoupleMode = lazy(() => import("./pages/CoupleMode"));
 const Gamification = lazy(() => import("./pages/Gamification"));
 const OKCLegendForge = lazy(() => import("./pages/EnhancedOKCLegend"));
 const ComingSoon = lazy(() => import("./pages/ComingSoon"));
-const TeeFeeMeCartoonifier = lazy(() => import("./pages/TeeFeeMeCartoonifier"));
+const CartoonifierNew = lazy(() => import("./pages/CartoonifierNew"));
+const Auth = lazy(() => import("./pages/Auth"));
 
 import { useGoogleMaps } from "@/hooks/useGoogleMaps";
 import { DevModeProvider } from "@/contexts/DevModeContext";
@@ -53,6 +54,7 @@ const AppRoutes = () => {
       <Routes>
         <Route path="/hacker" element={<HackerScreen />} />
         <Route path="/" element={<HackerHome />} />
+        <Route path="/auth" element={<Auth />} />
         <Route path="/quizzes" element={<Quizzes />} />
         <Route path="/quiz/love" element={<QuizLove />} />
         <Route path="/quiz/mbti" element={<QuizMBTI />} />
@@ -67,7 +69,7 @@ const AppRoutes = () => {
         <Route path="/okc-legend" element={<OKCLegendForge />} />
         <Route path="/boo-mode" element={<ComingSoon />} />
         <Route path="/coming-soon" element={<ComingSoon />} />
-        <Route path="/cartoonifier" element={<TeeFeeMeCartoonifier />} />
+        <Route path="/cartoonifier" element={<CartoonifierNew />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>

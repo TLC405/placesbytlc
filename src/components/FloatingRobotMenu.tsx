@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Shield, Zap, Crown, User, Settings, LogOut, Lock, Home } from "lucide-react";
+import { Shield, Zap, Crown, User, Settings, LogOut, Lock, Home, LogIn } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePIN } from "@/contexts/PINContext";
 import { AdminPINModal } from "./AdminPINModal";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface FloatingRobotMenuProps {
   isOpen: boolean;
@@ -36,6 +37,18 @@ export const FloatingRobotMenu = ({ isOpen, onClose, position }: FloatingRobotMe
     toast.success("🔓 Admin access granted!");
   };
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    toast.success("Logged out successfully");
+    navigate("/");
+    onClose();
+  };
+
+  const handleAuth = () => {
+    navigate("/auth");
+    onClose();
+  };
+
   const menuItems = [
     {
       icon: Home,
@@ -47,15 +60,10 @@ export const FloatingRobotMenu = ({ isOpen, onClose, position }: FloatingRobotMe
       color: "text-blue-400",
     },
     {
-      icon: user ? User : LogOut,
-      label: user ? "Account" : "Login",
-      action: () => {
-        if (!user) {
-          showLogin();
-        }
-        onClose();
-      },
-      color: "text-green-400",
+      icon: user ? LogOut : LogIn,
+      label: user ? "Logout" : "Login",
+      action: user ? handleLogout : handleAuth,
+      color: user ? "text-red-400" : "text-green-400",
     },
     {
       icon: Lock,
