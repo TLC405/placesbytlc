@@ -30,7 +30,7 @@ const CoupleMode = lazy(() => import("./pages/CoupleMode"));
 const Gamification = lazy(() => import("./pages/Gamification"));
 const OKCLegendForge = lazy(() => import("./pages/EnhancedOKCLegend"));
 const ComingSoon = lazy(() => import("./pages/ComingSoon"));
-const TeeFeeMeCartoonifier = lazy(() => import("./pages/TeeFeeMeCartoonifierNew"));
+const TeeFeeMeCartoonifier = lazy(() => import("./pages/TeeFeeMeCartoonifier"));
 
 import { useGoogleMaps } from "@/hooks/useGoogleMaps";
 import { DevModeProvider } from "@/contexts/DevModeContext";

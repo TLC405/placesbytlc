@@ -1,11 +1,20 @@
 import { useState, useRef } from "react";
-import { Upload, Download, RefreshCw, Camera, Sparkles, ImageIcon, Zap } from "lucide-react";
+import { Upload, Download, Sparkles, Zap, Wand2, Save, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { RoleGuard } from "@/components/RoleGuard";
 
-type CartoonStyle = "simpsons" | "flintstones" | "trump" | "elon" | "familyguy" | "renandstimpy" | "southpark" | "anime" | "disney" | "marvel" | "pixar" | "rickmorty";
+type CartoonStyle = 
+  | "simpsons" | "familyguy" | "renandstimpy" | "southpark" | "boondocks"
+  | "dbz" | "tmnt" | "invincible" | "spiderverse" | "arcane"
+  | "ghibli" | "disney" | "pixar" | "anime" | "comic";
 
 const TeeFeeMeCartoonifier = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -16,95 +25,33 @@ const TeeFeeMeCartoonifier = () => {
   const [showResult, setShowResult] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [statusMessage, setStatusMessage] = useState("");
+  const [customPrompt, setCustomPrompt] = useState("");
+  
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const styles = [
-    { 
-      id: "simpsons" as CartoonStyle, 
-      name: "Simpsons", 
-      icon: "🍩",
-      color: "bg-yellow-500",
-      available: true
-    },
-    { 
-      id: "flintstones" as CartoonStyle, 
-      name: "Flintstones", 
-      icon: "🦴",
-      color: "bg-orange-500",
-      available: true
-    },
-    { 
-      id: "trump" as CartoonStyle, 
-      name: "Trump", 
-      icon: "🎩",
-      color: "bg-blue-600",
-      available: true
-    },
-    { 
-      id: "elon" as CartoonStyle, 
-      name: "Elon", 
-      icon: "🚀",
-      color: "bg-purple-600",
-      available: true
-    },
-    { 
-      id: "familyguy" as CartoonStyle, 
-      name: "Family Guy", 
-      icon: "🍺",
-      color: "bg-teal-500",
-      available: true
-    },
-    { 
-      id: "renandstimpy" as CartoonStyle, 
-      name: "Ren & Stimpy", 
-      icon: "😵",
-      color: "bg-red-500",
-      available: true
-    },
-    { 
-      id: "southpark" as CartoonStyle, 
-      name: "South Park", 
-      icon: "🎿",
-      color: "bg-cyan-500",
-      available: false
-    },
-    { 
-      id: "anime" as CartoonStyle, 
-      name: "Anime", 
-      icon: "⚡",
-      color: "bg-pink-500",
-      available: false
-    },
-    { 
-      id: "disney" as CartoonStyle, 
-      name: "Disney", 
-      icon: "✨",
-      color: "bg-blue-400",
-      available: false
-    },
-    { 
-      id: "marvel" as CartoonStyle, 
-      name: "Marvel", 
-      icon: "💥",
-      color: "bg-red-600",
-      available: false
-    },
-    { 
-      id: "pixar" as CartoonStyle, 
-      name: "Pixar", 
-      icon: "🎬",
-      color: "bg-teal-600",
-      available: false
-    },
-    { 
-      id: "rickmorty" as CartoonStyle, 
-      name: "Rick & Morty", 
-      icon: "🧪",
-      color: "bg-green-600",
-      available: false
-    },
-  ];
+  const styleCategories = {
+    classic: [
+      { id: "simpsons" as CartoonStyle, name: "Simpsons", icon: "🍩", desc: "Yellow skin, spiky hair", premium: false },
+      { id: "familyguy" as CartoonStyle, name: "Family Guy", icon: "🍺", desc: "Bold flat colors", premium: false },
+      { id: "renandstimpy" as CartoonStyle, name: "Ren & Stimpy", icon: "😵", desc: "Gross-out vintage", premium: true },
+      { id: "southpark" as CartoonStyle, name: "South Park", icon: "🎿", desc: "Simple cutout style", premium: false },
+      { id: "boondocks" as CartoonStyle, name: "Boondocks", icon: "✊", desc: "Anime-influenced", premium: true },
+    ],
+    action: [
+      { id: "dbz" as CartoonStyle, name: "Dragon Ball Z", icon: "⚡", desc: "Muscular, aura effects", premium: true },
+      { id: "tmnt" as CartoonStyle, name: "TMNT", icon: "🍕", desc: "Comic book action", premium: true },
+      { id: "invincible" as CartoonStyle, name: "Invincible", icon: "💥", desc: "Detailed superhero", premium: true },
+      { id: "spiderverse" as CartoonStyle, name: "Spider-Verse", icon: "🕷️", desc: "Halftone comic pop", premium: true },
+      { id: "arcane" as CartoonStyle, name: "Arcane", icon: "🎨", desc: "Painterly 3D art", premium: true },
+    ],
+    artistic: [
+      { id: "ghibli" as CartoonStyle, name: "Studio Ghibli", icon: "🌸", desc: "Watercolor dream", premium: true },
+      { id: "disney" as CartoonStyle, name: "Disney Classic", icon: "✨", desc: "Smooth timeless", premium: false },
+      { id: "pixar" as CartoonStyle, name: "Pixar 3D", icon: "🎬", desc: "Rounded realistic", premium: true },
+      { id: "anime" as CartoonStyle, name: "Anime", icon: "🎌", desc: "Big eyes, detailed", premium: false },
+      { id: "comic" as CartoonStyle, name: "Comic Book", icon: "💥", desc: "Bold ink lines", premium: false },
+    ],
+  };
 
   const handleFileSelect = (file: File) => {
     if (!file.type.startsWith("image/")) {
@@ -156,22 +103,10 @@ const TeeFeeMeCartoonifier = () => {
     setIsProcessing(true);
     setProgress(0);
     setCartoonUrl("");
-    setStatusMessage("Analyzing your image...");
 
     const progressInterval = setInterval(() => {
-      setProgress(prev => {
-        const newProgress = Math.min(prev + 2, 95);
-        // Update status messages based on progress
-        if (newProgress >= 20 && newProgress < 40) {
-          setStatusMessage("Applying style transformation...");
-        } else if (newProgress >= 40 && newProgress < 70) {
-          setStatusMessage("Processing artistic effects...");
-        } else if (newProgress >= 70) {
-          setStatusMessage("Finalizing your cartoon...");
-        }
-        return newProgress;
-      });
-    }, 300);
+      setProgress(prev => Math.min(prev + 1, 95));
+    }, 150);
 
     try {
       const reader = new FileReader();
@@ -183,51 +118,39 @@ const TeeFeeMeCartoonifier = () => {
       const imageData = await imageDataPromise;
 
       const { data, error } = await supabase.functions.invoke('teefeeme-cartoonify', {
-        body: { imageData, style: selectedStyle }
+        body: { 
+          imageData, 
+          style: selectedStyle,
+          prompt: customPrompt || undefined
+        }
       });
 
       clearInterval(progressInterval);
 
-      if (error) {
-        if (error.message?.includes('429')) {
+      if (error || data?.error) {
+        if (error?.message?.includes('429') || data?.code === 429) {
           toast.error('Too many requests - wait 30 seconds');
-        } else if (error.message?.includes('402')) {
+        } else if (error?.message?.includes('402') || data?.code === 402) {
           toast.error('AI credits depleted - contact admin');
         } else {
-          throw error;
-        }
-        return;
-      }
-
-      if (data?.error) {
-        if (data.code === 429) {
-          toast.error('Too many requests - wait 30 seconds');
-        } else if (data.code === 402) {
-          toast.error('AI credits depleted - contact admin');
-        } else {
-          toast.error(`Error: ${data.error}`);
+          toast.error('Failed to transform image');
         }
         return;
       }
 
       if (data?.cartoonImage) {
-        setStatusMessage("Complete! 🎉");
         setProgress(100);
         setCartoonUrl(data.cartoonImage);
         setTimeout(() => {
           setShowResult(true);
-          toast.success('TeeFee transformation complete!');
-        }, 500);
-      } else {
-        throw new Error('No image returned');
+          toast.success('🎉 TeeFee transformation complete!');
+        }, 300);
       }
     } catch (error) {
       console.error('Cartoonify error:', error);
-      const errorMessage = error instanceof Error ? error.message : "Failed to transform image";
-      toast.error(errorMessage);
+      toast.error('Failed to transform image');
     } finally {
       setIsProcessing(false);
-      setStatusMessage("");
       clearInterval(progressInterval);
     }
   };
@@ -242,39 +165,56 @@ const TeeFeeMeCartoonifier = () => {
   };
 
   const handleReset = () => {
-    setCartoonUrl("");
-    setShowResult(false);
-  };
-
-  const handleNewPhoto = () => {
     setSelectedFile(null);
     setPreviewUrl("");
     setCartoonUrl("");
     setShowResult(false);
-    setSelectedStyle("simpsons");
+    setCustomPrompt("");
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
-        {/* Hero Section */}
-        {!selectedFile && (
+    <RoleGuard 
+      requiredRoles={['admin', 'alpha', 'beta', 'delta']} 
+      featureName="TeeFeeMe Cartoonifier"
+      fallbackMessage="Only Alpha, Beta, Delta testers and Admins can use this epic feature"
+    >
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950/20 to-slate-950 py-8">
+        <div className="container mx-auto px-4 max-w-7xl">
+          
+          {/* Epic Header */}
           <div className="text-center mb-12 animate-fade-in">
-            <div className="text-8xl mb-6">🎨</div>
-            
-            <h1 className="text-5xl md:text-7xl font-black mb-4">
-              TeeFee Me
+            <div className="inline-block mb-4 p-4 rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 border-2 border-purple-500/30">
+              <Sparkles className="w-16 h-16 text-purple-400" />
+            </div>
+            <h1 className="text-7xl font-black mb-4 bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
+              TeeFeeMe Cartoonifier
             </h1>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-              Transform your photos into legendary cartoon styles
+            <p className="text-xl text-purple-300/80 font-mono">
+              [ TRANSFORM YOUR PHOTOS INTO LEGENDARY CARTOON STYLES ]
             </p>
+            <div className="flex gap-2 justify-center mt-4">
+              <Badge variant="outline" className="border-purple-500/50 text-purple-400 font-mono">
+                15+ STYLES
+              </Badge>
+              <Badge variant="outline" className="border-pink-500/50 text-pink-400 font-mono">
+                AI POWERED
+              </Badge>
+              <Badge variant="outline" className="border-cyan-500/50 text-cyan-400 font-mono">
+                BETA ACCESS
+              </Badge>
+            </div>
+          </div>
 
+          {/* Upload Section */}
+          {!selectedFile && (
             <Card
-              className={`p-12 border-2 border-dashed transition-all duration-300 cursor-pointer ${
-                dragActive ? "border-primary bg-primary/5 scale-105" : "border-border"
+              className={`p-16 border-2 border-dashed transition-all duration-300 cursor-pointer mb-8 ${
+                dragActive 
+                  ? "border-purple-500 bg-purple-500/10 scale-105 shadow-2xl shadow-purple-500/20" 
+                  : "border-purple-500/30 bg-slate-900/50 hover:border-purple-500/50"
               }`}
               onDragEnter={handleDrag}
               onDragLeave={handleDrag}
@@ -282,221 +222,194 @@ const TeeFeeMeCartoonifier = () => {
               onDrop={handleDrop}
               onClick={() => fileInputRef.current?.click()}
             >
-              <div className="flex flex-col items-center space-y-4">
-                <div className="p-6 rounded-full bg-primary/10">
-                  <Upload className="w-12 h-12 text-primary" />
+              <div className="flex flex-col items-center space-y-6">
+                <div className="p-8 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-500/20 border-2 border-purple-500/30">
+                  <Upload className="w-16 h-16 text-purple-400" />
                 </div>
-                <div>
-                  <p className="text-xl font-semibold mb-2">Drop photo here or click to browse</p>
-                  <p className="text-sm text-muted-foreground">
-                    JPG, PNG, or WEBP • Max 10MB
+                <div className="text-center">
+                  <p className="text-2xl font-bold mb-2 text-purple-300">Drop your photo here</p>
+                  <p className="text-sm text-purple-400/60 font-mono">
+                    JPG, PNG, WEBP • Max 10MB
                   </p>
                 </div>
               </div>
             </Card>
+          )}
 
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleFileInputChange}
-              className="hidden"
-            />
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFileInputChange}
+            className="hidden"
+          />
 
-            <Button
-              variant="outline"
-              size="lg"
-              className="mt-6 md:hidden"
-              onClick={() => {
-                if (fileInputRef.current) {
-                  fileInputRef.current.setAttribute("capture", "environment");
-                  fileInputRef.current.click();
-                }
-              }}
-            >
-              <Camera className="mr-2" />
-              Take Selfie
-            </Button>
-          </div>
-        )}
-
-        {/* Style Selection & Processing */}
-        {selectedFile && !showResult && (
-          <div className="space-y-8 animate-fade-in">
-            <div className="text-center">
-              <h2 className="text-4xl font-black mb-3">
-                Pick Your Style
-              </h2>
-              <p className="text-lg text-muted-foreground">Choose your transformation</p>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-              {styles.map((style) => (
-                <Button
-                  key={style.id}
-                  onClick={() => {
-                    if (!style.available) {
-                      toast.info(`${style.name} coming soon!`);
-                      return;
-                    }
-                    setSelectedStyle(style.id);
-                    if (cartoonUrl) {
-                      setCartoonUrl("");
-                      setShowResult(false);
-                    }
-                  }}
-                  disabled={!style.available}
-                  variant={selectedStyle === style.id ? "default" : "outline"}
-                  className={`h-24 flex flex-col gap-2 relative ${
-                    !style.available ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
-                >
-                  {!style.available && (
-                    <div className="absolute top-1 right-1 bg-primary text-primary-foreground text-xs px-2 py-0.5 rounded-full font-bold">
-                      SOON
-                    </div>
-                  )}
-                  <span className="text-3xl">{style.icon}</span>
-                  <span className="font-bold text-sm">{style.name}</span>
-                </Button>
-              ))}
-            </div>
-
-            <Card className="p-6">
-              <div className="relative">
-                <h3 className="text-xl font-bold mb-4 text-center">
-                  {isProcessing ? 'Processing...' : 'Your Photo'}
-                </h3>
-                
-                <div className="relative">
-                  <img
-                    src={previewUrl}
-                    alt="Preview"
-                    className={`w-full h-auto rounded-lg border-2 transition-opacity duration-300 ${
-                      isProcessing ? 'opacity-50 border-primary' : 'border-border'
-                    }`}
-                  />
-                  
-                  {/* Processing Overlay */}
-                  {isProcessing && (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-primary/10 to-accent/10 rounded-lg">
-                      <div className="text-center space-y-4 p-6">
-                        <Zap className="w-16 h-16 mx-auto text-primary animate-pulse" />
-                        <p className="text-lg font-bold animate-pulse">{statusMessage}</p>
-                        
-                        <div className="w-full max-w-xs space-y-2">
-                          <div className="flex justify-between text-sm font-medium">
-                            <span>Progress</span>
-                            <span>{progress}%</span>
-                          </div>
-                          <div className="h-3 bg-background/50 rounded-full overflow-hidden">
-                            <div 
-                              className="h-full bg-primary transition-all duration-300"
-                              style={{ width: `${progress}%` }}
-                            />
-                          </div>
-                        </div>
-                        
-                        <p className="text-xs text-muted-foreground">
-                          This may take 20-40 seconds
+          {/* Main Interface */}
+          {selectedFile && !showResult && (
+            <div className="grid lg:grid-cols-3 gap-8">
+              
+              {/* Preview */}
+              <div className="lg:col-span-2">
+                <Card className="p-6 bg-slate-900/50 border-purple-500/30">
+                  <div className="relative">
+                    <img
+                      src={previewUrl}
+                      alt="Preview"
+                      className="w-full h-auto rounded-lg"
+                    />
+                    {isProcessing && (
+                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 rounded-lg backdrop-blur-sm">
+                        <Zap className="w-20 h-20 text-purple-400 animate-pulse mb-4" />
+                        <p className="text-2xl font-black text-purple-300 mb-2 font-mono">
+                          [ PROCESSING ]
                         </p>
+                        <div className="w-80 h-3 bg-slate-800 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-300"
+                            style={{ width: `${progress}%` }}
+                          />
+                        </div>
+                        <p className="text-purple-400 font-mono mt-2">{progress}%</p>
                       </div>
-                    </div>
-                  )}
-                </div>
+                    )}
+                  </div>
 
-                {/* Action Buttons */}
-                {!isProcessing && (
-                  <div className="flex flex-col gap-3 mt-6">
-                    <Button
-                      size="lg"
+                  {/* Custom Prompt */}
+                  <div className="mt-6 space-y-4">
+                    <Label className="text-purple-300 font-mono">CUSTOM INSTRUCTIONS (OPTIONAL)</Label>
+                    <Textarea 
+                      placeholder="e.g., Make me look heroic and powerful with vibrant colors"
+                      value={customPrompt}
+                      onChange={(e) => setCustomPrompt(e.target.value)}
+                      rows={3}
+                      className="bg-slate-800/50 border-purple-500/30 text-purple-200 font-mono"
+                    />
+                    <Button 
+                      size="lg" 
+                      className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold font-mono"
                       onClick={handleCartoonify}
-                      className="w-full text-lg py-6"
+                      disabled={isProcessing}
                     >
                       <Sparkles className="mr-2" />
-                      TeeFee Me!
+                      [ TEEFEEME! ]
                     </Button>
-                    <Button variant="outline" size="lg" onClick={handleNewPhoto} className="w-full">
+                    <Button 
+                      variant="outline" 
+                      size="lg" 
+                      className="w-full border-purple-500/30 text-purple-400 hover:bg-purple-500/10 font-mono"
+                      onClick={handleReset}
+                    >
                       <RefreshCw className="mr-2" />
-                      Different Photo
+                      [ RESET ]
                     </Button>
                   </div>
-                )}
+                </Card>
               </div>
-            </Card>
-          </div>
-        )}
 
-        {/* Results */}
-        {showResult && cartoonUrl && (
-          <div className="space-y-8 animate-fade-in">
-            <div className="text-center">
-              <h2 className="text-5xl font-black mb-3 gradient-text">
-                You've Been TeeFeed! 🎨
-              </h2>
-              <p className="text-lg text-muted-foreground">Transformation complete</p>
+              {/* Style Selector */}
+              <div>
+                <Card className="p-6 bg-slate-900/50 border-purple-500/30 sticky top-4">
+                  <h3 className="text-xl font-black mb-4 text-purple-300 font-mono">
+                    [ SELECT STYLE ]
+                  </h3>
+                  <Tabs defaultValue="classic">
+                    <TabsList className="grid grid-cols-3 mb-4 bg-slate-800/50">
+                      <TabsTrigger value="classic" className="font-mono text-xs">CLASSIC</TabsTrigger>
+                      <TabsTrigger value="action" className="font-mono text-xs">ACTION</TabsTrigger>
+                      <TabsTrigger value="artistic" className="font-mono text-xs">ART</TabsTrigger>
+                    </TabsList>
+
+                    {Object.entries(styleCategories).map(([category, styles]) => (
+                      <TabsContent key={category} value={category} className="space-y-2">
+                        {styles.map((style) => (
+                          <Button
+                            key={style.id}
+                            onClick={() => setSelectedStyle(style.id)}
+                            variant={selectedStyle === style.id ? "default" : "outline"}
+                            className={`w-full justify-start h-auto py-3 ${
+                              selectedStyle === style.id 
+                                ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0" 
+                                : "border-purple-500/20 hover:border-purple-500/40 hover:bg-purple-500/10"
+                            }`}
+                          >
+                            <span className="text-2xl mr-3">{style.icon}</span>
+                            <div className="text-left flex-1">
+                              <div className="font-bold text-sm">{style.name}</div>
+                              <div className="text-xs opacity-70">{style.desc}</div>
+                            </div>
+                            {style.premium && (
+                              <Badge variant="secondary" className="ml-2 text-xs bg-pink-500/20 text-pink-400 border-pink-500/30">
+                                PRO
+                              </Badge>
+                            )}
+                          </Button>
+                        ))}
+                      </TabsContent>
+                    ))}
+                  </Tabs>
+                </Card>
+              </div>
             </div>
+          )}
 
-            <Card className="p-6 border-2 border-primary/30 shadow-2xl">
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-3">
-                  <h3 className="text-xl font-bold text-center">Before</h3>
-                  <div className="relative group">
+          {/* Results */}
+          {showResult && cartoonUrl && (
+            <div className="space-y-8 animate-fade-in">
+              <div className="text-center">
+                <h2 className="text-6xl font-black mb-4 bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
+                  🎨 YOU'VE BEEN TEEFEED!
+                </h2>
+              </div>
+
+              <Card className="p-8 bg-slate-900/50 border-2 border-purple-500/30 shadow-2xl shadow-purple-500/20">
+                <div className="grid md:grid-cols-2 gap-8">
+                  <div className="space-y-3">
+                    <h3 className="text-xl font-bold text-center text-purple-300 font-mono">
+                      [ BEFORE ]
+                    </h3>
                     <img
                       src={previewUrl}
                       alt="Original"
-                      className="w-full h-auto rounded-lg border-2 border-border/50"
+                      className="w-full h-auto rounded-lg border-2 border-purple-500/30"
                     />
                   </div>
-                </div>
-                <div className="space-y-3">
-                  <h3 className="text-xl font-bold text-center gradient-text">
-                    After - {styles.find(s => s.id === selectedStyle)?.name}
-                  </h3>
-                  <div className="relative group">
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-accent/20 to-primary/20 rounded-lg blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
+                  <div className="space-y-3">
+                    <h3 className="text-xl font-bold text-center bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent font-mono">
+                      [ AFTER - {selectedStyle.toUpperCase()} ]
+                    </h3>
                     <img
                       src={cartoonUrl}
                       alt="Cartoon"
-                      className="relative w-full h-auto rounded-lg border-4 border-primary/60 shadow-2xl hover:scale-[1.02] transition-all duration-300"
+                      className="w-full h-auto rounded-lg border-4 border-purple-500 shadow-2xl shadow-purple-500/30 hover:scale-[1.02] transition-all duration-300"
                     />
                   </div>
                 </div>
-              </div>
 
-              <div className="flex flex-wrap gap-4 justify-center mt-8">
-                <Button
-                  size="lg"
-                  onClick={handleDownload}
-                  className="text-lg py-6 gap-2 bg-gradient-to-r from-primary via-accent to-primary hover:opacity-90 shadow-2xl hover:shadow-[0_0_40px_hsl(var(--primary)/0.6)] transition-all duration-300 hover:scale-105"
-                >
-                  <Download className="w-5 h-5" />
-                  Download Your Cartoon
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="lg" 
-                  onClick={handleReset}
-                  className="border-2 border-primary/40 hover:border-primary/60 hover:bg-primary/10 transition-all duration-300"
-                >
-                  <Sparkles className="mr-2" />
-                  Try Another Style
-                </Button>
-                <Button 
-                  variant="secondary" 
-                  size="lg" 
-                  onClick={handleNewPhoto}
-                  className="hover:bg-accent/20 transition-all duration-300"
-                >
-                  <ImageIcon className="mr-2" />
-                  New Photo
-                </Button>
-              </div>
-            </Card>
-          </div>
-        )}
+                <div className="flex flex-wrap gap-4 justify-center mt-8">
+                  <Button
+                    size="lg"
+                    onClick={handleDownload}
+                    className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold font-mono shadow-xl hover:shadow-2xl transition-all"
+                  >
+                    <Download className="mr-2" />
+                    [ DOWNLOAD ]
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="lg" 
+                    onClick={handleReset}
+                    className="border-2 border-purple-500/40 hover:bg-purple-500/10 text-purple-400 font-mono"
+                  >
+                    <Sparkles className="mr-2" />
+                    [ NEW PHOTO ]
+                  </Button>
+                </div>
+              </Card>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </RoleGuard>
   );
 };
 

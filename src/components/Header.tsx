@@ -20,7 +20,7 @@ import {
 export const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { isAdmin, isLoading } = useUserRole();
+  const { hasRole, isLoading } = useUserRole();
   const { user, showLogin } = useAuth();
   const [localUser, setLocalUser] = useState<any>(null);
 
@@ -37,7 +37,7 @@ export const Header = () => {
   }, []);
 
   const handleAdminClick = () => {
-    if (!isLoading && isAdmin) {
+    if (!isLoading && hasRole('admin')) {
       navigate('/admin');
     } else if (!localUser) {
       toast.error("Please sign in to access admin features");

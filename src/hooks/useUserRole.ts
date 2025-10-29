@@ -1,29 +1,47 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-export const useUserRole = () => {
-  const [isAdmin, setIsAdmin] = useState(false);
+export type UserRole = 'admin' | 'moderator' | 'alpha' | 'beta' | 'delta' | 'user';
+
+interface UserRoleData {
+  roles: UserRole[];
+  hasRole: (role: UserRole) => boolean;
+  hasAnyRole: (roles: UserRole[]) => boolean;
+  isLoading: boolean;
+  userId: string | null;
+}
+
+export const useUserRole = (): UserRoleData => {
+  const [roles, setRoles] = useState<UserRole[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
     const checkRole = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session?.user) {
-          setIsAdmin(false);
+          setRoles([]);
+          setUserId(null);
           setIsLoading(false);
           return;
         }
 
-        const { data: roles } = await supabase
+        setUserId(session.user.id);
+
+        const { data: userRoles } = await supabase
           .from('user_roles')
           .select('role')
           .eq('user_id', session.user.id);
 
-        setIsAdmin(roles?.some(r => r.role === 'admin') || false);
+        if (userRoles && userRoles.length > 0) {
+          setRoles(userRoles.map(r => r.role as UserRole));
+        } else {
+          setRoles([]);
+        }
       } catch (error) {
         console.error('Error checking role:', error);
-        setIsAdmin(false);
+        setRoles([]);
       } finally {
         setIsLoading(false);
       }
@@ -34,5 +52,11 @@ export const useUserRole = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  return { isAdmin, isLoading };
+  const hasRole = (role: UserRole) => roles.includes(role);
+  
+  const hasAnyRole = (checkRoles: UserRole[]) => {
+    return checkRoles.some(role => roles.includes(role));
+  };
+
+  return { roles, hasRole, hasAnyRole, isLoading, userId };
 };
