@@ -63,7 +63,7 @@ export default function HackerScreen() {
   }, [currentLine, hackerLines]);
 
   useEffect(() => {
-    // Progress bar - slower progression (8 seconds total)
+    // Progress bar
     const progressTimer = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
@@ -72,9 +72,9 @@ export default function HackerScreen() {
           setTimeout(() => navigate("/"), 800);
           return 100;
         }
-        return prev + 1.25; // Slower increment
+        return prev + 2;
       });
-    }, 100); // Check more frequently for smoother animation
+    }, 50);
 
     return () => clearInterval(progressTimer);
   }, [navigate]);
@@ -135,7 +135,7 @@ export default function HackerScreen() {
             <div className="flex items-center gap-2 mb-4 border-b border-green-500/30 pb-2">
               <Terminal className="w-5 h-5" />
               <span className="text-sm">MAIN_TERMINAL.log</span>
-              <span className="text-[10px] text-green-600 ml-auto">ROOT@INPERSON-TLC</span>
+              <span className="text-[10px] text-green-600 ml-auto">ROOT@FELICIA-TLC</span>
             </div>
             <div className="space-y-1 text-xs max-h-[380px] overflow-y-auto scrollbar-thin scrollbar-thumb-green-700 scrollbar-track-green-950">
               {hackerLines.slice(0, currentLine).map((line, idx) => (

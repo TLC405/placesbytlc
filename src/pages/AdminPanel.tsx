@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -21,8 +21,7 @@ import {
   Sparkles,
   MessageSquare,
   Wifi,
-  FileCode,
-  Rocket
+  FileCode
 } from "lucide-react";
 import { CommandStation } from "@/components/admin/CommandStation";
 import { UserAnalyticsDashboard } from "@/components/admin/UserAnalyticsDashboard";
@@ -31,7 +30,6 @@ import { CodeExportSystem } from "@/components/admin/CodeExportSystem";
 import { SMSNotificationPanel } from "@/components/admin/SMSNotificationPanel";
 import { AIPromptInterface } from "@/components/admin/AIPromptInterface";
 import { WiFiAnalyzer } from "@/components/admin/WiFiAnalyzer";
-import { AppReadinessChecklist } from "@/components/admin/AppReadinessChecklist";
 import { FileUploadManager } from "@/components/FileUploadManager";
 import { RecentUpdates } from "@/components/RecentUpdates";
 
@@ -54,24 +52,13 @@ const AdminPanel = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [users, setUsers] = useState<UserAnalytics[]>([]);
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState('dashboard');
   const [allActivities, setAllActivities] = useState<any[]>([]);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
   const [codeUnlocked, setCodeUnlocked] = useState(false);
   const [codeInput, setCodeInput] = useState("");
   const [showCodeDialog, setShowCodeDialog] = useState(true);
-
-  // Track admin actions
-  const trackAdminAction = useCallback(async (action: string, section: string, details?: any) => {
-    try {
-      await supabase.functions.invoke('track-admin-activity', {
-        body: { action, section, details }
-      });
-    } catch (error) {
-      console.error('Failed to track admin action:', error);
-    }
-  }, []);
 
   // Setup realtime subscription for analytics
   useEffect(() => {
@@ -172,14 +159,7 @@ const AdminPanel = () => {
       
       if (error) {
         console.error('Edge function error:', error);
-        toast.error('Failed to load analytics data');
-        return;
-      }
-
-      if (!data) {
-        console.warn('No data returned from edge function');
-        setUsers([]);
-        return;
+        throw error;
       }
 
       console.log('Admin portal data received:', data);
@@ -249,14 +229,14 @@ const AdminPanel = () => {
       if (error) throw error;
       
       // Create README file
-      const readme = data?.readme || 'INPERSON.TLC Source Code';
+      const readme = data?.readme || 'FELICIA.TLC Source Code';
       const readmeBlob = new Blob([readme], { type: 'text/markdown' });
       const readmeUrl = URL.createObjectURL(readmeBlob);
       
       // Download README
       const readmeLink = document.createElement('a');
       readmeLink.href = readmeUrl;
-      readmeLink.download = 'INPERSON-TLC-README.md';
+      readmeLink.download = 'FELICIA-TLC-README.md';
       document.body.appendChild(readmeLink);
       readmeLink.click();
       document.body.removeChild(readmeLink);
@@ -276,10 +256,10 @@ const AdminPanel = () => {
 
   const handleDownloadAIPrompt = async () => {
     try {
-      const promptText = `# INPERSON.TLC - Complete App Blueprint for AI Reconstruction
+      const promptText = `# FELICIA.TLC - Complete App Blueprint for AI Reconstruction
 
 ## App Overview
-**Name**: INPERSON.TLC — Your Personalized Love Journey
+**Name**: FELICIA.TLC — Your Personalized Love Journey
 **Purpose**: Oklahoma City date spot discovery platform with AI-powered recommendations
 **Stack**: React 18 + Vite + TypeScript + Tailwind CSS + Supabase (Lovable Cloud)
 **Theme**: Romantic, playful, feminine aesthetic with pink/purple gradients
@@ -499,13 +479,13 @@ src/
 - Event RSVP system
 
 ---
-This blueprint provides everything needed to reconstruct the INPERSON.TLC app identically using AI tools like Claude, ChatGPT, or Lovable.`;
+This blueprint provides everything needed to reconstruct the FELICIA.TLC app identically using AI tools like Claude, ChatGPT, or Lovable.`;
 
       const blob = new Blob([promptText], { type: 'text/plain' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = 'INPERSON-TLC-AI-Prompt.txt';
+      link.download = 'FELICIA-TLC-AI-Prompt.txt';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -559,11 +539,15 @@ This blueprint provides everything needed to reconstruct the INPERSON.TLC app id
     );
   }
 
-  // Three main sections only
   const tabItems = [
-    { id: 'overview', label: 'Overview', icon: Activity },
-    { id: 'management', label: 'Management', icon: Settings },
-    { id: 'developer', label: 'Developer', icon: Code },
+    { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
+    { id: 'command', label: 'Command', icon: Terminal },
+    { id: 'users', label: 'Users', icon: Users },
+    { id: 'analytics', label: 'Analytics', icon: Activity },
+    { id: 'sms', label: 'SMS', icon: MessageSquare },
+    { id: 'ai', label: 'AI Prompt', icon: Sparkles },
+    { id: 'wifi', label: 'WiFi', icon: Wifi },
+    { id: 'tools', label: 'Tools', icon: FileCode },
   ];
 
   const totalUsers = users.length;
@@ -606,27 +590,23 @@ This blueprint provides everything needed to reconstruct the INPERSON.TLC app id
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-8 lg:w-auto lg:inline-grid">
             {tabItems.map((item) => {
               const Icon = item.icon;
               return (
                 <TabsTrigger
                   key={item.id}
                   value={item.id}
-                  className="gap-2 text-lg py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                 >
-                  <Icon className="h-5 w-5" />
-                  {item.label}
+                  <Icon className="h-4 w-4" />
+                  <span className="hidden sm:inline">{item.label}</span>
                 </TabsTrigger>
               );
             })}
           </TabsList>
 
-          <TabsContent value="overview" className="space-y-6" onClick={() => trackAdminAction('view', 'overview')}>
-            {/* App Readiness Checklist */}
-            <AppReadinessChecklist />
-            
-            {/* Quick Stats Dashboard */}
+          <TabsContent value="dashboard" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <Card className="p-6">
                 <div className="flex items-center justify-between mb-2">
@@ -688,11 +668,11 @@ This blueprint provides everything needed to reconstruct the INPERSON.TLC app id
             </Card>
           </TabsContent>
 
-          <TabsContent value="management" className="space-y-6">
-            {/* Command Station */}
+          <TabsContent value="command">
             <CommandStation />
-            
-            {/* User Management */}
+          </TabsContent>
+
+          <TabsContent value="users" className="space-y-6">
             <Card className="p-6">
               <h3 className="text-lg font-semibold mb-4">User List</h3>
               <div className="space-y-2 max-h-[600px] overflow-y-auto">
@@ -734,32 +714,30 @@ This blueprint provides everything needed to reconstruct the INPERSON.TLC app id
                 ))}
               </div>
             </Card>
-            
-            {/* Analytics Dashboard */}
+          </TabsContent>
+
+          <TabsContent value="analytics">
             <UserAnalyticsDashboard />
-            
-            {/* SMS Panel */}
+          </TabsContent>
+
+          <TabsContent value="sms" className="space-y-6">
             <SMSNotificationPanel />
-            
-            {/* Recent Updates */}
+          </TabsContent>
+
+          <TabsContent value="ai" className="space-y-6">
+            <AIPromptInterface />
+          </TabsContent>
+
+          <TabsContent value="wifi" className="space-y-6">
+            <WiFiAnalyzer />
+          </TabsContent>
+
+          <TabsContent value="updates">
             <RecentUpdates />
           </TabsContent>
 
-          <TabsContent value="developer" className="space-y-6" onClick={() => trackAdminAction('view', 'developer')}>
-            {/* AI Prompt Interface */}
-            <div onClick={() => trackAdminAction('interact', 'ai_prompt')}>
-              <AIPromptInterface />
-            </div>
-            
-            {/* WiFi Analyzer */}
-            <div onClick={() => trackAdminAction('interact', 'wifi_analyzer')}>
-              <WiFiAnalyzer />
-            </div>
-            
-            {/* Code Export & Tools */}
-            <div onClick={() => trackAdminAction('interact', 'code_export')}>
-              <CodeExportSystem />
-            </div>
+          <TabsContent value="tools" className="space-y-6">
+            <CodeExportSystem />
             
             <Card className="p-6">
               <h3 className="text-lg font-semibold mb-4">Developer Tools</h3>
@@ -771,10 +749,7 @@ This blueprint provides everything needed to reconstruct the INPERSON.TLC app id
                       Export the entire codebase as a ZIP file
                     </p>
                   </div>
-                  <Button onClick={() => {
-                    trackAdminAction('download', 'developer', { type: 'source_code' });
-                    handleDownloadSource();
-                  }} className="gap-2">
+                  <Button onClick={handleDownloadSource} className="gap-2">
                     <Download className="h-4 w-4" />
                     Download
                   </Button>
@@ -787,10 +762,7 @@ This blueprint provides everything needed to reconstruct the INPERSON.TLC app id
                       Complete app blueprint for AI reconstruction
                     </p>
                   </div>
-                  <Button onClick={() => {
-                    trackAdminAction('download', 'developer', { type: 'ai_prompt' });
-                    handleDownloadAIPrompt();
-                  }} className="gap-2">
+                  <Button onClick={handleDownloadAIPrompt} className="gap-2">
                     <Code className="h-4 w-4" />
                     Download
                   </Button>
@@ -803,10 +775,7 @@ This blueprint provides everything needed to reconstruct the INPERSON.TLC app id
                       View and browse the codebase
                     </p>
                   </div>
-                  <Button onClick={() => {
-                    trackAdminAction('navigate', 'developer', { destination: '/code' });
-                    navigate('/code');
-                  }} variant="outline" className="gap-2">
+                  <Button onClick={() => navigate('/code')} variant="outline" className="gap-2">
                     <Code className="h-4 w-4" />
                     Open Browser
                   </Button>

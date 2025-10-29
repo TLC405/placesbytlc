@@ -85,12 +85,12 @@ export const Header = () => {
               
               <div className="leading-tight">
                 <div className="text-xl sm:text-3xl font-black gradient-text tracking-tight drop-shadow-lg animate-pulse">
-                  ✨ INPERSON.TLC ✨
+                  ✨ FELICIA.TLC ✨
                 </div>
                 <div className="text-xs sm:text-sm font-bold tracking-widest hidden sm:block bg-gradient-to-r from-amber-400 via-rose-400 to-amber-400 bg-clip-text text-transparent animate-gradient-shift" style={{ backgroundSize: '200% 200%' }}>
                   <span className="inline-block animate-pulse">👑</span>
                   <span className="mx-1">
-                    ONE NEW ADVENTURE
+                    QUEEN FELICIA'S LOVE HUB
                   </span>
                   <span className="inline-block animate-pulse delay-75">👑</span>
                 </div>
@@ -122,10 +122,27 @@ export const Header = () => {
               <div className="flex-shrink-0">
                 <DarkModeToggle />
               </div>
+              <div className="flex-shrink-0">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowSignup(true)}
+                  className="gap-1 sm:gap-2 text-xs sm:text-sm"
+                >
+                  <UserPlus className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline">Sign Up</span>
+                </Button>
+              </div>
             </nav>
           </div>
         </div>
       </header>
+
+      <Dialog open={showSignup} onOpenChange={setShowSignup}>
+        <DialogContent className="max-w-md">
+          <AuthPanel />
+        </DialogContent>
+      </Dialog>
     </>
   );
 };

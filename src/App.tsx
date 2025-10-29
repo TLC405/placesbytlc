@@ -31,7 +31,6 @@ const AIRecommender = lazy(() => import("./pages/AIRecommender"));
 const CoupleMode = lazy(() => import("./pages/CoupleMode"));
 const Gamification = lazy(() => import("./pages/Gamification"));
 const OKCLegendForge = lazy(() => import("./pages/OKCLegendForge"));
-const ComingSoon = lazy(() => import("./pages/ComingSoon"));
 
 import { useGoogleMaps } from "@/hooks/useGoogleMaps";
 
@@ -65,8 +64,6 @@ const AppRoutes = () => {
         <Route path="/couple-mode" element={<CoupleMode />} />
         <Route path="/gamification" element={<Gamification />} />
         <Route path="/okc-legend" element={<OKCLegendForge />} />
-        <Route path="/boo-mode" element={<ComingSoon />} />
-        <Route path="/coming-soon" element={<ComingSoon />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>
