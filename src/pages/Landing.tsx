@@ -1,15 +1,7 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { Shield, Zap, Target, Activity, MessageSquare } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { FeedbackDialog } from "@/components/FeedbackDialog";
-
-export default function Landing() {
+1: import { useNavigate } from "react-router-dom";
+2: import { Shield } from "lucide-react";
+3: import { Button } from "@/components/ui/button";
+4: import { Card } from "@/components/ui/card";{
   const navigate = useNavigate();
 
   return (
