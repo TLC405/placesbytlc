@@ -8,17 +8,21 @@ interface EmptyStateProps {
 
 export const EmptyState = ({ icon: Icon, title, description }: EmptyStateProps) => {
   return (
-    <div className="col-span-full flex flex-col items-center justify-center p-16 text-center animate-fade-in">
+    <div 
+      className="col-span-full flex flex-col items-center justify-center p-8 sm:p-16 text-center animate-fade-in"
+      role="status"
+      aria-label="Empty state"
+    >
       <div className="relative mb-6">
-        <div className="absolute inset-0 animate-ping opacity-20">
-          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary to-accent" />
+        <div className="absolute inset-0 animate-ping opacity-20" aria-hidden="true">
+          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-primary to-accent" />
         </div>
-        <div className="relative w-24 h-24 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 backdrop-blur-sm flex items-center justify-center border-2 border-primary/30 shadow-xl">
-          <Icon className="w-12 h-12 text-primary animate-pulse" />
+        <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 backdrop-blur-sm flex items-center justify-center border-2 border-primary/30 shadow-xl">
+          <Icon className="w-10 h-10 sm:w-12 sm:h-12 text-primary animate-pulse" aria-hidden="true" />
         </div>
       </div>
-      <h3 className="text-2xl font-black gradient-text mb-3 drop-shadow-lg">{title}</h3>
-      <p className="text-base text-muted-foreground max-w-md font-medium leading-relaxed">{description}</p>
+      <h3 className="text-xl sm:text-2xl font-black gradient-text mb-3 drop-shadow-lg">{title}</h3>
+      <p className="text-sm sm:text-base text-muted-foreground max-w-md font-medium leading-relaxed px-4">{description}</p>
     </div>
   );
 };

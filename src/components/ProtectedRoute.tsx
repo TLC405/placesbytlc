@@ -32,10 +32,10 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50 flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="w-16 h-16 gradient-primary rounded-full animate-pulse mx-auto"></div>
-          <p className="gradient-text font-semibold">Loading...</p>
+      <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50 flex items-center justify-center p-4">
+        <div className="text-center space-y-4" role="status" aria-label="Loading">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 gradient-primary rounded-full animate-pulse mx-auto"></div>
+          <p className="gradient-text font-semibold text-sm sm:text-base">Loading...</p>
         </div>
       </div>
     );

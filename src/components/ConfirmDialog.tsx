@@ -35,16 +35,16 @@ export const ConfirmDialog = ({
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="border-primary/20 shadow-glow">
+      <AlertDialogContent className="border-primary/20 shadow-glow max-w-md mx-4 sm:mx-auto">
         <AlertDialogHeader>
-          <AlertDialogTitle className="text-xl gradient-text">{title}</AlertDialogTitle>
-          <AlertDialogDescription className="text-base">
+          <AlertDialogTitle className="text-lg sm:text-xl gradient-text">{title}</AlertDialogTitle>
+          <AlertDialogDescription className="text-sm sm:text-base">
             {description}
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel className="shadow-sm">{cancelText}</AlertDialogCancel>
-          <AlertDialogAction onClick={handleConfirm} className="shadow-sm hover:shadow-glow">
+        <AlertDialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
+          <AlertDialogCancel className="shadow-sm w-full sm:w-auto">{cancelText}</AlertDialogCancel>
+          <AlertDialogAction onClick={handleConfirm} className="shadow-sm hover:shadow-glow w-full sm:w-auto">
             {confirmText}
           </AlertDialogAction>
         </AlertDialogFooter>

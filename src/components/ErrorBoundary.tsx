@@ -27,17 +27,17 @@ export class ErrorBoundary extends React.Component<Props, State> {
   }
 
   render() {
-    if (this.state.hasError) {
+  if (this.state.hasError) {
       return (
         <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-background to-muted">
-          <Card className="max-w-md w-full p-8 text-center space-y-6">
+          <Card className="max-w-md w-full p-6 sm:p-8 text-center space-y-6">
             <div className="w-16 h-16 mx-auto bg-destructive/10 rounded-full flex items-center justify-center">
-              <AlertCircle className="w-8 h-8 text-destructive" />
+              <AlertCircle className="w-8 h-8 text-destructive" aria-hidden="true" />
             </div>
             
             <div className="space-y-2">
-              <h1 className="text-2xl font-bold">Oops! Something went wrong</h1>
-              <p className="text-muted-foreground">
+              <h1 className="text-xl sm:text-2xl font-bold">Oops! Something went wrong</h1>
+              <p className="text-sm sm:text-base text-muted-foreground">
                 The app encountered an unexpected error. Don't worry, your data is safe.
               </p>
             </div>
@@ -47,7 +47,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
                 <summary className="cursor-pointer font-medium mb-2">
                   Error Details
                 </summary>
-                <pre className="overflow-auto text-destructive">
+                <pre className="overflow-auto text-destructive whitespace-pre-wrap break-words">
                   {this.state.error.toString()}
                 </pre>
               </details>
@@ -58,8 +58,9 @@ export class ErrorBoundary extends React.Component<Props, State> {
                 onClick={() => window.location.reload()}
                 className="w-full"
                 size="lg"
+                aria-label="Reload application"
               >
-                <RefreshCw className="w-4 h-4 mr-2" />
+                <RefreshCw className="w-4 h-4 mr-2" aria-hidden="true" />
                 Reload App
               </Button>
               
@@ -69,6 +70,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
                   this.setState({ hasError: false, error: undefined });
                 }}
                 className="w-full"
+                aria-label="Try again"
               >
                 Try Again
               </Button>

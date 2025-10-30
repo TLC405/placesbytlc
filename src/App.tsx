@@ -30,11 +30,14 @@ const OKCLegendForge = lazy(() => import("./pages/EnhancedOKCLegend"));
 const ComingSoon = lazy(() => import("./pages/ComingSoon"));
 const CartoonifierNew = lazy(() => import("./pages/CartoonifierNew"));
 const Auth = lazy(() => import("./pages/Auth"));
+const Landing = lazy(() => import("./pages/Landing"));
 
 import { useGoogleMaps } from "@/hooks/useGoogleMaps";
 import { DevModeProvider } from "@/contexts/DevModeContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { AuthRedirect } from "@/components/AuthRedirect";
 
 const queryClient = new QueryClient();
 
@@ -50,24 +53,25 @@ const AppRoutes = () => {
       </div>
     }>
       <Routes>
+        <Route path="/landing" element={<Landing />} />
         <Route path="/hacker" element={<HackerScreen />} />
-        <Route path="/" element={<HackerHome />} />
+        <Route path="/" element={<ProtectedRoute><HackerHome /></ProtectedRoute>} />
         <Route path="/auth" element={<Auth />} />
-        <Route path="/quizzes" element={<Quizzes />} />
-        <Route path="/quiz/love" element={<QuizLove />} />
-        <Route path="/quiz/mbti" element={<QuizMBTI />} />
-        <Route path="/quiz/relationship-style" element={<QuizRelationshipStyle />} />
-        <Route path="/period-tracker" element={<PeriodTracker />} />
+        <Route path="/quizzes" element={<ProtectedRoute><Quizzes /></ProtectedRoute>} />
+        <Route path="/quiz/love" element={<ProtectedRoute><QuizLove /></ProtectedRoute>} />
+        <Route path="/quiz/mbti" element={<ProtectedRoute><QuizMBTI /></ProtectedRoute>} />
+        <Route path="/quiz/relationship-style" element={<ProtectedRoute><QuizRelationshipStyle /></ProtectedRoute>} />
+        <Route path="/period-tracker" element={<ProtectedRoute><PeriodTracker /></ProtectedRoute>} />
         <Route path="/code" element={<CodeViewer />} />
-        <Route path="/admin" element={<AdminPanel />} />
+        <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminPanel /></ProtectedRoute>} />
         <Route path="/tester" element={<TesterDashboard />} />
-        <Route path="/ai-recommender" element={<AIRecommender />} />
-        <Route path="/couple-mode" element={<CoupleMode />} />
-        <Route path="/gamification" element={<Gamification />} />
-        <Route path="/okc-legend" element={<OKCLegendForge />} />
-        <Route path="/boo-mode" element={<ComingSoon />} />
-        <Route path="/coming-soon" element={<ComingSoon />} />
-        <Route path="/cartoonifier" element={<CartoonifierNew />} />
+        <Route path="/ai-recommender" element={<ProtectedRoute><AIRecommender /></ProtectedRoute>} />
+        <Route path="/couple-mode" element={<ProtectedRoute><CoupleMode /></ProtectedRoute>} />
+        <Route path="/gamification" element={<ProtectedRoute><Gamification /></ProtectedRoute>} />
+        <Route path="/okc-legend" element={<ProtectedRoute><OKCLegendForge /></ProtectedRoute>} />
+        <Route path="/boo-mode" element={<ProtectedRoute><ComingSoon /></ProtectedRoute>} />
+        <Route path="/coming-soon" element={<ProtectedRoute><ComingSoon /></ProtectedRoute>} />
+        <Route path="/cartoonifier" element={<ProtectedRoute><CartoonifierNew /></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>
@@ -86,6 +90,7 @@ const App = () => {
                 <Sonner />
                 <BrowserRouter>
                   <ActivityTracker />
+                  <AuthRedirect />
                   <DetailedCupid />
                   <FloatingEmoji />
                   <main className="max-w-7xl mx-auto px-4 py-6">
