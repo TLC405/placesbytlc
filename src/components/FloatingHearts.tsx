@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, memo } from "react";
 import { Heart } from "lucide-react";
 
 interface FloatingElement {
@@ -11,12 +11,12 @@ interface FloatingElement {
   type: 'heart' | 'male' | 'female' | 'cupid';
 }
 
-export const FloatingHearts = () => {
+const FloatingHeartsComponent = () => {
   const [elements, setElements] = useState<FloatingElement[]>([]);
 
   useEffect(() => {
     const types: Array<'heart' | 'male' | 'female' | 'cupid'> = ['heart', 'male', 'female', 'cupid'];
-    const newElements: FloatingElement[] = Array.from({ length: 20 }, (_, i) => ({
+    const newElements: FloatingElement[] = Array.from({ length: 12 }, (_, i) => ({
       id: i,
       left: Math.random() * 100,
       delay: Math.random() * 10,
@@ -81,37 +81,41 @@ export const FloatingHearts = () => {
     }
   };
 
+  const styleBlock = useMemo(() => `
+    @keyframes float-up {
+      0% {
+        transform: translateY(0) rotate(0deg) scale(0.8);
+        opacity: 0;
+      }
+      10% {
+        opacity: var(--element-opacity);
+        transform: translateY(-10vh) rotate(45deg) scale(1);
+      }
+      50% {
+        transform: translateY(-50vh) rotate(180deg) scale(1.1);
+      }
+      90% {
+        opacity: var(--element-opacity);
+      }
+      100% {
+        transform: translateY(-110vh) rotate(360deg) scale(0.8);
+        opacity: 0;
+      }
+    }
+    
+    .animate-float-up {
+      animation: float-up linear infinite;
+      --element-opacity: 0.15;
+      will-change: transform;
+    }
+  `, []);
+
   return (
-    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
       {elements.map((element) => renderElement(element))}
-      
-      <style>{`
-        @keyframes float-up {
-          0% {
-            transform: translateY(0) rotate(0deg) scale(0.8);
-            opacity: 0;
-          }
-          10% {
-            opacity: var(--element-opacity);
-            transform: translateY(-10vh) rotate(45deg) scale(1);
-          }
-          50% {
-            transform: translateY(-50vh) rotate(180deg) scale(1.1);
-          }
-          90% {
-            opacity: var(--element-opacity);
-          }
-          100% {
-            transform: translateY(-110vh) rotate(360deg) scale(0.8);
-            opacity: 0;
-          }
-        }
-        
-        .animate-float-up {
-          animation: float-up linear infinite;
-          --element-opacity: 0.15;
-        }
-      `}</style>
+      <style>{styleBlock}</style>
     </div>
   );
 };
+
+export const FloatingHearts = memo(FloatingHeartsComponent);

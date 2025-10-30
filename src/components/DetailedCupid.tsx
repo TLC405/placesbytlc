@@ -1,8 +1,8 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback, memo } from "react";
 import cupidImageOriginal from "@/assets/cupid-icon-original.png";
 import { supabase } from "@/integrations/supabase/client";
 
-export const DetailedCupid = () => {
+const DetailedCupidComponent = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false); // No processing needed
   const [isEnabled, setIsEnabled] = useState(true);
@@ -104,8 +104,7 @@ export const DetailedCupid = () => {
     };
   }, []);
 
-  // Play fun water drop sound effect
-  const playPopSound = () => {
+  const playPopSound = useCallback(() => {
     if (!audioContextRef.current || !settings.soundEnabled) return;
     
     const ctx = audioContextRef.current;
@@ -115,28 +114,32 @@ export const DetailedCupid = () => {
     oscillator.connect(gainNode);
     gainNode.connect(ctx.destination);
     
-    // Water drop effect: quick descending frequency
     oscillator.frequency.setValueAtTime(800, ctx.currentTime);
     oscillator.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.1);
     oscillator.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.2);
     
-    // Volume envelope
     gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
     gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
     
     oscillator.type = 'sine';
     oscillator.start(ctx.currentTime);
     oscillator.stop(ctx.currentTime + 0.3);
-  };
+  }, [settings.soundEnabled]);
 
-  // Track mouse position for evasive behavior
   useEffect(() => {
+    let rafId: number;
     const handleMouseMove = (e: MouseEvent) => {
-      setMousePos({ x: e.clientX, y: e.clientY });
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        setMousePos({ x: e.clientX, y: e.clientY });
+      });
     };
     
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, []);
 
   // Evasive behavior - dodge when mouse gets close
@@ -246,7 +249,7 @@ export const DetailedCupid = () => {
     return () => clearInterval(actionInterval);
   }, [isVisible, isPopped, settings.actionFrequency]);
 
-  const handleTap = (e: React.MouseEvent) => {
+  const handleTap = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     
     // If already popped, do nothing
@@ -287,7 +290,14 @@ export const DetailedCupid = () => {
         setIsPopped(false);
       }, settings.hideTime);
     }
-  };
+  }, [isDodging, isRunning, isPopped, playPopSound, settings.soundEnabled, settings.hideTime]);
+
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleTap(e as any);
+    }
+  }, [handleTap]);
 
   if (!isVisible || !isEnabled) return null;
 
@@ -381,7 +391,11 @@ export const DetailedCupid = () => {
       <img
         ref={cupidRef}
         src={cupidImageOriginal}
-        alt="Cupid"
+        alt={isPopped ? "Cupid caught - click to interact" : "Cupid - try to catch me!"}
+        role="button"
+        tabIndex={0}
+        aria-pressed={isPopped}
+        aria-label={isPopped ? "Cupid caught" : "Try to catch Cupid"}
         className={`cupid-float ${isPopped ? 'popped' : ''} ${isRunning ? 'running' : ''} ${isPeeking ? 'peeking' : ''} ${isDodging ? 'dodging' : ''}`}
         style={{
           ...position,
@@ -390,8 +404,8 @@ export const DetailedCupid = () => {
           imageRendering: 'crisp-edges'
         }}
         onClick={handleTap}
+        onKeyDown={handleKeyDown}
         onMouseEnter={() => {
-          // Extra evasive on hover (unless popped)
           if (Math.random() > 0.5 && !isDodging && !isPopped) {
             const quickDodge = new MouseEvent('mousemove', {
               clientX: mousePos.x + 200,
@@ -405,3 +419,5 @@ export const DetailedCupid = () => {
     </>
   );
 };
+
+export const DetailedCupid = memo(DetailedCupidComponent);
