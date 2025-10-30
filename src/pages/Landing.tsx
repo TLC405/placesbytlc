@@ -1,10 +1,41 @@
 import { useNavigate } from "react-router-dom";
-import { Shield } from "lucide-react";
+import { Shield, Heart, LogIn, Settings } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Landing() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isSigningIn, setIsSigningIn] = useState(false);
+
+  const handleAdminAccess = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSigningIn(true);
+    
+    try {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      
+      toast.success("💖 Signed in successfully!");
+      setIsAuthDialogOpen(false);
+      setEmail("");
+      setPassword("");
+      navigate("/admin");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to sign in");
+    } finally {
+      setIsSigningIn(false);
+    }
+  };
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50">
@@ -51,7 +82,7 @@ export default function Landing() {
         </div>
 
         {/* Main grid */}
-        <div className="grid lg:grid-cols-2 gap-8 mb-12">
+        <div className="grid lg:grid-cols-3 gap-8 mb-12">
           {/* Places */}
           <Card
             className="group relative overflow-hidden glass-card border-2 border-primary/20 hover:border-primary/50 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/20 cursor-pointer hover-lift"
@@ -95,6 +126,65 @@ export default function Landing() {
               </div>
             </div>
           </Card>
+
+          {/* Admin Access */}
+          <Dialog open={isAuthDialogOpen} onOpenChange={setIsAuthDialogOpen}>
+            <DialogTrigger asChild>
+              <Card className="group relative overflow-hidden glass-card border-2 border-amber-400/30 hover:border-amber-400/60 transition-all duration-500 hover:shadow-2xl hover:shadow-amber-400/20 cursor-pointer hover-lift">
+                <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-amber-400 to-yellow-500" />
+                <div className="p-8 space-y-6">
+                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                    <Settings className="text-3xl text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-3xl font-black bg-gradient-to-r from-amber-500 to-yellow-600 bg-clip-text text-transparent mb-2">Admin Portal</h3>
+                    <p className="text-muted-foreground">Manage the platform and view analytics</p>
+                  </div>
+                  <div className="flex gap-2 flex-wrap">
+                    <span className="pill text-xs">Analytics</span>
+                    <span className="pill text-xs">Management</span>
+                    <span className="pill text-xs">Control</span>
+                  </div>
+                </div>
+              </Card>
+            </DialogTrigger>
+            <DialogContent className="glass-card border-2 border-primary/30">
+              <DialogHeader>
+                <DialogTitle className="gradient-text text-2xl">Admin Access</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleAdminAccess} className="space-y-6 mt-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-foreground">Email</label>
+                  <Input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="admin@example.com"
+                    required
+                    className="h-12 rounded-xl"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-foreground">Password</label>
+                  <Input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    required
+                    className="h-12 rounded-xl"
+                  />
+                </div>
+                <Button 
+                  type="submit" 
+                  disabled={isSigningIn}
+                  className="w-full h-14 gradient-primary text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transition-all"
+                >
+                  {isSigningIn ? "Signing in..." : <><LogIn className="w-5 h-5 mr-2" />Access Admin Portal</>}
+                </Button>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
 
         {/* CTA */}
