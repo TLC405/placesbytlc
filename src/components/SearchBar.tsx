@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, MapPin, Heart, Scale, SlidersHorizontal } from "lucide-react";
-import { useState } from "react";
+import { useState, useCallback, memo } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface SearchBarProps {
@@ -41,7 +41,7 @@ const ACTIVITY_CATEGORIES = [
   { label: "Spa", value: "spa" },
 ];
 
-export const SearchBar = ({
+const SearchBarComponent = ({
   query,
   radius,
   onQueryChange,
@@ -58,10 +58,16 @@ export const SearchBar = ({
   const [locationMode, setLocationMode] = useState<LocationMode>("tlc");
   const [filtersOpen, setFiltersOpen] = useState(false);
 
-  const handleLocationModeChange = (mode: LocationMode) => {
+  const handleLocationModeChange = useCallback((mode: LocationMode) => {
     setLocationMode(mode);
     onLocationModeChange?.(mode);
-  };
+  }, [onLocationModeChange]);
+
+  const handleSearch = useCallback(() => {
+    if (!disabled && !loading) {
+      onSearch();
+    }
+  }, [disabled, loading, onSearch]);
 
   return (
     <div className="space-y-4">
@@ -70,35 +76,41 @@ export const SearchBar = ({
         <div className="flex gap-2 p-3 bg-gradient-to-br from-card/80 to-card/60 backdrop-blur-md rounded-2xl border-2 border-border/40 shadow-lg animate-fade-in">
           <button
             onClick={() => handleLocationModeChange("tlc")}
-            className={`flex-1 p-3 rounded-xl text-sm font-bold transition-all duration-300 ${
+            className={`flex-1 p-3 rounded-xl text-sm font-bold transition-all duration-300 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
               locationMode === "tlc"
                 ? "bg-gradient-to-r from-primary to-accent text-white shadow-xl scale-105"
                 : "hover:bg-accent/20 hover:scale-105"
             }`}
+            aria-label="Search from TLC location"
+            aria-pressed={locationMode === "tlc"}
           >
-            <MapPin className="w-5 h-5 mx-auto mb-1" />
+            <MapPin className="w-5 h-5 mx-auto mb-1" aria-hidden="true" />
             TLC
           </button>
           <button
             onClick={() => handleLocationModeChange("partner")}
-            className={`flex-1 p-3 rounded-xl text-sm font-bold transition-all duration-300 ${
+            className={`flex-1 p-3 rounded-xl text-sm font-bold transition-all duration-300 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
               locationMode === "partner"
                 ? "bg-gradient-to-r from-primary to-accent text-white shadow-xl shadow-primary/30 animate-pulse scale-105"
                 : "hover:bg-accent/20 hover:scale-105"
             }`}
+            aria-label="Search from partner location"
+            aria-pressed={locationMode === "partner"}
           >
-            <Heart className="w-5 h-5 mx-auto mb-1 fill-current" />
+            <Heart className="w-5 h-5 mx-auto mb-1 fill-current" aria-hidden="true" />
             💝 Partner
           </button>
           <button
             onClick={() => handleLocationModeChange("middle")}
-            className={`flex-1 p-3 rounded-xl text-sm font-bold transition-all duration-300 ${
+            className={`flex-1 p-3 rounded-xl text-sm font-bold transition-all duration-300 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
               locationMode === "middle"
                 ? "bg-gradient-to-r from-primary to-accent text-white shadow-xl scale-105"
                 : "hover:bg-accent/20 hover:scale-105"
             }`}
+            aria-label="Search from middle point between locations"
+            aria-pressed={locationMode === "middle"}
           >
-            <Scale className="w-5 h-5 mx-auto mb-1" />
+            <Scale className="w-5 h-5 mx-auto mb-1" aria-hidden="true" />
             Middle
           </button>
         </div>
@@ -144,11 +156,12 @@ export const SearchBar = ({
         )}
 
         <Button 
-          onClick={onSearch} 
+          onClick={handleSearch} 
           disabled={disabled || loading}
-          className="flex-1 h-12 shadow-xl hover:shadow-2xl hover:shadow-primary/20 transition-all duration-300 font-bold gradient-primary hover:scale-105 text-base"
+          className="flex-1 h-12 shadow-xl hover:shadow-2xl hover:shadow-primary/20 transition-all duration-300 font-bold gradient-primary hover:scale-105 text-base focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          aria-label={loading ? "Searching for places" : "Search for places"}
         >
-          <Search className={`w-5 h-5 mr-2 ${loading ? 'animate-spin' : ''}`} />
+          <Search className={`w-5 h-5 mr-2 ${loading ? 'animate-spin' : ''}`} aria-hidden="true" />
           {loading ? "Searching..." : "Search"}
         </Button>
       </div>
@@ -221,3 +234,5 @@ export const SearchBar = ({
     </div>
   );
 };
+
+export const SearchBar = memo(SearchBarComponent);

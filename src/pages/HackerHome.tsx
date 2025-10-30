@@ -34,10 +34,14 @@ export default function HackerHome() {
   // Create floating hearts animation
   useEffect(() => {
     const interval = setInterval(() => {
-      setFloatingHearts((prev) => [...prev, Date.now()]);
-      setTimeout(() => {
-        setFloatingHearts((prev) => prev.slice(1));
+      const heartId = Date.now();
+      setFloatingHearts((prev) => [...prev, heartId]);
+      
+      const timeout = setTimeout(() => {
+        setFloatingHearts((prev) => prev.filter(id => id !== heartId));
       }, 3000);
+      
+      return () => clearTimeout(timeout);
     }, 2000);
     return () => clearInterval(interval);
   }, []);
@@ -162,20 +166,22 @@ export default function HackerHome() {
           {/* Quick Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto mt-8">
             {stats.map((stat, idx) => (
-              <Card
-                key={idx}
-                className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-2 border-pink-200 dark:border-pink-500/30 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
-              >
-                <CardContent className="pt-6 text-center">
-                  <stat.icon className={`w-8 h-8 mx-auto mb-2 ${stat.color}`} />
-                  <div className="text-3xl font-black text-gray-800 dark:text-white">
-                    {stat.value}
-                  </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">
-                    {stat.label}
-                  </div>
-                </CardContent>
-              </Card>
+            <Card
+              key={idx}
+              className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-2 border-pink-200 dark:border-pink-500/30 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+              role="article"
+              aria-label={`${stat.label}: ${stat.value}`}
+            >
+              <CardContent className="pt-6 text-center">
+                <stat.icon className={`w-8 h-8 mx-auto mb-2 ${stat.color}`} aria-hidden="true" />
+                <div className="text-3xl font-black text-gray-800 dark:text-white">
+                  {stat.value}
+                </div>
+                <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                  {stat.label}
+                </div>
+              </CardContent>
+            </Card>
             ))}
           </div>
         </div>
@@ -186,8 +192,17 @@ export default function HackerHome() {
             <Card
               key={idx}
               onClick={() => navigate(feature.path)}
-              className="group bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-2 border-pink-200 dark:border-pink-500/30 hover:border-pink-400 dark:hover:border-pink-400 shadow-lg hover:shadow-2xl hover:shadow-pink-500/50 transition-all duration-300 cursor-pointer hover:-translate-y-2 animate-fade-in"
+              className="group bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-2 border-pink-200 dark:border-pink-500/30 hover:border-pink-400 dark:hover:border-pink-400 shadow-lg hover:shadow-2xl hover:shadow-pink-500/50 transition-all duration-300 cursor-pointer hover:-translate-y-2 animate-fade-in focus-visible:ring-2 focus-visible:ring-pink-500 focus-visible:ring-offset-2"
               style={{ animationDelay: `${idx * 0.1}s` }}
+              role="button"
+              tabIndex={0}
+              aria-label={`Navigate to ${feature.title}: ${feature.desc}`}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  navigate(feature.path);
+                }
+              }}
             >
               <CardHeader className="pb-4">
                 <div className="flex items-start justify-between mb-3">

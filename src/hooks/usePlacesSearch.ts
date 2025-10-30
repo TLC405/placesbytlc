@@ -13,6 +13,11 @@ export const usePlacesSearch = ({ onError }: UsePlacesSearchProps) => {
 
   const search = useCallback(
     async (query: string, location: { lat: number; lng: number }, radius: number) => {
+      if (!location?.lat || !location?.lng) {
+        onError("Invalid location. Please try again.");
+        return;
+      }
+
       setIsSearching(true);
       setResults([]);
 
