@@ -8,14 +8,14 @@ interface FloatingElement {
   duration: number;
   size: number;
   opacity: number;
-  type: 'heart' | 'male' | 'female' | 'cupid';
+  type: 'mushroom' | 'leaf' | 'sprout' | 'sparkle';
 }
 
 const FloatingHeartsComponent = () => {
   const [elements, setElements] = useState<FloatingElement[]>([]);
 
   useEffect(() => {
-    const types: Array<'heart' | 'male' | 'female' | 'cupid'> = ['heart', 'male', 'female', 'cupid'];
+    const types: Array<'mushroom' | 'leaf' | 'sprout' | 'sparkle'> = ['mushroom', 'leaf', 'sprout', 'sparkle'];
     const newElements: FloatingElement[] = Array.from({ length: 12 }, (_, i) => ({
       id: i,
       left: Math.random() * 100,
@@ -40,42 +40,44 @@ const FloatingHeartsComponent = () => {
     };
 
     switch (element.type) {
-      case 'heart':
-        return (
-          <Heart
-            key={element.id}
-            className="absolute animate-float-up text-primary fill-current"
-            style={style}
-          />
-        );
-      case 'male':
+      case 'mushroom':
         return (
           <div
             key={element.id}
-            className="absolute animate-float-up text-blue-400 font-bold flex items-center justify-center"
-            style={{ ...style, fontSize: `${element.size * 0.8}px` }}
-          >
-            ♂
-          </div>
-        );
-      case 'female':
-        return (
-          <div
-            key={element.id}
-            className="absolute animate-float-up text-pink-400 font-bold flex items-center justify-center"
-            style={{ ...style, fontSize: `${element.size * 0.8}px` }}
-          >
-            ♀
-          </div>
-        );
-      case 'cupid':
-        return (
-          <div
-            key={element.id}
-            className="absolute animate-float-up text-rose-300 flex items-center justify-center"
+            className="absolute animate-float-up text-shroomBrown flex items-center justify-center"
             style={{ ...style, fontSize: `${element.size * 0.9}px` }}
           >
-            💘
+            🍄
+          </div>
+        );
+      case 'leaf':
+        return (
+          <div
+            key={element.id}
+            className="absolute animate-float-up text-shroomGreen flex items-center justify-center"
+            style={{ ...style, fontSize: `${element.size * 0.8}px` }}
+          >
+            🌿
+          </div>
+        );
+      case 'sprout':
+        return (
+          <div
+            key={element.id}
+            className="absolute animate-float-up text-shroomGreen font-bold flex items-center justify-center"
+            style={{ ...style, fontSize: `${element.size * 0.8}px` }}
+          >
+            🌱
+          </div>
+        );
+      case 'sparkle':
+        return (
+          <div
+            key={element.id}
+            className="absolute animate-float-up text-shroomYellow flex items-center justify-center"
+            style={{ ...style, fontSize: `${element.size * 0.9}px` }}
+          >
+            ✨
           </div>
         );
     }

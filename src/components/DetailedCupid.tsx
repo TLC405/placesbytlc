@@ -319,7 +319,7 @@ const DetailedCupidComponent = () => {
           backface-visibility: hidden;
           will-change: transform, filter, top, right, left, bottom;
           animation: ${settings.floatAnimation ? 'tlc-float 3.2s ease-in-out infinite' : 'none'};
-          filter: drop-shadow(0 8px 18px rgba(255, 106, 162, ${settings.shadowIntensity}));
+          filter: drop-shadow(0 8px 18px rgba(139, 195, 74, ${settings.shadowIntensity}));
           cursor: pointer;
           z-index: 50;
           image-rendering: auto;
@@ -333,7 +333,7 @@ const DetailedCupidComponent = () => {
         .cupid-float.popped {
           width: 40px !important;
           animation: none !important;
-          filter: grayscale(0.3) drop-shadow(0 2px 8px rgba(255, 106, 162, 0.2));
+          filter: grayscale(0.3) drop-shadow(0 2px 8px rgba(139, 195, 74, 0.2));
           transform: rotate(-90deg) scale(0.8);
           cursor: default;
           opacity: 0.7;
@@ -361,7 +361,7 @@ const DetailedCupidComponent = () => {
         }
         
         .cupid-float:hover {
-          filter: drop-shadow(0 0 40px rgba(255, 106, 162, 0.5)) drop-shadow(0 8px 20px rgba(0, 0, 0, 0.25));
+          filter: drop-shadow(0 0 40px rgba(247, 220, 111, 0.5)) drop-shadow(0 8px 20px rgba(0, 0, 0, 0.25));
           transform: scale(1.05);
         }
         

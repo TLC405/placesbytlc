@@ -62,8 +62,8 @@ const FloatingEmojiComponent = () => {
       <div
         role="button"
         tabIndex={0}
-        aria-label="Cupid menu - drag to move or click to open"
-        className="fixed z-[90] cursor-move select-none transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-500 focus-visible:ring-offset-2 rounded-full"
+        aria-label="Mushroom menu - drag to move or click to open"
+        className="fixed z-[90] cursor-move select-none transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-shroomGreen focus-visible:ring-offset-2 rounded-full"
         style={{
           left: `${position.x}px`,
           top: `${position.y}px`,
@@ -72,11 +72,11 @@ const FloatingEmojiComponent = () => {
         onKeyDown={handleKeyDown}
       >
         <div className="relative">
-          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-pink-400 via-rose-500 to-red-500 flex items-center justify-center shadow-2xl shadow-pink-500/50 animate-pulse border-2 border-white/30">
-            <span className="text-2xl" aria-hidden="true">💘</span>
+          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-shroomBrown via-shroomGreen to-shroomYellow flex items-center justify-center shadow-2xl shadow-shroomGreen/50 animate-pulse border-2 border-white/30">
+            <span className="text-2xl" aria-hidden="true">🍄</span>
           </div>
           
-          <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-pink-400 rounded-full border-2 border-white animate-pulse" aria-hidden="true" />
+          <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-shroomGreen rounded-full border-2 border-white animate-pulse" aria-hidden="true" />
         </div>
       </div>
 

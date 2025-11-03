@@ -57,7 +57,7 @@ const PlaceCardComponent = ({ place, onAdd, onFavoriteToggle, onView }: PlaceCar
   return (
     <>
       <Card 
-        className="group overflow-hidden border-2 border-border/30 hover:border-primary/60 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/10 cursor-pointer bg-gradient-to-br from-card/95 to-card/80 backdrop-blur-md hover:-translate-y-2 hover:scale-[1.02] animate-fade-in"
+        className="group overflow-hidden border-2 border-shroomGreen/30 hover:border-shroomYellow/60 transition-all duration-500 hover:shadow-2xl hover:shadow-shroomYellow/10 cursor-pointer bg-white backdrop-blur-md hover:-translate-y-2 hover:scale-[1.02] animate-fade-in"
         onClick={handleCardClick}
         role="button"
         tabIndex={0}
@@ -81,8 +81,8 @@ const PlaceCardComponent = ({ place, onAdd, onFavoriteToggle, onView }: PlaceCar
               img.src = getPlaceholder(place.name); 
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent transition-opacity group-hover:opacity-80" />
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/0 to-accent/0 group-hover:from-primary/10 group-hover:to-accent/10 transition-all duration-700" />
+          <div className="absolute inset-0 bg-gradient-to-t from-shroomBrown/70 via-black/20 to-transparent transition-opacity group-hover:opacity-80" />
+          <div className="absolute inset-0 bg-gradient-to-br from-shroomGreen/0 to-shroomYellow/0 group-hover:from-shroomGreen/10 group-hover:to-shroomYellow/10 transition-all duration-700" />
           
           {/* Compact Badges */}
           <div className="absolute top-2 left-2 flex gap-1.5 transition-all duration-300 group-hover:scale-105">
@@ -105,7 +105,7 @@ const PlaceCardComponent = ({ place, onAdd, onFavoriteToggle, onView }: PlaceCar
 
           {/* Distance Badge */}
           {place.distance && (
-            <Badge className="absolute bottom-2 right-2 bg-primary/90 text-white text-xs px-2 py-0.5 shadow-md">
+            <Badge className="absolute bottom-2 right-2 bg-shroomGreen/90 text-white text-xs px-2 py-0.5 shadow-md">
               <MapPin className="w-3 h-3 mr-1" />
               {place.distance}mi
             </Badge>
@@ -129,7 +129,7 @@ const PlaceCardComponent = ({ place, onAdd, onFavoriteToggle, onView }: PlaceCar
         
         {/* Compact Content */}
         <CardHeader className="p-4 pb-2 space-y-2">
-          <h3 className="font-bold text-base line-clamp-1 group-hover:text-primary transition-all duration-300 group-hover:translate-x-1">
+          <h3 className="font-bold text-base line-clamp-1 group-hover:text-shroomGreen transition-all duration-300 group-hover:translate-x-1">
             {place.name}
           </h3>
           

@@ -76,10 +76,10 @@ const SearchBarComponent = ({
         <div className="flex gap-2 p-3 bg-gradient-to-br from-card/80 to-card/60 backdrop-blur-md rounded-2xl border-2 border-border/40 shadow-lg animate-fade-in">
           <button
             onClick={() => handleLocationModeChange("tlc")}
-            className={`flex-1 p-3 rounded-xl text-sm font-bold transition-all duration-300 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+            className={`flex-1 p-3 rounded-xl text-sm font-bold transition-all duration-300 focus-visible:ring-2 focus-visible:ring-shroomGreen focus-visible:ring-offset-2 ${
               locationMode === "tlc"
-                ? "bg-gradient-to-r from-primary to-accent text-white shadow-xl scale-105"
-                : "hover:bg-accent/20 hover:scale-105"
+                ? "bg-gradient-to-r from-shroomGreen to-shroomYellow text-shroomBrown shadow-xl scale-105"
+                : "hover:bg-shroomYellow/20 hover:scale-105"
             }`}
             aria-label="Search from TLC location"
             aria-pressed={locationMode === "tlc"}
@@ -89,10 +89,10 @@ const SearchBarComponent = ({
           </button>
           <button
             onClick={() => handleLocationModeChange("partner")}
-            className={`flex-1 p-3 rounded-xl text-sm font-bold transition-all duration-300 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+            className={`flex-1 p-3 rounded-xl text-sm font-bold transition-all duration-300 focus-visible:ring-2 focus-visible:ring-shroomGreen focus-visible:ring-offset-2 ${
               locationMode === "partner"
-                ? "bg-gradient-to-r from-primary to-accent text-white shadow-xl shadow-primary/30 animate-pulse scale-105"
-                : "hover:bg-accent/20 hover:scale-105"
+                ? "bg-gradient-to-r from-shroomGreen to-shroomYellow text-shroomBrown shadow-xl shadow-shroomGreen/30 animate-pulse scale-105"
+                : "hover:bg-shroomYellow/20 hover:scale-105"
             }`}
             aria-label="Search from partner location"
             aria-pressed={locationMode === "partner"}
@@ -102,10 +102,10 @@ const SearchBarComponent = ({
           </button>
           <button
             onClick={() => handleLocationModeChange("middle")}
-            className={`flex-1 p-3 rounded-xl text-sm font-bold transition-all duration-300 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+            className={`flex-1 p-3 rounded-xl text-sm font-bold transition-all duration-300 focus-visible:ring-2 focus-visible:ring-shroomGreen focus-visible:ring-offset-2 ${
               locationMode === "middle"
-                ? "bg-gradient-to-r from-primary to-accent text-white shadow-xl scale-105"
-                : "hover:bg-accent/20 hover:scale-105"
+                ? "bg-gradient-to-r from-shroomGreen to-shroomYellow text-shroomBrown shadow-xl scale-105"
+                : "hover:bg-shroomYellow/20 hover:scale-105"
             }`}
             aria-label="Search from middle point between locations"
             aria-pressed={locationMode === "middle"}
@@ -120,7 +120,7 @@ const SearchBarComponent = ({
       <div className="flex gap-2">
         {onCategoryTypeChange && (
           <Select value={categoryType} onValueChange={onCategoryTypeChange} disabled={disabled || loading}>
-            <SelectTrigger className="w-[140px] h-12 shadow-md font-semibold border-2 border-border/50 hover:border-primary/50 transition-all">
+            <SelectTrigger className="w-[140px] h-12 shadow-md font-semibold border-2 border-shroomGreen/30 hover:border-shroomGreen/50 transition-all">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -132,7 +132,7 @@ const SearchBarComponent = ({
         )}
 
         <Select value={radius} onValueChange={onRadiusChange} disabled={disabled || loading}>
-          <SelectTrigger className="w-[120px] h-12 shadow-md font-semibold border-2 border-border/50 hover:border-primary/50 transition-all">
+          <SelectTrigger className="w-[120px] h-12 shadow-md font-semibold border-2 border-shroomGreen/30 hover:border-shroomGreen/50 transition-all">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -149,7 +149,7 @@ const SearchBarComponent = ({
             variant="outline"
             size="icon"
             onClick={() => setFiltersOpen(!filtersOpen)}
-            className="h-12 w-12 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 border-2 border-border/50 hover:border-primary/50"
+            className="h-12 w-12 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 border-2 border-shroomGreen/30 hover:border-shroomGreen/50"
           >
             <SlidersHorizontal className="w-5 h-5" />
           </Button>
@@ -158,7 +158,7 @@ const SearchBarComponent = ({
         <Button 
           onClick={handleSearch} 
           disabled={disabled || loading}
-          className="flex-1 h-12 shadow-xl hover:shadow-2xl hover:shadow-primary/20 transition-all duration-300 font-bold gradient-primary hover:scale-105 text-base focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          className="flex-1 h-12 shadow-xl hover:shadow-2xl hover:shadow-shroomYellow/20 transition-all duration-300 font-bold bg-shroomYellow text-shroomBrown hover:bg-shroomYellow/90 hover:scale-105 text-base focus-visible:ring-2 focus-visible:ring-shroomGreen focus-visible:ring-offset-2"
           aria-label={loading ? "Searching for places" : "Search for places"}
         >
           <Search className={`w-5 h-5 mr-2 ${loading ? 'animate-spin' : ''}`} aria-hidden="true" />
