@@ -73,10 +73,10 @@ export const Header = () => {
   
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 glass shadow-glow border-b-2 border-primary/30 backdrop-blur-xl"
+      <header className="fixed top-0 left-0 right-0 z-50 bg-[#964B00]/90 backdrop-blur-xl border-b-2 border-[#8BC34A]/30 shadow-lg"
         style={{ overflowX: 'hidden', overflowY: 'visible' }}>
         {/* Animated background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 opacity-50 animate-gradient-shift" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#8BC34A]/10 via-[#F7DC6F]/10 to-[#8BC34A]/10 opacity-50 animate-gradient-shift" />
         
         <div className="relative max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
@@ -87,7 +87,7 @@ export const Header = () => {
                 onClick={handleAdminClick}
                 variant="outline"
                 size="sm"
-                className="flex-shrink-0 gap-2 hover:bg-primary/10 hover:border-primary transition-all border-green-500/30 text-green-400 hover:text-green-300"
+                className="flex-shrink-0 gap-2 hover:bg-[#F7DC6F] hover:border-[#8BC34A] transition-all border-[#8BC34A] text-[#03A9F4] hover:text-[#964B00]"
               >
                 <Shield className="w-4 h-4" />
                 <span className="hidden sm:inline font-mono">[ADMIN]</span>
@@ -97,43 +97,43 @@ export const Header = () => {
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center gap-3 sm:gap-4 group relative hover:scale-105 transition-transform duration-300">
                     {/* Pulsing glow effect */}
-                    <div className="absolute -inset-2 bg-gradient-to-r from-primary/20 to-accent/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500 animate-pulse" />
+                    <div className="absolute -inset-2 bg-gradient-to-r from-[#8BC34A]/20 to-[#F7DC6F]/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500 animate-pulse" />
                     
-                    <div className="relative w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center bg-gradient-to-br from-primary via-accent to-primary rounded-2xl shadow-glow group-hover:shadow-[0_0_40px_hsl(var(--primary)/0.6)] transition-all duration-300 group-hover:rotate-12 border-2 border-white/20">
-                      <Heart className="w-6 h-6 sm:w-7 sm:h-7 text-white fill-white heart-pulse" />
-                      <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-yellow-300 animate-pulse" />
+                    <div className="relative w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center bg-gradient-to-br from-[#8BC34A] via-[#F7DC6F] to-[#8BC34A] rounded-2xl shadow-lg group-hover:shadow-[0_0_40px_#F7DC6F] transition-all duration-300 group-hover:rotate-12 border-2 border-white/20">
+                      <span className="text-3xl">🍄</span>
+                      <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-[#F7DC6F] animate-pulse" />
                     </div>
                     
                     <div className="leading-tight">
-                      <div className="text-xl sm:text-3xl font-black gradient-text tracking-tight drop-shadow-lg animate-pulse">
-                        ✨ INPERSON.TLC ✨
+                      <div className="text-xl sm:text-3xl font-black text-[#03A9F4] tracking-tight drop-shadow-lg">
+                        ✨ TEEFEEME ✨
                       </div>
-                      <div className="text-xs sm:text-sm font-bold tracking-widest hidden sm:block bg-gradient-to-r from-amber-400 via-rose-400 to-amber-400 bg-clip-text text-transparent animate-gradient-shift" style={{ backgroundSize: '200% 200%' }}>
-                        <span className="inline-block animate-pulse">💕</span>
+                      <div className="text-xs sm:text-sm font-bold tracking-widest hidden sm:block text-[#F7DC6F]">
+                        <span className="inline-block animate-pulse">🍄</span>
                         <span className="mx-1">
-                          TOGETHER OR AWAY, YOU TWO SHALL PLAY
+                          IDENTITY-LOCKED CARTOON MAGIC
                         </span>
-                        <span className="inline-block animate-pulse delay-75">💕</span>
+                        <span className="inline-block animate-pulse delay-75">🍄</span>
                       </div>
                     </div>
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-64 glass border-primary/30">
+                <DropdownMenuContent align="start" className="w-64 bg-white dark:bg-[#964B00] border-[#8BC34A]/30">
                   <div className="px-3 py-2">
-                    <p className="text-sm font-semibold">Quick Actions</p>
+                    <p className="text-sm font-semibold text-[#03A9F4]">Quick Actions</p>
                   </div>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleAdminClick}>
+                  <DropdownMenuItem onClick={handleAdminClick} className="text-[#03A9F4]">
                     <Settings className="w-4 h-4 mr-2" />
                     Admin Panel
                   </DropdownMenuItem>
                   {!localUser ? (
-                    <DropdownMenuItem onClick={showLogin}>
+                    <DropdownMenuItem onClick={showLogin} className="text-[#03A9F4]">
                       <LogIn className="w-4 h-4 mr-2" />
                       Sign In
                     </DropdownMenuItem>
                   ) : (
-                    <DropdownMenuItem onClick={handleLogout}>
+                    <DropdownMenuItem onClick={handleLogout} className="text-[#03A9F4]">
                       <LogOut className="w-4 h-4 mr-2" />
                       Sign Out
                     </DropdownMenuItem>
@@ -154,12 +154,12 @@ export const Header = () => {
                     className="flex-shrink-0"
                   >
                     <Button 
-                      variant={isActive(item.path) ? "default" : "outline"} 
+                      variant={isActive(item.path) ? "secondary" : "outline"} 
                       size="sm"
-                      className={`gap-1 sm:gap-2 font-semibold transition-all duration-300 text-xs sm:text-sm ${
+                      className={`gap-1 sm:gap-2 font-semibold transition-all duration-300 text-xs sm:text-sm border-[#8BC34A] text-[#03A9F4] hover:bg-[#F7DC6F] hover:text-[#964B00] ${
                         isActive(item.path) 
-                          ? "shadow-glow scale-105" 
-                          : "hover:scale-105 hover:shadow-soft"
+                          ? "bg-[#F7DC6F] text-[#964B00] shadow-lg scale-105" 
+                          : "hover:scale-105"
                       }`}
                     >
                       <Icon className="w-3 h-3 sm:w-4 sm:h-4" />

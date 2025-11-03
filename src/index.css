@@ -6,116 +6,116 @@
 
 @layer base {
   :root {
-    --background: 340 100% 98%;
-    --foreground: 330 30% 15%;
-    --card: 340 100% 99%;
-    --card-foreground: 330 30% 15%;
-    --popover: 340 100% 99%;
-    --popover-foreground: 330 30% 15%;
-    --primary: 330 81% 60%;
-    --primary-variant: 340 75% 68%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 340 60% 92%;
-    --secondary-foreground: 330 30% 15%;
-    --muted: 340 40% 94%;
-    --muted-foreground: 330 10% 45%;
-    --accent: 320 70% 88%;
-    --accent-foreground: 330 30% 15%;
+    --background: 30 100% 30%;
+    --foreground: 199 98% 48%;
+    --card: 0 0% 100%;
+    --card-foreground: 199 98% 48%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 199 98% 48%;
+    --primary: 88 54% 51%;
+    --primary-foreground: 30 100% 30%;
+    --primary-glow: 88 64% 61%;
+    --secondary: 48 89% 71%;
+    --secondary-foreground: 30 100% 30%;
+    --muted: 30 50% 40%;
+    --muted-foreground: 199 80% 40%;
+    --accent: 48 89% 71%;
+    --accent-foreground: 30 100% 30%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 340 30% 88%;
-    --input: 340 30% 88%;
-    --ring: 330 81% 60%;
-    --radius: 1rem;
+    --border: 0 0% 87%;
+    --input: 0 0% 87%;
+    --ring: 88 54% 51%;
+    --radius: 0.625rem;
     
     /* Chart Colors */
-    --chart-1: 338.57 83.05% 62.16%;
-    --chart-2: 280 70% 60%;
-    --chart-3: 240 4.8% 95.9%;
+    --chart-1: 88 54% 51%;
+    --chart-2: 48 89% 71%;
+    --chart-3: 30 100% 30%;
     --chart-4: 0 84.2% 60.2%;
-    --chart-5: 173 58% 39%;
+    --chart-5: 199 98% 48%;
     
     --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 338.57 83.05% 62.16%;
+    --sidebar-foreground: 199 98% 48%;
+    --sidebar-primary: 88 54% 51%;
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 338.57 83.05% 62.16%;
+    --sidebar-accent: 48 89% 71%;
+    --sidebar-accent-foreground: 30 100% 30%;
+    --sidebar-border: 0 0% 87%;
+    --sidebar-ring: 88 54% 51%;
   }
 
-  /* ROMANCE MODE (Default) - Soft pink and romantic */
+  /* ROMANCE MODE - Now Shroom Bros style */
   [data-theme="romance"] {
-    --primary: 336 72 153;
-    --accent: 244 63 94;
-    --border-radius: 1.5rem;
+    --primary: 88 54% 51%;
+    --accent: 48 89% 71%;
+    --border-radius: 0.625rem;
   }
 
-  /* MAN MODE - Tactical CoD style with military green */
+  /* MAN MODE - Adjusted for earthy palette */
   [data-theme="man-mode"] {
-    --background: 10 10 10;
-    --foreground: 34 197 94;
-    --primary: 249 115 22;
-    --accent: 34 197 94;
-    --border-radius: 0.25rem;
+    --background: 30 100% 15%;
+    --foreground: 88 54% 51%;
+    --primary: 48 89% 71%;
+    --accent: 88 54% 51%;
+    --border-radius: 0.625rem;
   }
 
-  /* CYBERPUNK MODE - Neon cyan and purple */
+  /* CYBERPUNK MODE - Earthy cyber */
   [data-theme="cyberpunk"] {
-    --background: 2 6 23;
-    --foreground: 6 182 212;
-    --primary: 168 85 247;
-    --accent: 236 72 153;
-    --border-radius: 0.5rem;
+    --background: 30 100% 15%;
+    --foreground: 199 98% 48%;
+    --primary: 88 54% 51%;
+    --accent: 48 89% 71%;
+    --border-radius: 0.625rem;
   }
 
-  /* NATURE MODE - Earth tones and organic */
+  /* NATURE MODE - Perfect match! */
   [data-theme="nature"] {
-    --background: 249 246 238;
-    --foreground: 92 64 14;
-    --primary: 22 163 74;
-    --accent: 14 165 233;
-    --border-radius: 1rem;
+    --background: 30 100% 95%;
+    --foreground: 30 100% 30%;
+    --primary: 88 54% 51%;
+    --accent: 199 98% 48%;
+    --border-radius: 0.625rem;
   }
 
   .dark {
-    --background: 330 35% 8%;
-    --foreground: 340 80% 95%;
-    --card: 330 35% 10%;
-    --card-foreground: 340 80% 95%;
-    --popover: 330 35% 10%;
-    --popover-foreground: 340 80% 95%;
-    --primary: 330 81% 60%;
-    --primary-variant: 340 75% 68%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 330 25% 18%;
-    --secondary-foreground: 340 80% 95%;
-    --muted: 330 25% 18%;
-    --muted-foreground: 340 30% 65%;
-    --accent: 330 25% 22%;
-    --accent-foreground: 340 80% 95%;
+    --background: 30 100% 15%;
+    --foreground: 199 98% 58%;
+    --card: 30 50% 20%;
+    --card-foreground: 199 98% 58%;
+    --popover: 30 100% 15%;
+    --popover-foreground: 199 98% 58%;
+    --primary: 88 54% 51%;
+    --primary-foreground: 30 100% 15%;
+    --primary-glow: 88 64% 61%;
+    --secondary: 48 89% 71%;
+    --secondary-foreground: 30 100% 15%;
+    --muted: 30 40% 25%;
+    --muted-foreground: 199 80% 50%;
+    --accent: 48 89% 71%;
+    --accent-foreground: 30 100% 15%;
     --destructive: 0 62.8% 45%;
-    --destructive-foreground: 340 80% 95%;
-    --border: 330 25% 22%;
-    --input: 330 25% 22%;
-    --ring: 330 81% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 30 40% 25%;
+    --input: 30 40% 25%;
+    --ring: 88 54% 51%;
     
     /* Chart Colors */
-    --chart-1: 338.57 83.05% 62.16%;
-    --chart-2: 280 70% 60%;
-    --chart-3: 240 5% 25%;
+    --chart-1: 88 54% 51%;
+    --chart-2: 48 89% 71%;
+    --chart-3: 30 40% 25%;
     --chart-4: 0 62.8% 45%;
-    --chart-5: 160 60% 50%;
+    --chart-5: 199 98% 48%;
     
-    --sidebar-background: 240 8% 15%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 338.57 83.05% 62.16%;
+    --sidebar-background: 30 100% 15%;
+    --sidebar-foreground: 199 98% 58%;
+    --sidebar-primary: 88 54% 51%;
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 5% 22%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 5% 25%;
-    --sidebar-ring: 338.57 83.05% 62.16%;
+    --sidebar-accent: 30 40% 25%;
+    --sidebar-accent-foreground: 199 98% 58%;
+    --sidebar-border: 30 40% 25%;
+    --sidebar-ring: 88 54% 51%;
   }
 }
 
@@ -124,7 +124,9 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    line-height: 1.5;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }

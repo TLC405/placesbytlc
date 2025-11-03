@@ -38,20 +38,20 @@ export default function Landing() {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50">
-      {/* Floating hearts background */}
+    <div className="min-h-screen relative overflow-hidden bg-[#964B00]">
+      {/* Floating shroom background */}
       <div className="fixed inset-0 -z-10 opacity-20 pointer-events-none" aria-hidden="true">
-        <div className="absolute top-20 left-10 text-4xl sm:text-6xl animate-float" style={{ animationDelay: "0s" }}>💕</div>
-        <div className="absolute top-40 right-20 text-3xl sm:text-4xl animate-float" style={{ animationDelay: "1s" }}>💖</div>
-        <div className="absolute bottom-32 left-1/4 text-4xl sm:text-5xl animate-float" style={{ animationDelay: "2s" }}>💗</div>
+        <div className="absolute top-20 left-10 text-4xl sm:text-6xl animate-float" style={{ animationDelay: "0s" }}>🍄</div>
+        <div className="absolute top-40 right-20 text-3xl sm:text-4xl animate-float" style={{ animationDelay: "1s" }}>🌿</div>
+        <div className="absolute bottom-32 left-1/4 text-4xl sm:text-5xl animate-float" style={{ animationDelay: "2s" }}>🌱</div>
         <div className="absolute bottom-20 right-1/3 text-2xl sm:text-3xl animate-float" style={{ animationDelay: "1.5s" }}>✨</div>
-        <div className="absolute top-1/3 right-10 text-3xl sm:text-4xl animate-float" style={{ animationDelay: "0.5s" }}>🌸</div>
-        <div className="absolute bottom-40 left-20 text-4xl sm:text-5xl animate-float" style={{ animationDelay: "2.5s" }}>🎀</div>
+        <div className="absolute top-1/3 right-10 text-3xl sm:text-4xl animate-float" style={{ animationDelay: "0.5s" }}>🍄</div>
+        <div className="absolute bottom-40 left-20 text-4xl sm:text-5xl animate-float" style={{ animationDelay: "2.5s" }}>🌿</div>
       </div>
 
-      {/* Romantic gradient accents */}
-      <div className="fixed top-0 right-0 w-64 h-64 sm:w-96 sm:h-96 bg-gradient-to-br from-pink-300/30 to-purple-300/30 rounded-full blur-3xl pointer-events-none" aria-hidden="true" />
-      <div className="fixed bottom-0 left-0 w-64 h-64 sm:w-96 sm:h-96 bg-gradient-to-tr from-rose-300/30 to-pink-300/30 rounded-full blur-3xl pointer-events-none" aria-hidden="true" />
+      {/* Earthy gradient accents */}
+      <div className="fixed top-0 right-0 w-64 h-64 sm:w-96 sm:h-96 bg-gradient-to-br from-[#8BC34A]/30 to-[#F7DC6F]/30 rounded-full blur-3xl pointer-events-none" aria-hidden="true" />
+      <div className="fixed bottom-0 left-0 w-64 h-64 sm:w-96 sm:h-96 bg-gradient-to-tr from-[#8BC34A]/30 to-[#F7DC6F]/30 rounded-full blur-3xl pointer-events-none" aria-hidden="true" />
 
       {/* Command Center */}
       <div className="container mx-auto px-4 py-8 sm:py-12 max-w-7xl">
@@ -59,24 +59,24 @@ export default function Landing() {
         <header className="text-center mb-12 sm:mb-16 space-y-6 sm:space-y-8 relative">
           <div className="inline-block relative animate-bounce-slow">
             <div className="w-24 h-24 sm:w-32 sm:h-32 mx-auto mb-6 sm:mb-8 relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full opacity-30 blur-3xl animate-pulse" aria-hidden="true" />
-              <div className="relative w-full h-full bg-gradient-to-br from-pink-400 via-rose-400 to-purple-400 rounded-full flex items-center justify-center shadow-2xl text-5xl sm:text-6xl" role="img" aria-label="Heart icon">
-                💖
+              <div className="absolute inset-0 bg-gradient-to-br from-[#8BC34A] to-[#F7DC6F] rounded-full opacity-30 blur-3xl animate-pulse" aria-hidden="true" />
+              <div className="relative w-full h-full bg-gradient-to-br from-[#8BC34A] via-[#F7DC6F] to-[#8BC34A] rounded-full flex items-center justify-center shadow-2xl text-5xl sm:text-6xl" role="img" aria-label="Mushroom icon">
+                🍄
               </div>
             </div>
           </div>
 
           <div className="space-y-4 sm:space-y-6">
-            <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight gradient-text animate-gradient px-4" style={{ backgroundSize: "200% 200%" }}>
-              Start Your Journey
+            <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight text-[#03A9F4] px-4">
+              🍄 TeeFeeMe 🍄
             </h1>
             <div className="flex items-center justify-center gap-3 sm:gap-4 px-4">
-              <div className="h-0.5 sm:h-1 w-16 sm:w-24 bg-gradient-to-r from-transparent via-primary to-transparent" aria-hidden="true" />
-              <p className="text-primary font-bold text-lg sm:text-2xl tracking-wide">With Love</p>
-              <div className="h-0.5 sm:h-1 w-16 sm:w-24 bg-gradient-to-r from-transparent via-primary to-transparent" aria-hidden="true" />
+              <div className="h-0.5 sm:h-1 w-16 sm:w-24 bg-gradient-to-r from-transparent via-[#8BC34A] to-transparent" aria-hidden="true" />
+              <p className="text-[#F7DC6F] font-bold text-lg sm:text-2xl tracking-wide">Identity-Locked Magic</p>
+              <div className="h-0.5 sm:h-1 w-16 sm:w-24 bg-gradient-to-r from-transparent via-[#8BC34A] to-transparent" aria-hidden="true" />
             </div>
-            <p className="text-muted-foreground text-sm sm:text-base lg:text-lg max-w-2xl mx-auto px-4">
-              Discover perfect date spots, explore romantic destinations, and create unforgettable memories together ✨
+            <p className="text-[#03A9F4] text-sm sm:text-base lg:text-lg max-w-2xl mx-auto px-4 font-semibold">
+              Transform your photos into perfectly identity-preserved cartoons across 12 TV-inspired styles 🎨
             </p>
           </div>
         </header>
@@ -219,25 +219,25 @@ export default function Landing() {
         <div className="flex justify-center px-4">
           <Button
             size="lg"
-            onClick={() => user ? navigate("/") : toast.error("Please sign in to begin your journey")}
-            className="h-14 sm:h-16 px-8 sm:px-16 gradient-primary text-white font-black text-lg sm:text-xl shadow-2xl hover:shadow-primary/50 transition-all hover:scale-105 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-            aria-label="Begin your love story"
+            onClick={() => user ? navigate("/cartoonifier") : toast.error("Please sign in to begin")}
+            className="h-14 sm:h-16 px-8 sm:px-16 bg-[#F7DC6F] hover:bg-[#F7DC6F]/90 text-[#964B00] border border-[#DDDDDD] font-black text-lg sm:text-xl shadow-2xl transition-all hover:scale-105 rounded-[10px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8BC34A]"
+            aria-label="Start cartoonifying"
           >
-            💖 Begin Your Love Story
+            🍄 Start Cartoonifying
           </Button>
         </div>
 
         {/* Footer */}
         <footer className="mt-12 sm:mt-16 text-center space-y-4">
-          <div className="flex items-center justify-center gap-2 sm:gap-3 text-xs sm:text-sm text-muted-foreground flex-wrap px-4">
+          <div className="flex items-center justify-center gap-2 sm:gap-3 text-xs sm:text-sm text-[#03A9F4] flex-wrap px-4 font-medium">
             <span className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-primary rounded-full animate-pulse" aria-hidden="true" />
-              Made with Love
+              <div className="w-2 h-2 bg-[#8BC34A] rounded-full animate-pulse" aria-hidden="true" />
+              Made with Magic
             </span>
             <span aria-hidden="true">•</span>
-            <span>✨ v1.0</span>
+            <span>🍄 v1.0</span>
             <span aria-hidden="true">•</span>
-            <span>TLC Army</span>
+            <span>TeeFeeMe Systems</span>
           </div>
         </footer>
       </div>
