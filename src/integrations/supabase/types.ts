@@ -130,6 +130,63 @@ export type Database = {
           },
         ]
       }
+      cartoon_generations: {
+        Row: {
+          background_mode: string | null
+          cartoon_image_url: string
+          color_palette: string | null
+          created_at: string | null
+          emotion: string | null
+          generation_time_ms: number | null
+          id: string
+          identity_strength: number | null
+          metadata: Json | null
+          original_image_url: string | null
+          pose: string | null
+          refinement_count: number | null
+          resolution: string | null
+          seed: number | null
+          style_id: string
+          user_id: string | null
+        }
+        Insert: {
+          background_mode?: string | null
+          cartoon_image_url: string
+          color_palette?: string | null
+          created_at?: string | null
+          emotion?: string | null
+          generation_time_ms?: number | null
+          id?: string
+          identity_strength?: number | null
+          metadata?: Json | null
+          original_image_url?: string | null
+          pose?: string | null
+          refinement_count?: number | null
+          resolution?: string | null
+          seed?: number | null
+          style_id: string
+          user_id?: string | null
+        }
+        Update: {
+          background_mode?: string | null
+          cartoon_image_url?: string
+          color_palette?: string | null
+          created_at?: string | null
+          emotion?: string | null
+          generation_time_ms?: number | null
+          id?: string
+          identity_strength?: number | null
+          metadata?: Json | null
+          original_image_url?: string | null
+          pose?: string | null
+          refinement_count?: number | null
+          resolution?: string | null
+          seed?: number | null
+          style_id?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       couples: {
         Row: {
           code_expires_at: string | null
