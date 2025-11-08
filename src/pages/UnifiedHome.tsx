@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   MapPin,
   Sparkles,
@@ -26,6 +25,13 @@ import { trackPlaceView, trackPlaceSave, trackSearch } from "@/components/Activi
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { StyleGallery } from "@/components/cartoon/StyleGallery";
 import { useAuth } from "@/contexts/AuthContext";
+import { HeroSection } from "@/components/organisms/HeroSection";
+import { NavigationBar } from "@/components/organisms/NavigationBar";
+import { SectionHeader } from "@/components/molecules/SectionHeader";
+import { FeatureCard } from "@/components/molecules/FeatureCard";
+import { CTASection } from "@/components/molecules/CTASection";
+import { GlowingBadge } from "@/components/atoms/GlowingBadge";
+import { GradientText } from "@/components/atoms/GradientText";
 
 export default function UnifiedHome() {
   const navigate = useNavigate();
@@ -145,76 +151,60 @@ export default function UnifiedHome() {
         ))}
       </div>
 
-      {/* Gradient orbs */}
-      <div className="absolute top-20 left-10 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse" />
-      <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent/20 rounded-full blur-3xl animate-pulse delay-1000" />
-
-      {/* Top navigation */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-primary/20">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      {/* Navigation */}
+      <NavigationBar
+        logo={
           <div className="flex items-center gap-2">
             <Heart className="w-6 h-6 text-primary animate-pulse fill-primary" />
-            <span className="font-black text-xl gradient-text">TLC Places</span>
+            <GradientText className="font-black text-xl">TLC Places</GradientText>
           </div>
-          <DarkModeToggle />
-        </div>
-      </div>
+        }
+        actions={<DarkModeToggle />}
+      />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 pt-24 pb-12 space-y-16">
-        {/* Hero Section */}
-        <section className="text-center space-y-6 animate-fade-in">
-          <Badge className="px-8 py-3 text-lg bg-gradient-to-r from-primary via-accent to-primary border-0 text-primary-foreground shadow-glow animate-pulse font-bold">
-            <Crown className="w-6 h-6 mr-2 animate-bounce" />
-            V1 Places by TLC for FeeFee
-          </Badge>
-
-          <h1 className="text-5xl md:text-7xl font-black bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
-            Your Love & Adventure Hub
-          </h1>
-
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-medium">
-            Discover perfect date spots, create identity-locked cartoons, and plan unforgettable memories together
-          </p>
-
-          <div className="flex flex-wrap gap-4 justify-center">
-            <Button
-              size="lg"
-              onClick={() => user ? navigate("/cartoonifier") : navigate("/auth")}
-              className="h-14 px-8 gradient-primary text-primary-foreground font-bold text-lg shadow-2xl hover:scale-105 transition-transform"
-            >
-              <Palette className="w-6 h-6 mr-2" />
-              Start Cartoonifying
-            </Button>
-            <Button
-              size="lg"
-              onClick={downloadApp}
-              variant="outline"
-              className="h-14 px-8 font-bold text-lg shadow-xl hover:scale-105 transition-transform"
-            >
-              <Download className="w-6 h-6 mr-2" />
-              Download App
-            </Button>
-          </div>
-        </section>
+        {/* Hero */}
+        <HeroSection
+          badge={{ text: "V1 Places by TLC for FeeFee", icon: Crown }}
+          title="Your Love & Adventure Hub"
+          description="Discover perfect date spots, create identity-locked cartoons, and plan unforgettable memories together"
+          actions={
+            <>
+              <Button
+                size="lg"
+                onClick={() => user ? navigate("/cartoonifier") : navigate("/auth")}
+                className="h-14 px-8 gradient-primary text-primary-foreground font-bold text-lg shadow-2xl hover:scale-105 transition-transform"
+              >
+                <Palette className="w-6 h-6 mr-2" />
+                Start Cartoonifying
+              </Button>
+              <Button
+                size="lg"
+                onClick={downloadApp}
+                variant="outline"
+                className="h-14 px-8 font-bold text-lg shadow-xl hover:scale-105 transition-transform"
+              >
+                <Download className="w-6 h-6 mr-2" />
+                Download App
+              </Button>
+            </>
+          }
+        />
 
         {/* Places Search Section */}
         <section id="places" className="space-y-6">
-          <div className="text-center space-y-3">
-            <h2 className="text-4xl font-black gradient-text flex items-center justify-center gap-3">
-              <MapPin className="w-8 h-8 text-primary" />
-              Discover Perfect Spots
-            </h2>
-            <p className="text-muted-foreground text-lg">Find restaurants, activities, and date ideas near you</p>
-          </div>
+          <SectionHeader
+            title="Discover Perfect Spots"
+            description="Find restaurants, activities, and date ideas near you"
+            icon={MapPin}
+          />
 
           <Card className="border-2 border-primary/40 shadow-2xl bg-card/95 backdrop-blur-md">
-            <CardHeader>
-              <CardTitle className="text-2xl flex items-center gap-3 font-black gradient-text">
+            <CardContent className="pt-6 space-y-4">
+              <div className="flex items-center gap-3">
                 <Sparkles className="w-6 h-6 text-primary animate-pulse" />
-                Search for Places
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+                <GradientText className="text-2xl font-black">Search for Places</GradientText>
+              </div>
               <SearchBar
                 query={query}
                 radius={radius}
@@ -237,11 +227,9 @@ export default function UnifiedHome() {
           {/* Search Results */}
           {results.length > 0 && (
             <div className="space-y-6 animate-fade-in">
-              <div className="flex items-center justify-between">
-                <h3 className="text-3xl font-black gradient-text">{results.length} Places Found 🎉</h3>
-                <Badge className="px-6 py-3 text-lg gradient-primary text-primary-foreground shadow-glow font-bold">
-                  ✨ Fresh Results
-                </Badge>
+              <div className="flex items-center justify-between flex-wrap gap-4">
+                <GradientText as="h3" className="text-3xl font-black">{results.length} Places Found 🎉</GradientText>
+                <GlowingBadge size="lg">✨ Fresh Results</GlowingBadge>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {results.map((place) => (
@@ -258,13 +246,11 @@ export default function UnifiedHome() {
 
         {/* Cartoonifier Preview Section */}
         <section id="cartoonifier" className="space-y-6">
-          <div className="text-center space-y-3">
-            <h2 className="text-4xl font-black gradient-text flex items-center justify-center gap-3">
-              <Palette className="w-8 h-8 text-primary" />
-              TeeFeeMe Cartoonifier
-            </h2>
-            <p className="text-muted-foreground text-lg">12 TV-inspired styles with identity-lock technology</p>
-          </div>
+          <SectionHeader
+            title="TeeFeeMe Cartoonifier"
+            description="12 TV-inspired styles with identity-lock technology"
+            icon={Palette}
+          />
 
           <Card className="border-2 border-primary/40 shadow-2xl bg-card/95 backdrop-blur-md">
             <CardContent className="pt-6">
@@ -284,64 +270,45 @@ export default function UnifiedHome() {
 
         {/* Features Grid */}
         <section id="features" className="space-y-6">
-          <div className="text-center space-y-3">
-            <h2 className="text-4xl font-black gradient-text">More Features</h2>
-            <p className="text-muted-foreground text-lg">Explore everything TLC Places has to offer</p>
-          </div>
+          <SectionHeader
+            title="More Features"
+            description="Explore everything TLC Places has to offer"
+          />
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((feature, idx) => (
-              <Card
+              <FeatureCard
                 key={idx}
+                title={feature.title}
+                description={feature.desc}
+                icon={feature.icon}
+                emoji={feature.emoji}
+                gradient={feature.gradient}
                 onClick={() => user ? navigate(feature.path) : navigate("/auth")}
-                className="group cursor-pointer border-2 border-primary/30 hover:border-primary/60 shadow-lg hover:shadow-2xl hover:shadow-primary/20 transition-all duration-300 hover:-translate-y-2"
-              >
-                <CardHeader className="pb-4">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${feature.gradient} p-3 shadow-lg group-hover:scale-110 transition-transform`}>
-                      <feature.icon className="w-full h-full text-white" />
-                    </div>
-                    <span className="text-3xl group-hover:scale-125 transition-transform">{feature.emoji}</span>
-                  </div>
-                  <CardTitle className="text-xl font-black group-hover:text-primary transition-colors">{feature.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground font-medium">{feature.desc}</p>
-                </CardContent>
-              </Card>
+              />
             ))}
           </div>
         </section>
 
         {/* Footer CTA */}
         <section className="text-center space-y-6 pt-12">
-          <Card className="gradient-primary border-0 shadow-2xl shadow-primary/30">
-            <CardContent className="py-12 space-y-6">
-              <h2 className="text-4xl font-black text-primary-foreground">Ready to Begin?</h2>
-              <p className="text-xl text-primary-foreground/90 max-w-2xl mx-auto">
-                Join thousands creating magical memories with TLC Places
-              </p>
-              <div className="flex flex-wrap gap-4 justify-center">
-                <Button
-                  size="lg"
-                  onClick={() => navigate("/auth")}
-                  className="bg-background text-foreground hover:bg-background/90 font-bold text-lg px-8 py-6 shadow-xl hover:scale-110 transition-transform"
-                >
-                  <Heart className="w-6 h-6 mr-2" />
-                  Get Started
-                </Button>
-                <Button
-                  size="lg"
-                  onClick={downloadApp}
-                  variant="outline"
-                  className="bg-transparent border-2 border-background text-primary-foreground hover:bg-background hover:text-foreground font-bold text-lg px-8 py-6 shadow-xl hover:scale-110 transition-transform"
-                >
-                  <Download className="w-6 h-6 mr-2" />
-                  Download App
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          <CTASection
+            title="Ready to Begin?"
+            description="Join thousands creating magical memories with TLC Places"
+            buttons={[
+              {
+                label: "Get Started",
+                icon: Heart,
+                onClick: () => navigate("/auth"),
+              },
+              {
+                label: "Download App",
+                icon: Download,
+                onClick: downloadApp,
+                variant: "outline",
+              },
+            ]}
+          />
 
           <div className="text-muted-foreground text-sm">
             <p className="flex items-center justify-center gap-2">
