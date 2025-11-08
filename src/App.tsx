@@ -9,28 +9,23 @@ import { DetailedCupid } from "@/components/DetailedCupid";
 import { FloatingEmoji } from "@/components/FloatingEmoji";
 import { useSessionTracker } from "@/hooks/useSessionTracker";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import HackerHome from "./pages/HackerHome";
 import NotFound from "./pages/NotFound";
 
-// Lazy load quiz pages and special features
-const HackerScreen = lazy(() => import("./pages/HackerScreen"));
+// Lazy load pages
+const UnifiedHome = lazy(() => import("./pages/UnifiedHome"));
 const Quizzes = lazy(() => import("./pages/Quizzes"));
 const QuizLove = lazy(() => import("./pages/QuizLove"));
 const QuizMBTI = lazy(() => import("./pages/QuizMBTI"));
 const QuizRelationshipStyle = lazy(() => import("./pages/QuizRelationshipStyle"));
 const PeriodTracker = lazy(() => import("./pages/PeriodTracker"));
-const FeliciaModPanel = lazy(() => import("./components/FeliciaModPanel"));
-const CodeViewer = lazy(() => import("./pages/CodeViewer"));
 const AdminPanel = lazy(() => import("./pages/AdminPanel"));
 const TesterDashboard = lazy(() => import("./components/TesterDashboard"));
 const AIRecommender = lazy(() => import("./pages/AIRecommender"));
 const CoupleMode = lazy(() => import("./pages/CoupleMode"));
 const Gamification = lazy(() => import("./pages/Gamification"));
 const OKCLegendForge = lazy(() => import("./pages/EnhancedOKCLegend"));
-const ComingSoon = lazy(() => import("./pages/ComingSoon"));
 const CartoonifierNew = lazy(() => import("./pages/CartoonifierNew"));
 const Auth = lazy(() => import("./pages/Auth"));
-const Landing = lazy(() => import("./pages/Landing"));
 
 import { useGoogleMaps } from "@/hooks/useGoogleMaps";
 import { DevModeProvider } from "@/contexts/DevModeContext";
@@ -53,24 +48,19 @@ const AppRoutes = () => {
       </div>
     }>
       <Routes>
-        <Route path="/landing" element={<Landing />} />
-        <Route path="/hacker" element={<HackerScreen />} />
-        <Route path="/" element={<ProtectedRoute><HackerHome /></ProtectedRoute>} />
+        <Route path="/" element={<UnifiedHome />} />
         <Route path="/auth" element={<Auth />} />
         <Route path="/quizzes" element={<ProtectedRoute><Quizzes /></ProtectedRoute>} />
         <Route path="/quiz/love" element={<ProtectedRoute><QuizLove /></ProtectedRoute>} />
         <Route path="/quiz/mbti" element={<ProtectedRoute><QuizMBTI /></ProtectedRoute>} />
         <Route path="/quiz/relationship-style" element={<ProtectedRoute><QuizRelationshipStyle /></ProtectedRoute>} />
         <Route path="/period-tracker" element={<ProtectedRoute><PeriodTracker /></ProtectedRoute>} />
-        <Route path="/code" element={<CodeViewer />} />
         <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminPanel /></ProtectedRoute>} />
         <Route path="/tester" element={<TesterDashboard />} />
         <Route path="/ai-recommender" element={<ProtectedRoute><AIRecommender /></ProtectedRoute>} />
         <Route path="/couple-mode" element={<ProtectedRoute><CoupleMode /></ProtectedRoute>} />
         <Route path="/gamification" element={<ProtectedRoute><Gamification /></ProtectedRoute>} />
         <Route path="/okc-legend" element={<ProtectedRoute><OKCLegendForge /></ProtectedRoute>} />
-        <Route path="/boo-mode" element={<ProtectedRoute><ComingSoon /></ProtectedRoute>} />
-        <Route path="/coming-soon" element={<ProtectedRoute><ComingSoon /></ProtectedRoute>} />
         <Route path="/cartoonifier" element={<ProtectedRoute><CartoonifierNew /></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
