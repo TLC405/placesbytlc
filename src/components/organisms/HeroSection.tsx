@@ -1,7 +1,4 @@
 import { ReactNode } from "react";
-import { GlowingBadge } from "@/components/atoms/GlowingBadge";
-import { GradientText } from "@/components/atoms/GradientText";
-import { FloatingOrb } from "@/components/atoms/FloatingOrb";
 import { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -17,29 +14,18 @@ interface HeroSectionProps {
   className?: string;
 }
 
-export function HeroSection({ badge, title, subtitle, description, actions, className }: HeroSectionProps) {
+export function HeroSection({ title, subtitle, description, actions, className }: HeroSectionProps) {
   return (
-    <section className={cn("relative text-center space-y-6 animate-fade-in", className)}>
-      <FloatingOrb position="top-left" color="primary" />
-      <FloatingOrb position="bottom-right" color="accent" delay={1000} />
-      
-      {badge && (
-        <div className="relative z-10">
-          <GlowingBadge icon={badge.icon} size="lg">
-            {badge.text}
-          </GlowingBadge>
-        </div>
-      )}
-
-      <div className="relative z-10 space-y-4">
-        <GradientText as="h1" className="text-5xl md:text-7xl font-black leading-tight">
+    <section className={cn("relative text-center space-y-6", className)}>
+      <div className="space-y-4">
+        <h1 className="text-5xl md:text-7xl font-black leading-tight text-foreground">
           {title}
-        </GradientText>
+        </h1>
         
         {subtitle && (
-          <GradientText as="p" className="text-2xl md:text-3xl font-bold">
+          <p className="text-2xl md:text-3xl font-bold text-foreground">
             {subtitle}
-          </GradientText>
+          </p>
         )}
         
         {description && (
@@ -50,7 +36,7 @@ export function HeroSection({ badge, title, subtitle, description, actions, clas
       </div>
 
       {actions && (
-        <div className="relative z-10 flex flex-wrap gap-4 justify-center pt-4">
+        <div className="flex flex-wrap gap-4 justify-center pt-4">
           {actions}
         </div>
       )}

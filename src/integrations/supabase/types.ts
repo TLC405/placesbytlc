@@ -134,15 +134,19 @@ export type Database = {
         Row: {
           background_mode: string | null
           cartoon_image_url: string
+          character_name: string | null
           color_palette: string | null
           created_at: string | null
           emotion: string | null
+          gender_style: string | null
           generation_time_ms: number | null
+          generation_type: string | null
           id: string
           identity_strength: number | null
           metadata: Json | null
           original_image_url: string | null
           pose: string | null
+          realistic_style: string | null
           refinement_count: number | null
           resolution: string | null
           seed: number | null
@@ -152,15 +156,19 @@ export type Database = {
         Insert: {
           background_mode?: string | null
           cartoon_image_url: string
+          character_name?: string | null
           color_palette?: string | null
           created_at?: string | null
           emotion?: string | null
+          gender_style?: string | null
           generation_time_ms?: number | null
+          generation_type?: string | null
           id?: string
           identity_strength?: number | null
           metadata?: Json | null
           original_image_url?: string | null
           pose?: string | null
+          realistic_style?: string | null
           refinement_count?: number | null
           resolution?: string | null
           seed?: number | null
@@ -170,15 +178,19 @@ export type Database = {
         Update: {
           background_mode?: string | null
           cartoon_image_url?: string
+          character_name?: string | null
           color_palette?: string | null
           created_at?: string | null
           emotion?: string | null
+          gender_style?: string | null
           generation_time_ms?: number | null
+          generation_type?: string | null
           id?: string
           identity_strength?: number | null
           metadata?: Json | null
           original_image_url?: string | null
           pose?: string | null
+          realistic_style?: string | null
           refinement_count?: number | null
           resolution?: string | null
           seed?: number | null

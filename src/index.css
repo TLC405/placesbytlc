@@ -132,16 +132,6 @@
 }
 
 @layer utilities {
-  /* Gradients */
-  .gradient-primary {
-    background: linear-gradient(to right, hsl(var(--primary)), hsl(var(--primary-variant)), hsl(var(--primary)));
-  }
-  
-  .gradient-text {
-    background: linear-gradient(to right, hsl(var(--primary)), hsl(var(--primary-variant)), hsl(var(--primary)));
-    @apply bg-clip-text text-transparent;
-  }
-
   /* Shadows */
   .shadow-soft {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
@@ -161,19 +151,6 @@
   }
 
   /* Animations */
-  .animate-gradient {
-    animation: gradient 8s ease infinite;
-    background-size: 200% 200%;
-  }
-
-  @keyframes gradient {
-    0%, 100% {
-      background-position: 0% 50%;
-    }
-    50% {
-      background-position: 100% 50%;
-    }
-  }
 
   @keyframes bounce-slow {
     0%, 100% {
@@ -221,15 +198,11 @@
   /* Form Elements */
   .pill {
     @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full
-           border-2 border-primary/20 backdrop-blur-sm
+           border-2 border-primary/20 bg-primary/10
            font-medium text-sm text-foreground
            transition-all duration-300
            hover:shadow-elegant hover:scale-105 hover:border-primary/40
            active:scale-95;
-    background: linear-gradient(to right, 
-      hsl(var(--primary) / 0.1), 
-      hsl(var(--primary-variant) / 0.1)
-    );
   }
   
   .btn-pill {
@@ -273,8 +246,7 @@
 
 .animate-shimmer {
   animation: shimmer 2s infinite;
-  background: linear-gradient(to right, transparent 0%, rgba(236, 72, 153, 0.1) 50%, transparent 100%);
-  background-size: 1000px 100%;
+  background: hsl(var(--primary) / 0.1);
 }
 
 /* Performance Optimizations */

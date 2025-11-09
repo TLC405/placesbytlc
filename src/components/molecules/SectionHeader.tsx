@@ -1,6 +1,4 @@
 import { LucideIcon } from "lucide-react";
-import { GradientText } from "@/components/atoms/GradientText";
-import { AnimatedEmoji } from "@/components/atoms/AnimatedEmoji";
 import { cn } from "@/lib/utils";
 
 interface SectionHeaderProps {
@@ -27,11 +25,11 @@ const descSizes = {
 export function SectionHeader({ title, description, icon: Icon, emoji, centered = true, size = "md" }: SectionHeaderProps) {
   return (
     <div className={cn("space-y-3", centered && "text-center")}>
-      <GradientText as="h2" className={cn("font-black flex items-center gap-3", titleSizes[size], centered && "justify-center")}>
-        {Icon && <Icon className="w-8 h-8 text-primary animate-pulse" />}
+      <h2 className={cn("font-black flex items-center gap-3 text-foreground", titleSizes[size], centered && "justify-center")}>
+        {Icon && <Icon className="w-8 h-8 text-primary" />}
         {title}
-        {emoji && <AnimatedEmoji emoji={emoji} size={size === "sm" ? "sm" : size === "lg" ? "lg" : "md"} />}
-      </GradientText>
+        {emoji && <span className="text-4xl">{emoji}</span>}
+      </h2>
       {description && (
         <p className={cn("text-muted-foreground font-medium", descSizes[size])}>
           {description}
