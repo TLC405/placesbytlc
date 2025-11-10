@@ -15,7 +15,7 @@ import NotFound from "./pages/NotFound";
 const UnifiedHome = lazy(() => import("./pages/UnifiedHome"));
 const AdminPanel = lazy(() => import("./pages/AdminPanel"));
 const TesterDashboard = lazy(() => import("./components/TesterDashboard"));
-const CartoonifierNew = lazy(() => import("./pages/CartoonifierNew"));
+const ComprehensiveCartoonifier = lazy(() => import("./pages/ComprehensiveCartoonifier"));
 const Auth = lazy(() => import("./pages/Auth"));
 
 import { useGoogleMaps } from "@/hooks/useGoogleMaps";
