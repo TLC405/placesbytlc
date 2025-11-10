@@ -1,102 +1,47 @@
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, MapPin, Heart, Scale, SlidersHorizontal } from "lucide-react";
-import { useState, useCallback, memo } from "react";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  MapPin,
+  Sparkles,
+  Download,
+  Heart,
+  Palette,
+  Users2,
+  Film,
+  Music2,
+} from "lucide-react";
+import { SearchBar } from "@/components/SearchBar";
+import { PlaceCard } from "@/components/PlaceCard";
+import { EmptyState } from "@/components/EmptyState";
+import { usePlacesSearch } from "@/hooks/usePlacesSearch";
+import { useGeolocation } from "@/hooks/useGeolocation";
+import { storage } from "@/lib/storage";
+import { toast } from "sonner";
+import { PlaceItem } from "@/types";
+import {
+  trackPlaceView,
+  trackPlaceSave,
+  trackSearch,
+} from "@/components/ActivityTracker";
+import { DarkModeToggle } from "@/components/DarkModeToggle";
+import { StyleGallery } from "@/components/cartoon/StyleGallery";
+import { CartoonToHumanGenerator } from "@/components/cartoon/CartoonToHumanGenerator";
+import { useAuth } from "@/contexts/AuthContext";
+import { NavigationBar } from "@/components/organisms/NavigationBar";
+import { SectionHeader } from "@/components/molecules/SectionHeader";
+import { AppLogo } from "@/components/AppLogo";
 
-interface SearchBarProps {
-  query: string;
-  radius: string;
-  onQueryChange: (query: string) => void;
-  onRadiusChange: (radius: string) => void;
-  onSearch: () => void;
-  disabled?: boolean;
-  loading?: boolean;
-  selectedCategories?: string[];
-  onCategoryToggle?: (category: string) => void;
-  categoryType?: "food" | "activity" | "both";
-  onCategoryTypeChange?: (type: "food" | "activity" | "both") => void;
-  onLocationModeChange?: (mode: "tlc" | "partner" | "middle") => void;
-}
+export default function UnifiedHome() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [query, setQuery] = useState("");
+  const [radius, setRadius] = useState("8047");
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [categoryType, setCategoryType] = useState<"food" | "activity" | "both">("both");
 
-type LocationMode = "tlc" | "partner" | "middle";
-
-const FOOD_CATEGORIES = [
-  { label: "All Food", value: "food" },
-  { label: "Restaurants", value: "restaurant" },
-  { label: "Cafes", value: "cafe" },
-  { label: "Bars", value: "bar" },
-  { label: "Bakery", value: "bakery" },
-  { label: "Pizza", value: "pizza" },
-  { label: "Sushi", value: "sushi" },
-];
-
-const ACTIVITY_CATEGORIES = [
-  { label: "All Activities", value: "activity" },
-  { label: "Parks", value: "park" },
-  { label: "Museums", value: "museum" },
-  { label: "Movies", value: "movie_theater" },
-  { label: "Shopping", value: "shopping_mall" },
-  { label: "Art", value: "art_gallery" },
-  { label: "Spa", value: "spa" },
-];
-
-const SearchBarComponent = ({
-  query,
-  radius,
-  onQueryChange,
-  onRadiusChange,
-  onSearch,
-  disabled,
-  loading,
-  selectedCategories = [],
-  onCategoryToggle,
-  categoryType = "both",
-  onCategoryTypeChange,
-  onLocationModeChange,
-}: SearchBarProps) => {
-  const [locationMode, setLocationMode] = useState<LocationMode>("tlc");
-  const [filtersOpen, setFiltersOpen] = useState(false);
-
-  const handleLocationModeChange = useCallback((mode: LocationMode) => {
-    setLocationMode(mode);
-    onLocationModeChange?.(mode);
-  }, [onLocationModeChange]);
-
-  const handleSearch = useCallback(() => {
-    if (!disabled && !loading) {
-      onSearch();
-    }
-  }, [disabled, loading, onSearch]);
-
-  return (
-    <div className="space-y-4">
-      {/* Compact Location Selector */}
-      {onLocationModeChange && (
-        <div className="flex gap-2 p-3 bg-gradient-to-br from-card/80 to-card/60 backdrop-blur-md rounded-2xl border-2 border-border/40 shadow-lg animate-fade-in">
-          <button
-            onClick={() => handleLocationModeChange("tlc")}
-            className={`flex-1 p-3 rounded-xl text-sm font-bold transition-all duration-300 focus-visible:ring-2 focus-visible:ring-shroomGreen focus-visible:ring-offset-2 ${
-              locationMode === "tlc"
-                ? "bg-gradient-to-r from-shroomGreen to-shroomYellow text-shroomBrown shadow-xl scale-105"
-                : "hover:bg-shroomYellow/20 hover:scale-105"
-            }`}
-            aria-label="Search from TLC location"
-            aria-pressed={locationMode === "tlc"}
-          >
-            <MapPin className="w-5 h-5 mx-auto mb-1" aria-hidden="true" />
-            TLC
-          </button>
-          <button
-            onClick={() => handleLocationModeChange("partner")}
-            className={`flex-1 p-3 rounded-xl text-sm font-bold transition-all duration-300 focus-visible:ring-2 focus-visible:ring-shroomGreen focus-visible:ring-offset-2 ${
-              locationMode === "partner"
-                ? "bg-gradient-to-r from-shroomGreen to-shroomYellow text-shroomBrown shadow-xl shadow-shroomGreen/30 animate-pulse scale-105"
-                : "hover:bg-shroomYellow/20 hover:scale-105"
-            }`}
-            aria-label="Search from partner location"
-            aria-pressed={locationMode === "partner"}
-          >
+  const { location } =          >
             <Heart className="w-5 h-5 mx-auto mb-1 fill-current" aria-hidden="true" />
             💝 Partner
           </button>
