@@ -91,158 +91,118 @@ export default function UnifiedHome() {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* NAV */}
-      <NavigationBar
-        logo={
-          <div className="flex items-center gap-2">
-            <AppLogo />
-            <span className="font-black text-xl text-foreground">
-              TeeFeeMe Studios
-            </span>
-          </div>
-        }
-        actions={<DarkModeToggle />}
-      />
-
-      {/* ANIMATED BACKDROP */}
-      <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute w-[38rem] h-[38rem] rounded-full blur-3xl bg-lime-500/15 top-[-6rem] left-1/2 -translate-x-1/2 animate-pulse" />
-        <div className="absolute w-[32rem] h-[32rem] rounded-full blur-3xl bg-fuchsia-500/10 bottom-[-8rem] right-[-6rem] animate-pulse" />
-        <div className="absolute w-[26rem] h-[26rem] rounded-full blur-3xl bg-cyan-500/10 bottom-[-10rem] left-[-6rem] animate-pulse" />
+      {/* Cartoon Background Elements */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-20 left-10 w-32 h-32 rounded-full bg-primary/5 blur-3xl floating-cartoon" />
+        <div className="absolute top-40 right-20 w-40 h-40 rounded-full bg-accent/5 blur-3xl floating-cartoon" style={{animationDelay: '1s'}} />
+        <div className="absolute bottom-20 left-1/3 w-36 h-36 rounded-full bg-primary/5 blur-3xl floating-cartoon" style={{animationDelay: '2s'}} />
       </div>
 
-      {/* HERO */}
-      <header className="relative max-w-7xl mx-auto px-4 pt-24 pb-10">
-        <div className="text-center">
-          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-foreground">
-            Where Every Pixel <span className="text-lime-400">Sings</span>
-          </h1>
-          <p className="mt-3 text-muted-foreground text-base sm:text-lg">
-            Nano paints. Veo moves. SoniQ sings. Built by{" "}
-            <span className="font-bold">Lord TLC 👑</span>.
-          </p>
-        </div>
-
-        {/* QUICK ACTIONS */}
-        <div className="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl mx-auto">
-          <Button
-            onClick={() =>
-              user ? navigate("/cartoonifier") : navigate("/auth")
-            }
-            className="h-16 rounded-2xl bg-lime-500/20 hover:bg-lime-500/40 border border-lime-400/40 font-bold"
-          >
-            <Palette className="w-5 h-5 mr-2" /> Nano DeX
-          </Button>
-          <Button
-            onClick={() => (user ? navigate("/veo") : navigate("/auth"))}
-            className="h-16 rounded-2xl bg-cyan-500/20 hover:bg-cyan-500/40 border border-cyan-400/40 font-bold"
-          >
-            <Film className="w-5 h-5 mr-2" /> Veo DeX
-          </Button>
-          <Button
-            onClick={() => (user ? navigate("/soniq") : navigate("/auth"))}
-            className="h-16 rounded-2xl bg-fuchsia-500/20 hover:bg-fuchsia-500/40 border border-fuchsia-400/40 font-bold"
-          >
-            <Music2 className="w-5 h-5 mr-2" /> SoniQ Forge
-          </Button>
-          <Button
-            variant="outline"
-            onClick={downloadApp}
-            className="h-16 rounded-2xl font-bold"
-          >
-            <Download className="w-5 h-5 mr-2" /> Download App
-          </Button>
-        </div>
-
-        {/* MINI PREVIEW STRIP */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto">
-          <Card className="border-2 border-border/60">
-            <CardContent className="p-4">
-              <div className="text-sm font-semibold mb-2 text-foreground">
-                Human → Cartoon
+      {/* Premium Header */}
+      <header className="border-b-2 border-primary/20 backdrop-blur-xl sticky top-0 z-50 bg-background/90 premium-glow">
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="sticker-effect">
+                <AppLogo />
               </div>
-              <StyleGallery
-                selectedStyle=""
-                onStyleSelect={() =>
-                  user ? navigate("/cartoonifier") : navigate("/auth")
-                }
-              />
-              <div className="mt-3 text-right">
-                <Button
-                  size="sm"
-                  onClick={() =>
-                    user ? navigate("/cartoonifier") : navigate("/auth")
-                  }
-                >
-                  Try Cartoonifier →
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-2 border-border/60">
-            <CardContent className="p-4">
-              <div className="text-sm font-semibold mb-2 text-foreground">
-                Cartoon → Human
-              </div>
-              {user ? (
-                <CartoonToHumanGenerator />
-              ) : (
-                <div className="text-center py-8 space-y-3">
-                  <Users2 className="w-10 h-10 text-primary mx-auto" />
-                  <p className="text-sm text-muted-foreground">
-                    Sign in to use Toon2Human
-                  </p>
-                  <Button size="sm" onClick={() => navigate("/auth")}>
-                    Sign In
-                  </Button>
+              <div>
+                <h1 className="text-3xl cartoon-text text-foreground">TeeFeeMe Studios</h1>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="cartoon-badge">Premium</span>
+                  <p className="text-xs text-muted-foreground font-semibold">Create • Transform • Share</p>
                 </div>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card className="border-2 border-border/60">
-            <CardContent className="p-4">
-              <div className="text-sm font-semibold mb-3 text-foreground">
-                Decade Styles Timeline
               </div>
-              <div className="text-sm text-muted-foreground">
-                Tap a decade to auto-load style + music in the Studio.
-              </div>
-              <div className="mt-3">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => navigate("/timeline")}
-                >
-                  Open Timeline →
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+            </div>
+            <DarkModeToggle />
+          </div>
         </div>
       </header>
 
-      {/* PLACES SEARCH */}
-      <section
-        id="places"
-        className="relative max-w-7xl mx-auto px-4 pb-10 space-y-6"
-      >
-        <SectionHeader
-          title="Discover Perfect Spots"
-          description="Find restaurants, activities, and date ideas near you"
-          icon={MapPin}
-        />
+      {/* Premium Hero Section */}
+      <section className="py-24 px-4 relative">
+        <div className="container mx-auto text-center space-y-10 pop-in">
+          <div className="space-y-6">
+            <div className="inline-block mb-4">
+              <span className="cartoon-badge text-base">✨ AI-Powered Creativity ✨</span>
+            </div>
+            <h2 className="text-7xl cartoon-text text-foreground leading-tight">
+              Transform Your World<br />
+              <span className="text-primary">Into Pure Magic</span>
+            </h2>
+            <p className="text-2xl text-muted-foreground max-w-3xl mx-auto font-semibold">
+              Face-locked cartoonification • Hyper-realistic transformations • Epic place discovery
+            </p>
+          </div>
+          <div className="flex gap-6 justify-center flex-wrap">
+            <Button 
+              size="lg" 
+              variant="premium" 
+              className="text-xl px-12 py-8"
+              onClick={() => user ? navigate("/cartoonifier") : navigate("/auth")}
+            >
+              <Sparkles className="w-6 h-6 mr-3" />
+              Start Creating Now
+            </Button>
+            <Button size="lg" variant="outline" className="text-xl px-12 py-8" onClick={downloadApp}>
+              <Download className="w-6 h-6 mr-3" />
+              Download Premium App
+            </Button>
+          </div>
+        </div>
+      </section>
 
-        <Card className="border-2 border-border shadow-lg">
-          <CardContent className="pt-6 space-y-4">
-            <div className="flex items-center gap-3">
-              <Sparkles className="w-6 h-6 text-primary" />
-              <h3 className="text-2xl font-bold text-foreground">
-                Search for Places
-              </h3>
+      {/* Premium Feature Cards */}
+      <section className="py-12 px-4">
+        <div className="container mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            {/* Cartoonifier Card */}
+            <div className="premium-card p-8 pop-in">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-4xl">🎨</span>
+                <h3 className="text-2xl font-black text-foreground">Face-Lock Studio</h3>
+              </div>
+              <p className="text-muted-foreground mb-6">
+                Transform into 12 TV cartoon styles with perfect identity preservation
+              </p>
+              <Button 
+                className="w-full"
+                onClick={() => user ? navigate("/cartoonifier") : navigate("/auth")}
+              >
+                <Palette className="w-5 h-5 mr-2" />
+                Open Studio
+              </Button>
             </div>
 
+            {/* Toon2Human Card */}
+            <div className="premium-card p-8 pop-in" style={{animationDelay: '0.1s'}}>
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-4xl">👤</span>
+                <h3 className="text-2xl font-black text-foreground">Toon2Human</h3>
+              </div>
+              <p className="text-muted-foreground mb-6">
+                SpongeBob → Real person in yellow shirt • Any cartoon → Reality
+              </p>
+              <CartoonToHumanGenerator />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Premium Places Section */}
+      <section id="places" className="py-20 px-4 relative">
+        <div className="container mx-auto space-y-12">
+          <div className="text-center space-y-4">
+            <div className="inline-flex items-center gap-3 mb-3">
+              <span className="text-5xl">📍</span>
+              <h3 className="text-5xl cartoon-text text-foreground">Discover Epic Places</h3>
+              <span className="text-5xl">🗺️</span>
+            </div>
+            <p className="text-xl text-muted-foreground font-semibold max-w-2xl mx-auto">
+              AI-powered date spot finder • Real-time recommendations • Perfect for any vibe
+            </p>
+          </div>
+          <div className="max-w-5xl mx-auto premium-card p-8">
             <SearchBar
               query={query}
               radius={radius}
@@ -267,74 +227,58 @@ export default function UnifiedHome() {
                 )
               }
             />
-          </CardContent>
-        </Card>
-
-        {/* Results */}
-        {results.length > 0 && (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between flex-wrap gap-4">
-              <h3 className="text-3xl font-bold text-foreground">
-                {results.length} Places Found 🎉
-              </h3>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {results.map((place) => (
-                <PlaceCard
-                  key={place.id}
-                  place={place}
-                  onAdd={handleAddToPlan}
-                  onView={() => trackPlaceView(place)}
-                />
-              ))}
-            </div>
           </div>
-        )}
 
-        {results.length === 0 && !isSearching && (
-          <EmptyState
-            icon={Heart}
-            title="Start Your Search"
-            description="Choose your preferences above and discover amazing date spots"
-          />
-        )}
+          {/* Results */}
+          {results.length > 0 && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between flex-wrap gap-4">
+                <h3 className="text-3xl font-bold text-foreground">
+                  {results.length} Places Found 🎉
+                </h3>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {results.map((place) => (
+                  <PlaceCard
+                    key={place.id}
+                    place={place}
+                    onAdd={handleAddToPlan}
+                    onView={() => trackPlaceView(place)}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {results.length === 0 && !isSearching && (
+            <EmptyState
+              icon={Heart}
+              title="Start Your Search"
+              description="Choose your preferences above and discover amazing date spots"
+            />
+          )}
+        </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="text-center space-y-6 pb-12">
-        <div className="space-y-2">
-          <h2 className="text-2xl font-black text-foreground">Ready to Begin?</h2>
-          <p className="text-muted-foreground text-sm">
-            Create magical memories with TeeFeeMe Studios
-          </p>
-        </div>
-
-        <div className="flex flex-wrap gap-3 justify-center">
-          <Button
-            size="lg"
-            onClick={() => navigate("/auth")}
-            className="h-12 px-6 font-bold"
-          >
-            <Heart className="w-5 h-5 mr-2" />
-            Get Started
-          </Button>
-          <Button
-            size="lg"
-            onClick={downloadApp}
-            variant="outline"
-            className="h-12 px-6 font-bold"
-          >
-            <Download className="w-5 h-5 mr-2" />
-            Download App
-          </Button>
-        </div>
-
-        <div className="text-muted-foreground text-xs pt-2">
-          <p className="flex items-center justify-center gap-2">
-            <Heart className="w-4 h-4 fill-primary text-primary" />
-            Made with love by Lord TLC 👑
-            <Heart className="w-4 h-4 fill-primary text-primary" />
-          </p>
+      {/* Premium Footer */}
+      <footer className="border-t-2 border-primary/20 py-16 px-4 bg-card/50 backdrop-blur-xl relative premium-glow mt-20">
+        <div className="container mx-auto text-center space-y-8">
+          <div className="premium-gradient-border inline-block">
+            <Button size="lg" variant="premium" className="text-xl px-12 py-8" onClick={downloadApp}>
+              <Download className="w-6 h-6 mr-3" />
+              Download Premium App
+            </Button>
+          </div>
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground font-semibold flex items-center justify-center gap-2">
+              <span>🔒</span>
+              Face-Lock Technology • AI Powered • Premium Quality
+              <span>✨</span>
+            </p>
+            <p className="text-xs text-muted-foreground">
+              © 2024 TeeFeeMe Studios • Made with 💚 by Lord TLC 👑
+            </p>
+          </div>
         </div>
       </footer>
     </div>

@@ -43,7 +43,7 @@ const AppRoutes = () => {
         <Route path="/auth" element={<Auth />} />
         <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminPanel /></ProtectedRoute>} />
         <Route path="/tester" element={<TesterDashboard />} />
-        <Route path="/cartoonifier" element={<ProtectedRoute><CartoonifierNew /></ProtectedRoute>} />
+        <Route path="/cartoonifier" element={<ProtectedRoute><ComprehensiveCartoonifier /></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>
