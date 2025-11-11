@@ -69,16 +69,16 @@ export function IdentityLockControls({
       </div>
 
       {/* Feature Locks */}
-      <Card>
+      <Card className="premium-card">
         <CardContent className="pt-6 space-y-4">
-          <Label className="text-sm font-bold text-muted-foreground">
+          <Label className="text-sm font-bold text-primary">
             LOCK FACIAL FEATURES
           </Label>
           <div className="grid md:grid-cols-2 gap-4">
             {LOCK_OPTIONS.map((opt) => (
               <div
                 key={opt.key}
-                className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-accent transition-colors"
+                className="flex items-center space-x-3 p-3 rounded-xl border-2 border-border hover:bg-accent hover:border-primary/30 transition-all hover-lift"
               >
                 <Checkbox
                   id={opt.key}
@@ -99,16 +99,16 @@ export function IdentityLockControls({
       </Card>
 
       {/* Prevention Locks */}
-      <Card>
+      <Card className="premium-card">
         <CardContent className="pt-6 space-y-4">
-          <Label className="text-sm font-bold text-muted-foreground">
+          <Label className="text-sm font-bold text-primary">
             PREVENT MODIFICATIONS
           </Label>
           <div className="grid md:grid-cols-2 gap-4">
             {PREVENT_OPTIONS.map((opt) => (
               <div
                 key={opt.key}
-                className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-accent transition-colors"
+                className="flex items-center space-x-3 p-3 rounded-xl border-2 border-border hover:bg-accent hover:border-primary/30 transition-all hover-lift"
               >
                 <Checkbox
                   id={opt.key}
@@ -129,7 +129,7 @@ export function IdentityLockControls({
 
       {/* Custom Features */}
       <div className="space-y-2">
-        <Label htmlFor="customFeatures" className="font-bold">
+        <Label htmlFor="customFeatures" className="font-bold text-foreground">
           Custom Features to Lock
         </Label>
         <Input
@@ -139,7 +139,7 @@ export function IdentityLockControls({
             onSettingsChange({ ...settings, customFeatures: e.target.value })
           }
           placeholder="e.g., mole at left cheek, scar above right eyebrow, dimples"
-          className="h-12"
+          className="premium-input h-12"
         />
         <p className="text-xs text-muted-foreground">
           Specify any distinctive features, scars, moles, or unique characteristics

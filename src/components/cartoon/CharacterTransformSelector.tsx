@@ -77,7 +77,7 @@ export function CharacterTransformSelector({
 
         {/* Standard Cartoon */}
         <TabsContent value="standard-cartoon" className="space-y-4">
-          <Card>
+          <Card className="premium-card">
             <CardContent className="pt-6 space-y-4">
               <p className="text-sm text-muted-foreground">
                 Classic cartoon transformation with TV/anime styles
@@ -113,21 +113,21 @@ export function CharacterTransformSelector({
 
         {/* TMNT Classic */}
         <TabsContent value="tmnt-classic" className="space-y-4">
-          <Card>
+          <Card className="premium-card">
             <CardContent className="pt-6 space-y-4">
               <p className="text-sm text-muted-foreground">
                 1987 TMNT Saturday-morning style with turtle-themed gear
               </p>
               <div className="space-y-2">
-                <Label>Your TMNT Role</Label>
+                <Label className="text-foreground font-bold">Your TMNT Role</Label>
                 <div className="grid grid-cols-2 gap-3">
                   {TMNT_ROLES.map((role) => (
                     <button
                       key={role.value}
                       onClick={() => onSettingsChange({ ...settings, tmntRole: role.value as any, bandanaColor: role.color })}
-                      className={`p-4 rounded-xl border-2 transition-all ${
+                      className={`p-4 rounded-2xl border-2 transition-all hover-lift ${
                         settings.tmntRole === role.value
-                          ? "border-primary bg-primary/10 scale-105"
+                          ? "border-primary bg-primary/10 scale-105 shadow-xl shadow-primary/20"
                           : "border-border hover:border-primary/50"
                       }`}
                     >
@@ -144,21 +144,21 @@ export function CharacterTransformSelector({
 
         {/* Hyper-Realistic Transformer */}
         <TabsContent value="hyper-realistic" className="space-y-4">
-          <Card>
+          <Card className="premium-card">
             <CardContent className="pt-6 space-y-4">
               <p className="text-sm text-muted-foreground">
                 Photoreal AI cartoon transformer with exo-suit armor
               </p>
               <div className="space-y-2">
-                <Label>Transformer Style</Label>
+                <Label className="text-foreground font-bold">Transformer Style</Label>
                 <div className="grid md:grid-cols-2 gap-3">
                   {TRANSFORMER_STYLES.map((style) => (
                     <button
                       key={style.value}
                       onClick={() => onSettingsChange({ ...settings, transformerStyle: style.value as any })}
-                      className={`p-3 rounded-lg border-2 text-left transition-all ${
+                      className={`p-3 rounded-2xl border-2 text-left transition-all hover-lift ${
                         settings.transformerStyle === style.value
-                          ? "border-primary bg-primary/10"
+                          ? "border-primary bg-primary/10 shadow-lg shadow-primary/20"
                           : "border-border hover:border-primary/50"
                       }`}
                     >
@@ -169,13 +169,13 @@ export function CharacterTransformSelector({
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="armorColor">Armor Accent Color</Label>
+                <Label htmlFor="armorColor" className="text-foreground font-bold">Armor Accent Color</Label>
                 <input
                   id="armorColor"
                   type="color"
                   value={settings.armorColor || "#00ffff"}
                   onChange={(e) => onSettingsChange({ ...settings, armorColor: e.target.value })}
-                  className="w-full h-12 rounded-lg border-2 cursor-pointer"
+                  className="w-full h-12 rounded-2xl border-2 border-border cursor-pointer premium-input"
                 />
               </div>
               <Badge>Environment: Futuristic rooftop • Golden hour • Bokeh lights</Badge>
@@ -185,7 +185,7 @@ export function CharacterTransformSelector({
 
         {/* Custom Character */}
         <TabsContent value="custom-character" className="space-y-4">
-          <Card>
+          <Card className="premium-card">
             <CardContent className="pt-6 space-y-4">
               <p className="text-sm text-muted-foreground">
                 Transform into any iconic character with their signature colors & accessories

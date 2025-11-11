@@ -101,14 +101,14 @@ export function FaceReferenceUploader({ references, onReferencesChange }: FaceRe
   return (
     <div className="space-y-6">
       {/* Requirements Alert */}
-      <Alert className={isReady ? "border-lime-400 bg-lime-50" : "border-cyan-400 bg-cyan-50"}>
-        <AlertCircle className="h-5 w-5" />
+      <Alert className={isReady ? "border-primary bg-primary/10" : "border-accent bg-accent/10"}>
+        <AlertCircle className="h-5 w-5 text-foreground" />
         <AlertDescription>
           <div className="space-y-2">
-            <p className="font-bold">
+            <p className="font-bold text-foreground">
               {isReady ? "✅ Ready to Generate!" : "📸 Reference Pack Requirements"}
             </p>
-            <p className="text-sm">
+            <p className="text-sm text-muted-foreground">
               Upload 12–20 photos: even lighting, no hats, glasses consistent (all on or all off), hair styled as desired.
             </p>
           </div>
@@ -121,17 +121,17 @@ export function FaceReferenceUploader({ references, onReferencesChange }: FaceRe
           <button
             key={angle}
             onClick={() => setSelectedAngle(angle)}
-            className={`p-4 rounded-xl border-2 transition-all ${
+            className={`p-4 rounded-2xl border-2 transition-all hover-lift ${
               selectedAngle === angle
-                ? "border-lime-400 bg-lime-50 scale-105"
-                : "border-border bg-card hover:border-cyan-400"
+                ? "border-primary bg-primary/10 scale-105 shadow-lg shadow-primary/20"
+                : "border-border bg-card hover:border-accent"
             }`}
           >
             <div className="text-center space-y-1">
               <div className="text-3xl">{emoji}</div>
-              <p className="font-bold text-sm">{label}</p>
+              <p className="font-bold text-sm text-foreground">{label}</p>
               <div className={`text-xs font-semibold ${
-                angleCounts[angle] >= min ? "text-lime-600" : "text-muted-foreground"
+                angleCounts[angle] >= min ? "text-primary" : "text-muted-foreground"
               }`}>
                 {angleCounts[angle]}/{min} {angleCounts[angle] >= min && "✓"}
               </div>
@@ -145,7 +145,7 @@ export function FaceReferenceUploader({ references, onReferencesChange }: FaceRe
         <Button
           onClick={() => fileInputRef.current?.click()}
           className="flex-1 h-14 text-lg font-bold"
-          variant={totalPhotos < 12 ? "default" : "outline"}
+          variant={totalPhotos < 12 ? "premium" : "outline"}
         >
           <Upload className="w-5 h-5 mr-2" />
           Add {selectedAngle} Photos ({totalPhotos}/20)
@@ -163,10 +163,10 @@ export function FaceReferenceUploader({ references, onReferencesChange }: FaceRe
       {/* Reference Grid */}
       {references.length > 0 && (
         <div className="space-y-3">
-          <p className="font-bold text-foreground">Your Reference Pack</p>
+          <p className="font-bold text-foreground text-lg">Your Reference Pack</p>
           <div className="grid grid-cols-3 md:grid-cols-5 gap-3">
             {references.map((ref) => (
-              <Card key={ref.id} className="relative group overflow-hidden">
+              <Card key={ref.id} className="relative group overflow-hidden premium-card">
                 <CardContent className="p-0">
                   <img
                     src={ref.dataUrl}

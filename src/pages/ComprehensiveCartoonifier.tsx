@@ -211,21 +211,21 @@ ID_WEIGHT: ${idWeight}
       <div className="min-h-screen bg-background py-8 px-4">
         <div className="max-w-7xl mx-auto space-y-6">
           {/* Header */}
-          <div className="text-center space-y-3">
+          <div className="text-center space-y-3 sticker-effect">
             <div className="flex items-center justify-center gap-3">
-              <span className="text-4xl">🔒</span>
-              <h1 className="text-5xl font-black text-foreground">
+              <span className="text-5xl floating-cartoon">🔒</span>
+              <h1 className="text-5xl md:text-6xl font-black text-foreground cartoon-text">
                 FACE-LOCK CARTOONIFIER
               </h1>
-              <span className="text-4xl">✨</span>
+              <span className="text-5xl floating-cartoon">✨</span>
             </div>
-            <p className="text-muted-foreground font-semibold text-lg">
+            <p className="text-muted-foreground font-bold text-lg">
               Professional Identity-Locked Transformations • 3 Methods • Perfect Likeness
             </p>
           </div>
 
           {/* Progress Steps */}
-          <Card className="border-2">
+          <Card className="premium-card">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 {["refs", "method", "settings", "generate"].map((s, i) => (
@@ -233,12 +233,12 @@ ID_WEIGHT: ${idWeight}
                     <button
                       onClick={() => setStep(s as any)}
                       disabled={s === "generate" && !isRefsReady}
-                      className={`flex flex-col items-center gap-2 ${
+                      className={`flex flex-col items-center gap-2 transition-all hover-lift ${
                         step === s ? "opacity-100" : "opacity-50 hover:opacity-75"
                       }`}
                     >
-                      <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${
-                        step === s ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                      <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg transition-all ${
+                        step === s ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30 premium-glow" : "bg-muted text-muted-foreground"
                       }`}>
                         {i + 1}
                       </div>
@@ -257,7 +257,7 @@ ID_WEIGHT: ${idWeight}
           </Card>
 
           {/* Main Content */}
-          <Card className="border-2 shadow-xl">
+          <Card className="premium-card premium-glow">
             <CardContent className="pt-8 space-y-8">
               {/* Step 1: Reference Pack */}
               {step === "refs" && (
@@ -271,6 +271,7 @@ ID_WEIGHT: ${idWeight}
                       onClick={() => setStep("method")}
                       disabled={!isRefsReady}
                       size="lg"
+                      variant="premium"
                       className="min-w-[200px]"
                     >
                       Next: Choose Method →
@@ -292,7 +293,7 @@ ID_WEIGHT: ${idWeight}
                     <Button onClick={() => setStep("refs")} variant="outline">
                       ← Back
                     </Button>
-                    <Button onClick={() => setStep("settings")} size="lg" className="min-w-[200px]">
+                    <Button onClick={() => setStep("settings")} size="lg" variant="premium" className="min-w-[200px]">
                       Next: Configure Settings →
                     </Button>
                   </div>
@@ -379,7 +380,7 @@ ID_WEIGHT: ${idWeight}
                     <Button onClick={() => setStep("method")} variant="outline">
                       ← Back
                     </Button>
-                    <Button onClick={() => setStep("generate")} size="lg" className="min-w-[200px]">
+                    <Button onClick={() => setStep("generate")} size="lg" variant="premium" className="min-w-[200px]">
                       Ready to Generate →
                     </Button>
                   </div>
@@ -393,11 +394,11 @@ ID_WEIGHT: ${idWeight}
                   <div className="grid md:grid-cols-2 gap-8">
                     {/* Reference Preview */}
                     <div className="space-y-4">
-                      <h3 className="text-2xl font-bold text-foreground">
+                      <h3 className="text-2xl font-bold text-foreground cartoon-text">
                         Your Reference
                       </h3>
                       {primaryRef ? (
-                        <div className="aspect-square rounded-xl border-2 border-border overflow-hidden shadow-lg">
+                        <div className="aspect-square rounded-2xl border-2 border-primary/20 overflow-hidden shadow-2xl premium-glow">
                           <img
                             src={primaryRef.dataUrl}
                             alt="Primary Reference"
@@ -405,7 +406,7 @@ ID_WEIGHT: ${idWeight}
                           />
                         </div>
                       ) : (
-                        <div className="aspect-square rounded-xl border-2 border-dashed border-border flex items-center justify-center">
+                        <div className="aspect-square rounded-2xl border-2 border-dashed border-border flex items-center justify-center bg-muted/20">
                           <p className="text-muted-foreground">No reference selected</p>
                         </div>
                       )}
@@ -413,8 +414,8 @@ ID_WEIGHT: ${idWeight}
 
                     {/* Result */}
                     <div className="space-y-4">
-                      <h3 className="text-2xl font-bold text-foreground flex items-center gap-2">
-                        <Sparkles className="w-5 h-5" />
+                      <h3 className="text-2xl font-bold text-foreground flex items-center gap-2 cartoon-text">
+                        <Sparkles className="w-5 h-5 text-accent" />
                         Transformation Result
                       </h3>
                       {showComparison && primaryRef && resultImage ? (
@@ -423,7 +424,7 @@ ID_WEIGHT: ${idWeight}
                           cartoonImage={resultImage}
                         />
                       ) : (
-                        <div className="aspect-square rounded-xl border-2 border-border bg-card flex items-center justify-center overflow-hidden shadow-lg">
+                        <div className="aspect-square rounded-2xl border-2 border-border bg-card flex items-center justify-center overflow-hidden shadow-2xl premium-glow">
                           {resultImage ? (
                             <img
                               src={resultImage}

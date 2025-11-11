@@ -78,24 +78,24 @@ export function MethodSelector({
             <button
               key={m.id}
               onClick={() => onMethodChange(m.id)}
-              className={`text-left transition-all ${
+              className={`text-left transition-all hover-lift ${
                 isSelected ? "scale-105" : "opacity-70 hover:opacity-100"
               }`}
             >
-              <Card className={`border-2 ${
+              <Card className={`premium-card ${
                 isSelected
-                  ? `border-${m.color}-400 bg-${m.color}-50`
+                  ? "border-primary bg-primary/10 shadow-2xl shadow-primary/30"
                   : "border-border"
               }`}>
                 <CardContent className="p-4 space-y-3">
                   <div className="flex items-center justify-between">
-                    <Icon className={`w-6 h-6 text-${m.color}-500`} />
-                    <Badge variant={isSelected ? "default" : "secondary"}>
+                    <Icon className={`w-6 h-6 ${isSelected ? "text-primary" : "text-foreground"}`} />
+                    <Badge variant={isSelected ? "default" : "secondary"} className="cartoon-badge">
                       {m.speed}
                     </Badge>
                   </div>
                   <div>
-                    <p className="font-bold text-foreground">{m.name}</p>
+                    <p className="font-bold text-foreground text-lg">{m.name}</p>
                     <p className="text-xs text-muted-foreground mt-1">
                       {m.description}
                     </p>
