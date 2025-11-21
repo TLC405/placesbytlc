@@ -131,73 +131,77 @@
   }
 }
 
-/* Premium Cartoon Design System */
-.premium-card {
-  @apply bg-card border-2 border-primary/20 rounded-3xl shadow-2xl backdrop-blur-sm;
-  @apply hover:shadow-primary/20 hover:border-primary/40 transition-all duration-300;
+/* TeeFeeMee Cartoon Design System */
+.toon-card {
+  @apply bg-card border-4 border-foreground/80 rounded-[2rem] shadow-[8px_8px_0px_0px] shadow-foreground/20;
+  @apply transition-all duration-200 hover:translate-x-[2px] hover:translate-y-[2px];
+  @apply hover:shadow-[6px_6px_0px_0px] hover:shadow-foreground/20;
 }
 
-.premium-button {
-  @apply relative overflow-hidden;
-  @apply before:absolute before:inset-0 before:bg-white/10 before:translate-y-full;
-  @apply hover:before:translate-y-0 before:transition-transform before:duration-300;
+.toon-button {
+  @apply relative font-black uppercase tracking-wide;
+  @apply border-4 border-foreground/80 rounded-2xl;
+  @apply shadow-[6px_6px_0px_0px] shadow-foreground/30;
+  @apply transition-all duration-150 active:translate-x-[3px] active:translate-y-[3px];
+  @apply active:shadow-[3px_3px_0px_0px];
 }
 
-.cartoon-badge {
-  @apply px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider;
-  @apply bg-primary/20 text-primary border border-primary/30;
-  @apply shadow-lg shadow-primary/20;
+.toon-badge {
+  @apply inline-block px-5 py-2 rounded-full font-black uppercase tracking-wider;
+  @apply bg-accent text-accent-foreground border-4 border-foreground/80;
+  @apply shadow-[4px_4px_0px_0px] shadow-foreground/30;
+  @apply transform -rotate-2;
 }
 
-.premium-glow {
-  box-shadow: 0 0 30px -5px hsl(var(--primary) / 0.4),
-              0 0 60px -10px hsl(var(--accent) / 0.2);
-}
-
-.cartoon-text {
+.toon-text {
   @apply font-black tracking-tight;
-  text-shadow: 2px 2px 0px hsl(var(--primary) / 0.3);
+  text-shadow: 4px 4px 0px hsl(var(--foreground) / 0.2);
 }
 
-.premium-gradient-border {
-  position: relative;
-  border-radius: 1.5rem;
-  padding: 2px;
-  background: linear-gradient(135deg, 
-    hsl(var(--primary)) 0%,
-    hsl(var(--accent)) 50%,
-    hsl(var(--primary)) 100%);
-  background-size: 200% 200%;
-  animation: borderShift 3s ease infinite;
+.toon-pop {
+  @apply transform transition-all duration-200;
+  @apply hover:scale-110 hover:-rotate-3;
 }
 
-.premium-gradient-border > * {
-  @apply bg-background rounded-3xl;
+.comic-border {
+  @apply border-[6px] border-foreground/90 rounded-3xl;
+  @apply bg-gradient-to-br from-card via-card to-primary/5;
+  box-shadow: 
+    inset 3px 3px 0px hsl(var(--foreground) / 0.1),
+    8px 8px 0px hsl(var(--foreground) / 0.2);
 }
 
-@keyframes borderShift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+.speech-bubble {
+  @apply relative bg-card border-4 border-foreground/80 rounded-3xl p-6;
+  @apply shadow-[6px_6px_0px_0px] shadow-foreground/20;
 }
 
-.sticker-effect {
-  @apply relative;
-  filter: drop-shadow(4px 4px 0px hsl(var(--primary) / 0.3))
-          drop-shadow(-2px -2px 0px hsl(var(--accent) / 0.2));
+.speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -20px;
+  left: 30px;
+  width: 0;
+  height: 0;
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-top: 20px solid hsl(var(--foreground) / 0.8);
 }
 
-.premium-input {
-  @apply bg-card/50 border-2 border-primary/20 rounded-2xl;
-  @apply focus:border-primary focus:ring-4 focus:ring-primary/10;
-  @apply transition-all duration-200;
+.toon-input {
+  @apply bg-card border-4 border-foreground/60 rounded-2xl;
+  @apply focus:border-primary focus:shadow-[4px_4px_0px_0px] focus:shadow-primary/30;
+  @apply transition-all duration-200 font-bold;
 }
 
-.floating-cartoon {
-  animation: floatCartoon 3s ease-in-out infinite;
+.bounce-in {
+  animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
-@keyframes floatCartoon {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
+@keyframes bounceIn {
+  0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+  50% { transform: scale(1.1) rotate(5deg); }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
   25% { transform: translateY(-10px) rotate(2deg); }
   75% { transform: translateY(-5px) rotate(-2deg); }
 }
