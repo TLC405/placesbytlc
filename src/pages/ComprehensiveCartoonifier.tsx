@@ -29,14 +29,18 @@ import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
 
 export default function ComprehensiveCartoonifier() {
-  const [step, setStep] = useState<"refs" | "method" | "settings" | "generate">("refs");
+  const [step, setStep] = useState<"method" | "settings" | "generate">("method");
   
-  // Reference Pack
+  // Load user photo and theme from session
+  const [userPhoto, setUserPhoto] = useState<string | null>(null);
+  const [userTheme, setUserTheme] = useState<any>(null);
+  
+  // Reference Pack - auto-populated from user photo
   const [references, setReferences] = useState<ReferenceImage[]>([]);
   
   // Method Selection
-  const [method, setMethod] = useState<GenerationMethod>("lora");
-  const [idWeight, setIdWeight] = useState(1.0);
+  const [method, setMethod] = useState<GenerationMethod>("instant-id");
+  const [idWeight, setIdWeight] = useState(1.2);
   
   // Identity Lock
   const [identityLock, setIdentityLock] = useState<IdentityLockSettings>({
@@ -71,8 +75,26 @@ export default function ComprehensiveCartoonifier() {
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [showComparison, setShowComparison] = useState(false);
 
-  const isRefsReady = references.length >= 12;
-  const primaryRef = references.find((r) => r.angle === "front") || references[0];
+  // Load theme and photo on mount
+  useState(() => {
+    const themeData = sessionStorage.getItem("userTheme");
+    const photoData = sessionStorage.getItem("userPhoto");
+    
+    if (themeData && photoData) {
+      setUserTheme(JSON.parse(themeData));
+      setUserPhoto(photoData);
+      // Auto-set as primary reference
+      setReferences([{
+        id: "user-photo",
+        dataUrl: photoData,
+        angle: "front",
+        hasSmile: false,
+      }]);
+    }
+  });
+
+  const isRefsReady = references.length >= 1 || userPhoto !== null;
+  const primaryRef = userPhoto ? { id: "user-photo", dataUrl: userPhoto, angle: "front" as const } : references[0];
 
   const generateTransformation = async () => {
     if (!isRefsReady) {
@@ -199,7 +221,7 @@ ID_WEIGHT: ${idWeight}
   };
 
   const reset = () => {
-    setStep("refs");
+    setStep("method");
     setReferences([]);
     setResultImage(null);
     setProgress(0);
@@ -210,17 +232,24 @@ ID_WEIGHT: ${idWeight}
     <RoleGuard allowedRoles={["admin", "alpha", "beta", "delta", "moderator"]} featureName="Face-Lock Cartoonifier">
       <div className="min-h-screen bg-background py-8 px-4">
         <div className="max-w-7xl mx-auto space-y-6">
-          {/* Header */}
-          <div className="text-center space-y-3 sticker-effect">
+          {/* Header with Theme Display */}
+          <div className="text-center space-y-4 sticker-effect">
             <div className="flex items-center justify-center gap-3">
-              <span className="text-5xl floating-cartoon">🔒</span>
+              <span className="text-5xl floating-cartoon">🎨</span>
               <h1 className="text-5xl md:text-6xl font-black text-foreground cartoon-text">
-                FACE-LOCK CARTOONIFIER
+                YOUR CARTOON UNIVERSE
               </h1>
               <span className="text-5xl floating-cartoon">✨</span>
             </div>
+            {userTheme && (
+              <div className="flex items-center justify-center gap-3 flex-wrap">
+                <span className="cartoon-badge text-sm">{userTheme.personalityMatch}</span>
+                <span className="cartoon-badge text-sm capitalize">{userTheme.vibe} Vibes</span>
+                <span className="cartoon-badge text-sm">Style: {userTheme.suggestedStyle}</span>
+              </div>
+            )}
             <p className="text-muted-foreground font-bold text-lg">
-              Professional Identity-Locked Transformations • 3 Methods • Perfect Likeness
+              Face-Locked Transformation • AI-Powered • Your Personal Theme
             </p>
           </div>
 
@@ -228,7 +257,7 @@ ID_WEIGHT: ${idWeight}
           <Card className="premium-card">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
-                {["refs", "method", "settings", "generate"].map((s, i) => (
+                {["method", "settings", "generate"].map((s, i) => (
                   <div key={s} className="flex items-center flex-1">
                     <button
                       onClick={() => setStep(s as any)}
@@ -243,13 +272,12 @@ ID_WEIGHT: ${idWeight}
                         {i + 1}
                       </div>
                       <span className="text-xs font-semibold">
-                        {s === "refs" && "References"}
                         {s === "method" && "Method"}
                         {s === "settings" && "Settings"}
                         {s === "generate" && "Generate"}
                       </span>
                     </button>
-                    {i < 3 && <div className="flex-1 h-0.5 bg-border mx-2" />}
+                    {i < 2 && <div className="flex-1 h-0.5 bg-border mx-2" />}
                   </div>
                 ))}
               </div>
@@ -259,28 +287,19 @@ ID_WEIGHT: ${idWeight}
           {/* Main Content */}
           <Card className="premium-card premium-glow">
             <CardContent className="pt-8 space-y-8">
-              {/* Step 1: Reference Pack */}
-              {step === "refs" && (
-                <div className="space-y-6">
-                  <FaceReferenceUploader
-                    references={references}
-                    onReferencesChange={setReferences}
-                  />
-                  <div className="flex justify-end">
-                    <Button
-                      onClick={() => setStep("method")}
-                      disabled={!isRefsReady}
-                      size="lg"
-                      variant="premium"
-                      className="min-w-[200px]"
-                    >
-                      Next: Choose Method →
-                    </Button>
+              {/* User Photo Display */}
+              {userPhoto && (
+                <div className="text-center space-y-4">
+                  <div className="inline-block">
+                    <div className="w-48 h-48 rounded-3xl overflow-hidden border-4 border-primary/30 premium-glow mx-auto">
+                      <img src={userPhoto} alt="Your photo" className="w-full h-full object-cover" />
+                    </div>
                   </div>
+                  <p className="text-sm text-muted-foreground font-semibold">Your reference photo is locked in! 🔒</p>
                 </div>
               )}
 
-              {/* Step 2: Method Selection */}
+              {/* Step 1: Method Selection */}
               {step === "method" && (
                 <div className="space-y-6">
                   <MethodSelector
@@ -289,10 +308,7 @@ ID_WEIGHT: ${idWeight}
                     idWeight={idWeight}
                     onIdWeightChange={setIdWeight}
                   />
-                  <div className="flex justify-between">
-                    <Button onClick={() => setStep("refs")} variant="outline">
-                      ← Back
-                    </Button>
+                  <div className="flex justify-end">
                     <Button onClick={() => setStep("settings")} size="lg" variant="premium" className="min-w-[200px]">
                       Next: Configure Settings →
                     </Button>
