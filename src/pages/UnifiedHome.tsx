@@ -33,26 +33,20 @@ export default function UnifiedHome() {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Animated Background */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-20 left-10 w-64 h-64 rounded-full bg-primary/5 blur-3xl floating-cartoon" />
-        <div className="absolute top-40 right-20 w-80 h-80 rounded-full bg-accent/5 blur-3xl floating-cartoon" style={{animationDelay: '1s'}} />
-        <div className="absolute bottom-20 left-1/3 w-72 h-72 rounded-full bg-primary/5 blur-3xl floating-cartoon" style={{animationDelay: '2s'}} />
+      {/* Comic Book Pattern Background */}
+      <div className="fixed inset-0 pointer-events-none opacity-[0.03]">
+        <div className="absolute inset-0" style={{
+          backgroundImage: `repeating-linear-gradient(0deg, hsl(var(--foreground)) 0px, transparent 1px, transparent 20px),
+                           repeating-linear-gradient(90deg, hsl(var(--foreground)) 0px, transparent 1px, transparent 20px)`,
+          backgroundSize: '20px 20px'
+        }} />
       </div>
 
       {/* Header */}
-      <header className="border-b-2 border-primary/20 backdrop-blur-xl sticky top-0 z-50 bg-background/90 premium-glow">
-        <div className="container mx-auto px-4 py-4">
+      <header className="border-b-4 border-foreground/20 sticky top-0 z-50 bg-background/95 backdrop-blur-md">
+        <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="sticker-effect">
-                <AppLogo />
-              </div>
-              <div>
-                <h1 className="text-2xl cartoon-text text-foreground">ToonMe Studios</h1>
-                <span className="cartoon-badge text-xs">Photo-Powered Themes</span>
-              </div>
-            </div>
+            <AppLogo />
             <DarkModeToggle />
           </div>
         </div>
@@ -60,35 +54,40 @@ export default function UnifiedHome() {
 
       <div className="container mx-auto px-4 py-12 max-w-6xl">
         {/* Hero Section */}
-        <div className="text-center space-y-8 mb-16 pop-in">
-          <div className="space-y-4">
-            <div className="inline-block">
-              <span className="cartoon-badge text-lg px-6 py-2">
-                🚀 Revolutionary AI Technology
-              </span>
+        <div className="text-center space-y-10 mb-16 bounce-in">
+          <div className="space-y-6">
+            <div className="inline-block toon-badge text-base">
+              🎨 AI-Powered Cartoon Magic
             </div>
-            <h2 className="text-6xl md:text-7xl cartoon-text text-foreground leading-tight">
-              Your Face.<br />
-              <span className="text-primary">Your Universe.</span>
+            <h2 className="text-6xl md:text-8xl font-black tracking-tighter leading-none">
+              <span className="block text-foreground toon-text transform -rotate-1">Your Face.</span>
+              <span className="block text-primary toon-text transform rotate-1">Your Cartoon.</span>
+              <span className="block text-accent toon-text transform -rotate-1">Your Universe!</span>
             </h2>
-            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto font-semibold">
-              Upload your photo → AI creates your personalized cartoon theme → Transform with perfect face-lock technology
+            <p className="text-xl md:text-2xl text-foreground/70 max-w-3xl mx-auto font-bold leading-relaxed">
+              Upload a selfie → Get your custom cartoon theme → Transform into 12 epic TV styles!
             </p>
           </div>
 
-          {/* Feature Pills */}
-          <div className="flex flex-wrap gap-4 justify-center">
-            <div className="premium-card px-6 py-3 flex items-center gap-2">
-              <Shield className="w-5 h-5 text-primary" />
-              <span className="font-bold text-sm">Face-Locked Identity</span>
+          {/* Feature Cards */}
+          <div className="flex flex-wrap gap-6 justify-center max-w-4xl mx-auto">
+            <div className="toon-card px-8 py-4 flex items-center gap-3 bg-primary/10">
+              <div className="w-12 h-12 bg-primary border-3 border-foreground/80 rounded-xl flex items-center justify-center transform -rotate-6">
+                <Shield className="w-6 h-6 text-primary-foreground" />
+              </div>
+              <span className="font-black text-base">Face-Lock Tech</span>
             </div>
-            <div className="premium-card px-6 py-3 flex items-center gap-2">
-              <Palette className="w-5 h-5 text-accent" />
-              <span className="font-bold text-sm">AI Theme Generation</span>
+            <div className="toon-card px-8 py-4 flex items-center gap-3 bg-accent/10">
+              <div className="w-12 h-12 bg-accent border-3 border-foreground/80 rounded-xl flex items-center justify-center transform rotate-6">
+                <Palette className="w-6 h-6 text-accent-foreground" />
+              </div>
+              <span className="font-black text-base">AI Theme Gen</span>
             </div>
-            <div className="premium-card px-6 py-3 flex items-center gap-2">
-              <Zap className="w-5 h-5 text-primary" />
-              <span className="font-bold text-sm">12 Cartoon Styles</span>
+            <div className="toon-card px-8 py-4 flex items-center gap-3 bg-secondary/10">
+              <div className="w-12 h-12 bg-secondary border-3 border-foreground/80 rounded-xl flex items-center justify-center transform -rotate-3">
+                <Zap className="w-6 h-6 text-secondary-foreground" />
+              </div>
+              <span className="font-black text-base">12 TV Styles</span>
             </div>
           </div>
         </div>
@@ -98,66 +97,69 @@ export default function UnifiedHome() {
           {!generatedTheme ? (
             <PhotoThemeGenerator onThemeGenerated={handleThemeGenerated} />
           ) : (
-            <div className="space-y-6 pop-in">
+            <div className="space-y-8 bounce-in">
               {/* Generated Theme Display */}
-              <div className="premium-card p-8 space-y-6">
-                <div className="text-center space-y-3">
+              <div className="comic-border p-10 space-y-8">
+                <div className="text-center space-y-4">
                   <div className="inline-block">
-                    <Sparkles className="w-12 h-12 text-primary animate-pulse" />
+                    <div className="w-20 h-20 bg-primary border-4 border-foreground/80 rounded-full flex items-center justify-center transform rotate-12 shadow-[6px_6px_0px_0px] shadow-foreground/30">
+                      <Sparkles className="w-10 h-10 text-primary-foreground" />
+                    </div>
                   </div>
-                  <h3 className="text-3xl font-black cartoon-text">Your Universe is Ready!</h3>
-                  <p className="text-muted-foreground font-semibold">
+                  <h3 className="text-4xl md:text-5xl font-black toon-text">Your Universe is Ready!</h3>
+                  <p className="text-lg text-foreground/70 font-bold">
                     {generatedTheme.personalityMatch}
                   </p>
                 </div>
 
                 {/* Theme Preview */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="space-y-2">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                  <div className="space-y-3 toon-pop">
                     <div 
-                      className="h-20 rounded-xl border-2 border-primary/20 premium-glow"
+                      className="h-24 border-4 border-foreground/80 rounded-2xl shadow-[4px_4px_0px_0px] shadow-foreground/20"
                       style={{ backgroundColor: generatedTheme.primaryColor }}
                     />
-                    <p className="text-xs text-center font-bold">Primary</p>
+                    <p className="text-sm text-center font-black uppercase">Primary</p>
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-3 toon-pop">
                     <div 
-                      className="h-20 rounded-xl border-2 border-primary/20"
+                      className="h-24 border-4 border-foreground/80 rounded-2xl shadow-[4px_4px_0px_0px] shadow-foreground/20"
                       style={{ backgroundColor: generatedTheme.accentColor }}
                     />
-                    <p className="text-xs text-center font-bold">Accent</p>
+                    <p className="text-sm text-center font-black uppercase">Accent</p>
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-3 toon-pop">
                     <div 
-                      className="h-20 rounded-xl border-2 border-primary/20"
+                      className="h-24 border-4 border-foreground/80 rounded-2xl shadow-[4px_4px_0px_0px] shadow-foreground/20"
                       style={{ backgroundColor: generatedTheme.backgroundColor }}
                     />
-                    <p className="text-xs text-center font-bold">Background</p>
+                    <p className="text-sm text-center font-black uppercase">Background</p>
                   </div>
-                  <div className="space-y-2">
-                    <div className="h-20 rounded-xl border-2 border-primary/20 flex items-center justify-center bg-muted">
-                      <span className="text-3xl">{generatedTheme.vibe === "energetic" ? "⚡" : generatedTheme.vibe === "calm" ? "🌊" : generatedTheme.vibe === "playful" ? "🎨" : "✨"}</span>
+                  <div className="space-y-3 toon-pop">
+                    <div className="h-24 border-4 border-foreground/80 rounded-2xl flex items-center justify-center bg-card shadow-[4px_4px_0px_0px] shadow-foreground/20">
+                      <span className="text-4xl">{generatedTheme.vibe === "energetic" ? "⚡" : generatedTheme.vibe === "calm" ? "🌊" : generatedTheme.vibe === "playful" ? "🎨" : "✨"}</span>
                     </div>
-                    <p className="text-xs text-center font-bold capitalize">{generatedTheme.vibe}</p>
+                    <p className="text-sm text-center font-black uppercase">{generatedTheme.vibe}</p>
                   </div>
                 </div>
 
                 {/* Suggested Style */}
                 <div className="text-center">
-                  <div className="inline-flex items-center gap-2 cartoon-badge text-base px-6 py-3">
-                    <span className="text-2xl">🎬</span>
-                    <span>Suggested Style: <strong>{generatedTheme.suggestedStyle}</strong></span>
+                  <div className="speech-bubble inline-block">
+                    <div className="flex items-center gap-3">
+                      <span className="text-3xl">🎬</span>
+                      <span className="font-black text-lg">Perfect Style: <span className="text-primary">{generatedTheme.suggestedStyle}</span></span>
+                    </div>
                   </div>
                 </div>
 
                 <Button 
                   size="lg" 
-                  variant="premium" 
-                  className="w-full text-xl py-8"
+                  className="w-full text-xl py-8 toon-button bg-primary hover:bg-primary/90 text-primary-foreground"
                   onClick={() => user ? navigate("/cartoonifier") : navigate("/auth", { state: { returnTo: "/cartoonifier" } })}
                 >
                   <Sparkles className="w-6 h-6 mr-3" />
-                  Transform Me Now
+                  <span className="font-black">Transform Me Now!</span>
                   <ArrowRight className="w-6 h-6 ml-3" />
                 </Button>
               </div>
@@ -166,40 +168,49 @@ export default function UnifiedHome() {
         </div>
 
         {/* How It Works */}
-        <div className="max-w-4xl mx-auto space-y-8">
-          <div className="text-center">
-            <h3 className="text-4xl cartoon-text text-foreground mb-3">How It Works</h3>
-            <p className="text-muted-foreground font-semibold">Three simple steps to your cartoon universe</p>
+        <div className="max-w-5xl mx-auto space-y-10">
+          <div className="text-center space-y-3">
+            <h3 className="text-5xl font-black toon-text transform -rotate-1">How It Works</h3>
+            <p className="text-xl text-foreground/70 font-bold">Three super simple steps!</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="premium-card p-6 text-center space-y-4">
-              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto premium-glow">
-                <span className="text-3xl">1️⃣</span>
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="toon-card p-8 text-center space-y-6 bg-primary/5 transform hover:scale-105 transition-transform">
+              <div className="relative inline-block">
+                <div className="w-20 h-20 bg-primary border-4 border-foreground/80 rounded-2xl flex items-center justify-center transform -rotate-6 shadow-[6px_6px_0px_0px] shadow-foreground/30">
+                  <span className="text-4xl font-black">1</span>
+                </div>
+                <div className="absolute -top-2 -right-2 text-3xl">📸</div>
               </div>
-              <h4 className="text-xl font-black text-foreground">Upload Photo</h4>
-              <p className="text-sm text-muted-foreground">
-                AI analyzes your face, colors, and personality
+              <h4 className="text-2xl font-black text-foreground">Upload Photo</h4>
+              <p className="text-base text-foreground/70 font-bold leading-relaxed">
+                AI analyzes your face, colors, and personality instantly
               </p>
             </div>
 
-            <div className="premium-card p-6 text-center space-y-4">
-              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto premium-glow">
-                <span className="text-3xl">2️⃣</span>
+            <div className="toon-card p-8 text-center space-y-6 bg-accent/5 transform hover:scale-105 transition-transform">
+              <div className="relative inline-block">
+                <div className="w-20 h-20 bg-accent border-4 border-foreground/80 rounded-2xl flex items-center justify-center transform rotate-6 shadow-[6px_6px_0px_0px] shadow-foreground/30">
+                  <span className="text-4xl font-black">2</span>
+                </div>
+                <div className="absolute -top-2 -right-2 text-3xl">🎨</div>
               </div>
-              <h4 className="text-xl font-black text-foreground">Get Your Theme</h4>
-              <p className="text-sm text-muted-foreground">
-                Personalized color palette and style recommendations
+              <h4 className="text-2xl font-black text-foreground">Get Your Theme</h4>
+              <p className="text-base text-foreground/70 font-bold leading-relaxed">
+                Custom color palette and perfect style match for you
               </p>
             </div>
 
-            <div className="premium-card p-6 text-center space-y-4">
-              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto premium-glow">
-                <span className="text-3xl">3️⃣</span>
+            <div className="toon-card p-8 text-center space-y-6 bg-secondary/5 transform hover:scale-105 transition-transform">
+              <div className="relative inline-block">
+                <div className="w-20 h-20 bg-secondary border-4 border-foreground/80 rounded-2xl flex items-center justify-center transform -rotate-3 shadow-[6px_6px_0px_0px] shadow-foreground/30">
+                  <span className="text-4xl font-black">3</span>
+                </div>
+                <div className="absolute -top-2 -right-2 text-3xl">⚡</div>
               </div>
-              <h4 className="text-xl font-black text-foreground">Transform</h4>
-              <p className="text-sm text-muted-foreground">
-                Face-locked cartoonification in 12 TV styles
+              <h4 className="text-2xl font-black text-foreground">Transform!</h4>
+              <p className="text-base text-foreground/70 font-bold leading-relaxed">
+                Face-locked magic in 12 epic TV cartoon styles
               </p>
             </div>
           </div>
@@ -207,13 +218,15 @@ export default function UnifiedHome() {
       </div>
 
       {/* Footer */}
-      <footer className="border-t-2 border-primary/20 py-12 px-4 bg-card/50 backdrop-blur-xl mt-20">
-        <div className="container mx-auto text-center space-y-4">
-          <p className="text-sm text-muted-foreground font-semibold">
-            🔒 Face-Lock Technology • 🎨 AI Theme Generation • ✨ Perfect Identity Preservation
-          </p>
-          <p className="text-xs text-muted-foreground">
-            © 2024 ToonMe Studios • Powered by Advanced AI
+      <footer className="border-t-4 border-foreground/20 py-16 px-4 bg-card/50 backdrop-blur-md mt-24">
+        <div className="container mx-auto text-center space-y-6">
+          <div className="flex flex-wrap justify-center gap-4">
+            <span className="toon-badge text-xs">🔒 Face-Lock Tech</span>
+            <span className="toon-badge text-xs">🎨 AI Theme Gen</span>
+            <span className="toon-badge text-xs">⚡ 12 TV Styles</span>
+          </div>
+          <p className="text-sm text-foreground/60 font-bold">
+            © 2024 TeeFeeMee by TLC • Powered by Cartoon Magic 🪄
           </p>
         </div>
       </footer>

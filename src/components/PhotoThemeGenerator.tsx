@@ -1,7 +1,5 @@
 import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Upload, Sparkles, Loader2, Camera } from "lucide-react";
+import { Upload, Sparkles, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -20,14 +18,10 @@ interface PhotoThemeGeneratorProps {
 }
 
 export function PhotoThemeGenerator({ onThemeGenerated }: PhotoThemeGeneratorProps) {
-  const [analyzing, setAnalyzing] = useState(false);
-  const [preview, setPreview] = useState<string | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isDragActive, setIsDragActive] = useState(false);
 
-  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    // Validate file
+  const handleFile = async (file: File) => {
     if (!file.type.startsWith("image/")) {
       toast.error("Please upload an image file");
       return;
@@ -41,21 +35,39 @@ export function PhotoThemeGenerator({ onThemeGenerated }: PhotoThemeGeneratorPro
     const reader = new FileReader();
     reader.onload = async (event) => {
       const dataUrl = event.target?.result as string;
-      setPreview(dataUrl);
       await analyzePhotoAndGenerateTheme(dataUrl);
     };
     reader.readAsDataURL(file);
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) handleFile(file);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragActive(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragActive(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragActive(false);
+    const file = e.dataTransfer.files[0];
+    if (file) handleFile(file);
+  };
+
   const analyzePhotoAndGenerateTheme = async (photoDataUrl: string) => {
-    setAnalyzing(true);
+    setIsAnalyzing(true);
     
     try {
-      // Call edge function to analyze photo and generate theme
       const { data, error } = await supabase.functions.invoke("analyze-photo-theme", {
-        body: { 
-          image: photoDataUrl.split(",")[1] 
-        },
+        body: { image: photoDataUrl.split(",")[1] },
       });
 
       if (error) throw error;
@@ -71,79 +83,74 @@ export function PhotoThemeGenerator({ onThemeGenerated }: PhotoThemeGeneratorPro
       toast.error("Theme Generation Failed", {
         description: error.message || "Try another photo",
       });
-      setPreview(null);
     } finally {
-      setAnalyzing(false);
+      setIsAnalyzing(false);
     }
   };
 
   return (
-    <Card className="premium-card border-4 border-primary/30 overflow-hidden">
-      <CardContent className="p-0">
-        {!preview ? (
-          <label className="cursor-pointer block">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleFileSelect}
-              className="hidden"
-              disabled={analyzing}
-            />
-            <div className="min-h-[400px] flex flex-col items-center justify-center p-12 space-y-6 hover:bg-muted/30 transition-all">
-              <div className="relative">
-                <div className="w-32 h-32 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center premium-glow">
-                  <Camera className="w-16 h-16 text-primary" />
-                </div>
-                <div className="absolute -top-2 -right-2">
-                  <Sparkles className="w-8 h-8 text-accent animate-pulse" />
-                </div>
-              </div>
-              
-              <div className="text-center space-y-3">
-                <h3 className="text-3xl font-black cartoon-text text-foreground">
-                  Upload Your Photo
-                </h3>
-                <p className="text-muted-foreground font-semibold max-w-md">
-                  AI will analyze your face and generate a personalized cartoon universe just for you
-                </p>
-              </div>
+    <div className="comic-border p-10 space-y-8">
+      <div className="text-center space-y-4">
+        <div className="inline-block">
+          <div className="w-20 h-20 bg-primary border-4 border-foreground/80 rounded-full flex items-center justify-center transform -rotate-12 shadow-[6px_6px_0px_0px] shadow-foreground/30 toon-pop">
+            <Sparkles className="w-10 h-10 text-primary-foreground" />
+          </div>
+        </div>
+        <h3 className="text-4xl md:text-5xl font-black toon-text">Start Your Journey!</h3>
+        <p className="text-lg text-foreground/70 font-bold leading-relaxed max-w-2xl mx-auto">
+          Upload your photo and AI creates your epic cartoon universe
+        </p>
+      </div>
 
-              <Button size="lg" variant="premium" className="px-12 py-6 text-xl">
-                <Upload className="w-6 h-6 mr-3" />
-                Choose Your Photo
-              </Button>
-
-              <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                <span className="cartoon-badge">✓ Face Detection</span>
-                <span className="cartoon-badge">✓ Color Analysis</span>
-                <span className="cartoon-badge">✓ Style Matching</span>
+      <div className="space-y-6">
+        <label 
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          className={`block toon-card p-16 text-center cursor-pointer transition-all duration-200 ${
+            isDragActive 
+              ? 'border-primary bg-primary/10 scale-105 shadow-[8px_8px_0px_0px]' 
+              : 'bg-card hover:bg-primary/5'
+          } ${isAnalyzing ? 'opacity-50 cursor-not-allowed' : ''}`}
+        >
+          <input 
+            type="file" 
+            accept="image/*" 
+            onChange={handleFileChange}
+            disabled={isAnalyzing}
+            className="hidden"
+          />
+          <div className="space-y-6">
+            <div className="inline-block">
+              <div className="w-24 h-24 bg-primary border-4 border-foreground/80 rounded-2xl flex items-center justify-center transform rotate-6 shadow-[6px_6px_0px_0px] shadow-foreground/30">
+                <Upload className="w-12 h-12 text-primary-foreground" />
               </div>
             </div>
-          </label>
-        ) : (
-          <div className="relative">
-            {analyzing && (
-              <div className="absolute inset-0 bg-background/90 backdrop-blur-sm flex flex-col items-center justify-center z-10 space-y-4">
-                <Loader2 className="w-16 h-16 text-primary animate-spin" />
-                <div className="text-center space-y-2">
-                  <p className="text-xl font-bold cartoon-text">Analyzing Your Photo...</p>
-                  <div className="space-y-1 text-sm text-muted-foreground">
-                    <p>🔍 Detecting facial features</p>
-                    <p>🎨 Extracting color palette</p>
-                    <p>✨ Matching cartoon style</p>
-                    <p>🌈 Generating your universe</p>
-                  </div>
-                </div>
+            <div className="space-y-2">
+              <p className="text-2xl font-black text-foreground">
+                {isDragActive ? "Drop It Here!" : "Upload Your Selfie"}
+              </p>
+              <p className="text-base text-foreground/60 font-bold">
+                Drag & drop or click to choose
+              </p>
+            </div>
+          </div>
+        </label>
+
+        {isAnalyzing && (
+          <div className="speech-bubble text-center space-y-6 p-10 bg-primary/10">
+            <div className="flex items-center justify-center gap-4">
+              <div className="w-16 h-16 bg-primary border-4 border-foreground/80 rounded-full flex items-center justify-center animate-bounce">
+                <Sparkles className="w-8 h-8 text-primary-foreground" />
               </div>
-            )}
-            <img 
-              src={preview} 
-              alt="Your photo" 
-              className="w-full h-[400px] object-cover"
-            />
+              <Loader2 className="w-12 h-12 text-primary animate-spin" />
+            </div>
+            <p className="text-xl font-black text-primary">
+              AI is crafting your cartoon universe...
+            </p>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
