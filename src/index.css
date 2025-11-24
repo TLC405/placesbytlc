@@ -6,27 +6,27 @@
 
 @layer base {
   :root {
-    --background: 30 100% 30%;
-    --foreground: 199 98% 48%;
+    --background: 270 100% 98%;
+    --foreground: 270 50% 15%;
     --card: 0 0% 100%;
-    --card-foreground: 199 98% 48%;
+    --card-foreground: 270 50% 15%;
     --popover: 0 0% 100%;
-    --popover-foreground: 199 98% 48%;
-    --primary: 88 54% 51%;
-    --primary-foreground: 30 100% 30%;
-    --primary-glow: 88 64% 61%;
-    --secondary: 48 89% 71%;
-    --secondary-foreground: 30 100% 30%;
-    --muted: 30 50% 40%;
-    --muted-foreground: 199 80% 40%;
-    --accent: 48 89% 71%;
-    --accent-foreground: 30 100% 30%;
+    --popover-foreground: 270 50% 15%;
+    --primary: 280 100% 65%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 280 100% 75%;
+    --secondary: 340 100% 65%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 270 20% 90%;
+    --muted-foreground: 270 30% 45%;
+    --accent: 180 100% 55%;
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 87%;
-    --input: 0 0% 87%;
-    --ring: 88 54% 51%;
-    --radius: 0.625rem;
+    --border: 270 20% 85%;
+    --input: 270 20% 90%;
+    --ring: 280 100% 65%;
+    --radius: 1rem;
     
     /* Chart Colors */
     --chart-1: 88 54% 51%;
@@ -45,61 +45,61 @@
     --sidebar-ring: 88 54% 51%;
   }
 
-  /* ROMANCE MODE - Now Shroom Bros style */
+  /* ROMANCE MODE */
   [data-theme="romance"] {
-    --primary: 88 54% 51%;
-    --accent: 48 89% 71%;
-    --border-radius: 0.625rem;
+    --primary: 340 100% 65%;
+    --accent: 280 100% 75%;
+    --border-radius: 1rem;
   }
 
-  /* MAN MODE - Adjusted for earthy palette */
+  /* MAN MODE */
   [data-theme="man-mode"] {
-    --background: 30 100% 15%;
-    --foreground: 88 54% 51%;
-    --primary: 48 89% 71%;
-    --accent: 88 54% 51%;
-    --border-radius: 0.625rem;
+    --background: 210 100% 10%;
+    --foreground: 180 100% 55%;
+    --primary: 280 100% 65%;
+    --accent: 340 100% 65%;
+    --border-radius: 1rem;
   }
 
-  /* CYBERPUNK MODE - Earthy cyber */
+  /* CYBERPUNK MODE */
   [data-theme="cyberpunk"] {
-    --background: 30 100% 15%;
-    --foreground: 199 98% 48%;
-    --primary: 88 54% 51%;
-    --accent: 48 89% 71%;
-    --border-radius: 0.625rem;
+    --background: 270 50% 10%;
+    --foreground: 180 100% 65%;
+    --primary: 280 100% 65%;
+    --accent: 340 100% 75%;
+    --border-radius: 1rem;
   }
 
-  /* NATURE MODE - Perfect match! */
+  /* NATURE MODE */
   [data-theme="nature"] {
-    --background: 30 100% 95%;
-    --foreground: 30 100% 30%;
-    --primary: 88 54% 51%;
-    --accent: 199 98% 48%;
-    --border-radius: 0.625rem;
+    --background: 140 60% 95%;
+    --foreground: 140 50% 20%;
+    --primary: 140 60% 50%;
+    --accent: 200 80% 55%;
+    --border-radius: 1rem;
   }
 
   .dark {
-    --background: 30 100% 15%;
-    --foreground: 199 98% 58%;
-    --card: 30 50% 20%;
-    --card-foreground: 199 98% 58%;
-    --popover: 30 100% 15%;
-    --popover-foreground: 199 98% 58%;
-    --primary: 88 54% 51%;
-    --primary-foreground: 30 100% 15%;
-    --primary-glow: 88 64% 61%;
-    --secondary: 48 89% 71%;
-    --secondary-foreground: 30 100% 15%;
-    --muted: 30 40% 25%;
-    --muted-foreground: 199 80% 50%;
-    --accent: 48 89% 71%;
-    --accent-foreground: 30 100% 15%;
+    --background: 270 50% 8%;
+    --foreground: 270 20% 90%;
+    --card: 270 40% 12%;
+    --card-foreground: 270 20% 90%;
+    --popover: 270 50% 8%;
+    --popover-foreground: 270 20% 90%;
+    --primary: 280 100% 65%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 280 100% 75%;
+    --secondary: 340 100% 65%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 270 30% 20%;
+    --muted-foreground: 270 20% 65%;
+    --accent: 180 100% 55%;
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 62.8% 45%;
     --destructive-foreground: 0 0% 98%;
-    --border: 30 40% 25%;
-    --input: 30 40% 25%;
-    --ring: 88 54% 51%;
+    --border: 270 30% 20%;
+    --input: 270 30% 20%;
+    --ring: 280 100% 65%;
     
     /* Chart Colors */
     --chart-1: 88 54% 51%;
@@ -131,67 +131,73 @@
   }
 }
 
-/* TeeFeeMee Cartoon Design System */
+/* TeeFeeMee Futuristic Cartoon Design System */
 .toon-card {
-  @apply bg-card border-4 border-foreground/80 rounded-[2rem] shadow-[8px_8px_0px_0px] shadow-foreground/20;
-  @apply transition-all duration-200 hover:translate-x-[2px] hover:translate-y-[2px];
-  @apply hover:shadow-[6px_6px_0px_0px] hover:shadow-foreground/20;
+  @apply bg-card border-2 border-primary/30 rounded-3xl shadow-2xl;
+  @apply transition-all duration-300 hover:scale-[1.02] hover:border-primary/60;
+  @apply backdrop-blur-sm bg-card/95;
+  box-shadow: 0 8px 32px rgba(168, 85, 247, 0.15), 0 0 60px rgba(168, 85, 247, 0.05);
 }
 
 .toon-button {
-  @apply relative font-black uppercase tracking-wide;
-  @apply border-4 border-foreground/80 rounded-2xl;
-  @apply shadow-[6px_6px_0px_0px] shadow-foreground/30;
-  @apply transition-all duration-150 active:translate-x-[3px] active:translate-y-[3px];
-  @apply active:shadow-[3px_3px_0px_0px];
+  @apply relative font-bold tracking-wide rounded-2xl;
+  @apply bg-gradient-to-r from-primary via-secondary to-accent;
+  @apply text-white shadow-xl;
+  @apply transition-all duration-300 hover:scale-105 hover:shadow-2xl;
+  @apply active:scale-95;
 }
 
 .toon-badge {
-  @apply inline-block px-5 py-2 rounded-full font-black uppercase tracking-wider;
-  @apply bg-accent text-accent-foreground border-4 border-foreground/80;
-  @apply shadow-[4px_4px_0px_0px] shadow-foreground/30;
-  @apply transform -rotate-2;
+  @apply inline-flex items-center px-4 py-2 rounded-full font-bold tracking-wide;
+  @apply bg-gradient-to-r from-primary/20 to-secondary/20;
+  @apply text-primary border-2 border-primary/40;
+  @apply backdrop-blur-md;
 }
 
 .toon-text {
-  @apply font-black tracking-tight;
-  text-shadow: 4px 4px 0px hsl(var(--foreground) / 0.2);
+  @apply font-extrabold tracking-tight;
+  background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .toon-pop {
-  @apply transform transition-all duration-200;
-  @apply hover:scale-110 hover:-rotate-3;
+  @apply transform transition-all duration-300;
+  @apply hover:scale-110 hover:rotate-2;
 }
 
 .comic-border {
-  @apply border-[6px] border-foreground/90 rounded-3xl;
-  @apply bg-gradient-to-br from-card via-card to-primary/5;
+  @apply border-2 border-primary/20 rounded-3xl p-1;
+  @apply bg-gradient-to-br from-primary/5 via-transparent to-accent/5;
+  backdrop-filter: blur(20px);
   box-shadow: 
-    inset 3px 3px 0px hsl(var(--foreground) / 0.1),
-    8px 8px 0px hsl(var(--foreground) / 0.2);
+    inset 0 0 20px rgba(168, 85, 247, 0.1),
+    0 8px 32px rgba(168, 85, 247, 0.15);
 }
 
 .speech-bubble {
-  @apply relative bg-card border-4 border-foreground/80 rounded-3xl p-6;
-  @apply shadow-[6px_6px_0px_0px] shadow-foreground/20;
+  @apply relative bg-card/90 backdrop-blur-xl border-2 border-primary/30 rounded-3xl p-6;
+  @apply shadow-xl;
+  box-shadow: 0 8px 32px rgba(168, 85, 247, 0.2);
 }
 
 .speech-bubble::after {
   content: '';
   position: absolute;
-  bottom: -20px;
+  bottom: -15px;
   left: 30px;
   width: 0;
   height: 0;
-  border-left: 15px solid transparent;
-  border-right: 15px solid transparent;
-  border-top: 20px solid hsl(var(--foreground) / 0.8);
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-top: 15px solid hsl(var(--primary) / 0.3);
 }
 
 .toon-input {
-  @apply bg-card border-4 border-foreground/60 rounded-2xl;
-  @apply focus:border-primary focus:shadow-[4px_4px_0px_0px] focus:shadow-primary/30;
-  @apply transition-all duration-200 font-bold;
+  @apply bg-card/80 backdrop-blur-md border-2 border-primary/30 rounded-2xl;
+  @apply focus:border-primary focus:ring-4 focus:ring-primary/20;
+  @apply transition-all duration-300 font-semibold;
 }
 
 .bounce-in {

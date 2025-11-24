@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Upload, Sparkles, Loader2 } from "lucide-react";
+import { useState, useRef } from "react";
+import { Upload, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -19,7 +19,8 @@ interface PhotoThemeGeneratorProps {
 
 export function PhotoThemeGenerator({ onThemeGenerated }: PhotoThemeGeneratorProps) {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [isDragActive, setIsDragActive] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = async (file: File) => {
     if (!file.type.startsWith("image/")) {
@@ -40,24 +41,24 @@ export function PhotoThemeGenerator({ onThemeGenerated }: PhotoThemeGeneratorPro
     reader.readAsDataURL(file);
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) handleFile(file);
   };
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
-    setIsDragActive(true);
+    setIsDragging(true);
   };
 
   const handleDragLeave = (e: React.DragEvent) => {
     e.preventDefault();
-    setIsDragActive(false);
+    setIsDragging(false);
   };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
-    setIsDragActive(false);
+    setIsDragging(false);
     const file = e.dataTransfer.files[0];
     if (file) handleFile(file);
   };
@@ -89,67 +90,83 @@ export function PhotoThemeGenerator({ onThemeGenerated }: PhotoThemeGeneratorPro
   };
 
   return (
-    <div className="comic-border p-10 space-y-8">
-      <div className="text-center space-y-4">
-        <div className="inline-block">
-          <div className="w-20 h-20 bg-primary border-4 border-foreground/80 rounded-full flex items-center justify-center transform -rotate-12 shadow-[6px_6px_0px_0px] shadow-foreground/30 toon-pop">
-            <Sparkles className="w-10 h-10 text-primary-foreground" />
-          </div>
+    <div className="w-full space-y-8">
+      {/* Main Upload Area */}
+      <div
+        className={`toon-card transition-all duration-500 ${
+          isDragging ? 'scale-[1.02] shadow-[0_0_60px_rgba(168,85,247,0.4)]' : ''
+        }`}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+      >
+        <div className="p-12 text-center space-y-8">
+          {!isAnalyzing && (
+            <>
+              <div className="text-center space-y-4">
+                <div className="inline-block">
+                  <div className="w-20 h-20 bg-gradient-to-br from-primary via-secondary to-accent rounded-3xl flex items-center justify-center shadow-2xl animate-pulse">
+                    <Sparkles className="w-10 h-10 text-white" />
+                  </div>
+                </div>
+                <h3 className="text-4xl md:text-5xl font-black toon-text">Start Your Journey</h3>
+                <p className="text-lg text-foreground/70 font-semibold leading-relaxed max-w-2xl mx-auto">
+                  Upload your photo and watch AI create your personalized cartoon universe
+                </p>
+              </div>
+
+              <div 
+                className="group cursor-pointer p-16 rounded-3xl border-2 border-dashed border-primary/40 hover:border-primary transition-all duration-300 bg-gradient-to-br from-primary/5 to-accent/5 hover:from-primary/10 hover:to-accent/10" 
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <div className="space-y-6">
+                  <div className="w-28 h-28 mx-auto rounded-3xl bg-gradient-to-br from-primary via-secondary to-accent flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform duration-300">
+                    <Upload className="w-14 h-14 text-white animate-bounce" />
+                  </div>
+                  <h4 className="text-4xl font-black">
+                    <span className="toon-text">Upload Your Photo</span>
+                  </h4>
+                  <p className="text-xl text-foreground/70 font-medium max-w-md mx-auto">
+                    Drop your image here or click to browse
+                  </p>
+                  <div className="toon-badge inline-flex items-center gap-3 text-base">
+                    <Sparkles className="w-5 h-5" />
+                    <span>AI will generate your personalized cartoon theme</span>
+                  </div>
+                </div>
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileInput}
+                className="hidden"
+              />
+            </>
+          )}
+
+          {isAnalyzing && (
+            <div className="animate-fade-in space-y-8">
+              <div className="flex flex-col items-center gap-8">
+                <div className="relative">
+                  <div className="w-24 h-24 border-8 border-primary/20 border-t-primary rounded-full animate-spin" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <Sparkles className="w-10 h-10 text-primary animate-pulse" />
+                  </div>
+                  <div className="absolute inset-0 bg-primary/20 rounded-full blur-2xl animate-pulse" />
+                </div>
+                <div className="text-center space-y-4">
+                  <h3 className="text-4xl font-black">
+                    <span className="toon-text">AI Analyzing Your Photo</span>
+                  </h3>
+                  <p className="text-xl text-foreground/70 font-semibold">
+                    Generating your personalized cartoon universe...
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
-        <h3 className="text-4xl md:text-5xl font-black toon-text">Start Your Journey!</h3>
-        <p className="text-lg text-foreground/70 font-bold leading-relaxed max-w-2xl mx-auto">
-          Upload your photo and AI creates your epic cartoon universe
-        </p>
-      </div>
-
-      <div className="space-y-6">
-        <label 
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          className={`block toon-card p-16 text-center cursor-pointer transition-all duration-200 ${
-            isDragActive 
-              ? 'border-primary bg-primary/10 scale-105 shadow-[8px_8px_0px_0px]' 
-              : 'bg-card hover:bg-primary/5'
-          } ${isAnalyzing ? 'opacity-50 cursor-not-allowed' : ''}`}
-        >
-          <input 
-            type="file" 
-            accept="image/*" 
-            onChange={handleFileChange}
-            disabled={isAnalyzing}
-            className="hidden"
-          />
-          <div className="space-y-6">
-            <div className="inline-block">
-              <div className="w-24 h-24 bg-primary border-4 border-foreground/80 rounded-2xl flex items-center justify-center transform rotate-6 shadow-[6px_6px_0px_0px] shadow-foreground/30">
-                <Upload className="w-12 h-12 text-primary-foreground" />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <p className="text-2xl font-black text-foreground">
-                {isDragActive ? "Drop It Here!" : "Upload Your Selfie"}
-              </p>
-              <p className="text-base text-foreground/60 font-bold">
-                Drag & drop or click to choose
-              </p>
-            </div>
-          </div>
-        </label>
-
-        {isAnalyzing && (
-          <div className="speech-bubble text-center space-y-6 p-10 bg-primary/10">
-            <div className="flex items-center justify-center gap-4">
-              <div className="w-16 h-16 bg-primary border-4 border-foreground/80 rounded-full flex items-center justify-center animate-bounce">
-                <Sparkles className="w-8 h-8 text-primary-foreground" />
-              </div>
-              <Loader2 className="w-12 h-12 text-primary animate-spin" />
-            </div>
-            <p className="text-xl font-black text-primary">
-              AI is crafting your cartoon universe...
-            </p>
-          </div>
-        )}
       </div>
     </div>
   );

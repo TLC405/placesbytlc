@@ -17,10 +17,12 @@ export default {
         sans: ['Open Sans', 'system-ui', '-apple-system', 'sans-serif'],
       },
       colors: {
-        shroomBrown: '#964B00',
-        shroomBlue: '#03A9F4',
-        shroomGreen: '#8BC34A',
-        shroomYellow: '#F7DC6F',
+        electric: {
+          purple: '#A855F7',
+          pink: '#EC4899',
+          cyan: '#06B6D4',
+          yellow: '#FCD34D',
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
