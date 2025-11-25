@@ -1,7 +1,7 @@
 import { Heart, Sparkles, Palette, Shield, LogOut, User, Settings, LogIn } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { DarkModeToggle } from "@/components/DarkModeToggle";
+
 import { ThemeSelector } from "@/components/ThemeSelector";
 import { DevModeBadge } from "@/components/DevModeBadge";
 import { useState, useEffect } from "react";
@@ -166,7 +166,6 @@ export const Header = () => {
               })}
               <div className="flex-shrink-0 flex items-center gap-2">
                 <ThemeSelector />
-                <DarkModeToggle />
               </div>
             </nav>
           </div>

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sparkles, ArrowRight, Zap, Palette, Upload } from "lucide-react";
-import { DarkModeToggle } from "@/components/DarkModeToggle";
+
 import { AppLogo } from "@/components/AppLogo";
 import { PhotoThemeGenerator, GeneratedTheme } from "@/components/PhotoThemeGenerator";
 import { useAuth } from "@/contexts/AuthContext";
@@ -36,7 +36,6 @@ export default function UnifiedHome() {
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <AppLogo />
-            <DarkModeToggle />
           </div>
         </div>
       </header>
