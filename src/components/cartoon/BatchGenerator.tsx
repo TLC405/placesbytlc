@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Loader2, Download } from "lucide-react";
+import { Loader2, Download, Sparkles } from "lucide-react";
 
 interface BatchResult {
   styleId: string;
@@ -83,41 +83,44 @@ export function BatchGenerator({ originalImage }: BatchGeneratorProps) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <Button
         onClick={generateAll}
         disabled={generating}
         size="lg"
-        className="w-full"
+        className="cartoon-button w-full h-16 text-xl"
       >
         {generating ? (
           <>
-            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-            Generating All Styles... {progress}%
+            <Loader2 className="w-6 h-6 mr-2 animate-spin" />
+            Generating... {progress}% 🎨
           </>
         ) : (
-          <>🎨 Generate All 12 Styles</>
+          <>
+            <Sparkles className="w-6 h-6 mr-2" />
+            Generate All 12 Styles! 🚀
+          </>
         )}
       </Button>
 
       {results.length > 0 && (
-        <div className="space-y-3">
+        <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold">Batch Results ({results.length}/12)</h3>
-            <Button onClick={downloadAll} size="sm" variant="outline">
-              <Download className="w-4 h-4 mr-1" />
-              Download All
+            <h3 className="text-xl font-black">Results ({results.length}/12) ✨</h3>
+            <Button onClick={downloadAll} size="lg" className="cartoon-button">
+              <Download className="w-5 h-5 mr-2" />
+              Download All 💾
             </Button>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {results.map((result) => (
-              <Card key={result.styleId} className="p-2 space-y-2">
+              <Card key={result.styleId} className="cartoon-card p-3 space-y-2">
                 <img
                   src={result.imageUrl}
                   alt={result.styleName}
-                  className="w-full aspect-square object-cover rounded"
+                  className="w-full aspect-square object-cover rounded-2xl border-4 border-foreground/10"
                 />
-                <div className="text-center text-xs font-semibold">
+                <div className="text-center text-sm font-black">
                   {result.emoji} {result.styleName}
                 </div>
               </Card>
