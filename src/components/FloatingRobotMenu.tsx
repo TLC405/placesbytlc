@@ -1,8 +1,9 @@
-import { useState, useCallback, memo } from "react";
+import { useState } from "react";
 import { Shield, Zap, Crown, User, Settings, LogOut, Lock, Home, LogIn } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { useUserRole } from "@/hooks/useUserRole";
+import { usePIN } from "@/contexts/PINContext";
+import { AdminPINModal } from "./AdminPINModal";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -12,45 +13,41 @@ interface FloatingRobotMenuProps {
   position: { x: number; y: number };
 }
 
-const FloatingRobotMenuComponent = ({ isOpen, onClose, position }: FloatingRobotMenuProps) => {
+export const FloatingRobotMenu = ({ isOpen, onClose, position }: FloatingRobotMenuProps) => {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const { hasRole } = useUserRole();
+  const { user, showLogin } = useAuth();
+  const { isAdmin, checkAdminAccess } = usePIN();
   const [showAdminPIN, setShowAdminPIN] = useState(false);
-  
-  const isAdmin = hasRole('admin');
-
-  const handleAdminAccess = useCallback(() => {
-    navigate("/admin");
-    onClose();
-  }, [navigate, onClose]);
-
-  const handleLogout = useCallback(async () => {
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      toast.success("✨ Logged out successfully");
-      onClose();
-      window.location.href = "/";
-    } catch (error: any) {
-      console.error("Logout error:", error);
-      toast.error("Failed to logout");
-    }
-  }, [onClose]);
-
-  const handleAuth = useCallback(() => {
-    navigate("/auth");
-    onClose();
-  }, [navigate, onClose]);
-
-  const handleKeyDown = useCallback((e: React.KeyboardEvent, action: () => void) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      action();
-    }
-  }, []);
 
   if (!isOpen) return null;
+
+  const handleAdminAccess = () => {
+    if (isAdmin) {
+      navigate("/admin");
+      onClose();
+    } else {
+      setShowAdminPIN(true);
+    }
+  };
+
+  const handleAdminPINSuccess = () => {
+    checkAdminAccess();
+    navigate("/admin");
+    onClose();
+    toast.success("🔓 Admin access granted!");
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    toast.success("Logged out successfully");
+    navigate("/");
+    onClose();
+  };
+
+  const handleAuth = () => {
+    navigate("/auth");
+    onClose();
+  };
 
   const menuItems = [
     {
@@ -91,12 +88,9 @@ const FloatingRobotMenuComponent = ({ isOpen, onClose, position }: FloatingRobot
       <div
         className="fixed inset-0 z-[100]"
         onClick={onClose}
-        aria-hidden="true"
       />
       
       <div
-        role="menu"
-        aria-label="Guardian bot menu"
         className="fixed z-[101] bg-black/95 backdrop-blur-xl rounded-2xl border-2 border-green-500/30 shadow-2xl shadow-green-500/50 p-4 min-w-[200px] animate-fade-in"
         style={{
           left: `${Math.min(position.x + 60, window.innerWidth - 220)}px`,
@@ -115,33 +109,34 @@ const FloatingRobotMenuComponent = ({ isOpen, onClose, position }: FloatingRobot
           </div>
         </div>
 
-        <div className="space-y-1" role="none">
+        <div className="space-y-1">
           {menuItems.map((item, idx) => (
             <button
               key={idx}
-              role="menuitem"
-              aria-label={item.label}
               onClick={item.action}
-              onKeyDown={(e) => handleKeyDown(e, item.action)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all hover:bg-green-500/10 border border-transparent hover:border-green-500/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 ${
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all hover:bg-green-500/10 border border-transparent hover:border-green-500/30 ${
                 item.special ? "bg-gradient-to-r from-purple-500/10 to-pink-500/10" : ""
               }`}
             >
-              <item.icon className={`w-5 h-5 ${item.color}`} aria-hidden="true" />
+              <item.icon className={`w-5 h-5 ${item.color}`} />
               <span className="font-bold text-green-400">{item.label}</span>
-              {item.special && <Crown className="w-4 h-4 text-yellow-400 ml-auto" aria-hidden="true" />}
+              {item.special && <Crown className="w-4 h-4 text-yellow-400 ml-auto" />}
             </button>
           ))}
         </div>
 
         <div className="mt-3 pt-3 border-t border-green-500/30 text-center">
           <div className="text-xs text-green-500/50 font-mono">
-            {isAdmin ? "ADMIN_ACCESS • AUTHORIZED" : "SECURE_MODE • ACTIVE"}
+            SECURE_MODE • PIN_PROTECTED
           </div>
         </div>
       </div>
+
+      <AdminPINModal
+        open={showAdminPIN}
+        onOpenChange={setShowAdminPIN}
+        onSuccess={handleAdminPINSuccess}
+      />
     </>
   );
 };
-
-export const FloatingRobotMenu = memo(FloatingRobotMenuComponent);

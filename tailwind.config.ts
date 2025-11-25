@@ -13,16 +13,7 @@ export default {
       },
     },
     extend: {
-      fontFamily: {
-        sans: ['Open Sans', 'system-ui', '-apple-system', 'sans-serif'],
-      },
       colors: {
-        electric: {
-          purple: '#A855F7',
-          pink: '#EC4899',
-          cyan: '#06B6D4',
-          yellow: '#FCD34D',
-        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

@@ -1,8 +1,8 @@
-import { useEffect, useState, useRef, useCallback, memo } from "react";
+import { useEffect, useState, useRef } from "react";
 import cupidImageOriginal from "@/assets/cupid-icon-original.png";
 import { supabase } from "@/integrations/supabase/client";
 
-const DetailedCupidComponent = () => {
+export const DetailedCupid = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false); // No processing needed
   const [isEnabled, setIsEnabled] = useState(true);
@@ -104,7 +104,8 @@ const DetailedCupidComponent = () => {
     };
   }, []);
 
-  const playPopSound = useCallback(() => {
+  // Play fun water drop sound effect
+  const playPopSound = () => {
     if (!audioContextRef.current || !settings.soundEnabled) return;
     
     const ctx = audioContextRef.current;
@@ -114,32 +115,28 @@ const DetailedCupidComponent = () => {
     oscillator.connect(gainNode);
     gainNode.connect(ctx.destination);
     
+    // Water drop effect: quick descending frequency
     oscillator.frequency.setValueAtTime(800, ctx.currentTime);
     oscillator.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.1);
     oscillator.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.2);
     
+    // Volume envelope
     gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
     gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
     
     oscillator.type = 'sine';
     oscillator.start(ctx.currentTime);
     oscillator.stop(ctx.currentTime + 0.3);
-  }, [settings.soundEnabled]);
+  };
 
+  // Track mouse position for evasive behavior
   useEffect(() => {
-    let rafId: number;
     const handleMouseMove = (e: MouseEvent) => {
-      if (rafId) cancelAnimationFrame(rafId);
-      rafId = requestAnimationFrame(() => {
-        setMousePos({ x: e.clientX, y: e.clientY });
-      });
+      setMousePos({ x: e.clientX, y: e.clientY });
     };
     
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      if (rafId) cancelAnimationFrame(rafId);
-    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
   // Evasive behavior - dodge when mouse gets close
@@ -249,7 +246,7 @@ const DetailedCupidComponent = () => {
     return () => clearInterval(actionInterval);
   }, [isVisible, isPopped, settings.actionFrequency]);
 
-  const handleTap = useCallback((e: React.MouseEvent) => {
+  const handleTap = (e: React.MouseEvent) => {
     e.preventDefault();
     
     // If already popped, do nothing
@@ -290,14 +287,7 @@ const DetailedCupidComponent = () => {
         setIsPopped(false);
       }, settings.hideTime);
     }
-  }, [isDodging, isRunning, isPopped, playPopSound, settings.soundEnabled, settings.hideTime]);
-
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      handleTap(e as any);
-    }
-  }, [handleTap]);
+  };
 
   if (!isVisible || !isEnabled) return null;
 
@@ -319,7 +309,7 @@ const DetailedCupidComponent = () => {
           backface-visibility: hidden;
           will-change: transform, filter, top, right, left, bottom;
           animation: ${settings.floatAnimation ? 'tlc-float 3.2s ease-in-out infinite' : 'none'};
-          filter: drop-shadow(0 8px 18px rgba(139, 195, 74, ${settings.shadowIntensity}));
+          filter: drop-shadow(0 8px 18px rgba(255, 106, 162, ${settings.shadowIntensity}));
           cursor: pointer;
           z-index: 50;
           image-rendering: auto;
@@ -333,7 +323,7 @@ const DetailedCupidComponent = () => {
         .cupid-float.popped {
           width: 40px !important;
           animation: none !important;
-          filter: grayscale(0.3) drop-shadow(0 2px 8px rgba(139, 195, 74, 0.2));
+          filter: grayscale(0.3) drop-shadow(0 2px 8px rgba(255, 106, 162, 0.2));
           transform: rotate(-90deg) scale(0.8);
           cursor: default;
           opacity: 0.7;
@@ -361,7 +351,7 @@ const DetailedCupidComponent = () => {
         }
         
         .cupid-float:hover {
-          filter: drop-shadow(0 0 40px rgba(247, 220, 111, 0.5)) drop-shadow(0 8px 20px rgba(0, 0, 0, 0.25));
+          filter: drop-shadow(0 0 40px rgba(255, 106, 162, 0.5)) drop-shadow(0 8px 20px rgba(0, 0, 0, 0.25));
           transform: scale(1.05);
         }
         
@@ -391,11 +381,7 @@ const DetailedCupidComponent = () => {
       <img
         ref={cupidRef}
         src={cupidImageOriginal}
-        alt={isPopped ? "Cupid caught - click to interact" : "Cupid - try to catch me!"}
-        role="button"
-        tabIndex={0}
-        aria-pressed={isPopped}
-        aria-label={isPopped ? "Cupid caught" : "Try to catch Cupid"}
+        alt="Cupid"
         className={`cupid-float ${isPopped ? 'popped' : ''} ${isRunning ? 'running' : ''} ${isPeeking ? 'peeking' : ''} ${isDodging ? 'dodging' : ''}`}
         style={{
           ...position,
@@ -404,8 +390,8 @@ const DetailedCupidComponent = () => {
           imageRendering: 'crisp-edges'
         }}
         onClick={handleTap}
-        onKeyDown={handleKeyDown}
         onMouseEnter={() => {
+          // Extra evasive on hover (unless popped)
           if (Math.random() > 0.5 && !isDodging && !isPopped) {
             const quickDodge = new MouseEvent('mousemove', {
               clientX: mousePos.x + 200,
@@ -419,5 +405,3 @@ const DetailedCupidComponent = () => {
     </>
   );
 };
-
-export const DetailedCupid = memo(DetailedCupidComponent);

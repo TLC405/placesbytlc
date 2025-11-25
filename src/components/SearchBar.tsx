@@ -1,36 +1,8 @@
-import { memo } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
-import { Search, SlidersHorizontal, Heart, Scale } from "lucide-react";
+import { Search, MapPin, Heart, Scale, SlidersHorizontal } from "lucide-react";
 import { useState } from "react";
-
-const FOOD_CATEGORIES = [
-  { label: "Italian", value: "italian_restaurant" },
-  { label: "Mexican", value: "mexican_restaurant" },
-  { label: "Asian", value: "asian_restaurant" },
-  { label: "American", value: "american_restaurant" },
-  { label: "Seafood", value: "seafood_restaurant" },
-  { label: "Steakhouse", value: "steak_house" },
-  { label: "Pizza", value: "pizza_restaurant" },
-  { label: "Sushi", value: "sushi_restaurant" },
-  { label: "Cafe", value: "cafe" },
-  { label: "Dessert", value: "dessert_shop" },
-];
-
-const ACTIVITY_CATEGORIES = [
-  { label: "Museum", value: "museum" },
-  { label: "Park", value: "park" },
-  { label: "Theater", value: "movie_theater" },
-  { label: "Bowling", value: "bowling_alley" },
-  { label: "Arcade", value: "amusement_arcade" },
-  { label: "Mini Golf", value: "miniature_golf_course" },
-  { label: "Zoo", value: "zoo" },
-  { label: "Aquarium", value: "aquarium" },
-  { label: "Art Gallery", value: "art_gallery" },
-  { label: "Shopping", value: "shopping_mall" },
-];
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface SearchBarProps {
   query: string;
@@ -44,81 +16,89 @@ interface SearchBarProps {
   onCategoryToggle?: (category: string) => void;
   categoryType?: "food" | "activity" | "both";
   onCategoryTypeChange?: (type: "food" | "activity" | "both") => void;
-  locationMode?: "tlc" | "partner" | "middle";
   onLocationModeChange?: (mode: "tlc" | "partner" | "middle") => void;
 }
 
-const SearchBarComponent = ({
+type LocationMode = "tlc" | "partner" | "middle";
+
+const FOOD_CATEGORIES = [
+  { label: "All Food", value: "food" },
+  { label: "Restaurants", value: "restaurant" },
+  { label: "Cafes", value: "cafe" },
+  { label: "Bars", value: "bar" },
+  { label: "Bakery", value: "bakery" },
+  { label: "Pizza", value: "pizza" },
+  { label: "Sushi", value: "sushi" },
+];
+
+const ACTIVITY_CATEGORIES = [
+  { label: "All Activities", value: "activity" },
+  { label: "Parks", value: "park" },
+  { label: "Museums", value: "museum" },
+  { label: "Movies", value: "movie_theater" },
+  { label: "Shopping", value: "shopping_mall" },
+  { label: "Art", value: "art_gallery" },
+  { label: "Spa", value: "spa" },
+];
+
+export const SearchBar = ({
   query,
   radius,
   onQueryChange,
   onRadiusChange,
   onSearch,
-  disabled = false,
-  loading = false,
+  disabled,
+  loading,
   selectedCategories = [],
   onCategoryToggle,
   categoryType = "both",
   onCategoryTypeChange,
-  locationMode = "tlc",
   onLocationModeChange,
 }: SearchBarProps) => {
+  const [locationMode, setLocationMode] = useState<LocationMode>("tlc");
   const [filtersOpen, setFiltersOpen] = useState(false);
 
-  const handleSearch = () => {
-    if (!loading && !disabled) {
-      onSearch();
-    }
-  };
-
-  const handleLocationModeChange = (mode: "tlc" | "partner" | "middle") => {
-    if (onLocationModeChange) {
-      onLocationModeChange(mode);
-    }
+  const handleLocationModeChange = (mode: LocationMode) => {
+    setLocationMode(mode);
+    onLocationModeChange?.(mode);
   };
 
   return (
-    <div className="space-y-3">
-      {/* Location Mode Toggle */}
+    <div className="space-y-4">
+      {/* Compact Location Selector */}
       {onLocationModeChange && (
-        <div className="flex gap-2">
+        <div className="flex gap-2 p-3 bg-gradient-to-br from-card/80 to-card/60 backdrop-blur-md rounded-2xl border-2 border-border/40 shadow-lg animate-fade-in">
           <button
             onClick={() => handleLocationModeChange("tlc")}
-            className={`flex-1 p-3 rounded-xl text-sm font-bold transition-all duration-300 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+            className={`flex-1 p-3 rounded-xl text-sm font-bold transition-all duration-300 ${
               locationMode === "tlc"
-                ? "bg-primary text-primary-foreground shadow-xl scale-105"
-                : "bg-card hover:bg-accent hover:scale-105"
+                ? "bg-gradient-to-r from-primary to-accent text-white shadow-xl scale-105"
+                : "hover:bg-accent/20 hover:scale-105"
             }`}
-            aria-label="Search from your location"
-            aria-pressed={locationMode === "tlc"}
           >
-            <Heart className="w-5 h-5 mx-auto mb-1 fill-current" aria-hidden="true" />
-            TLC 👑
+            <MapPin className="w-5 h-5 mx-auto mb-1" />
+            TLC
           </button>
           <button
             onClick={() => handleLocationModeChange("partner")}
-            className={`flex-1 p-3 rounded-xl text-sm font-bold transition-all duration-300 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+            className={`flex-1 p-3 rounded-xl text-sm font-bold transition-all duration-300 ${
               locationMode === "partner"
-                ? "bg-primary text-primary-foreground shadow-xl scale-105"
-                : "bg-card hover:bg-accent hover:scale-105"
+                ? "bg-gradient-to-r from-primary to-accent text-white shadow-xl shadow-primary/30 animate-pulse scale-105"
+                : "hover:bg-accent/20 hover:scale-105"
             }`}
-            aria-label="Search from partner location"
-            aria-pressed={locationMode === "partner"}
           >
-            <Heart className="w-5 h-5 mx-auto mb-1 fill-current" aria-hidden="true" />
+            <Heart className="w-5 h-5 mx-auto mb-1 fill-current" />
             💝 Partner
           </button>
           <button
             onClick={() => handleLocationModeChange("middle")}
-            className={`flex-1 p-3 rounded-xl text-sm font-bold transition-all duration-300 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+            className={`flex-1 p-3 rounded-xl text-sm font-bold transition-all duration-300 ${
               locationMode === "middle"
-                ? "bg-primary text-primary-foreground shadow-xl scale-105"
-                : "bg-card hover:bg-accent hover:scale-105"
+                ? "bg-gradient-to-r from-primary to-accent text-white shadow-xl scale-105"
+                : "hover:bg-accent/20 hover:scale-105"
             }`}
-            aria-label="Search from middle point between locations"
-            aria-pressed={locationMode === "middle"}
           >
-            <Scale className="w-5 h-5 mx-auto mb-1" aria-hidden="true" />
+            <Scale className="w-5 h-5 mx-auto mb-1" />
             Middle
           </button>
         </div>
@@ -128,7 +108,7 @@ const SearchBarComponent = ({
       <div className="flex gap-2">
         {onCategoryTypeChange && (
           <Select value={categoryType} onValueChange={onCategoryTypeChange} disabled={disabled || loading}>
-            <SelectTrigger className="w-[140px] h-12 shadow-md font-semibold border-2">
+            <SelectTrigger className="w-[140px] h-12 shadow-md font-semibold border-2 border-border/50 hover:border-primary/50 transition-all">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -140,7 +120,7 @@ const SearchBarComponent = ({
         )}
 
         <Select value={radius} onValueChange={onRadiusChange} disabled={disabled || loading}>
-          <SelectTrigger className="w-[120px] h-12 shadow-md font-semibold border-2">
+          <SelectTrigger className="w-[120px] h-12 shadow-md font-semibold border-2 border-border/50 hover:border-primary/50 transition-all">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -157,19 +137,18 @@ const SearchBarComponent = ({
             variant="outline"
             size="icon"
             onClick={() => setFiltersOpen(!filtersOpen)}
-            className="h-12 w-12 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 border-2"
+            className="h-12 w-12 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 border-2 border-border/50 hover:border-primary/50"
           >
             <SlidersHorizontal className="w-5 h-5" />
           </Button>
         )}
 
         <Button 
-          onClick={handleSearch} 
+          onClick={onSearch} 
           disabled={disabled || loading}
-          className="flex-1 h-12 shadow-xl hover:shadow-2xl transition-all duration-300 font-bold hover:scale-105 text-base focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-          aria-label={loading ? "Searching for places" : "Search for places"}
+          className="flex-1 h-12 shadow-xl hover:shadow-2xl hover:shadow-primary/20 transition-all duration-300 font-bold gradient-primary hover:scale-105 text-base"
         >
-          <Search className={`w-5 h-5 mr-2 ${loading ? 'animate-spin' : ''}`} aria-hidden="true" />
+          <Search className={`w-5 h-5 mr-2 ${loading ? 'animate-spin' : ''}`} />
           {loading ? "Searching..." : "Search"}
         </Button>
       </div>
@@ -178,7 +157,7 @@ const SearchBarComponent = ({
       {onCategoryToggle && (
         <Collapsible open={filtersOpen} onOpenChange={setFiltersOpen}>
           <CollapsibleContent>
-            <div className="p-4 bg-card backdrop-blur-md rounded-2xl border-2 border-border shadow-lg space-y-3 animate-fade-in">
+            <div className="p-4 bg-gradient-to-br from-card/80 to-card/60 backdrop-blur-md rounded-2xl border-2 border-border/40 shadow-lg space-y-3 animate-fade-in">
               <p className="text-sm font-bold text-muted-foreground mb-2 tracking-wide">🎯 REFINE SEARCH</p>
               
               {categoryType === "both" ? (
@@ -242,5 +221,3 @@ const SearchBarComponent = ({
     </div>
   );
 };
-
-export const SearchBar = memo(SearchBarComponent);
