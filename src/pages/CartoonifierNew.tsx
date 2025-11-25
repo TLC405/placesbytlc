@@ -190,28 +190,28 @@ export default function CartoonifierNew() {
 
   return (
     <RoleGuard allowedRoles={['admin','alpha','beta','delta','moderator']} featureName="Cartoonifier">
-      <div className="min-h-screen bg-[#964B00] py-8 px-4">
+      <div className="min-h-screen bg-background py-8 px-4">
         <div className="max-w-7xl mx-auto space-y-6">
           {/* Header */}
           <div className="text-center space-y-3">
             <div className="flex items-center justify-center gap-3">
-              <span className="text-4xl animate-pulse">🍄</span>
-              <h1 className="text-5xl font-black text-[#03A9F4]">
-                ✨ ADVANCED CARTOONIFY SYSTEM ✨
+              <Sparkles className="w-12 h-12 text-primary animate-pulse" />
+              <h1 className="text-6xl font-black cartoon-title">
+                CARTOONIFY STUDIO
               </h1>
-              <span className="text-4xl animate-bounce">🌿</span>
+              <Sparkles className="w-12 h-12 text-secondary animate-bounce" />
             </div>
-            <p className="text-[#F7DC6F] font-semibold text-lg">
-              20 Advanced Features • 12 Styles • Identity-Locked Perfection 🎨
+            <p className="text-foreground/80 font-black text-xl">
+              20 Features • 12 Styles • Face-Locked Magic ✨
             </p>
           </div>
 
           {/* Main Card */}
-          <Card className="bg-white border-2 border-[#DDDDDD] shadow-xl p-8 rounded-[10px]">
+          <Card className="cartoon-container p-8">
             <Tabs defaultValue="generate" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6">
-                <TabsTrigger value="generate">🎨 Generate</TabsTrigger>
-                <TabsTrigger value="batch">⚡ Batch All Styles</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 mb-6 h-16">
+                <TabsTrigger value="generate" className="text-lg font-black">🎨 Generate</TabsTrigger>
+                <TabsTrigger value="batch" className="text-lg font-black">⚡ Batch Styles</TabsTrigger>
               </TabsList>
 
               <TabsContent value="generate" className="space-y-6">
@@ -239,20 +239,20 @@ export default function CartoonifierNew() {
                 <div className="grid md:grid-cols-2 gap-8">
                   {/* Original Image */}
                   <div className="space-y-4">
-                    <h3 className="text-2xl font-bold flex items-center gap-2 text-[#03A9F4]">
-                      <Upload className="w-5 h-5" />
-                      Upload Your Photo
+                    <h3 className="text-2xl font-black flex items-center gap-2 text-primary">
+                      <Upload className="w-6 h-6" />
+                      Upload Photo 📸
                     </h3>
                     <div
-                      className="relative aspect-square rounded-[10px] border-2 border-dashed border-[#8BC34A] hover:border-[#F7DC6F] transition-all bg-white flex items-center justify-center overflow-hidden cursor-pointer group shadow-lg"
+                      className="relative aspect-square rounded-3xl border-8 border-dashed border-primary hover:border-secondary transition-all bg-card flex items-center justify-center overflow-hidden cursor-pointer group shadow-2xl"
                       onClick={() => fileInputRef.current?.click()}
                     >
                       {originalImage ? (
-                        <img src={originalImage} alt="Original" className="w-full h-full object-cover rounded-[10px]" />
+                        <img src={originalImage} alt="Original" className="w-full h-full object-cover rounded-2xl" />
                       ) : (
                         <div className="text-center space-y-3 p-6">
-                          <Upload className="w-20 h-20 text-[#8BC34A] mx-auto group-hover:text-[#F7DC6F] transition-colors animate-bounce" />
-                          <p className="text-[#03A9F4] font-semibold">Tap to choose image 📸</p>
+                          <Upload className="w-24 h-24 text-primary mx-auto group-hover:text-secondary transition-colors animate-bounce" />
+                          <p className="text-foreground font-black text-lg">Tap to Upload! 🎉</p>
                         </div>
                       )}
                     </div>
@@ -261,27 +261,27 @@ export default function CartoonifierNew() {
 
                   {/* Cartoon Result */}
                   <div className="space-y-4">
-                    <h3 className="text-2xl font-bold flex items-center gap-2 text-[#03A9F4]">
-                      <Sparkles className="w-5 h-5" />
-                      Your Cartoon Magic ✨
+                    <h3 className="text-2xl font-black flex items-center gap-2 text-secondary">
+                      <Sparkles className="w-6 h-6" />
+                      Cartoon Magic ✨
                     </h3>
                     {showComparison && originalImage && cartoonImage ? (
                       <ComparisonSlider originalImage={originalImage} cartoonImage={cartoonImage} />
                     ) : (
-                      <div className="relative aspect-square rounded-[10px] border-2 border-[#8BC34A] bg-white flex items-center justify-center overflow-hidden shadow-lg">
+                      <div className="relative aspect-square rounded-3xl border-8 border-secondary bg-card flex items-center justify-center overflow-hidden shadow-2xl">
                         {cartoonImage ? (
-                          <img src={cartoonImage} alt="Cartoon" className="w-full h-full object-cover rounded-[10px] animate-fade-in" />
+                          <img src={cartoonImage} alt="Cartoon" className="w-full h-full object-cover rounded-2xl animate-fade-in" />
                         ) : (
                           <div className="text-center space-y-3 p-6">
-                            <Sparkles className="w-20 h-20 text-[#8BC34A] mx-auto animate-pulse" />
-                            <p className="text-[#03A9F4] font-semibold">Your masterpiece appears here 🎨</p>
+                            <Sparkles className="w-24 h-24 text-secondary mx-auto animate-pulse" />
+                            <p className="text-foreground font-black text-lg">Result Shows Here! 🎨</p>
                           </div>
                         )}
                       </div>
                     )}
                     {cartoonImage && (
-                      <Button variant="outline" size="sm" onClick={() => setShowComparison(!showComparison)} className="w-full">
-                        {showComparison ? "Hide" : "Show"} Comparison Slider
+                      <Button variant="outline" size="sm" onClick={() => setShowComparison(!showComparison)} className="w-full font-bold">
+                        {showComparison ? "Hide" : "Show"} Comparison
                       </Button>
                     )}
                   </div>
@@ -301,38 +301,38 @@ export default function CartoonifierNew() {
                     onClick={() => generateCartoon(false)}
                     disabled={!originalImage || processing}
                     size="lg"
-                    className="bg-[#F7DC6F] hover:bg-[#F7DC6F]/90 text-[#964B00] font-bold shadow-xl border border-[#DDDDDD] min-w-[220px] h-14 text-lg rounded-[10px]"
+                    className="cartoon-button min-w-[240px] h-16 text-xl"
                   >
                     {processing ? (
                       <>
-                        <div className="w-5 h-5 border-3 border-[#964B00]/30 border-t-[#964B00] rounded-full animate-spin mr-2" />
-                        Cartoonifying...
+                        <div className="w-6 h-6 border-4 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+                        Creating Magic...
                       </>
                     ) : (
                       <>
-                        <span className="mr-2">🍄</span>
-                        Generate Cartoon!
+                        <Sparkles className="w-6 h-6 mr-2" />
+                        Generate! 🚀
                       </>
                     )}
                   </Button>
 
                   {cartoonImage && refinementCount < 3 && (
-                    <Button onClick={refineResult} disabled={processing} size="lg" variant="outline" className="border-2 border-[#03A9F4]">
-                      ✨ Refine Result ({refinementCount}/3)
+                    <Button onClick={refineResult} disabled={processing} size="lg" className="cartoon-button min-w-[200px] h-16 text-xl">
+                      ✨ Refine ({refinementCount}/3)
                     </Button>
                   )}
 
                   {cartoonImage && (
-                    <Button onClick={downloadCartoon} size="lg" variant="outline" className="border-2 border-[#8BC34A]">
+                    <Button onClick={downloadCartoon} size="lg" className="cartoon-button min-w-[200px] h-16 text-xl">
                       <Download className="w-6 h-6 mr-2" />
-                      Download ⬇️
+                      Download 💾
                     </Button>
                   )}
 
                   {(originalImage || cartoonImage) && (
-                    <Button onClick={reset} size="lg" variant="outline" className="border-2 border-[#DDDDDD]">
-                      <RefreshCw className="w-5 h-5 mr-2" />
-                      Start Over
+                    <Button onClick={reset} size="lg" variant="outline" className="border-4 border-foreground/20 min-w-[200px] h-16 text-xl font-black">
+                      <RefreshCw className="w-6 h-6 mr-2" />
+                      Reset
                     </Button>
                   )}
                 </div>
@@ -368,11 +368,11 @@ export default function CartoonifierNew() {
           </Card>
 
           {/* Footer */}
-          <div className="text-center text-sm text-[#F7DC6F] font-medium space-y-2">
+          <div className="text-center text-lg text-foreground/80 font-black space-y-2">
             <p className="flex items-center justify-center gap-2">
-              <span>🍄</span>
-              Powered by TeeFeeMe AI Systems • 20 Advanced Features Active
-              <span>🍄</span>
+              <Sparkles className="w-6 h-6 text-primary" />
+              Powered by TeeFeeMee AI • 20 Features Active
+              <Sparkles className="w-6 h-6 text-secondary" />
             </p>
           </div>
         </div>
