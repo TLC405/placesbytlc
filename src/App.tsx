@@ -8,7 +8,6 @@ import { AppAuthGate } from "@/components/AppAuthGate";
 import { EntryGate } from "@/components/EntryGate";
 import { ActivityTracker } from "@/components/ActivityTracker";
 import { DetailedCupid } from "@/components/DetailedCupid";
-import { FloatingEmoji } from "@/components/FloatingEmoji";
 import { useSessionTracker } from "@/hooks/useSessionTracker";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import HackerHome from "./pages/HackerHome";
@@ -93,10 +92,7 @@ const App = () => {
                       <AppAuthGate>
                         <ActivityTracker />
                         <DetailedCupid />
-                        <FloatingEmoji />
-                        <main className="max-w-7xl mx-auto px-4 py-6">
-                          <AppRoutes />
-                        </main>
+                        <AppRoutes />
                       </AppAuthGate>
                     </EntryGate>
                   </BrowserRouter>
