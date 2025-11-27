@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,23 +9,26 @@ import {
   Sparkles,
   Calendar,
   Gamepad2,
-  MessageSquare,
   Shield,
   Zap,
   Crown,
   Brain,
   Users,
   Image,
-  Lock,
   LogIn,
-  Settings,
   ChevronRight,
   Star,
+  Activity,
+  Wand2,
+  Trophy,
+  Map,
+  MessageSquare,
 } from "lucide-react";
 import { useDevMode } from "@/contexts/DevModeContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePIN } from "@/contexts/PINContext";
 import { AdminPINModal } from "@/components/AdminPINModal";
+import { AppLogo } from "@/components/AppLogo";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -38,79 +41,93 @@ export default function HackerHome() {
 
   const coreFeatures = [
     {
-      title: "Places Discovery",
+      title: "Places",
       icon: MapPin,
-      desc: "Find perfect date spots with AI-powered search and recommendations",
+      desc: "Discover amazing date spots in OKC with smart search",
       path: "/",
-      color: "from-blue-600 via-cyan-500 to-teal-400",
-      badge: "Core",
-      highlight: true,
+      color: "from-pink-500/30 to-rose-500/30",
+      badge: "Essential",
     },
     {
       title: "OKC Legend Map",
-      icon: Star,
-      desc: "Explore 8 epic adventure zones with 70+ curated locations",
+      icon: Map,
+      desc: "Interactive map with 70+ curated locations across 8 zones",
       path: "/okc-legend",
-      color: "from-orange-500 via-yellow-500 to-amber-400",
+      color: "from-purple-500/30 to-pink-500/30",
       badge: "Featured",
-      highlight: true,
+    },
+    {
+      title: "Cupid Chat",
+      icon: MessageSquare,
+      desc: "AI-powered relationship advice and date ideas",
+      path: "/ai-recommender",
+      color: "from-blue-500/30 to-purple-500/30",
+      badge: "AI",
     },
   ];
 
   const relationshipTools = [
     {
-      title: "Couple Mode",
+      title: "Love Language",
       icon: Heart,
-      desc: "Shared planning & real-time sync for couples",
-      path: "/couple-mode",
-      color: "from-pink-600 to-rose-500",
-      badge: "Popular",
+      desc: "Discover how you express love",
+      path: "/quizzes/love-language",
+      color: "from-red-500/30 to-pink-500/30",
+    },
+    {
+      title: "MBTI Quiz",
+      icon: Brain,
+      desc: "Understand personality types",
+      path: "/quizzes/mbti",
+      color: "from-purple-500/30 to-blue-500/30",
+    },
+    {
+      title: "Relationship Style",
+      icon: Users,
+      desc: "Find your compatibility",
+      path: "/quizzes/relationship",
+      color: "from-blue-500/30 to-cyan-500/30",
     },
     {
       title: "Period Tracker",
-      icon: Calendar,
-      desc: "Survival mode with SMS alerts",
+      icon: Activity,
+      desc: "Track cycles with SMS alerts",
       path: "/period-tracker",
-      color: "from-red-500 to-orange-500",
-      badge: "Essential",
-    },
-    {
-      title: "Quizzes",
-      icon: Brain,
-      desc: "Love language, MBTI & compatibility",
-      path: "/quizzes",
-      color: "from-purple-600 to-violet-500",
-      badge: "Insights",
+      color: "from-pink-500/30 to-purple-500/30",
     },
   ];
 
   const aiPowered = [
     {
-      title: "AI Recommender",
-      icon: Sparkles,
-      desc: "Smart suggestions powered by GPT",
-      path: "/ai-recommender",
-      color: "from-indigo-600 to-purple-500",
-      badge: "AI",
+      title: "Cartoonifier",
+      icon: Wand2,
+      desc: "Transform photos into stunning cartoons",
+      path: "/cartoonifier",
+      color: "from-yellow-500/30 to-orange-500/30",
     },
     {
-      title: "TeeFeeMe",
-      icon: Image,
-      desc: "Transform photos into cartoons",
-      path: "/cartoonifier",
-      color: "from-yellow-500 to-amber-500",
-      badge: "Creative",
+      title: "Event Discovery",
+      icon: Calendar,
+      desc: "Find local events and activities",
+      path: "/events",
+      color: "from-green-500/30 to-emerald-500/30",
     },
   ];
 
   const gamification = [
     {
-      title: "Gamification",
-      icon: Gamepad2,
-      desc: "Earn XP, unlock achievements & level up",
+      title: "Achievements",
+      icon: Trophy,
+      desc: "Unlock badges and level up together",
       path: "/gamification",
-      color: "from-emerald-600 to-green-500",
-      badge: "Fun",
+      color: "from-amber-500/30 to-yellow-500/30",
+    },
+    {
+      title: "Couple Mode",
+      icon: Users,
+      desc: "Sync and share with your partner",
+      path: "/couple-mode",
+      color: "from-rose-500/30 to-pink-500/30",
     },
   ];
 
@@ -137,54 +154,54 @@ export default function HackerHome() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30">
-      {/* Premium Hero Section */}
-      <div className="relative overflow-hidden border-b border-border/50">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(120,119,198,0.1),transparent_50%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(255,119,198,0.1),transparent_50%)]" />
-        
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
-          <div className="text-center space-y-6">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-sm">
-              <Zap className="w-4 h-4 text-primary" />
-              <span className="text-sm font-bold text-primary">V1 Places by TLC</span>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/10 relative overflow-hidden">
+      {/* Premium animated background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-primary-variant/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-primary-glow/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+      </div>
+
+      {/* Hero Section */}
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent"></div>
+        <div className="container mx-auto px-4 py-16 relative">
+          <div className="text-center space-y-8 animate-fade-in">
+            <div className="inline-block animate-scale-in">
+              <AppLogo />
             </div>
             
-            <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tight">
-              <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-gradient">
-                Your Complete
-              </span>
-              <br />
-              <span className="text-foreground">Dating Platform</span>
-            </h1>
+            <div className="max-w-3xl mx-auto space-y-4">
+              <h2 className="heading-premium animate-slide-up">
+                Your Premium Dating Experience
+              </h2>
+              <p className="subheading-premium animate-slide-up" style={{ animationDelay: '0.1s' }}>
+                Discover perfect spots, understand each other better, and create unforgettable memories
+              </p>
+            </div>
             
-            <p className="text-xl sm:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              Everything you need for amazing dates, better relationships, and deeper connections
-            </p>
-
-            {/* Quick Actions */}
-            <div className="flex flex-wrap items-center justify-center gap-3 pt-4">
+            <div className="flex gap-4 justify-center flex-wrap animate-slide-up" style={{ animationDelay: '0.2s' }}>
               {!user ? (
-                <Button size="lg" onClick={handleAuth} className="gap-2">
-                  <LogIn className="w-5 h-5" />
-                  Login / Sign Up
+                <Button onClick={handleAuth} variant="premium" size="lg" className="group">
+                  <LogIn className="w-5 h-5 group-hover:rotate-12 transition-transform duration-500" />
+                  Sign In / Sign Up
+                  <Sparkles className="w-4 h-4 ml-1 animate-glow-pulse" />
                 </Button>
               ) : (
                 <>
-                  <Button size="lg" onClick={handleLogout} variant="outline" className="gap-2">
-                    <LogIn className="w-5 h-5" />
+                  <Button onClick={handleLogout} variant="outline" size="lg" className="group">
+                    <LogIn className="w-5 h-5 group-hover:rotate-12 transition-transform duration-500" />
                     Logout
                   </Button>
-                  <Button size="lg" onClick={handleAdminAccess} variant="secondary" className="gap-2">
-                    <Lock className="w-5 h-5" />
+                  <Button onClick={handleAdminAccess} variant="premium" size="lg" className="group">
+                    <Shield className="w-5 h-5 group-hover:scale-110 transition-transform duration-500" />
                     Admin Panel
                   </Button>
                 </>
               )}
               {isDevMode && (
-                <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-black px-4 py-2 text-sm animate-pulse">
-                  <Crown className="w-4 h-4 mr-1" />
+                <Badge className="gradient-primary text-primary-foreground px-6 py-3 text-sm animate-pulse shadow-glow">
+                  <Crown className="w-4 h-4 mr-2" />
                   PLATINUM MODE
                 </Badge>
               )}
@@ -193,40 +210,49 @@ export default function HackerHome() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 space-y-16">
-        {/* Core Features - Hero Cards */}
-        <section className="space-y-6">
-          <div className="flex items-center gap-3">
-            <div className="w-1 h-8 bg-gradient-to-b from-primary to-accent rounded-full" />
-            <h2 className="text-3xl sm:text-4xl font-black text-foreground">Core Features</h2>
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-16 space-y-20 relative">
+        {/* Core Features */}
+        <section className="space-y-8">
+          <div className="text-center space-y-3 animate-slide-up">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card">
+              <Zap className="w-4 h-4 text-primary animate-glow-pulse" />
+              <span className="text-sm font-semibold text-primary">Core Features</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-black gradient-text-animated">
+              Essential Tools
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Everything you need for your relationship journey
+            </p>
           </div>
           
-          <div className="grid md:grid-cols-2 gap-6">
-            {coreFeatures.map((feature) => {
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {coreFeatures.map((feature, idx) => {
               const Icon = feature.icon;
               return (
                 <Link key={feature.path} to={feature.path}>
-                  <Card className="group relative overflow-hidden border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/20 h-full bg-gradient-to-br from-card to-card/50">
-                    <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-10 transition-opacity`} />
-                    <CardContent className="p-8 space-y-4 relative">
+                  <Card 
+                    className="card-premium cursor-pointer border-2 border-border/50 hover:border-primary/50 group animate-slide-up h-full"
+                    style={{ animationDelay: `${idx * 0.1}s` }}
+                  >
+                    <CardContent className="p-8 space-y-4">
                       <div className="flex items-start justify-between">
-                        <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${feature.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
-                          <Icon className="w-8 h-8 text-white" />
+                        <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${feature.color} flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-glow backdrop-blur-sm`}>
+                          <Icon className="w-8 h-8 text-primary group-hover:rotate-12 transition-transform duration-500" />
                         </div>
                         <Badge variant="secondary" className="text-xs font-bold">
                           {feature.badge}
                         </Badge>
                       </div>
-                      
                       <div className="space-y-2">
-                        <h3 className="text-2xl font-black text-foreground group-hover:text-primary transition-colors">
+                        <h3 className="text-2xl font-black group-hover:text-primary transition-colors duration-300">
                           {feature.title}
                         </h3>
-                        <p className="text-muted-foreground leading-relaxed">
+                        <p className="text-base text-muted-foreground">
                           {feature.desc}
                         </p>
                       </div>
-
                       <div className="flex items-center gap-2 text-sm text-primary font-semibold group-hover:gap-3 transition-all">
                         <span>Explore Now</span>
                         <ChevronRight className="w-4 h-4" />
@@ -240,34 +266,39 @@ export default function HackerHome() {
         </section>
 
         {/* Relationship Tools */}
-        <section className="space-y-6">
-          <div className="flex items-center gap-3">
-            <div className="w-1 h-8 bg-gradient-to-b from-pink-500 to-rose-500 rounded-full" />
-            <h2 className="text-3xl sm:text-4xl font-black text-foreground">Relationship Tools</h2>
+        <section className="space-y-8">
+          <div className="text-center space-y-3 animate-slide-up">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card">
+              <Heart className="w-4 h-4 text-primary animate-pulse" />
+              <span className="text-sm font-semibold text-primary">Relationship Tools</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-black gradient-text-animated">
+              Understand Each Other
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Discover deeper connections through understanding
+            </p>
           </div>
           
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {relationshipTools.map((feature) => {
-              const Icon = feature.icon;
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {relationshipTools.map((tool, idx) => {
+              const Icon = tool.icon;
               return (
-                <Link key={feature.path} to={feature.path}>
-                  <Card className="group relative overflow-hidden border hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 h-full">
+                <Link key={tool.path} to={tool.path}>
+                  <Card 
+                    className="card-premium cursor-pointer border-2 border-border/50 hover:border-primary/50 group animate-slide-up h-full"
+                    style={{ animationDelay: `${idx * 0.1}s` }}
+                  >
                     <CardContent className="p-6 space-y-4">
-                      <div className="flex items-start justify-between">
-                        <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
-                          <Icon className="w-6 h-6 text-white" />
-                        </div>
-                        <Badge variant="outline" className="text-xs">
-                          {feature.badge}
-                        </Badge>
+                      <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${tool.color} flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-card backdrop-blur-sm`}>
+                        <Icon className="w-7 h-7 text-primary group-hover:rotate-12 transition-transform duration-500" />
                       </div>
-                      
-                      <div>
-                        <h3 className="text-xl font-black text-foreground mb-2 group-hover:text-primary transition-colors">
-                          {feature.title}
+                      <div className="space-y-2">
+                        <h3 className="text-lg font-bold group-hover:text-primary transition-colors duration-300">
+                          {tool.title}
                         </h3>
                         <p className="text-sm text-muted-foreground">
-                          {feature.desc}
+                          {tool.desc}
                         </p>
                       </div>
                     </CardContent>
@@ -278,34 +309,39 @@ export default function HackerHome() {
           </div>
         </section>
 
-        {/* AI-Powered Features */}
-        <section className="space-y-6">
-          <div className="flex items-center gap-3">
-            <div className="w-1 h-8 bg-gradient-to-b from-purple-500 to-indigo-500 rounded-full" />
-            <h2 className="text-3xl sm:text-4xl font-black text-foreground">AI-Powered</h2>
+        {/* AI-Powered */}
+        <section className="space-y-8">
+          <div className="text-center space-y-3 animate-slide-up">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card">
+              <Sparkles className="w-4 h-4 text-primary animate-glow-pulse" />
+              <span className="text-sm font-semibold text-primary">AI-Powered</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-black gradient-text-animated">
+              Smart Features
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Powered by artificial intelligence for modern couples
+            </p>
           </div>
           
-          <div className="grid sm:grid-cols-2 gap-4">
-            {aiPowered.map((feature) => {
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {aiPowered.map((feature, idx) => {
               const Icon = feature.icon;
               return (
                 <Link key={feature.path} to={feature.path}>
-                  <Card className="group relative overflow-hidden border hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 h-full">
-                    <CardContent className="p-6 space-y-4">
-                      <div className="flex items-start justify-between">
-                        <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
-                          <Icon className="w-6 h-6 text-white" />
-                        </div>
-                        <Badge variant="outline" className="text-xs">
-                          {feature.badge}
-                        </Badge>
+                  <Card 
+                    className="card-premium cursor-pointer border-2 border-border/50 hover:border-primary/50 group animate-slide-up h-full"
+                    style={{ animationDelay: `${idx * 0.1}s` }}
+                  >
+                    <CardContent className="p-8 space-y-4">
+                      <div className={`w-20 h-20 rounded-3xl bg-gradient-to-br ${feature.color} flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-glow backdrop-blur-sm`}>
+                        <Icon className="w-10 h-10 text-primary group-hover:rotate-12 transition-transform duration-500" />
                       </div>
-                      
-                      <div>
-                        <h3 className="text-xl font-black text-foreground mb-2 group-hover:text-primary transition-colors">
+                      <div className="space-y-3">
+                        <h3 className="text-3xl font-black group-hover:text-primary transition-colors duration-300">
                           {feature.title}
                         </h3>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-base text-muted-foreground">
                           {feature.desc}
                         </p>
                       </div>
@@ -318,36 +354,40 @@ export default function HackerHome() {
         </section>
 
         {/* Gamification */}
-        <section className="space-y-6">
-          <div className="flex items-center gap-3">
-            <div className="w-1 h-8 bg-gradient-to-b from-emerald-500 to-green-500 rounded-full" />
-            <h2 className="text-3xl sm:text-4xl font-black text-foreground">Level Up</h2>
+        <section className="space-y-8">
+          <div className="text-center space-y-3 animate-slide-up">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card">
+              <Trophy className="w-4 h-4 text-primary animate-bounce-slow" />
+              <span className="text-sm font-semibold text-primary">Gamification</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-black gradient-text-animated">
+              Fun & Rewards
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Make every moment together more exciting
+            </p>
           </div>
           
-          <div className="grid gap-4">
-            {gamification.map((feature) => {
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {gamification.map((feature, idx) => {
               const Icon = feature.icon;
               return (
                 <Link key={feature.path} to={feature.path}>
-                  <Card className="group relative overflow-hidden border hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:shadow-primary/10">
-                    <CardContent className="p-6 space-y-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
-                            <Icon className="w-6 h-6 text-white" />
-                          </div>
-                          <div>
-                            <h3 className="text-xl font-black text-foreground mb-1 group-hover:text-primary transition-colors">
-                              {feature.title}
-                            </h3>
-                            <p className="text-sm text-muted-foreground">
-                              {feature.desc}
-                            </p>
-                          </div>
-                        </div>
-                        <Badge variant="outline" className="text-xs">
-                          {feature.badge}
-                        </Badge>
+                  <Card 
+                    className="card-premium cursor-pointer border-2 border-border/50 hover:border-primary/50 group animate-slide-up h-full"
+                    style={{ animationDelay: `${idx * 0.1}s` }}
+                  >
+                    <CardContent className="p-8 space-y-4">
+                      <div className={`w-20 h-20 rounded-3xl bg-gradient-to-br ${feature.color} flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-glow backdrop-blur-sm`}>
+                        <Icon className="w-10 h-10 text-primary group-hover:rotate-12 transition-transform duration-500" />
+                      </div>
+                      <div className="space-y-3">
+                        <h3 className="text-3xl font-black group-hover:text-primary transition-colors duration-300">
+                          {feature.title}
+                        </h3>
+                        <p className="text-base text-muted-foreground">
+                          {feature.desc}
+                        </p>
                       </div>
                     </CardContent>
                   </Card>
@@ -358,22 +398,26 @@ export default function HackerHome() {
         </section>
 
         {/* Footer CTA */}
-        <section className="relative overflow-hidden rounded-3xl border border-border/50 bg-gradient-to-br from-primary/5 to-accent/5 p-8 sm:p-12 text-center">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(120,119,198,0.1),transparent_70%)]" />
-          <div className="relative space-y-4">
-            <h2 className="text-3xl sm:text-4xl font-black text-foreground">
-              Ready to explore?
+        <section className="relative overflow-hidden rounded-3xl glass-premium p-12 text-center animate-slide-up">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-primary-variant/10"></div>
+          <div className="relative space-y-6">
+            <h2 className="text-4xl md:text-5xl font-black gradient-text-animated">
+              Ready to Explore?
             </h2>
-            <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-              Start discovering amazing date spots and building better relationships
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Start discovering amazing date spots and building deeper connections
             </p>
-            <Button size="lg" className="gap-2" onClick={() => navigate("/")}>
+            <Button variant="premium" size="lg" className="gap-2 shadow-premium" onClick={() => navigate("/")}>
               <MapPin className="w-5 h-5" />
               Get Started
+              <Sparkles className="w-4 h-4 animate-glow-pulse" />
             </Button>
           </div>
         </section>
       </div>
+      
+      {/* Footer gradient */}
+      <div className="h-32 bg-gradient-to-t from-primary/5 to-transparent"></div>
 
       <AdminPINModal
         open={showAdminPIN}
