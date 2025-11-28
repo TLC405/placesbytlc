@@ -154,56 +154,48 @@ export default function HackerHome() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/10 relative overflow-hidden">
-      {/* Premium animated background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-primary-variant/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-primary-glow/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
-      </div>
-
+    <div className="page-shell">
       {/* Hero Section */}
-      <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent"></div>
-        <div className="container mx-auto px-4 py-16 relative">
+      <div className="relative overflow-hidden bg-gradient-to-b from-primary/5 via-transparent to-transparent py-16">
+        <div className="page-content">
           <div className="text-center space-y-8 animate-fade-in">
             <div className="inline-block animate-scale-in">
               <AppLogo />
             </div>
             
-            <div className="max-w-3xl mx-auto space-y-4">
-              <h2 className="heading-premium animate-slide-up">
+            <div className="space-y-4">
+              <h1 className="heading-main animate-slide-up">
                 Your Premium Dating Experience
-              </h2>
-              <p className="subheading-premium animate-slide-up" style={{ animationDelay: '0.1s' }}>
+              </h1>
+              <p className="subheading-main mx-auto animate-slide-up" style={{ animationDelay: '0.1s' }}>
                 Discover perfect spots, understand each other better, and create unforgettable memories
               </p>
             </div>
             
             <div className="flex gap-4 justify-center flex-wrap animate-slide-up" style={{ animationDelay: '0.2s' }}>
               {!user ? (
-                <Button onClick={handleAuth} variant="premium" size="lg" className="group">
-                  <LogIn className="w-5 h-5 group-hover:rotate-12 transition-transform duration-500" />
+                <button onClick={handleAuth} className="btn-main group">
+                  <LogIn className="w-5 h-5 group-hover:rotate-12 transition-transform" />
                   Sign In / Sign Up
                   <Sparkles className="w-4 h-4 ml-1 animate-glow-pulse" />
-                </Button>
+                </button>
               ) : (
                 <>
-                  <Button onClick={handleLogout} variant="outline" size="lg" className="group">
-                    <LogIn className="w-5 h-5 group-hover:rotate-12 transition-transform duration-500" />
+                  <Button onClick={handleLogout} variant="outline" size="lg">
+                    <LogIn className="w-5 h-5" />
                     Logout
                   </Button>
-                  <Button onClick={handleAdminAccess} variant="premium" size="lg" className="group">
-                    <Shield className="w-5 h-5 group-hover:scale-110 transition-transform duration-500" />
+                  <button onClick={handleAdminAccess} className="btn-main group">
+                    <Shield className="w-5 h-5 group-hover:scale-110 transition-transform" />
                     Admin Panel
-                  </Button>
+                  </button>
                 </>
               )}
               {isDevMode && (
-                <Badge className="gradient-primary text-primary-foreground px-6 py-3 text-sm animate-pulse shadow-glow">
-                  <Crown className="w-4 h-4 mr-2" />
+                <div className="chip-soft bg-primary/10 text-primary border-primary/30 animate-pulse">
+                  <Crown className="w-4 h-4" />
                   PLATINUM MODE
-                </Badge>
+                </div>
               )}
             </div>
           </div>
@@ -211,18 +203,18 @@ export default function HackerHome() {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-16 space-y-20 relative">
+      <div className="page-content space-y-20">
         {/* Core Features */}
         <section className="space-y-8">
           <div className="text-center space-y-3 animate-slide-up">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card">
+            <div className="chip-soft mx-auto">
               <Zap className="w-4 h-4 text-primary animate-glow-pulse" />
-              <span className="text-sm font-semibold text-primary">Core Features</span>
+              <span className="font-semibold text-primary">Core Features</span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-black gradient-text-animated">
+            <h2 className="heading-main text-primary">
               Essential Tools
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="subheading-main mx-auto">
               Everything you need for your relationship journey
             </p>
           </div>
@@ -241,9 +233,9 @@ export default function HackerHome() {
                         <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${feature.color} flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-glow backdrop-blur-sm`}>
                           <Icon className="w-8 h-8 text-primary group-hover:rotate-12 transition-transform duration-500" />
                         </div>
-                        <Badge variant="secondary" className="text-xs font-bold">
+                        <span className="chip-soft">
                           {feature.badge}
-                        </Badge>
+                        </span>
                       </div>
                       <div className="space-y-2">
                         <h3 className="text-2xl font-black group-hover:text-primary transition-colors duration-300">
@@ -268,14 +260,14 @@ export default function HackerHome() {
         {/* Relationship Tools */}
         <section className="space-y-8">
           <div className="text-center space-y-3 animate-slide-up">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card">
+            <div className="chip-soft mx-auto">
               <Heart className="w-4 h-4 text-primary animate-pulse" />
-              <span className="text-sm font-semibold text-primary">Relationship Tools</span>
+              <span className="font-semibold text-primary">Relationship Tools</span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-black gradient-text-animated">
+            <h2 className="heading-main text-primary">
               Understand Each Other
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="subheading-main mx-auto">
               Discover deeper connections through understanding
             </p>
           </div>
@@ -312,14 +304,14 @@ export default function HackerHome() {
         {/* AI-Powered */}
         <section className="space-y-8">
           <div className="text-center space-y-3 animate-slide-up">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card">
+            <div className="chip-soft mx-auto">
               <Sparkles className="w-4 h-4 text-primary animate-glow-pulse" />
-              <span className="text-sm font-semibold text-primary">AI-Powered</span>
+              <span className="font-semibold text-primary">AI-Powered</span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-black gradient-text-animated">
+            <h2 className="heading-main text-primary">
               Smart Features
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="subheading-main mx-auto">
               Powered by artificial intelligence for modern couples
             </p>
           </div>
@@ -356,14 +348,14 @@ export default function HackerHome() {
         {/* Gamification */}
         <section className="space-y-8">
           <div className="text-center space-y-3 animate-slide-up">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card">
+            <div className="chip-soft mx-auto">
               <Trophy className="w-4 h-4 text-primary animate-bounce-slow" />
-              <span className="text-sm font-semibold text-primary">Gamification</span>
+              <span className="font-semibold text-primary">Gamification</span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-black gradient-text-animated">
+            <h2 className="heading-main text-primary">
               Fun & Rewards
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="subheading-main mx-auto">
               Make every moment together more exciting
             </p>
           </div>
@@ -398,26 +390,22 @@ export default function HackerHome() {
         </section>
 
         {/* Footer CTA */}
-        <section className="relative overflow-hidden rounded-3xl glass-premium p-12 text-center animate-slide-up">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-primary-variant/10"></div>
-          <div className="relative space-y-6">
-            <h2 className="text-4xl md:text-5xl font-black gradient-text-animated">
+        <section className="card-premium text-center animate-slide-up bg-gradient-to-br from-primary/5 to-transparent">
+          <div className="space-y-6">
+            <h2 className="heading-main text-primary">
               Ready to Explore?
             </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="subheading-main mx-auto">
               Start discovering amazing date spots and building deeper connections
             </p>
-            <Button variant="premium" size="lg" className="gap-2 shadow-premium" onClick={() => navigate("/")}>
+            <button className="btn-main gap-2" onClick={() => navigate("/")}>
               <MapPin className="w-5 h-5" />
               Get Started
               <Sparkles className="w-4 h-4 animate-glow-pulse" />
-            </Button>
+            </button>
           </div>
         </section>
       </div>
-      
-      {/* Footer gradient */}
-      <div className="h-32 bg-gradient-to-t from-primary/5 to-transparent"></div>
 
       <AdminPINModal
         open={showAdminPIN}
