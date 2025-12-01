@@ -14,24 +14,24 @@ import HackerHome from "./pages/HackerHome";
 import NotFound from "./pages/NotFound";
 
 // Lazy load quiz pages and special features
+const AIRecommender = lazy(() => import("./pages/AIRecommender"));
+const AdminPanel = lazy(() => import("./pages/AdminPanel"));
+const Auth = lazy(() => import("./pages/Auth"));
+const CartoonifierNew = lazy(() => import("./pages/CartoonifierNew"));
+const CodeViewer = lazy(() => import("./pages/CodeViewer"));
+const ComingSoon = lazy(() => import("./pages/ComingSoon"));
+const CoupleMode = lazy(() => import("./pages/CoupleMode"));
+const FeliciaModPanel = lazy(() => import("./components/FeliciaModPanel"));
+const Gamification = lazy(() => import("./pages/Gamification"));
 const HackerScreen = lazy(() => import("./pages/HackerScreen"));
-const Quizzes = lazy(() => import("./pages/Quizzes"));
+const NewHome = lazy(() => import("./pages/NewHome"));
+const OKCLegendForge = lazy(() => import("./pages/EnhancedOKCLegend"));
+const PeriodTracker = lazy(() => import("./pages/PeriodTracker"));
 const QuizLove = lazy(() => import("./pages/QuizLove"));
 const QuizMBTI = lazy(() => import("./pages/QuizMBTI"));
 const QuizRelationshipStyle = lazy(() => import("./pages/QuizRelationshipStyle"));
-const PeriodTracker = lazy(() => import("./pages/PeriodTracker"));
-const FeliciaModPanel = lazy(() => import("./components/FeliciaModPanel"));
-const CodeViewer = lazy(() => import("./pages/CodeViewer"));
-const AdminPanel = lazy(() => import("./pages/AdminPanel"));
+const Quizzes = lazy(() => import("./pages/Quizzes"));
 const TesterDashboard = lazy(() => import("./components/TesterDashboard"));
-const AIRecommender = lazy(() => import("./pages/AIRecommender"));
-const CoupleMode = lazy(() => import("./pages/CoupleMode"));
-const Gamification = lazy(() => import("./pages/Gamification"));
-const OKCLegendForge = lazy(() => import("./pages/EnhancedOKCLegend"));
-const ComingSoon = lazy(() => import("./pages/ComingSoon"));
-const CartoonifierNew = lazy(() => import("./pages/CartoonifierNew"));
-const Auth = lazy(() => import("./pages/Auth"));
-const NewHome = lazy(() => import("./pages/NewHome"));
 
 import { useGoogleMaps } from "@/hooks/useGoogleMaps";
 import { DevModeProvider } from "@/contexts/DevModeContext";
@@ -53,26 +53,37 @@ const AppRoutes = () => {
       </div>
     }>
       <Routes>
-        <Route path="/hacker" element={<HackerScreen />} />
+        {/* Main pages */}
         <Route path="/" element={<HackerHome />} />
         <Route path="/places" element={<NewHome />} />
-        <Route path="/auth" element={<Auth />} />
+        <Route path="/okc-legend" element={<OKCLegendForge />} />
+        <Route path="/ai-recommender" element={<AIRecommender />} />
+        
+        {/* Quizzes */}
         <Route path="/quizzes" element={<Quizzes />} />
         <Route path="/quiz/love" element={<QuizLove />} />
         <Route path="/quiz/mbti" element={<QuizMBTI />} />
         <Route path="/quiz/relationship-style" element={<QuizRelationshipStyle />} />
+        
+        {/* Features */}
         <Route path="/period-tracker" element={<PeriodTracker />} />
-        <Route path="/code" element={<CodeViewer />} />
-        <Route path="/admin" element={<AdminPanel />} />
-        <Route path="/tester" element={<TesterDashboard />} />
-        <Route path="/ai-recommender" element={<AIRecommender />} />
         <Route path="/couple-mode" element={<CoupleMode />} />
         <Route path="/gamification" element={<Gamification />} />
-        <Route path="/okc-legend" element={<OKCLegendForge />} />
+        <Route path="/cartoonifier" element={<CartoonifierNew />} />
+        
+        {/* Coming Soon */}
+        <Route path="/events" element={<ComingSoon />} />
         <Route path="/boo-mode" element={<ComingSoon />} />
         <Route path="/coming-soon" element={<ComingSoon />} />
-        <Route path="/events" element={<ComingSoon />} />
-        <Route path="/cartoonifier" element={<CartoonifierNew />} />
+        
+        {/* Auth & Admin */}
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/admin" element={<AdminPanel />} />
+        <Route path="/tester" element={<TesterDashboard />} />
+        <Route path="/code" element={<CodeViewer />} />
+        <Route path="/hacker" element={<HackerScreen />} />
+        
+        {/* 404 */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>
