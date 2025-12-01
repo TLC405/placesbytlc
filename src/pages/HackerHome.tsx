@@ -44,7 +44,7 @@ export default function HackerHome() {
       title: "Places",
       icon: MapPin,
       desc: "Discover amazing date spots in OKC with smart search",
-      path: "/",
+      path: "/places",
       color: "from-pink-500/30 to-rose-500/30",
       badge: "Essential",
     },
@@ -71,21 +71,21 @@ export default function HackerHome() {
       title: "Love Language",
       icon: Heart,
       desc: "Discover how you express love",
-      path: "/quizzes/love-language",
+      path: "/quiz/love",
       color: "from-red-500/30 to-pink-500/30",
     },
     {
       title: "MBTI Quiz",
       icon: Brain,
       desc: "Understand personality types",
-      path: "/quizzes/mbti",
+      path: "/quiz/mbti",
       color: "from-purple-500/30 to-blue-500/30",
     },
     {
       title: "Relationship Style",
       icon: Users,
       desc: "Find your compatibility",
-      path: "/quizzes/relationship",
+      path: "/quiz/relationship-style",
       color: "from-blue-500/30 to-cyan-500/30",
     },
     {
@@ -398,7 +398,7 @@ export default function HackerHome() {
             <p className="subheading-main mx-auto">
               Start discovering amazing date spots and building deeper connections
             </p>
-            <button className="btn-main gap-2" onClick={() => navigate("/")}>
+            <button className="btn-main gap-2" onClick={() => navigate("/places")}>
               <MapPin className="w-5 h-5" />
               Get Started
               <Sparkles className="w-4 h-4 animate-glow-pulse" />
