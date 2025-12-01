@@ -31,6 +31,7 @@ const OKCLegendForge = lazy(() => import("./pages/EnhancedOKCLegend"));
 const ComingSoon = lazy(() => import("./pages/ComingSoon"));
 const CartoonifierNew = lazy(() => import("./pages/CartoonifierNew"));
 const Auth = lazy(() => import("./pages/Auth"));
+const NewHome = lazy(() => import("./pages/NewHome"));
 
 import { useGoogleMaps } from "@/hooks/useGoogleMaps";
 import { DevModeProvider } from "@/contexts/DevModeContext";
@@ -54,6 +55,7 @@ const AppRoutes = () => {
       <Routes>
         <Route path="/hacker" element={<HackerScreen />} />
         <Route path="/" element={<HackerHome />} />
+        <Route path="/places" element={<NewHome />} />
         <Route path="/auth" element={<Auth />} />
         <Route path="/quizzes" element={<Quizzes />} />
         <Route path="/quiz/love" element={<QuizLove />} />
@@ -69,6 +71,7 @@ const AppRoutes = () => {
         <Route path="/okc-legend" element={<OKCLegendForge />} />
         <Route path="/boo-mode" element={<ComingSoon />} />
         <Route path="/coming-soon" element={<ComingSoon />} />
+        <Route path="/events" element={<ComingSoon />} />
         <Route path="/cartoonifier" element={<CartoonifierNew />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
