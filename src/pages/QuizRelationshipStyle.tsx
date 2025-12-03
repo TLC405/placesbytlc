@@ -1,10 +1,7 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Heart, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Progress } from "@/components/ui/progress";
+import { ArrowLeft, Users, RotateCcw, Heart } from "lucide-react";
 import {
   relationshipStylePairs,
   relationshipStyleLabels,
@@ -14,11 +11,11 @@ import {
 } from "@/data/relationshipStyleQuiz";
 
 const styleColors = {
-  ADVENTURER: "from-orange-500 to-red-500",
-  NURTURER: "from-green-500 to-emerald-500",
-  INTELLECTUAL: "from-blue-500 to-purple-500",
-  ROMANTIC: "from-pink-500 to-rose-500",
-  PRAGMATIC: "from-slate-500 to-gray-600",
+  ADVENTURER: "bg-orange-100 dark:bg-orange-900/30 text-orange-500",
+  NURTURER: "bg-green-100 dark:bg-green-900/30 text-green-500",
+  INTELLECTUAL: "bg-blue-100 dark:bg-blue-900/30 text-blue-500",
+  ROMANTIC: "bg-rose-100 dark:bg-rose-900/30 text-rose-500",
+  PRAGMATIC: "bg-slate-100 dark:bg-slate-900/30 text-slate-500",
 };
 
 const styleEmojis = {
@@ -46,7 +43,7 @@ export default function QuizRelationshipStyle() {
 
   const handleAnswer = (key: RelationshipStylePair["a"]["k"]) => {
     setScores((prev) => ({ ...prev, [key]: prev[key] + 1 }));
-    
+
     if (currentIndex < relationshipStylePairs.length - 1) {
       setCurrentIndex(currentIndex + 1);
     } else {
@@ -55,167 +52,142 @@ export default function QuizRelationshipStyle() {
   };
 
   const topStyle = Object.entries(scores).reduce((a, b) => (b[1] > a[1] ? b : a))[0] as keyof typeof scores;
+  const sortedScores = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+
+  const resetQuiz = () => {
+    setCurrentIndex(0);
+    setScores({ ADVENTURER: 0, NURTURER: 0, INTELLECTUAL: 0, ROMANTIC: 0, PRAGMATIC: 0 });
+    setFinished(false);
+  };
 
   if (finished) {
-    const sortedScores = Object.entries(scores).sort((a, b) => b[1] - a[1]);
-
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black text-green-400 font-mono p-6">
-        <div className="max-w-4xl mx-auto space-y-6">
-          <Button
-            variant="outline"
-            onClick={() => navigate("/quizzes")}
-            className="border-green-500/30 text-green-400 hover:bg-green-500/10"
-          >
-            <ArrowLeft className="mr-2 w-4 h-4" />
-            [BACK_TO_QUIZZES]
-          </Button>
+      <div className="page-shell">
+        <div className="page-content space-y-6">
+          <header className="pt-2 animate-in">
+            <button onClick={() => navigate("/quizzes")} className="btn-ghost -ml-3 mb-4">
+              <ArrowLeft className="w-4 h-4" />
+              <span>Back</span>
+            </button>
+          </header>
 
-          <Card className="border-2 border-green-500/30 bg-black/80 backdrop-blur-sm shadow-2xl shadow-green-500/20">
-            <CardHeader className="text-center space-y-4">
-              <div className="flex justify-center">
-                <div className={`text-6xl mb-4 p-6 rounded-full bg-gradient-to-br ${styleColors[topStyle]} flex items-center justify-center animate-pulse shadow-glow`}>
-                  {styleEmojis[topStyle]}
+          {/* Result */}
+          <div className="text-center animate-in">
+            <span className="text-6xl mb-4 block">{styleEmojis[topStyle]}</span>
+            <p className="text-caption mb-2">Your Style</p>
+            <h1 className="text-display text-foreground mb-2">
+              {relationshipStyleLabels[topStyle]}
+            </h1>
+            <p className="text-body max-w-sm mx-auto">
+              {relationshipStyleDescriptions[topStyle]}
+            </p>
+          </div>
+
+          {/* Breakdown */}
+          <div className="card-luxury animate-in-delay-1">
+            <h3 className="font-semibold text-foreground mb-4">Style Breakdown</h3>
+            <div className="space-y-3">
+              {sortedScores.map(([style, score], idx) => (
+                <div key={style}>
+                  <div className="flex justify-between text-sm mb-1.5">
+                    <span className={`font-medium ${idx === 0 ? "text-primary" : "text-foreground"}`}>
+                      {styleEmojis[style as keyof typeof styleEmojis]}{" "}
+                      {relationshipStyleLabels[style as keyof typeof relationshipStyleLabels]}
+                    </span>
+                    <span className="text-muted-foreground">
+                      {score}/{relationshipStylePairs.length}
+                    </span>
+                  </div>
+                  <Progress
+                    value={(score / relationshipStylePairs.length) * 100}
+                    className={`h-2 ${idx === 0 ? "[&>div]:bg-primary" : ""}`}
+                  />
                 </div>
-              </div>
-              <CardTitle className="text-4xl font-black text-green-400">
-                [ANALYSIS_COMPLETE]
-              </CardTitle>
-              <CardDescription className="text-xl font-bold text-green-500">
-                Your Primary Relationship Style: {relationshipStyleLabels[topStyle]}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="p-6 rounded-xl bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-2 border-green-500/30">
-                <p className="text-lg leading-relaxed font-medium text-green-300">
-                  {relationshipStyleDescriptions[topStyle]}
-                </p>
-              </div>
+              ))}
+            </div>
+          </div>
 
-              <div>
-                <h3 className="text-2xl font-black mb-4 text-green-400 flex items-center gap-2">
-                  <Sparkles className="w-6 h-6" />
-                  [YOUR_STYLE_BREAKDOWN]
-                </h3>
-                <div className="space-y-3">
-                  {sortedScores.map(([style, score]) => (
-                    <div key={style} className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-2 font-bold text-green-400">
-                          <span className="text-2xl">{styleEmojis[style as keyof typeof styleEmojis]}</span>
-                          <span>{relationshipStyleLabels[style as keyof typeof relationshipStyleLabels]}</span>
-                        </div>
-                        <Badge className="bg-green-500/20 text-green-400 border border-green-500/30">
-                          {score} / {relationshipStylePairs.length}
-                        </Badge>
-                      </div>
-                      <Progress 
-                        value={(score / relationshipStylePairs.length) * 100} 
-                        className="h-2 bg-green-950 border border-green-500/30"
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
+          {/* Date Ideas */}
+          <div className="card-highlight animate-in-delay-2">
+            <div className="flex items-center gap-2 mb-3">
+              <Heart className="w-4 h-4 text-primary" />
+              <h3 className="font-semibold text-foreground">Perfect Date Ideas</h3>
+            </div>
+            <ul className="space-y-2">
+              {relationshipStyleIdeas[topStyle].map((idea, idx) => (
+                <li key={idx} className="flex items-start gap-2 text-sm">
+                  <span className="text-primary mt-0.5">•</span>
+                  <span className="text-muted-foreground">{idea}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-              <div className="p-6 rounded-xl bg-gradient-to-br from-purple-500/10 to-pink-500/10 border-2 border-purple-500/30">
-                <h3 className="text-xl font-black mb-3 text-purple-400 flex items-center gap-2">
-                  <Heart className="w-5 h-5" />
-                  [PERFECT_DATE_IDEAS]
-                </h3>
-                <ul className="space-y-2">
-                  {relationshipStyleIdeas[topStyle].map((idea, idx) => (
-                    <li key={idx} className="flex items-start gap-2 text-purple-300 font-medium">
-                      <span className="text-purple-400 font-black">▸</span>
-                      {idea}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <Button
-                  onClick={() => {
-                    setCurrentIndex(0);
-                    setScores({ ADVENTURER: 0, NURTURER: 0, INTELLECTUAL: 0, ROMANTIC: 0, PRAGMATIC: 0 });
-                    setFinished(false);
-                  }}
-                  variant="outline"
-                  className="h-12 border-green-500/30 text-green-400 hover:bg-green-500/10"
-                >
-                  [RETAKE_QUIZ]
-                </Button>
-                <Button
-                  onClick={() => navigate("/quizzes")}
-                  className="h-12 bg-gradient-to-r from-green-500 to-emerald-500 text-black font-black"
-                >
-                  [EXPLORE_MORE_QUIZZES]
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Actions */}
+          <div className="flex gap-3 animate-in-delay-3">
+            <button onClick={resetQuiz} className="btn-secondary flex-1">
+              <RotateCcw className="w-4 h-4" />
+              Retake
+            </button>
+            <button onClick={() => navigate("/quizzes")} className="btn-primary flex-1">
+              More Quizzes
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black text-green-400 font-mono p-6">
-      <div className="max-w-3xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
-          <Button
-            variant="outline"
-            onClick={() => navigate("/quizzes")}
-            className="border-green-500/30 text-green-400 hover:bg-green-500/10"
+    <div className="page-shell">
+      <div className="page-content space-y-6">
+        {/* Header */}
+        <header className="pt-2 animate-in">
+          <button onClick={() => navigate("/quizzes")} className="btn-ghost -ml-3 mb-4">
+            <ArrowLeft className="w-4 h-4" />
+            <span>Back</span>
+          </button>
+
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+              <Users className="w-6 h-6 text-blue-500" />
+            </div>
+            <div>
+              <h1 className="text-headline text-foreground">Relationship Style</h1>
+              <p className="text-xs text-muted-foreground">
+                Question {currentIndex + 1} of {relationshipStylePairs.length}
+              </p>
+            </div>
+          </div>
+
+          <Progress value={progress} className="h-2" />
+        </header>
+
+        {/* Question */}
+        <div className="space-y-3 animate-in-delay-1">
+          <p className="text-caption text-center">Choose the one that resonates more</p>
+
+          <button
+            onClick={() => handleAnswer(currentPair.a.k)}
+            className="card-luxury w-full p-5 text-left hover:border-primary/30 border-2 border-transparent"
           >
-            <ArrowLeft className="mr-2 w-4 h-4" />
-            [EXIT]
-          </Button>
-          <Badge className="bg-green-500/20 text-green-400 border border-green-500/30 px-4 py-2">
-            QUESTION {currentIndex + 1} / {relationshipStylePairs.length}
-          </Badge>
-        </div>
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">{styleEmojis[currentPair.a.k]}</span>
+              <span className="text-sm text-foreground">{currentPair.a.t}</span>
+            </div>
+          </button>
 
-        <Progress value={progress} className="h-2 bg-green-950 border border-green-500/30" />
+          <div className="text-center text-xs text-muted-foreground">or</div>
 
-        <Card className="border-2 border-green-500/30 bg-black/80 backdrop-blur-sm shadow-2xl shadow-green-500/20">
-          <CardHeader>
-            <CardTitle className="text-2xl font-black text-center text-green-400">
-              [RELATIONSHIP_STYLE_ANALYSIS]
-            </CardTitle>
-            <CardDescription className="text-center text-lg font-bold text-green-500">
-              Choose the statement that resonates more with you
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Button
-              onClick={() => handleAnswer(currentPair.a.k)}
-              className="w-full h-auto p-6 text-left border-2 border-green-500/30 bg-gradient-to-r from-green-500/10 to-emerald-500/10 hover:from-green-500/20 hover:to-emerald-500/20 text-green-400 font-bold text-lg transition-all"
-              variant="outline"
-            >
-              <div className="flex items-center gap-3">
-                <span className="text-3xl">{styleEmojis[currentPair.a.k]}</span>
-                <span>{currentPair.a.t}</span>
-              </div>
-            </Button>
-            
-            <div className="text-center text-green-500/50 font-black">OR</div>
-            
-            <Button
-              onClick={() => handleAnswer(currentPair.b.k)}
-              className="w-full h-auto p-6 text-left border-2 border-green-500/30 bg-gradient-to-r from-blue-500/10 to-purple-500/10 hover:from-blue-500/20 hover:to-purple-500/20 text-green-400 font-bold text-lg transition-all"
-              variant="outline"
-            >
-              <div className="flex items-center gap-3">
-                <span className="text-3xl">{styleEmojis[currentPair.b.k]}</span>
-                <span>{currentPair.b.t}</span>
-              </div>
-            </Button>
-          </CardContent>
-        </Card>
-
-        <div className="text-center text-xs text-green-500/50 font-bold">
-          [TERMINAL_SECURE] • [DATA_ENCRYPTED] • [PRIVACY_PROTECTED]
+          <button
+            onClick={() => handleAnswer(currentPair.b.k)}
+            className="card-luxury w-full p-5 text-left hover:border-primary/30 border-2 border-transparent"
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">{styleEmojis[currentPair.b.k]}</span>
+              <span className="text-sm text-foreground">{currentPair.b.t}</span>
+            </div>
+          </button>
         </div>
       </div>
     </div>
