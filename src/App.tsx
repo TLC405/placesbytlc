@@ -1,19 +1,21 @@
-import React, { useState, useEffect, lazy, Suspense } from "react";
+import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import { AppAuthGate } from "@/components/AppAuthGate";
 import { EntryGate } from "@/components/EntryGate";
 import { ActivityTracker } from "@/components/ActivityTracker";
 import { DetailedCupid } from "@/components/DetailedCupid";
+import { BottomTabBar } from "@/components/BottomTabBar";
 import { useSessionTracker } from "@/hooks/useSessionTracker";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+
 import HackerHome from "./pages/HackerHome";
 import NotFound from "./pages/NotFound";
 
-// Lazy load quiz pages and special features
 const HackerScreen = lazy(() => import("./pages/HackerScreen"));
 const Quizzes = lazy(() => import("./pages/Quizzes"));
 const QuizLove = lazy(() => import("./pages/QuizLove"));
@@ -42,24 +44,29 @@ const queryClient = new QueryClient();
 
 const AppRoutes = () => {
   useSessionTracker();
-  // Ensure Google Maps Places API is loaded once globally
-  const { isReady: isMapsReady } = useGoogleMaps();
-  
+  useGoogleMaps();
+
   return (
-    <Suspense fallback={
-      <div className="flex items-center justify-center min-h-[50vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent" />
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center min-h-screen bg-background">
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-10 h-10 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+            <p className="text-sm text-muted-foreground">Loading...</p>
+          </div>
+        </div>
+      }
+    >
       <Routes>
-        <Route path="/hacker" element={<HackerScreen />} />
         <Route path="/" element={<HackerHome />} />
+        <Route path="/hacker" element={<HackerScreen />} />
         <Route path="/auth" element={<Auth />} />
         <Route path="/quizzes" element={<Quizzes />} />
         <Route path="/quiz/love" element={<QuizLove />} />
         <Route path="/quiz/mbti" element={<QuizMBTI />} />
         <Route path="/quiz/relationship-style" element={<QuizRelationshipStyle />} />
         <Route path="/period-tracker" element={<PeriodTracker />} />
+        <Route path="/felicia-mod" element={<FeliciaModPanel />} />
         <Route path="/code" element={<CodeViewer />} />
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="/tester" element={<TesterDashboard />} />
@@ -72,6 +79,7 @@ const AppRoutes = () => {
         <Route path="/cartoonifier" element={<CartoonifierNew />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
+      <BottomTabBar />
     </Suspense>
   );
 };
