@@ -5,8 +5,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import { AppAuthGate } from "@/components/AppAuthGate";
-import { EntryGate } from "@/components/EntryGate";
 import { ActivityTracker } from "@/components/ActivityTracker";
 import { DetailedCupid } from "@/components/DetailedCupid";
 import { BottomTabBar } from "@/components/BottomTabBar";
@@ -95,15 +93,11 @@ const App = () => {
                 <TooltipProvider>
                   <Toaster />
                   <Sonner />
-                  <BrowserRouter>
-                    <EntryGate>
-                      <AppAuthGate>
-                        <ActivityTracker />
-                        <DetailedCupid />
-                        <AppRoutes />
-                      </AppAuthGate>
-                    </EntryGate>
-                  </BrowserRouter>
+                <BrowserRouter>
+                  <ActivityTracker />
+                  <DetailedCupid />
+                  <AppRoutes />
+                </BrowserRouter>
                 </TooltipProvider>
               </PINProvider>
             </AuthProvider>
