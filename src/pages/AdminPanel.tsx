@@ -6,20 +6,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { 
-  Users, 
   BarChart3, 
   Terminal, 
-  Download,
   Code,
   Activity,
   Sparkles,
-  MessageSquare,
   Wifi,
-  FileCode,
-  Rocket,
   Shield,
   Zap,
   Heart
@@ -27,7 +20,6 @@ import {
 import { CommandStation } from "@/components/admin/CommandStation";
 import { UserAnalyticsDashboard } from "@/components/admin/UserAnalyticsDashboard";
 import { UserProfileViewer } from "@/components/admin/UserProfileViewer";
-import { CodeExportSystem } from "@/components/admin/CodeExportSystem";
 import { SMSNotificationPanel } from "@/components/admin/SMSNotificationPanel";
 import { AIPromptInterface } from "@/components/admin/AIPromptInterface";
 import { WiFiAnalyzer } from "@/components/admin/WiFiAnalyzer";
@@ -109,53 +101,45 @@ const AdminPanel = () => {
   useEffect(() => {
     const checkAdminAccess = () => {
       try {
+        // Check if already unlocked in this session
+        const sessionCode = sessionStorage.getItem('admin_code_unlocked');
         const role = localStorage.getItem('pin_role');
         const expiry = parseInt(localStorage.getItem('pin_expiry') || '0');
         
-        // Check if PIN token expired
-        if (!role || Date.now() > expiry) {
-          toast.error("Please log in to access admin panel");
-          navigate('/');
-          return;
-        }
-        
-        // Check if user has admin or warlord role
-        if (role !== 'admin' && role !== 'warlord') {
-          toast.error("Admin access required");
-          navigate('/');
-          return;
-        }
-
-        setIsAdmin(true);
-        
-        // Check if code was already entered in this session
-        const sessionCode = sessionStorage.getItem('admin_code_unlocked');
-        if (sessionCode === 'true') {
+        if (sessionCode === 'true' && role === 'admin' && Date.now() < expiry) {
+          setIsAdmin(true);
           setCodeUnlocked(true);
           setShowCodeDialog(false);
           fetchUserAnalytics();
+        } else {
+          // Clear any stale session data
+          sessionStorage.removeItem('admin_code_unlocked');
+          setIsAdmin(false);
+          setShowCodeDialog(true);
         }
       } catch (error) {
         console.error("Admin access check failed:", error);
-        toast.error("Failed to verify admin access");
-        navigate('/');
+        setShowCodeDialog(true);
       } finally {
         setLoading(false);
       }
     };
 
     checkAdminAccess();
-  }, [navigate]);
+  }, []);
 
   const handleCodeSubmit = () => {
-    if (codeInput && isAdmin) {
+    // Only accept the specific admin PIN
+    if (codeInput === "1309") {
       setCodeUnlocked(true);
       setShowCodeDialog(false);
       sessionStorage.setItem('admin_code_unlocked', 'true');
+      localStorage.setItem('pin_role', 'admin');
+      localStorage.setItem('pin_expiry', (Date.now() + 24 * 60 * 60 * 1000).toString());
       fetchUserAnalytics();
-      toast.success("Access granted");
+      toast.success("Admin access granted");
     } else {
-      toast.error("Incorrect code");
+      toast.error("Invalid admin code");
       setCodeInput("");
     }
   };
@@ -283,33 +267,42 @@ const AdminPanel = () => {
     );
   }
 
-  // Code unlock dialog
+  // Code unlock dialog - always show if not unlocked
   if (!codeUnlocked) {
     return (
-      <Dialog open={showCodeDialog} onOpenChange={setShowCodeDialog}>
-        <DialogContent className="bg-white border-2 border-primary">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-primary">
-              <Shield className="w-6 h-6" />
-              Admin Security Check
-            </DialogTitle>
-          </DialogHeader>
+      <div className="page-shell flex items-center justify-center">
+        <div className="card-luxury w-full max-w-sm p-8 space-y-6 animate-in">
+          <div className="text-center">
+            <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+              <Shield className="w-8 h-8 text-primary" />
+            </div>
+            <h1 className="text-headline text-foreground mb-2">Admin Access</h1>
+            <p className="text-body text-sm">Enter admin PIN to continue</p>
+          </div>
+          
           <div className="space-y-4">
-            <p className="text-muted-foreground">Enter admin code to unlock full access</p>
             <Input
               type="password"
               value={codeInput}
               onChange={(e) => setCodeInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleCodeSubmit()}
-              placeholder="Enter code..."
-              className="text-center text-xl tracking-widest"
+              placeholder="Enter PIN"
+              className="h-14 text-center text-2xl tracking-[0.5em] font-mono bg-card border-border focus:border-primary rounded-xl"
+              autoFocus
+              maxLength={4}
             />
-            <Button onClick={handleCodeSubmit} className="w-full">
-              Unlock Admin Panel
+            <Button onClick={handleCodeSubmit} className="btn-primary w-full h-12">
+              Unlock
             </Button>
+            <button
+              onClick={() => navigate('/')}
+              className="btn-ghost w-full"
+            >
+              Back to Home
+            </button>
           </div>
-        </DialogContent>
-      </Dialog>
+        </div>
+      </div>
     );
   }
 
