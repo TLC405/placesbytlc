@@ -14,22 +14,13 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import HackerHome from "./pages/HackerHome";
 import NotFound from "./pages/NotFound";
 
-const HackerScreen = lazy(() => import("./pages/HackerScreen"));
 const Quizzes = lazy(() => import("./pages/Quizzes"));
 const QuizLove = lazy(() => import("./pages/QuizLove"));
 const QuizMBTI = lazy(() => import("./pages/QuizMBTI"));
 const QuizRelationshipStyle = lazy(() => import("./pages/QuizRelationshipStyle"));
-const PeriodTracker = lazy(() => import("./pages/PeriodTracker"));
-const FeliciaModPanel = lazy(() => import("./components/FeliciaModPanel"));
-const CodeViewer = lazy(() => import("./pages/CodeViewer"));
 const AdminPanel = lazy(() => import("./pages/AdminPanel"));
-const TesterDashboard = lazy(() => import("./components/TesterDashboard"));
 const AIRecommender = lazy(() => import("./pages/AIRecommender"));
-const CoupleMode = lazy(() => import("./pages/CoupleMode"));
-const Gamification = lazy(() => import("./pages/Gamification"));
 const OKCLegendForge = lazy(() => import("./pages/EnhancedOKCLegend"));
-const ComingSoon = lazy(() => import("./pages/ComingSoon"));
-const CartoonifierNew = lazy(() => import("./pages/CartoonifierNew"));
 const Auth = lazy(() => import("./pages/Auth"));
 
 import { useGoogleMaps } from "@/hooks/useGoogleMaps";
@@ -57,24 +48,14 @@ const AppRoutes = () => {
     >
       <Routes>
         <Route path="/" element={<HackerHome />} />
-        <Route path="/hacker" element={<HackerScreen />} />
         <Route path="/auth" element={<Auth />} />
         <Route path="/quizzes" element={<Quizzes />} />
         <Route path="/quiz/love" element={<QuizLove />} />
         <Route path="/quiz/mbti" element={<QuizMBTI />} />
         <Route path="/quiz/relationship-style" element={<QuizRelationshipStyle />} />
-        <Route path="/period-tracker" element={<PeriodTracker />} />
-        <Route path="/felicia-mod" element={<FeliciaModPanel />} />
-        <Route path="/code" element={<CodeViewer />} />
         <Route path="/admin" element={<AdminPanel />} />
-        <Route path="/tester" element={<TesterDashboard />} />
         <Route path="/ai-recommender" element={<AIRecommender />} />
-        <Route path="/couple-mode" element={<CoupleMode />} />
-        <Route path="/gamification" element={<Gamification />} />
-        <Route path="/okc-legend" element={<OKCLegendForge />} />
-        <Route path="/boo-mode" element={<ComingSoon />} />
-        <Route path="/coming-soon" element={<ComingSoon />} />
-        <Route path="/cartoonifier" element={<CartoonifierNew />} />
+        <Route path="/places" element={<OKCLegendForge />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <BottomTabBar />

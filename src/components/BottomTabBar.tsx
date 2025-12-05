@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 
 const tabs = [
   { id: "home", label: "Home", icon: Home, path: "/" },
-  { id: "places", label: "Places", icon: MapPin, path: "/okc-legend" },
+  { id: "places", label: "Places", icon: MapPin, path: "/places" },
   { id: "cupid", label: "Cupid", icon: Sparkles, path: "/ai-recommender" },
   { id: "quizzes", label: "Quizzes", icon: ClipboardList, path: "/quizzes" },
   { id: "profile", label: "Profile", icon: User, path: "/auth" },
