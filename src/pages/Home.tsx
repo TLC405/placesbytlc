@@ -21,7 +21,7 @@ export default function Home() {
         {/* Actions */}
         <div className="grid gap-4 animate-in-delay-1">
           <button
-            onClick={() => navigate("/okc-legend")}
+            onClick={() => navigate("/places")}
             className="card-luxury p-6 text-left"
           >
             <div className="feature-icon bg-primary/10 text-primary mb-3">

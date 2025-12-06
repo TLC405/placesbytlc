@@ -20,7 +20,7 @@ const QuizMBTI = lazy(() => import("./pages/QuizMBTI"));
 const QuizRelationshipStyle = lazy(() => import("./pages/QuizRelationshipStyle"));
 const AdminPanel = lazy(() => import("./pages/AdminPanel"));
 const AIRecommender = lazy(() => import("./pages/AIRecommender"));
-const OKCLegendForge = lazy(() => import("./pages/EnhancedOKCLegend"));
+const PlacesPage = lazy(() => import("./pages/EnhancedOKCLegend"));
 const Auth = lazy(() => import("./pages/Auth"));
 
 import { useGoogleMaps } from "@/hooks/useGoogleMaps";
@@ -55,7 +55,7 @@ const AppRoutes = () => {
         <Route path="/quiz/relationship-style" element={<QuizRelationshipStyle />} />
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="/ai-recommender" element={<AIRecommender />} />
-        <Route path="/places" element={<OKCLegendForge />} />
+        <Route path="/places" element={<PlacesPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <BottomTabBar />
