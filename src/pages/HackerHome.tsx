@@ -22,7 +22,7 @@ export default function HackerHome() {
       subtitle: "70+ curated locations",
       icon: Map,
       color: "bg-primary/10 text-primary",
-      path: "/okc-legend",
+      path: "/places",
     },
     {
       id: "cupid",
@@ -109,7 +109,7 @@ export default function HackerHome() {
           <div className="section-header">
             <h2 className="section-title">Featured Spots</h2>
             <button 
-              onClick={() => navigate("/okc-legend")}
+              onClick={() => navigate("/places")}
               className="section-action flex items-center gap-1"
             >
               See all <ChevronRight className="w-3 h-3" />
@@ -120,7 +120,7 @@ export default function HackerHome() {
             {featuredSpots.map((spot) => (
               <button
                 key={spot.id}
-                onClick={() => navigate("/okc-legend")}
+                onClick={() => navigate("/places")}
                 className="flex-shrink-0 w-36 card-luxury p-4"
               >
                 <span className="text-3xl mb-2 block">{spot.emoji}</span>
@@ -191,7 +191,7 @@ export default function HackerHome() {
               </div>
             </div>
             <button
-              onClick={() => navigate("/okc-legend")}
+              onClick={() => navigate("/places")}
               className="btn-primary w-full mt-4"
             >
               <span>Start Exploring</span>

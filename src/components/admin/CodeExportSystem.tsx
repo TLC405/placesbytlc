@@ -122,7 +122,7 @@ export const CodeExportSystem = () => {
       icon: "🎮",
       files: [
         { name: "Gamification.tsx", path: "src/pages/Gamification.tsx", category: "gamification" },
-        { name: "OKCLegendForge.tsx", path: "src/pages/OKCLegendForge.tsx", category: "gamification" },
+        { name: "EnhancedOKCLegend.tsx", path: "src/pages/EnhancedOKCLegend.tsx", category: "gamification" },
       ]
     },
     {
@@ -130,7 +130,7 @@ export const CodeExportSystem = () => {
       name: "Shared UI Components",
       icon: "🎨",
       files: [
-        { name: "Header.tsx", path: "src/components/Header.tsx", category: "ui-components" },
+        { name: "BottomTabBar.tsx", path: "src/components/BottomTabBar.tsx", category: "ui-components" },
         { name: "LoadingScreen.tsx", path: "src/components/LoadingScreen.tsx", category: "ui-components" },
         { name: "ErrorBoundary.tsx", path: "src/components/ErrorBoundary.tsx", category: "ui-components" },
         { name: "DetailedCupid.tsx", path: "src/components/DetailedCupid.tsx", category: "ui-components" },
