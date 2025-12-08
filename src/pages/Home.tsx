@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { MapPin, Brain, Sparkles, Heart, ChevronRight, Star } from "lucide-react";
+import { MapPin, Brain, Sparkles, Heart, ChevronRight, Star, Droplets } from "lucide-react";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -31,6 +31,15 @@ export default function Home() {
       color: "bg-blue-100 dark:bg-blue-900/30",
       iconColor: "text-blue-500",
       path: "/quizzes",
+    },
+    {
+      id: "cycle",
+      title: "Cycle Tracker",
+      desc: "Understand her rhythm for better dates",
+      icon: Droplets,
+      color: "bg-rose-100 dark:bg-rose-900/30",
+      iconColor: "text-rose-500",
+      path: "/cycle",
     },
   ];
 
