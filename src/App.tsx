@@ -22,6 +22,7 @@ const AdminPanel = lazy(() => import("./pages/AdminPanel"));
 const AIRecommender = lazy(() => import("./pages/AIRecommender"));
 const PlacesPage = lazy(() => import("./pages/EnhancedOKCLegend"));
 const Auth = lazy(() => import("./pages/Auth"));
+const PeriodTracker = lazy(() => import("./pages/PeriodTracker"));
 
 import { useGoogleMaps } from "@/hooks/useGoogleMaps";
 import { DevModeProvider } from "@/contexts/DevModeContext";
@@ -56,6 +57,7 @@ const AppRoutes = () => {
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="/ai-recommender" element={<AIRecommender />} />
         <Route path="/places" element={<PlacesPage />} />
+        <Route path="/cycle" element={<PeriodTracker />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <BottomTabBar />
