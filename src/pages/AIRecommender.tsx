@@ -1,12 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Textarea } from "@/components/ui/textarea";
-import { Sparkles, Send, ArrowLeft, MapPin, ChevronRight } from "lucide-react";
+import { Sparkles, Send, ArrowLeft, MapPin, ChevronRight, Heart } from "lucide-react";
 import { toast } from "sonner";
-import { useTesterCheck } from "@/hooks/useTesterCheck";
 
 export default function AIRecommender() {
-  useTesterCheck();
   const navigate = useNavigate();
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
@@ -32,31 +30,11 @@ export default function AIRecommender() {
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
       setRecommendations([
-        {
-          name: "The Mule",
-          type: "Rooftop Bar",
-          desc: "Stunning city views, perfect for sunset dates",
-        },
-        {
-          name: "Paseo Arts District",
-          type: "Arts & Culture",
-          desc: "Gallery walks with dinner at The Press",
-        },
-        {
-          name: "Scissortail Park",
-          type: "Outdoor",
-          desc: "Romantic evening stroll with food trucks",
-        },
-        {
-          name: "Vast",
-          type: "Fine Dining",
-          desc: "49th floor panoramic views",
-        },
-        {
-          name: "Factory Obscura",
-          type: "Experience",
-          desc: "Interactive art, fun and unique",
-        },
+        { name: "The Mule", type: "Rooftop Bar", desc: "Stunning city views, perfect for sunset dates" },
+        { name: "Paseo Arts District", type: "Arts & Culture", desc: "Gallery walks with dinner at The Press" },
+        { name: "Scissortail Park", type: "Outdoor", desc: "Romantic evening stroll with food trucks" },
+        { name: "Vast", type: "Fine Dining", desc: "49th floor panoramic views" },
+        { name: "Factory Obscura", type: "Experience", desc: "Interactive art, fun and unique" },
       ]);
 
       toast.success("Found 5 recommendations!");
@@ -71,24 +49,19 @@ export default function AIRecommender() {
     <div className="page-shell">
       <div className="page-content space-y-6">
         {/* Header */}
-        <header className="pt-2 animate-in">
-          <button
-            onClick={() => navigate("/")}
-            className="btn-ghost -ml-3 mb-4"
-          >
+        <header className="animate-in">
+          <button onClick={() => navigate("/")} className="btn-ghost -ml-3 mb-3">
             <ArrowLeft className="w-4 h-4" />
             <span>Back</span>
           </button>
 
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
-              <Sparkles className="w-6 h-6 text-primary" />
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+              <Sparkles className="w-7 h-7 text-primary" />
             </div>
             <div>
               <h1 className="text-headline text-foreground">Cupid AI</h1>
-              <p className="text-xs text-muted-foreground">
-                Your personal date planner
-              </p>
+              <p className="text-sm text-muted-foreground">Your personal date planner</p>
             </div>
           </div>
         </header>
@@ -96,9 +69,7 @@ export default function AIRecommender() {
         {/* Input Section */}
         <section className="space-y-4 animate-in-delay-1">
           <div className="card-luxury">
-            <label className="text-caption mb-2 block">
-              What are you looking for?
-            </label>
+            <label className="text-caption mb-2 block">What are you looking for?</label>
             <Textarea
               placeholder="Describe your ideal date... budget, vibe, activities, food preferences"
               value={prompt}
@@ -107,7 +78,7 @@ export default function AIRecommender() {
             />
 
             {/* Quick Prompts */}
-            <div className="flex flex-wrap gap-2 mt-3">
+            <div className="flex flex-wrap gap-2 mt-4">
               {quickPrompts.map((qp, idx) => (
                 <button
                   key={idx}
@@ -144,29 +115,23 @@ export default function AIRecommender() {
           <section className="space-y-3 animate-in">
             <div className="section-header">
               <h2 className="section-title">Your Recommendations</h2>
-              <span className="text-xs text-muted-foreground">
-                {recommendations.length} spots
-              </span>
+              <span className="text-caption">{recommendations.length} spots</span>
             </div>
 
             {recommendations.map((rec, idx) => (
               <button
                 key={idx}
-                onClick={() => navigate("/okc-legend")}
+                onClick={() => navigate("/places")}
                 className="feature-card w-full"
                 style={{ animationDelay: `${idx * 0.05}s` }}
               >
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <div className="feature-icon bg-primary/10">
                   <MapPin className="w-5 h-5 text-primary" />
                 </div>
                 <div className="flex-1 text-left">
                   <div className="flex items-center gap-2">
-                    <h3 className="font-medium text-foreground text-sm">
-                      {rec.name}
-                    </h3>
-                    <span className="chip text-[10px] py-0.5 px-2">
-                      {rec.type}
-                    </span>
+                    <h3 className="font-medium text-foreground">{rec.name}</h3>
+                    <span className="chip text-[10px] py-0.5 px-2">{rec.type}</span>
                   </div>
                   <p className="text-xs text-muted-foreground">{rec.desc}</p>
                 </div>
@@ -180,13 +145,10 @@ export default function AIRecommender() {
         {recommendations.length === 0 && !loading && (
           <section className="animate-in-delay-2">
             <div className="card-highlight text-center py-8">
-              <Sparkles className="w-10 h-10 text-primary mx-auto mb-3 animate-pulse-soft" />
-              <h3 className="font-semibold text-foreground mb-1">
-                Let Cupid help you
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Describe your perfect date and get personalized spot
-                recommendations
+              <Heart className="w-10 h-10 text-primary mx-auto mb-3 animate-pulse-soft" />
+              <h3 className="font-semibold text-foreground mb-1">Let Cupid help you</h3>
+              <p className="text-sm text-muted-foreground max-w-xs mx-auto">
+                Describe your perfect date and get personalized spot recommendations
               </p>
             </div>
           </section>
