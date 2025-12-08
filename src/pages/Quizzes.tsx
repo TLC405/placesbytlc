@@ -1,9 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { Heart, Brain, Users, ChevronRight, Sparkles } from "lucide-react";
-import { useTesterCheck } from "@/hooks/useTesterCheck";
+import { Heart, Brain, Users, ChevronRight, Sparkles, ArrowLeft } from "lucide-react";
 
 export default function Quizzes() {
-  useTesterCheck();
   const navigate = useNavigate();
 
   const quizzes = [
@@ -48,21 +46,33 @@ export default function Quizzes() {
     <div className="page-shell">
       <div className="page-content space-y-8">
         {/* Header */}
-        <header className="pt-4 text-center animate-in">
-          <div className="inline-flex items-center gap-2 chip-primary mb-4">
-            <Sparkles className="w-3 h-3" />
-            <span>Personality Quizzes</span>
+        <header className="animate-in">
+          <button 
+            onClick={() => navigate("/")} 
+            className="btn-ghost -ml-3 mb-3"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Back</span>
+          </button>
+          
+          <div className="text-center">
+            <div className="inline-flex items-center gap-2 chip-primary mb-4">
+              <Sparkles className="w-3 h-3" />
+              <span>Personality Quizzes</span>
+            </div>
+            <h1 className="text-display text-foreground mb-2">Discover Yourself</h1>
+            <p className="text-body max-w-sm mx-auto">
+              Take fun quizzes to understand your personality and relationships better
+            </p>
           </div>
-          <h1 className="text-display text-foreground mb-2">
-            Discover Yourself
-          </h1>
-          <p className="text-body max-w-sm mx-auto">
-            Take fun quizzes to understand your personality and relationships better
-          </p>
         </header>
 
         {/* Main Quizzes */}
         <section className="space-y-3 animate-in-delay-1">
+          <div className="section-header">
+            <h2 className="section-title">Available Quizzes</h2>
+          </div>
+          
           {quizzes.map((quiz) => {
             const Icon = quiz.icon;
             return (
@@ -76,16 +86,10 @@ export default function Quizzes() {
                 </div>
                 <div className="flex-1 text-left">
                   <div className="flex items-center gap-2 mb-0.5">
-                    <h3 className="font-semibold text-foreground">
-                      {quiz.title}
-                    </h3>
-                    <span className="chip text-[10px] py-0.5 px-2">
-                      {quiz.duration}
-                    </span>
+                    <h3 className="font-semibold text-foreground">{quiz.title}</h3>
+                    <span className="chip text-[10px] py-0.5 px-2">{quiz.duration}</span>
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    {quiz.description}
-                  </p>
+                  <p className="text-xs text-muted-foreground">{quiz.description}</p>
                 </div>
                 <ChevronRight className="w-5 h-5 text-muted-foreground" />
               </button>
@@ -101,14 +105,9 @@ export default function Quizzes() {
           
           <div className="grid grid-cols-2 gap-3">
             {comingSoon.map((item, idx) => (
-              <div
-                key={idx}
-                className="card-luxury p-4 opacity-75 cursor-not-allowed"
-              >
+              <div key={idx} className="card-luxury p-4 opacity-60 cursor-not-allowed">
                 <span className="text-2xl mb-2 block">{item.emoji}</span>
-                <h3 className="font-medium text-foreground text-sm">
-                  {item.title}
-                </h3>
+                <h3 className="font-medium text-foreground text-sm">{item.title}</h3>
                 <p className="text-xs text-muted-foreground">{item.desc}</p>
               </div>
             ))}
@@ -117,14 +116,11 @@ export default function Quizzes() {
 
         {/* Info Card */}
         <section className="animate-in-delay-3">
-          <div className="card-highlight text-center">
+          <div className="card-highlight text-center py-6">
             <Heart className="w-8 h-8 text-primary mx-auto mb-3 animate-pulse-soft" />
-            <h3 className="text-headline text-foreground mb-2">
-              Why Take Quizzes?
-            </h3>
-            <p className="text-body text-sm">
-              Understanding yourself and your partner leads to deeper connections
-              and more meaningful dates.
+            <h3 className="text-headline text-foreground mb-2">Why Take Quizzes?</h3>
+            <p className="text-body text-sm max-w-xs mx-auto">
+              Understanding yourself and your partner leads to deeper connections and more meaningful dates.
             </p>
           </div>
         </section>
