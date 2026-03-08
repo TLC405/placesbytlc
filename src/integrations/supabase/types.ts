@@ -345,6 +345,131 @@ export type Database = {
         }
         Relationships: []
       }
+      event_signals: {
+        Row: {
+          captured_at: string | null
+          event_id: string
+          id: string
+          raw: Json | null
+          signal_type: string
+          source: string | null
+          value: number | null
+        }
+        Insert: {
+          captured_at?: string | null
+          event_id: string
+          id?: string
+          raw?: Json | null
+          signal_type: string
+          source?: string | null
+          value?: number | null
+        }
+        Update: {
+          captured_at?: string | null
+          event_id?: string
+          id?: string
+          raw?: Json | null
+          signal_type?: string
+          source?: string | null
+          value?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_signals_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      events: {
+        Row: {
+          age_band: Json | null
+          created_at: string | null
+          currency: string | null
+          description: string | null
+          ends_at: string | null
+          event_url: string | null
+          id: string
+          organizer_id: string | null
+          price_max: number | null
+          price_min: number | null
+          raw: Json | null
+          source: Database["public"]["Enums"]["event_source"]
+          source_event_id: string | null
+          starts_at: string | null
+          status: string | null
+          tags: string[] | null
+          ticket_url: string | null
+          timezone: string | null
+          title: string
+          updated_at: string | null
+          venue_id: string | null
+        }
+        Insert: {
+          age_band?: Json | null
+          created_at?: string | null
+          currency?: string | null
+          description?: string | null
+          ends_at?: string | null
+          event_url?: string | null
+          id?: string
+          organizer_id?: string | null
+          price_max?: number | null
+          price_min?: number | null
+          raw?: Json | null
+          source?: Database["public"]["Enums"]["event_source"]
+          source_event_id?: string | null
+          starts_at?: string | null
+          status?: string | null
+          tags?: string[] | null
+          ticket_url?: string | null
+          timezone?: string | null
+          title: string
+          updated_at?: string | null
+          venue_id?: string | null
+        }
+        Update: {
+          age_band?: Json | null
+          created_at?: string | null
+          currency?: string | null
+          description?: string | null
+          ends_at?: string | null
+          event_url?: string | null
+          id?: string
+          organizer_id?: string | null
+          price_max?: number | null
+          price_min?: number | null
+          raw?: Json | null
+          source?: Database["public"]["Enums"]["event_source"]
+          source_event_id?: string | null
+          starts_at?: string | null
+          status?: string | null
+          tags?: string[] | null
+          ticket_url?: string | null
+          timezone?: string | null
+          title?: string
+          updated_at?: string | null
+          venue_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_organizer_id_fkey"
+            columns: ["organizer_id"]
+            isOneToOne: false
+            referencedRelation: "organizers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "events_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ip_history: {
         Row: {
           first_seen: string | null
@@ -380,6 +505,50 @@ export type Database = {
           visit_count?: number | null
         }
         Relationships: []
+      }
+      khaos_scores: {
+        Row: {
+          components: Json | null
+          confidence: string | null
+          created_at: string | null
+          explain: Json | null
+          id: string
+          organizer_id: string
+          score_total: number | null
+          scored_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          components?: Json | null
+          confidence?: string | null
+          created_at?: string | null
+          explain?: Json | null
+          id?: string
+          organizer_id: string
+          score_total?: number | null
+          scored_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          components?: Json | null
+          confidence?: string | null
+          created_at?: string | null
+          explain?: Json | null
+          id?: string
+          organizer_id?: string
+          score_total?: number | null
+          scored_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "khaos_scores_organizer_id_fkey"
+            columns: ["organizer_id"]
+            isOneToOne: true
+            referencedRelation: "organizers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       okc_events_cache: {
         Row: {
@@ -429,6 +598,77 @@ export type Database = {
           url?: string | null
           venue_address?: string | null
           venue_name?: string | null
+        }
+        Relationships: []
+      }
+      organizer_signals: {
+        Row: {
+          captured_at: string | null
+          id: string
+          organizer_id: string
+          raw: Json | null
+          signal_type: string
+          source: string | null
+          value: number | null
+        }
+        Insert: {
+          captured_at?: string | null
+          id?: string
+          organizer_id: string
+          raw?: Json | null
+          signal_type: string
+          source?: string | null
+          value?: number | null
+        }
+        Update: {
+          captured_at?: string | null
+          id?: string
+          organizer_id?: string
+          raw?: Json | null
+          signal_type?: string
+          source?: string | null
+          value?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organizer_signals_organizer_id_fkey"
+            columns: ["organizer_id"]
+            isOneToOne: false
+            referencedRelation: "organizers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organizers: {
+        Row: {
+          claimed: boolean | null
+          created_at: string | null
+          id: string
+          name: string
+          raw: Json | null
+          social_links: Json | null
+          updated_at: string | null
+          website: string | null
+        }
+        Insert: {
+          claimed?: boolean | null
+          created_at?: string | null
+          id?: string
+          name: string
+          raw?: Json | null
+          social_links?: Json | null
+          updated_at?: string | null
+          website?: string | null
+        }
+        Update: {
+          claimed?: boolean | null
+          created_at?: string | null
+          id?: string
+          name?: string
+          raw?: Json | null
+          social_links?: Json | null
+          updated_at?: string | null
+          website?: string | null
         }
         Relationships: []
       }
@@ -791,6 +1031,48 @@ export type Database = {
         }
         Relationships: []
       }
+      venues: {
+        Row: {
+          address: string | null
+          city: string | null
+          created_at: string | null
+          id: string
+          lat: number | null
+          lng: number | null
+          name: string
+          raw: Json | null
+          state: string | null
+          updated_at: string | null
+          zip: string | null
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          created_at?: string | null
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          name: string
+          raw?: Json | null
+          state?: string | null
+          updated_at?: string | null
+          zip?: string | null
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          created_at?: string | null
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          name?: string
+          raw?: Json | null
+          state?: string | null
+          updated_at?: string | null
+          zip?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -811,6 +1093,12 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      event_source:
+        | "ticketmaster"
+        | "eventbrite"
+        | "meetup"
+        | "manual"
+        | "ai_generated"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -939,6 +1227,13 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      event_source: [
+        "ticketmaster",
+        "eventbrite",
+        "meetup",
+        "manual",
+        "ai_generated",
+      ],
     },
   },
 } as const
