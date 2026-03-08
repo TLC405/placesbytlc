@@ -396,6 +396,104 @@
     background-color: hsl(var(--primary) / 0.15);
     color: hsl(var(--foreground));
   }
+
+  /* ========================================
+     PREMIUM DESIGN TOKENS
+     ======================================== */
+
+  /* Premium Card */
+  .card-premium {
+    @apply bg-card rounded-2xl p-5 transition-all duration-500 relative overflow-hidden;
+    box-shadow: var(--shadow-card);
+    border: 1px solid hsl(var(--border));
+  }
+
+  .card-premium::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      hsl(var(--primary) / 0.04),
+      transparent
+    );
+    animation: shimmer 4s ease-in-out infinite;
+  }
+
+  .card-premium:hover {
+    box-shadow: var(--shadow-elevated), 0 0 30px -10px hsl(var(--primary) / 0.15);
+    border-color: hsl(var(--primary) / 0.2);
+    @apply -translate-y-1;
+  }
+
+  /* Premium Icon Container */
+  .icon-premium {
+    @apply relative w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0;
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.12), hsl(var(--secondary) / 0.12));
+    box-shadow: inset 0 1px 2px hsl(0 0% 100% / 0.2), 0 2px 8px hsl(var(--primary) / 0.1);
+  }
+
+  .icon-premium::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.2), transparent, hsl(var(--secondary) / 0.15));
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .card-premium:hover .icon-premium::after,
+  .feature-card:hover .icon-premium::after {
+    opacity: 1;
+  }
+
+  /* Powered by TLC Badge */
+  .powered-by-tlc {
+    @apply inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-semibold tracking-widest uppercase;
+    color: hsl(var(--muted-foreground));
+    border: 1px solid hsl(var(--border));
+    border-radius: 100px;
+    background: linear-gradient(135deg, hsl(var(--card)), hsl(var(--muted) / 0.5));
+    letter-spacing: 0.15em;
+  }
+
+  .powered-by-tlc .tlc-accent {
+    color: hsl(var(--primary));
+    font-weight: 800;
+  }
+
+  /* Premium Section Divider */
+  .section-divider-premium {
+    @apply relative flex items-center justify-center my-8;
+  }
+
+  .section-divider-premium::before,
+  .section-divider-premium::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, hsl(var(--border)), transparent);
+  }
+
+  .section-divider-premium .divider-diamond {
+    @apply mx-4 w-2 h-2 rotate-45 bg-primary/30;
+  }
+
+  /* Brand Text */
+  .text-brand {
+    font-family: "Playfair Display", Georgia, serif;
+    @apply font-bold tracking-tight;
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
 }
 
 /* Custom Scrollbar for desktop */
