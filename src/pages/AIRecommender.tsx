@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Textarea } from "@/components/ui/textarea";
 import { Sparkles, Send, ArrowLeft, MapPin, ChevronRight, Heart } from "lucide-react";
 import { toast } from "sonner";
+import { PoweredByTLC } from "@/components/PoweredByTLC";
 
 export default function AIRecommender() {
   const navigate = useNavigate();
@@ -56,7 +57,7 @@ export default function AIRecommender() {
           </button>
 
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+            <div className="icon-premium" style={{ animation: 'glow-pulse 3s ease-in-out infinite' }}>
               <Sparkles className="w-7 h-7 text-primary" />
             </div>
             <div>
@@ -68,7 +69,7 @@ export default function AIRecommender() {
 
         {/* Input Section */}
         <section className="space-y-4 animate-in-delay-1">
-          <div className="card-luxury">
+          <div className="card-premium">
             <label className="text-caption mb-2 block">What are you looking for?</label>
             <Textarea
               placeholder="Describe your ideal date... budget, vibe, activities, food preferences"
@@ -77,7 +78,6 @@ export default function AIRecommender() {
               className="min-h-[100px] bg-muted/50 border-0 resize-none rounded-xl"
             />
 
-            {/* Quick Prompts */}
             <div className="flex flex-wrap gap-2 mt-4">
               {quickPrompts.map((qp, idx) => (
                 <button
@@ -125,7 +125,7 @@ export default function AIRecommender() {
                 className="feature-card w-full"
                 style={{ animationDelay: `${idx * 0.05}s` }}
               >
-                <div className="feature-icon bg-primary/10">
+                <div className="icon-premium">
                   <MapPin className="w-5 h-5 text-primary" />
                 </div>
                 <div className="flex-1 text-left">
@@ -144,7 +144,7 @@ export default function AIRecommender() {
         {/* Empty State */}
         {recommendations.length === 0 && !loading && (
           <section className="animate-in-delay-2">
-            <div className="card-highlight text-center py-8">
+            <div className="card-premium text-center py-8">
               <Heart className="w-10 h-10 text-primary mx-auto mb-3 animate-pulse-soft" />
               <h3 className="font-semibold text-foreground mb-1">Let Cupid help you</h3>
               <p className="text-sm text-muted-foreground max-w-xs mx-auto">
@@ -153,6 +153,8 @@ export default function AIRecommender() {
             </div>
           </section>
         )}
+
+        <PoweredByTLC />
       </div>
     </div>
   );
