@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { MapPin, Brain, Sparkles, Heart, ChevronRight, Star, Droplets } from "lucide-react";
+import { MapPin, FlaskConical, Sparkles, Heart, ChevronRight, Star, Droplets } from "lucide-react";
+import { PoweredByTLC } from "@/components/PoweredByTLC";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -24,10 +25,10 @@ export default function Home() {
       path: "/ai-recommender",
     },
     {
-      id: "quizzes",
-      title: "Quizzes",
-      desc: "Discover your love language & style",
-      icon: Brain,
+      id: "psych",
+      title: "Psychology Quizzes",
+      desc: "Research-backed personality insights",
+      icon: FlaskConical,
       color: "bg-blue-100 dark:bg-blue-900/30",
       iconColor: "text-blue-500",
       path: "/quizzes",
@@ -46,7 +47,7 @@ export default function Home() {
   const stats = [
     { label: "Date Spots", value: "70+" },
     { label: "Categories", value: "6" },
-    { label: "Quizzes", value: "3" },
+    { label: "Psych Tests", value: "3" },
   ];
 
   return (
@@ -54,10 +55,13 @@ export default function Home() {
       <div className="page-content space-y-8">
         {/* Hero */}
         <header className="text-center pt-6 animate-in">
-          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center mx-auto mb-5 shadow-lg">
+          <div className="icon-premium mx-auto mb-5 w-20 h-20 rounded-2xl" style={{ animation: 'glow-pulse 3s ease-in-out infinite' }}>
             <Heart className="w-10 h-10 text-primary animate-pulse-soft" />
           </div>
-          <h1 className="text-display text-foreground">Places by TLC</h1>
+          <h1 className="text-display text-foreground">
+            <span className="text-brand">InPerson</span>{" "}
+            <span className="opacity-60">OKC</span>
+          </h1>
           <p className="text-body mt-2 max-w-xs mx-auto">
             Discover perfect date spots, explore your love style, and plan unforgettable adventures
           </p>
@@ -67,7 +71,7 @@ export default function Home() {
         <section className="animate-in-delay-1">
           <div className="grid grid-cols-3 gap-3">
             {stats.map((stat, idx) => (
-              <div key={idx} className="card-luxury text-center py-4">
+              <div key={idx} className="card-premium text-center py-4">
                 <span className="text-2xl font-bold text-primary">{stat.value}</span>
                 <p className="text-caption mt-1">{stat.label}</p>
               </div>
@@ -89,7 +93,7 @@ export default function Home() {
                 onClick={() => navigate(feature.path)}
                 className="feature-card w-full"
               >
-                <div className={`feature-icon ${feature.color}`}>
+                <div className="icon-premium">
                   <Icon className={`w-6 h-6 ${feature.iconColor}`} />
                 </div>
                 <div className="flex-1 text-left">
@@ -104,7 +108,7 @@ export default function Home() {
 
         {/* Highlight Card */}
         <section className="animate-in-delay-2">
-          <div className="card-highlight text-center py-6">
+          <div className="card-premium text-center py-6">
             <Star className="w-8 h-8 text-primary mx-auto mb-3" />
             <h3 className="text-headline text-foreground mb-2">Made for Couples</h3>
             <p className="text-body text-sm max-w-xs mx-auto">
@@ -119,6 +123,8 @@ export default function Home() {
             </button>
           </div>
         </section>
+
+        <PoweredByTLC />
       </div>
     </div>
   );

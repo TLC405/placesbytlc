@@ -1,12 +1,12 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { Home, MapPin, Sparkles, ClipboardList, User } from "lucide-react";
+import { Home, MapPin, Sparkles, FlaskConical, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const tabs = [
   { id: "home", label: "Home", icon: Home, path: "/" },
   { id: "places", label: "Places", icon: MapPin, path: "/places" },
   { id: "cupid", label: "Cupid", icon: Sparkles, path: "/ai-recommender" },
-  { id: "quizzes", label: "Quizzes", icon: ClipboardList, path: "/quizzes" },
+  { id: "psych", label: "Psych", icon: FlaskConical, path: "/quizzes" },
   { id: "profile", label: "Profile", icon: User, path: "/auth" },
 ];
 

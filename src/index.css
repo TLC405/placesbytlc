@@ -518,6 +518,18 @@
   }
 }
 
+/* Premium Animations */
+@keyframes shimmer {
+  0% { left: -100%; }
+  50% { left: 100%; }
+  100% { left: 100%; }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 20px -5px hsl(var(--primary) / 0.2); }
+  50% { box-shadow: 0 0 30px -5px hsl(var(--primary) / 0.35); }
+}
+
 /* Performance */
 @media (prefers-reduced-motion: reduce) {
   *,

@@ -1,7 +1,7 @@
 {
-  "name": "INPERSON.TLC — Enhance Your Love Story",
-  "short_name": "INPERSON.TLC",
-  "description": "Discover enchanting date spots, create perfect plans, and explore love through AI-powered recommendations",
+  "name": "InPerson OKC — Powered by TLC",
+  "short_name": "InPerson OKC",
+  "description": "Discover enchanting date spots, take psychology quizzes, and explore love through AI-powered recommendations — Powered by TLC",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#fde7f3",
@@ -26,22 +26,22 @@
     {
       "name": "Explore Places",
       "short_name": "Explore",
-      "description": "Find romantic date spots",
-      "url": "/explore",
+      "description": "Find romantic date spots in OKC",
+      "url": "/places",
       "icons": [{ "src": "/felicia-crown.png", "sizes": "96x96" }]
     },
     {
-      "name": "My Plan",
-      "short_name": "Plan",
-      "description": "View your date plan",
-      "url": "/plan",
-      "icons": [{ "src": "/felicia-crown.png", "sizes": "96x96" }]
-    },
-    {
-      "name": "Quizzes",
-      "short_name": "Quizzes",
-      "description": "Take personality quizzes",
+      "name": "Psychology Quizzes",
+      "short_name": "Psych",
+      "description": "Take research-backed personality assessments",
       "url": "/quizzes",
+      "icons": [{ "src": "/felicia-crown.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Cupid AI",
+      "short_name": "Cupid",
+      "description": "Get AI date recommendations",
+      "url": "/ai-recommender",
       "icons": [{ "src": "/felicia-crown.png", "sizes": "96x96" }]
     }
   ]
