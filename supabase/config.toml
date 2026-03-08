@@ -23,3 +23,12 @@ verify_jwt = true
 
 [functions.analytics-query]
 verify_jwt = true
+
+[functions.tlc-engine-discover]
+verify_jwt = false
+
+[functions.tlc-engine-import]
+verify_jwt = true
+
+[functions.khaos-score]
+verify_jwt = false
