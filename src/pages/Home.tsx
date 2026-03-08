@@ -7,9 +7,9 @@ export default function Home() {
 
   const features = [
     {
-      id: "places",
-      title: "Places",
-      desc: "70+ curated OKC date spots",
+      id: "tlc-engine",
+      title: "TLC Engine",
+      desc: "Events + Places powered by OSINT discovery",
       icon: MapPin,
       color: "bg-primary/10",
       iconColor: "text-primary",

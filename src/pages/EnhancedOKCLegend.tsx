@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { MapPin, ChevronRight, Search, Star, Loader2, ArrowLeft } from "lucide-react";
+import { MapPin, ChevronRight, Search, Star, Loader2, ArrowLeft, Calendar, Shield, ExternalLink, DollarSign } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { PoweredByTLC } from "@/components/PoweredByTLC";
+import { KhaosScoreBadge } from "@/components/KhaosScoreCard";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { EventsTab } from "@/components/EventsTab";
 
 interface Place {
   id: string;
@@ -77,87 +80,102 @@ export default function PlacesPage() {
             <ArrowLeft className="w-4 h-4" />
             <span>Back</span>
           </button>
-          <h1 className="text-display text-foreground">Places</h1>
-          <p className="text-body">{places.length} curated date spots in OKC</p>
+          <h1 className="text-display text-foreground">
+            <span className="text-brand">TLC</span> Engine
+          </h1>
+          <p className="text-body">Discover places & events in OKC</p>
         </header>
 
-        <section className="animate-in-delay-1">
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search places..." className="h-12 pl-11 bg-muted border-0 rounded-xl" />
-          </div>
-        </section>
+        <Tabs defaultValue="places" className="animate-in-delay-1">
+          <TabsList className="w-full">
+            <TabsTrigger value="places" className="flex-1 gap-1.5">
+              <MapPin className="w-3.5 h-3.5" />
+              Places
+            </TabsTrigger>
+            <TabsTrigger value="events" className="flex-1 gap-1.5">
+              <Calendar className="w-3.5 h-3.5" />
+              Events
+            </TabsTrigger>
+            <TabsTrigger value="organizers" className="flex-1 gap-1.5">
+              <Shield className="w-3.5 h-3.5" />
+              KHAOS
+            </TabsTrigger>
+          </TabsList>
 
-        <section className="animate-in-delay-1">
-          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-            {CATEGORIES.map((cat) => (
-              <button key={cat.id} onClick={() => setSelectedCategory(cat.id)} className={`chip flex-shrink-0 transition-all ${selectedCategory === cat.id ? "chip-primary" : ""}`}>
-                <span>{cat.emoji}</span>
-                <span>{cat.name}</span>
-              </button>
-            ))}
-          </div>
-        </section>
-
-        <section className="animate-in-delay-2">
-          <div className="card-premium p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="icon-premium w-10 h-10">
-                  <MapPin className="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                  <p className="font-semibold text-foreground">Oklahoma City</p>
-                  <p className="text-xs text-muted-foreground">All spots verified by locals</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="text-2xl font-bold text-primary">{filteredPlaces.length}</p>
-                <p className="text-caption">places</p>
-              </div>
+          <TabsContent value="places" className="space-y-4 mt-4">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search places..." className="h-12 pl-11 bg-muted border-0 rounded-xl" />
             </div>
-          </div>
-        </section>
 
-        <section className="animate-in-delay-3">
-          <div className="section-header">
-            <h2 className="section-title">
-              {selectedCategory === "all" ? "All Spots" : CATEGORIES.find(c => c.id === selectedCategory)?.name}
-            </h2>
-          </div>
-          
-          {loading ? (
-            <div className="flex items-center justify-center py-16">
-              <Loader2 className="w-8 h-8 text-primary animate-spin" />
-            </div>
-          ) : (
-            <div className="grid gap-3">
-              {filteredPlaces.map((place) => (
-                <button key={place.id} onClick={() => setSelectedPlace(place)} className="feature-card text-left">
-                  <div className="icon-premium w-12 h-12">
-                    <span className="text-xl">{getCategoryEmoji(place.category)}</span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-medium text-foreground truncate">{place.name}</h3>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <span className="chip text-[10px] py-0.5 px-2 capitalize">{place.category || "Date Spot"}</span>
-                      {place.city && <span className="text-caption truncate">{place.city}</span>}
-                    </div>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+              {CATEGORIES.map((cat) => (
+                <button key={cat.id} onClick={() => setSelectedCategory(cat.id)} className={`chip flex-shrink-0 transition-all ${selectedCategory === cat.id ? "chip-primary" : ""}`}>
+                  <span>{cat.emoji}</span>
+                  <span>{cat.name}</span>
                 </button>
               ))}
             </div>
-          )}
 
-          {!loading && filteredPlaces.length === 0 && (
-            <div className="text-center py-12">
-              <MapPin className="w-12 h-12 text-muted-foreground/50 mx-auto mb-3" />
-              <p className="text-body">No places found</p>
-              <p className="text-caption">Try a different search or category</p>
+            <div className="card-premium p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="icon-premium w-10 h-10">
+                    <MapPin className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-foreground">Oklahoma City</p>
+                    <p className="text-xs text-muted-foreground">All spots verified by locals</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-2xl font-bold text-primary">{filteredPlaces.length}</p>
+                  <p className="text-caption">places</p>
+                </div>
+              </div>
             </div>
-          )}
-        </section>
+
+            {loading ? (
+              <div className="flex items-center justify-center py-16">
+                <Loader2 className="w-8 h-8 text-primary animate-spin" />
+              </div>
+            ) : (
+              <div className="grid gap-3">
+                {filteredPlaces.map((place) => (
+                  <button key={place.id} onClick={() => setSelectedPlace(place)} className="feature-card text-left">
+                    <div className="icon-premium w-12 h-12">
+                      <span className="text-xl">{getCategoryEmoji(place.category)}</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-medium text-foreground truncate">{place.name}</h3>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="chip text-[10px] py-0.5 px-2 capitalize">{place.category || "Date Spot"}</span>
+                        {place.city && <span className="text-caption truncate">{place.city}</span>}
+                      </div>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {!loading && filteredPlaces.length === 0 && (
+              <div className="text-center py-12">
+                <MapPin className="w-12 h-12 text-muted-foreground/50 mx-auto mb-3" />
+                <p className="text-body">No places found</p>
+                <p className="text-caption">Try a different search or category</p>
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="events" className="mt-4">
+            <EventsTab />
+          </TabsContent>
+
+          <TabsContent value="organizers" className="mt-4">
+            <OrganizersTab />
+          </TabsContent>
+        </Tabs>
 
         <PoweredByTLC />
       </div>
@@ -207,6 +225,97 @@ export default function PlacesPage() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+// Organizers Tab with KHAOS scores
+function OrganizersTab() {
+  const [organizers, setOrganizers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchOrganizers();
+  }, []);
+
+  const fetchOrganizers = async () => {
+    try {
+      const { data: orgs } = await supabase.from("organizers").select("*").order("name");
+      const { data: scores } = await supabase.from("khaos_scores").select("*");
+      
+      const scoreMap = new Map();
+      scores?.forEach((s: any) => scoreMap.set(s.organizer_id, s));
+      
+      const merged = (orgs || []).map((o: any) => ({
+        ...o,
+        khaos: scoreMap.get(o.id) || null,
+      }));
+
+      // Sort by score descending
+      merged.sort((a: any, b: any) => (b.khaos?.score_total || 0) - (a.khaos?.score_total || 0));
+      setOrganizers(merged);
+    } catch (err) {
+      console.error("Error fetching organizers:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-16">
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
+      </div>
+    );
+  }
+
+  if (organizers.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <Shield className="w-12 h-12 text-muted-foreground/50 mx-auto mb-3" />
+        <p className="text-body">No organizers yet</p>
+        <p className="text-caption">Organizer data will appear as events are discovered</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="card-premium p-4">
+        <div className="flex items-center gap-3">
+          <div className="icon-premium w-10 h-10">
+            <Shield className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <p className="font-semibold text-foreground">KHAOS Scoring</p>
+            <p className="text-xs text-muted-foreground">Organizer trust & reputation rankings</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid gap-3">
+        {organizers.map((org: any) => (
+          <div key={org.id} className="feature-card">
+            <div className="icon-premium w-12 h-12">
+              <span className="text-lg">🏢</span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <h3 className="font-medium text-foreground truncate">{org.name}</h3>
+                {org.claimed && <span className="chip text-[10px] py-0 px-1.5 bg-primary/10 text-primary">Verified</span>}
+              </div>
+              <div className="flex items-center gap-2 mt-0.5">
+                {org.khaos ? (
+                  <KhaosScoreBadge score={org.khaos.score_total} />
+                ) : (
+                  <span className="text-caption">No score yet</span>
+                )}
+                {org.website && <span className="text-caption truncate">{org.website}</span>}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
