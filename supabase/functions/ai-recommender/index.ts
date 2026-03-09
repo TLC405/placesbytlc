@@ -13,80 +13,149 @@ serve(async (req) => {
   }
 
   try {
-    // Verify authentication
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: 'Authentication required' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey, {
-      global: { headers: { Authorization: authHeader } }
-    });
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabaseAnon = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const lovableApiKey = Deno.env.get('LOVABLE_API_KEY')!;
 
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
-      return new Response(
-        JSON.stringify({ error: 'Invalid authentication' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    // Auth check (optional — allow unauthenticated for public access)
+    const authHeader = req.headers.get('Authorization');
+    let userId: string | null = null;
+
+    if (authHeader) {
+      const userClient = createClient(supabaseUrl, supabaseAnon, {
+        global: { headers: { Authorization: authHeader } }
+      });
+      const { data: { user } } = await userClient.auth.getUser();
+      userId = user?.id || null;
     }
 
-    // Rate limiting: 20 recommendations per 10 minutes per user
-    const rateLimitKey = `ai-rec:${user.id}`;
-    const { data: allowed } = await supabase.rpc('check_rate_limit', {
+    // Rate limit by IP or user
+    const adminClient = createClient(supabaseUrl, supabaseServiceKey);
+    const rateLimitKey = userId ? `cupid:${userId}` : `cupid:anon:${req.headers.get('x-forwarded-for') || 'unknown'}`;
+    const { data: allowed } = await adminClient.rpc('check_rate_limit', {
       _key: rateLimitKey,
-      _max_requests: 20,
-      _window_minutes: 10
+      _max_requests: 15,
+      _window_minutes: 10,
     });
 
     if (!allowed) {
       return new Response(
-        JSON.stringify({ 
-          error: 'Rate limit exceeded. Please wait a few minutes and try again.',
-          retryAfter: 600
-        }),
-        { 
-          status: 429, 
-          headers: { 
-            ...corsHeaders, 
-            'Content-Type': 'application/json',
-            'Retry-After': '600'
-          } 
-        }
+        JSON.stringify({ error: 'Cupid needs a breather! Try again in a few minutes. 💫' }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    const { type, context } = await req.json();
+    const { prompt, mood, budget, conversation } = await req.json();
 
-    const lovableApiKey = Deno.env.get('LOVABLE_API_KEY')!;
+    if (!prompt?.trim()) {
+      return new Response(
+        JSON.stringify({ error: 'Please tell Cupid what you\'re looking for!' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
-    // Fetch user preferences and activity
-    const { data: preferences } = await supabase
-      .from('user_preferences')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('confidence_score', { ascending: false });
+    // Fetch ALL real places from the database
+    const { data: places } = await adminClient
+      .from('discovered_places')
+      .select('name, address, category, description, discovery_context, city')
+      .order('name');
 
-    const { data: recentActivity } = await supabase
-      .from('user_activity_log')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('timestamp', { ascending: false })
-      .limit(50);
+    // Fetch upcoming events
+    const { data: events } = await adminClient
+      .from('events')
+      .select('title, description, starts_at, venue_id, price_min, price_max, tags, event_url')
+      .gte('starts_at', new Date().toISOString())
+      .order('starts_at')
+      .limit(30);
 
-    // Build AI context
-    const userContext = {
-      preferences: preferences || [],
-      recentActivity: recentActivity || [],
-      context: context || {}
-    };
+    // Fetch venues for event context
+    const { data: venues } = await adminClient
+      .from('venues')
+      .select('id, name, address, city');
 
-    // Call AI to generate recommendations
+    const venueMap = new Map();
+    venues?.forEach((v: any) => venueMap.set(v.id, v));
+
+    const eventsWithVenues = (events || []).map((e: any) => ({
+      ...e,
+      venue: venueMap.get(e.venue_id) || null,
+    }));
+
+    // Fetch user preferences if authenticated
+    let userPrefs: any[] = [];
+    if (userId) {
+      const { data } = await adminClient
+        .from('user_preferences')
+        .select('preference_type, preference_value, confidence_score')
+        .eq('user_id', userId)
+        .order('confidence_score', { ascending: false })
+        .limit(20);
+      userPrefs = data || [];
+    }
+
+    // Build conversation history for multi-turn
+    const messages: any[] = [
+      {
+        role: 'system',
+        content: `You are Cupid, an expert OKC date planner. You're warm, witty, and genuinely helpful.
+
+REAL PLACES DATABASE (${places?.length || 0} spots):
+${JSON.stringify(places?.map((p: any) => ({ name: p.name, category: p.category, desc: p.description, context: p.discovery_context, city: p.city })) || [], null, 1)}
+
+UPCOMING EVENTS (${eventsWithVenues.length}):
+${JSON.stringify(eventsWithVenues.map((e: any) => ({ title: e.title, date: e.starts_at, price: e.price_min ? `$${e.price_min}-$${e.price_max}` : 'Free/TBD', venue: e.venue?.name, tags: e.tags })), null, 1)}
+
+${userPrefs.length > 0 ? `USER PREFERENCES: ${JSON.stringify(userPrefs)}` : ''}
+
+RULES:
+1. ONLY recommend places/events from the databases above. Never invent places.
+2. For each recommendation, include a "match_score" (1-100) based on how well it fits the request.
+3. Include a brief, charming "cupid_note" explaining WHY this spot is perfect for them.
+4. If mood is provided, factor it heavily into recommendations.
+5. If budget is provided (1=cheap, 2=moderate, 3=splurge), filter accordingly.
+6. Suggest a complete date plan when possible (e.g., "Start at X, then walk to Y, finish at Z").
+
+User mood: ${mood || 'not specified'}
+Budget level: ${budget ? ['$', '$$', '$$$'][budget - 1] : 'any'}
+
+Respond ONLY with valid JSON:
+{
+  "message": "Your warm, personalized intro (2-3 sentences max, use emojis sparingly)",
+  "recommendations": [
+    {
+      "name": "Exact place/event name from database",
+      "type": "place|event",
+      "category": "food|activity|entertainment|both",
+      "match_score": 85,
+      "cupid_note": "Why this is perfect for you",
+      "price_indicator": "$|$$|$$$",
+      "best_for": "dinner|drinks|adventure|culture|romantic|fun",
+      "address": "address if available",
+      "event_date": "ISO date if event, null if place",
+      "event_url": "url if event"
+    }
+  ],
+  "date_plan": {
+    "title": "Catchy plan name",
+    "steps": ["Step 1: ...", "Step 2: ...", "Step 3: ..."],
+    "estimated_cost": "$XX-$XX",
+    "duration": "X hours"
+  },
+  "follow_up": "A conversational follow-up question to refine"
+}`
+      }
+    ];
+
+    // Add conversation history
+    if (conversation?.length) {
+      for (const msg of conversation.slice(-6)) {
+        messages.push({ role: msg.role, content: msg.content });
+      }
+    }
+
+    messages.push({ role: 'user', content: prompt });
+
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -95,105 +164,46 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         model: 'google/gemini-2.5-flash',
-        messages: [
-          {
-            role: 'system',
-            content: `You are an intelligent recommendation engine. Analyze user behavior patterns and generate personalized suggestions.
-            
-Your task: Generate ${type} recommendations based on user data.
-
-Output ONLY valid JSON with this structure:
-{
-  "recommendations": [
-    {
-      "type": "place|event|itinerary",
-      "data": {...relevant data...},
-      "confidence": 0.0-1.0,
-      "reason": "brief explanation"
-    }
-  ],
-  "learnings": [
-    {
-      "preference_type": "place_type|price_range|etc",
-      "preference_value": "value",
-      "confidence": 0.0-1.0
-    }
-  ]
-}`
-          },
-          {
-            role: 'user',
-            content: `User Context: ${JSON.stringify(userContext, null, 2)}
-            
-Generate ${type} recommendations for Oklahoma City. Be specific and actionable.`
-          }
-        ],
-        temperature: 0.7,
+        messages,
+        temperature: 0.75,
       }),
     });
 
     if (!aiResponse.ok) {
-      console.error('AI API error:', await aiResponse.text());
-      return new Response(JSON.stringify({ error: 'AI service unavailable' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      const errText = await aiResponse.text();
+      console.error('AI API error:', errText);
+      return new Response(
+        JSON.stringify({ error: 'Cupid is taking a nap. Try again shortly!' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     const aiData = await aiResponse.json();
-    const content = aiData.choices[0].message.content;
-    
-    // Parse AI response
+    const content = aiData.choices?.[0]?.message?.content || '';
+
+    // Parse JSON from response (handle markdown code blocks)
     let result;
     try {
-      result = JSON.parse(content);
+      const jsonStr = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      result = JSON.parse(jsonStr);
     } catch {
-      // If AI returns text, wrap it
-      result = { recommendations: [], learnings: [] };
+      console.error('Failed to parse AI response:', content);
+      result = {
+        message: "I found some great spots for you! Here's what I'd suggest:",
+        recommendations: [],
+        follow_up: "Could you tell me more about what vibe you're going for?"
+      };
     }
 
-    // Store recommendations
-    if (result.recommendations) {
-      for (const rec of result.recommendations) {
-        await supabase.from('ai_recommendations').insert({
-          user_id: user.id,
-          recommendation_type: rec.type,
-          recommendation_data: rec.data,
-          confidence_score: rec.confidence,
-          reason: rec.reason,
-        });
-      }
-    }
-
-    // Update user preferences
-    if (result.learnings) {
-      for (const learning of result.learnings) {
-        const { data: existing } = await supabase
-          .from('user_preferences')
-          .select('*')
-          .eq('user_id', user.id)
-          .eq('preference_type', learning.preference_type)
-          .eq('preference_value', learning.preference_value)
-          .single();
-
-        if (existing) {
-          await supabase
-            .from('user_preferences')
-            .update({
-              confidence_score: Math.min(1, existing.confidence_score + 0.1),
-              interaction_count: existing.interaction_count + 1,
-            })
-            .eq('id', existing.id);
-        } else {
-          await supabase.from('user_preferences').insert({
-            user_id: user.id,
-            preference_type: learning.preference_type,
-            preference_value: learning.preference_value,
-            confidence_score: learning.confidence,
-            learned_from: 'pattern',
-          });
-        }
-      }
+    // Store recommendation if user is authenticated
+    if (userId && result.recommendations?.length) {
+      await adminClient.from('ai_recommendations').insert({
+        user_id: userId,
+        recommendation_type: 'cupid_chat',
+        recommendation_data: result,
+        confidence_score: result.recommendations[0]?.match_score / 100 || 0.7,
+        reason: prompt,
+      });
     }
 
     return new Response(JSON.stringify(result), {
@@ -201,13 +211,9 @@ Generate ${type} recommendations for Oklahoma City. Be specific and actionable.`
     });
 
   } catch (error) {
-    console.error('AI Recommender error:', error);
-    
+    console.error('Cupid error:', error);
     return new Response(
-      JSON.stringify({ 
-        error: 'Failed to generate recommendations. Please try again.',
-        code: 'AI_ERROR'
-      }),
+      JSON.stringify({ error: 'Something went wrong. Cupid will be back shortly!' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
