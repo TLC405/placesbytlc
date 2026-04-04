@@ -32,3 +32,9 @@ verify_jwt = true
 
 [functions.khaos-score]
 verify_jwt = false
+
+[functions.search-everything]
+verify_jwt = false
+
+[functions.ai-recommender]
+verify_jwt = false
