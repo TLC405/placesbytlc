@@ -2,7 +2,9 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   MapPin, ChevronRight, Search, Star, Loader2, ArrowLeft, Calendar,
-  Shield, ExternalLink, DollarSign, Sparkles, Globe, Clock, X, RefreshCw, Zap
+  Shield, ExternalLink, DollarSign, Sparkles, Globe, Clock, X, RefreshCw, Zap,
+  Heart, Music, Dumbbell, ShoppingBag, Palette, TreePine, Laugh, Users,
+  Wine, Gem, Activity, Flame, Send
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,7 +12,6 @@ import { toast } from "sonner";
 import { PoweredByTLC } from "@/components/PoweredByTLC";
 import { KhaosScoreBadge } from "@/components/KhaosScoreCard";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { EventsTab } from "@/components/EventsTab";
 
 interface Place {
   id: string;
@@ -44,6 +45,32 @@ interface AISuggestion {
   description: string;
   address: string;
   why: string;
+  vibe_match?: number;
+}
+
+interface HiddenGem {
+  name: string;
+  type: string;
+  description: string;
+  address: string;
+  why_hidden: string;
+  insider_tip: string;
+}
+
+interface DateStop {
+  order: number;
+  name: string;
+  type: string;
+  description: string;
+  address: string;
+  estimated_cost: string;
+  duration: string;
+  tip: string;
+}
+
+interface LivePulseItem {
+  venue: string;
+  count: number;
 }
 
 interface SearchResults {
@@ -52,31 +79,32 @@ interface SearchResults {
   live_events: LiveEvent[];
   venues: any[];
   ai_suggestions: AISuggestion[];
+  hidden_gems: HiddenGem[];
+  date_itinerary: { itinerary: DateStop[]; total_estimated_cost: string; theme: string } | null;
+  live_pulse: LivePulseItem[];
   total: number;
   query: string;
+  mode: string;
 }
 
 const CATEGORIES = [
-  { id: "all", name: "All", emoji: "✨" },
-  { id: "food", name: "Food", emoji: "🍽️" },
-  { id: "activity", name: "Activities", emoji: "🎯" },
-  { id: "both", name: "Both", emoji: "💫" },
-  { id: "entertainment", name: "Entertainment", emoji: "🎭" },
-];
-
-const QUICK_SEARCHES = [
-  "Date night", "Live music", "Brunch", "Outdoor", "Comedy",
-  "Happy hour", "Art", "Sports", "Dance", "Karaoke"
+  { id: "music", name: "Music", emoji: "🎵", icon: Music },
+  { id: "sports", name: "Sports", emoji: "⚽", icon: Activity },
+  { id: "food", name: "Food & Drink", emoji: "🍽️", icon: Wine },
+  { id: "nightlife", name: "Nightlife", emoji: "🌙", icon: Wine },
+  { id: "arts", name: "Arts & Culture", emoji: "🎨", icon: Palette },
+  { id: "outdoor", name: "Outdoor", emoji: "🌿", icon: TreePine },
+  { id: "comedy", name: "Comedy", emoji: "😂", icon: Laugh },
+  { id: "family", name: "Family", emoji: "👨‍👩‍👧", icon: Users },
+  { id: "fitness", name: "Fitness", emoji: "💪", icon: Dumbbell },
+  { id: "shopping", name: "Shopping", emoji: "🛍️", icon: ShoppingBag },
+  { id: "wellness", name: "Wellness", emoji: "🧘", icon: Sparkles },
+  { id: "datenight", name: "Date Night", emoji: "💕", icon: Heart },
 ];
 
 const getCategoryEmoji = (category: string | null) => {
-  switch (category?.toLowerCase()) {
-    case "food": return "🍽️";
-    case "activity": return "🎯";
-    case "entertainment": return "🎭";
-    case "both": return "💫";
-    default: return "📍";
-  }
+  const found = CATEGORIES.find(c => c.id === category?.toLowerCase());
+  return found?.emoji || "📍";
 };
 
 const formatDate = (d: string | null) => {
@@ -98,70 +126,112 @@ const formatPrice = (min: number | null, max: number | null) => {
 export default function PlacesPage() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [places, setPlaces] = useState<Place[]>([]);
+  const [vibeQuery, setVibeQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [searching, setSearching] = useState(false);
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
-  const [searchResults, setSearchResults] = useState<SearchResults | null>(null);
-  const [activeTab, setActiveTab] = useState("search");
+  const [results, setResults] = useState<SearchResults | null>(null);
+  const [activeSection, setActiveSection] = useState<"discover" | "date-builder" | "hidden-gems">("discover");
+  const [dateBuilderLoading, setDateBuilderLoading] = useState(false);
+  const [hiddenGemsLoading, setHiddenGemsLoading] = useState(false);
 
-  useEffect(() => { fetchPlaces(); }, []);
+  // Auto-load on mount — browse mode, no keyword
+  useEffect(() => { loadEverything(); }, []);
 
-  const fetchPlaces = async () => {
+  const loadEverything = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from("discovered_places")
-        .select("id, name, address, category, description, discovery_context, city")
-        .order("name");
+      const { data, error } = await supabase.functions.invoke("search-everything", {
+        body: { query: "", mode: "browse" },
+      });
       if (error) throw error;
-      setPlaces(data || []);
+      setResults(data as SearchResults);
     } catch (err) {
-      console.error("Error fetching places:", err);
-      toast.error("Failed to load places");
+      console.error("Auto-load error:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSearch = useCallback(async (query?: string) => {
-    const q = query || searchQuery;
-    if (!q.trim()) return;
-    
+  const handleSearch = useCallback(async (query?: string, cat?: string) => {
+    const q = query ?? searchQuery;
+    const c = cat ?? selectedCategory;
     setSearching(true);
-    setActiveTab("search");
     try {
       const { data, error } = await supabase.functions.invoke("search-everything", {
-        body: { query: q, category: selectedCategory !== "all" ? selectedCategory : undefined },
+        body: { query: q || "", category: c || undefined, mode: q ? "search" : "browse" },
       });
       if (error) throw error;
-      setSearchResults(data as SearchResults);
-      if (data.total === 0) {
-        toast("No results found — try different keywords", { icon: "🔍" });
-      } else {
-        toast.success(`Found ${data.total} results`);
+      setResults(data as SearchResults);
+      if (data.total === 0 && q) {
+        toast("No exact matches — AI suggestions below", { icon: "🔍" });
       }
     } catch (err) {
       console.error("Search error:", err);
-      toast.error("Search failed. Please try again.");
+      toast.error("Search failed");
     } finally {
       setSearching(false);
     }
   }, [searchQuery, selectedCategory]);
 
-  const handleQuickSearch = (term: string) => {
-    setSearchQuery(term);
-    handleSearch(term);
+  const handleCategoryTap = (catId: string) => {
+    const newCat = selectedCategory === catId ? null : catId;
+    setSelectedCategory(newCat);
+    handleSearch("", newCat || undefined);
   };
 
-  const filteredPlaces = places.filter((place) => {
-    const matchesCategory = selectedCategory === "all" ||
-      place.category?.toLowerCase() === selectedCategory.toLowerCase();
-    return matchesCategory;
-  });
+  const handleVibeMatch = async () => {
+    if (!vibeQuery.trim()) return;
+    setSearching(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("search-everything", {
+        body: { query: vibeQuery, mode: "vibe", vibe: vibeQuery },
+      });
+      if (error) throw error;
+      setResults(data as SearchResults);
+      setActiveSection("discover");
+    } catch (err) {
+      toast.error("Vibe match failed");
+    } finally {
+      setSearching(false);
+    }
+  };
 
-  const hasSearchResults = searchResults && searchResults.total > 0;
+  const handleDateBuilder = async () => {
+    setDateBuilderLoading(true);
+    setActiveSection("date-builder");
+    try {
+      const { data, error } = await supabase.functions.invoke("search-everything", {
+        body: { mode: "date-builder", vibe: "romantic", budget: "moderate", time_of_day: "evening" },
+      });
+      if (error) throw error;
+      setResults(data as SearchResults);
+    } catch (err) {
+      toast.error("Date builder failed");
+    } finally {
+      setDateBuilderLoading(false);
+    }
+  };
+
+  const handleHiddenGems = async () => {
+    setHiddenGemsLoading(true);
+    setActiveSection("hidden-gems");
+    try {
+      const { data, error } = await supabase.functions.invoke("search-everything", {
+        body: { mode: "hidden-gems" },
+      });
+      if (error) throw error;
+      setResults(data as SearchResults);
+    } catch (err) {
+      toast.error("Hidden gems failed");
+    } finally {
+      setHiddenGemsLoading(false);
+    }
+  };
+
+  const totalEvents = (results?.events?.length || 0) + (results?.live_events?.length || 0);
+  const totalPlaces = results?.places?.length || 0;
 
   return (
     <div className="page-shell">
@@ -175,11 +245,33 @@ export default function PlacesPage() {
           <h1 className="text-display text-foreground">
             <span className="text-brand">TLC</span> Engine
           </h1>
-          <p className="text-body">Search everything in OKC — places, events, live results</p>
+          <p className="text-body">Discover everything OKC — powered by AI + live data</p>
         </header>
 
-        {/* Universal Search Bar */}
-        <div className="animate-in-delay-1 space-y-3">
+        {/* Vibe Match */}
+        <div className="animate-in-delay-1">
+          <div className="card-highlight p-4 space-y-2">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-primary" />
+              <span className="text-xs font-bold text-primary tracking-wide uppercase">Vibe Match</span>
+            </div>
+            <div className="flex gap-2">
+              <Input
+                value={vibeQuery}
+                onChange={(e) => setVibeQuery(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleVibeMatch()}
+                placeholder="chill sunset drinks, hype night out..."
+                className="h-10 bg-background border-0 rounded-xl text-sm flex-1"
+              />
+              <button onClick={handleVibeMatch} disabled={searching || !vibeQuery.trim()} className="btn-primary h-10 px-4 flex-shrink-0">
+                <Send className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Search Bar */}
+        <div className="animate-in-delay-1">
           <div className="relative flex gap-2">
             <div className="relative flex-1">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -187,81 +279,263 @@ export default function PlacesPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                placeholder="Search places, events, anything..."
+                placeholder="Search places, events..."
                 className="h-12 pl-11 pr-10 bg-muted border-0 rounded-xl text-base"
               />
               {searchQuery && (
-                <button
-                  onClick={() => { setSearchQuery(""); setSearchResults(null); }}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                >
+                <button onClick={() => { setSearchQuery(""); setSelectedCategory(null); loadEverything(); }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
                   <X className="w-4 h-4" />
                 </button>
               )}
             </div>
-            <button
-              onClick={() => handleSearch()}
-              disabled={searching || !searchQuery.trim()}
-              className="btn-primary h-12 px-5 flex-shrink-0"
-            >
+            <button onClick={() => handleSearch()} disabled={searching} className="btn-primary h-12 px-5 flex-shrink-0">
               {searching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
             </button>
           </div>
-
-          {/* Quick Search Tags */}
-          {!searchResults && (
-            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-              {QUICK_SEARCHES.map((term) => (
-                <button
-                  key={term}
-                  onClick={() => handleQuickSearch(term)}
-                  className="chip flex-shrink-0 hover:bg-primary/10 transition-colors"
-                >
-                  {term}
-                </button>
-              ))}
-            </div>
-          )}
         </div>
 
-        {/* Search Results */}
-        {searching && (
+        {/* Category Grid */}
+        <div className="animate-in-delay-2">
+          <div className="grid grid-cols-4 gap-2">
+            {CATEGORIES.map((cat) => {
+              const Icon = cat.icon;
+              const isActive = selectedCategory === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => handleCategoryTap(cat.id)}
+                  className={`flex flex-col items-center gap-1 p-3 rounded-xl transition-all text-center
+                    ${isActive
+                      ? "bg-primary text-primary-foreground shadow-lg scale-105"
+                      : "bg-muted/50 hover:bg-muted text-foreground"
+                    }`}
+                >
+                  <span className="text-lg">{cat.emoji}</span>
+                  <span className="text-[10px] font-medium leading-tight">{cat.name}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Quick Actions: Date Builder + Hidden Gems */}
+        <div className="flex gap-2 animate-in-delay-2">
+          <button onClick={handleDateBuilder} disabled={dateBuilderLoading}
+            className={`flex-1 p-3 rounded-xl border-2 transition-all flex items-center gap-2 text-left
+              ${activeSection === "date-builder" ? "border-primary bg-primary/5" : "border-border/50 hover:border-primary/30"}`}>
+            <Heart className="w-5 h-5 text-primary flex-shrink-0" />
+            <div className="min-w-0">
+              <p className="text-xs font-bold text-foreground">Date Builder</p>
+              <p className="text-[10px] text-muted-foreground">AI itinerary</p>
+            </div>
+          </button>
+          <button onClick={handleHiddenGems} disabled={hiddenGemsLoading}
+            className={`flex-1 p-3 rounded-xl border-2 transition-all flex items-center gap-2 text-left
+              ${activeSection === "hidden-gems" ? "border-primary bg-primary/5" : "border-border/50 hover:border-primary/30"}`}>
+            <Gem className="w-5 h-5 text-primary flex-shrink-0" />
+            <div className="min-w-0">
+              <p className="text-xs font-bold text-foreground">Hidden Gems</p>
+              <p className="text-[10px] text-muted-foreground">Underrated spots</p>
+            </div>
+          </button>
+        </div>
+
+        {/* Live Pulse */}
+        {results?.live_pulse && results.live_pulse.length > 0 && (
+          <div className="animate-in space-y-2">
+            <div className="flex items-center gap-2">
+              <Flame className="w-4 h-4 text-orange-500" />
+              <span className="text-xs font-bold text-foreground tracking-wide uppercase">Live Pulse</span>
+            </div>
+            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+              {results.live_pulse.slice(0, 6).map((p, i) => (
+                <div key={i} className="chip flex-shrink-0 gap-1.5">
+                  <Flame className={`w-3 h-3 ${p.count > 3 ? "text-orange-500" : "text-muted-foreground"}`} />
+                  <span className="truncate max-w-[120px]">{p.venue}</span>
+                  <span className="font-bold text-primary">{p.count}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Loading State */}
+        {(loading || searching) && (
           <div className="flex items-center justify-center py-16 animate-in">
             <div className="text-center space-y-3">
               <Loader2 className="w-8 h-8 text-primary animate-spin mx-auto" />
-              <p className="text-body">Searching everywhere...</p>
+              <p className="text-body">{loading ? "Loading OKC..." : "Searching everywhere..."}</p>
               <p className="text-caption">Database • Ticketmaster • AI</p>
             </div>
           </div>
         )}
 
-        {hasSearchResults && !searching && (
-          <div className="space-y-4 animate-in">
+        {/* Date Builder Results */}
+        {activeSection === "date-builder" && results?.date_itinerary && !dateBuilderLoading && (
+          <div className="space-y-3 animate-in">
+            <div className="card-premium p-4">
+              <div className="flex items-center gap-3">
+                <div className="icon-premium w-10 h-10"><Heart className="w-5 h-5 text-primary" /></div>
+                <div>
+                  <p className="font-semibold text-foreground">{results.date_itinerary.theme || "Date Night Plan"}</p>
+                  <p className="text-xs text-muted-foreground">Est. {results.date_itinerary.total_estimated_cost}</p>
+                </div>
+              </div>
+            </div>
+            {results.date_itinerary.itinerary?.map((stop, i) => (
+              <div key={i} className="feature-card">
+                <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold flex-shrink-0">
+                  {stop.order}
+                </div>
+                <div className="flex-1 min-w-0 space-y-0.5">
+                  <h4 className="font-medium text-foreground text-sm">{stop.name}</h4>
+                  <p className="text-caption">{stop.description}</p>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="chip text-[10px] py-0 px-1.5 capitalize">{stop.type}</span>
+                    <span className="text-caption">{stop.estimated_cost}</span>
+                    <span className="text-caption">~{stop.duration}</span>
+                  </div>
+                  {stop.tip && <p className="text-xs text-primary italic">💡 {stop.tip}</p>}
+                  {stop.address && <p className="text-caption flex items-center gap-0.5"><MapPin className="w-3 h-3" />{stop.address}</p>}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Hidden Gems Results */}
+        {activeSection === "hidden-gems" && results?.hidden_gems && results.hidden_gems.length > 0 && !hiddenGemsLoading && (
+          <div className="space-y-3 animate-in">
+            <div className="card-premium p-4">
+              <div className="flex items-center gap-3">
+                <div className="icon-premium w-10 h-10"><Gem className="w-5 h-5 text-primary" /></div>
+                <div>
+                  <p className="font-semibold text-foreground">Hidden Gems</p>
+                  <p className="text-xs text-muted-foreground">{results.hidden_gems.length} underrated OKC spots</p>
+                </div>
+              </div>
+            </div>
+            {results.hidden_gems.map((gem, i) => (
+              <div key={i} className="card-highlight p-4 space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <Gem className="w-4 h-4 text-primary" />
+                  <h4 className="font-medium text-foreground text-sm">{gem.name}</h4>
+                  <span className="chip text-[10px] py-0 px-1.5 capitalize">{gem.type}</span>
+                </div>
+                <p className="text-caption">{gem.description}</p>
+                {gem.address && <p className="text-caption flex items-center gap-0.5"><MapPin className="w-3 h-3" />{gem.address}</p>}
+                <p className="text-xs text-primary italic">🤫 {gem.why_hidden}</p>
+                {gem.insider_tip && <p className="text-xs text-muted-foreground">💡 {gem.insider_tip}</p>}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Main Discovery Feed */}
+        {activeSection === "discover" && !loading && !searching && results && (
+          <div className="space-y-5 animate-in">
+            {/* Summary */}
             <div className="card-premium p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="icon-premium w-10 h-10">
-                    <Globe className="w-5 h-5 text-primary" />
-                  </div>
+                  <div className="icon-premium w-10 h-10"><Globe className="w-5 h-5 text-primary" /></div>
                   <div>
-                    <p className="font-semibold text-foreground">Search: "{searchResults!.query}"</p>
+                    <p className="font-semibold text-foreground">
+                      {results.query ? `"${results.query}"` : selectedCategory ? CATEGORIES.find(c => c.id === selectedCategory)?.name : "Everything OKC"}
+                    </p>
                     <p className="text-xs text-muted-foreground">
-                      {searchResults!.places.length} places • {searchResults!.events.length + searchResults!.live_events.length} events
+                      {totalPlaces} places • {totalEvents} events
                     </p>
                   </div>
                 </div>
-                <button onClick={() => setSearchResults(null)} className="btn-ghost text-xs">Clear</button>
+                <button onClick={loadEverything} className="btn-ghost text-xs"><RefreshCw className="w-3 h-3" /></button>
               </div>
             </div>
 
-            {/* Places Results */}
-            {searchResults!.places.length > 0 && (
+            {/* Live Ticketmaster Events */}
+            {results.live_events.length > 0 && (
               <div className="space-y-2">
                 <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-primary" /> Places ({searchResults!.places.length})
+                  <Zap className="w-4 h-4 text-amber-500" /> Live Events ({results.live_events.length})
+                  <span className="chip text-[10px] py-0 px-1.5 bg-amber-500/10 text-amber-600">Live</span>
                 </h3>
                 <div className="grid gap-2">
-                  {searchResults!.places.map((place) => (
+                  {results.live_events.slice(0, 20).map((event) => (
+                    <div key={event.id} className="feature-card group">
+                      {event.image_url ? (
+                        <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 bg-muted">
+                          <img src={event.image_url} alt={event.title} className="w-full h-full object-cover" loading="lazy" />
+                        </div>
+                      ) : (
+                        <div className="icon-premium w-12 h-12 flex-shrink-0">
+                          <Zap className="w-5 h-5 text-amber-500" />
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0 space-y-0.5">
+                        <h4 className="font-medium text-foreground text-sm line-clamp-2">{event.title}</h4>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-caption flex items-center gap-0.5">
+                            <Clock className="w-3 h-3" />{formatDate(event.starts_at)} {formatTime(event.starts_at)}
+                          </span>
+                          <span className="chip text-[10px] py-0 px-1.5">{formatPrice(event.price_min, event.price_max)}</span>
+                        </div>
+                        {event.venue_name && (
+                          <p className="text-caption flex items-center gap-0.5 truncate">
+                            <MapPin className="w-3 h-3 flex-shrink-0" />{event.venue_name}
+                          </p>
+                        )}
+                      </div>
+                      {event.ticket_url && (
+                        <a href={event.ticket_url} target="_blank" rel="noopener noreferrer" className="flex-shrink-0 p-2 rounded-lg hover:bg-muted">
+                          <ExternalLink className="w-4 h-4 text-muted-foreground" />
+                        </a>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* DB Events */}
+            {results.events.length > 0 && (
+              <div className="space-y-2">
+                <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-primary" /> Events ({results.events.length})
+                </h3>
+                <div className="grid gap-2">
+                  {results.events.slice(0, 15).map((event: any) => (
+                    <div key={event.id} className="feature-card">
+                      <div className="icon-premium w-10 h-10"><Calendar className="w-4 h-4 text-primary" /></div>
+                      <div className="flex-1 min-w-0 space-y-0.5">
+                        <h4 className="font-medium text-foreground text-sm line-clamp-1">{event.title}</h4>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-caption flex items-center gap-0.5">
+                            <Clock className="w-3 h-3" />{formatDate(event.starts_at)} {formatTime(event.starts_at)}
+                          </span>
+                          <span className="chip text-[10px] py-0 px-1.5">{formatPrice(event.price_min, event.price_max)}</span>
+                        </div>
+                        {event.venues && <p className="text-caption truncate">{event.venues.name}</p>}
+                      </div>
+                      {(event.ticket_url || event.event_url) && (
+                        <a href={event.ticket_url || event.event_url} target="_blank" rel="noopener noreferrer" className="flex-shrink-0 p-2 rounded-lg hover:bg-muted">
+                          <ExternalLink className="w-4 h-4 text-muted-foreground" />
+                        </a>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Places */}
+            {results.places.length > 0 && (
+              <div className="space-y-2">
+                <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-primary" /> Places ({results.places.length})
+                </h3>
+                <div className="grid gap-2">
+                  {results.places.slice(0, 20).map((place) => (
                     <button key={place.id} onClick={() => setSelectedPlace(place)} className="feature-card text-left">
                       <div className="icon-premium w-10 h-10">
                         <span className="text-lg">{getCategoryEmoji(place.category)}</span>
@@ -280,112 +554,19 @@ export default function PlacesPage() {
               </div>
             )}
 
-            {/* DB Events */}
-            {searchResults!.events.length > 0 && (
+            {/* AI Suggestions — always shown */}
+            {results.ai_suggestions.length > 0 && (
               <div className="space-y-2">
                 <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-primary" /> Database Events ({searchResults!.events.length})
+                  <Sparkles className="w-4 h-4 text-violet-500" /> Recommended
                 </h3>
                 <div className="grid gap-2">
-                  {searchResults!.events.map((event: any) => (
-                    <div key={event.id} className="feature-card">
-                      <div className="icon-premium w-10 h-10">
-                        <Calendar className="w-4 h-4 text-primary" />
-                      </div>
-                      <div className="flex-1 min-w-0 space-y-0.5">
-                        <h4 className="font-medium text-foreground text-sm line-clamp-1">{event.title}</h4>
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-caption flex items-center gap-0.5">
-                            <Clock className="w-3 h-3" />
-                            {formatDate(event.starts_at)} {formatTime(event.starts_at)}
-                          </span>
-                          <span className="chip text-[10px] py-0 px-1.5">
-                            {formatPrice(event.price_min, event.price_max)}
-                          </span>
-                        </div>
-                        {event.venues && (
-                          <p className="text-caption truncate">{event.venues.name}</p>
-                        )}
-                      </div>
-                      {(event.ticket_url || event.event_url) && (
-                        <a href={event.ticket_url || event.event_url} target="_blank" rel="noopener noreferrer" className="flex-shrink-0 p-2 rounded-lg hover:bg-muted">
-                          <ExternalLink className="w-4 h-4 text-muted-foreground" />
-                        </a>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Live Ticketmaster Events */}
-            {searchResults!.live_events.length > 0 && (
-              <div className="space-y-2">
-                <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-                  <Zap className="w-4 h-4 text-amber-500" /> Live Results ({searchResults!.live_events.length})
-                  <span className="chip text-[10px] py-0 px-1.5 bg-amber-500/10 text-amber-600">Ticketmaster</span>
-                </h3>
-                <div className="grid gap-2">
-                  {searchResults!.live_events.map((event) => (
-                    <div key={event.id} className="feature-card group">
-                      {event.image_url && (
-                        <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 bg-muted">
-                          <img src={event.image_url} alt={event.title} className="w-full h-full object-cover" loading="lazy" />
-                        </div>
-                      )}
-                      {!event.image_url && (
-                        <div className="icon-premium w-12 h-12 flex-shrink-0">
-                          <Zap className="w-5 h-5 text-amber-500" />
-                        </div>
-                      )}
-                      <div className="flex-1 min-w-0 space-y-0.5">
-                        <h4 className="font-medium text-foreground text-sm line-clamp-2">{event.title}</h4>
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-caption flex items-center gap-0.5">
-                            <Clock className="w-3 h-3" />
-                            {formatDate(event.starts_at)} {formatTime(event.starts_at)}
-                          </span>
-                          <span className="chip text-[10px] py-0 px-1.5">
-                            {formatPrice(event.price_min, event.price_max)}
-                          </span>
-                        </div>
-                        {event.venue_name && (
-                          <p className="text-caption flex items-center gap-0.5 truncate">
-                            <MapPin className="w-3 h-3 flex-shrink-0" />
-                            {event.venue_name}{event.venue_city ? `, ${event.venue_city}` : ""}
-                          </p>
-                        )}
-                        {event.tags.length > 0 && (
-                          <div className="flex gap-1 flex-wrap">
-                            {event.tags.slice(0, 3).map((tag, i) => (
-                              <span key={i} className="chip text-[9px] py-0 px-1 opacity-60">{tag}</span>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                      {event.ticket_url && (
-                        <a href={event.ticket_url} target="_blank" rel="noopener noreferrer" className="flex-shrink-0 p-2 rounded-lg hover:bg-muted">
-                          <ExternalLink className="w-4 h-4 text-muted-foreground" />
-                        </a>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* AI Suggestions */}
-            {searchResults!.ai_suggestions.length > 0 && (
-              <div className="space-y-2">
-                <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-violet-500" /> AI Suggestions
-                </h3>
-                <div className="grid gap-2">
-                  {searchResults!.ai_suggestions.map((s, i) => (
+                  {results.ai_suggestions.map((s, i) => (
                     <div key={i} className="card-highlight p-4 space-y-1">
                       <div className="flex items-center gap-2">
                         <h4 className="font-medium text-foreground text-sm">{s.name}</h4>
                         <span className="chip text-[10px] py-0 px-1.5 capitalize">{s.type}</span>
+                        {s.vibe_match && <span className="chip text-[10px] py-0 px-1.5 bg-primary/10 text-primary">{s.vibe_match}% match</span>}
                       </div>
                       <p className="text-caption">{s.description}</p>
                       {s.address && <p className="text-caption flex items-center gap-1"><MapPin className="w-3 h-3" /> {s.address}</p>}
@@ -395,96 +576,10 @@ export default function PlacesPage() {
                 </div>
               </div>
             )}
+
+            {/* KHAOS Organizers */}
+            <OrganizersSection />
           </div>
-        )}
-
-        {/* Main Tabs (when not showing search results) */}
-        {!hasSearchResults && !searching && (
-          <Tabs defaultValue="places" className="animate-in-delay-1">
-            <TabsList className="w-full">
-              <TabsTrigger value="places" className="flex-1 gap-1.5">
-                <MapPin className="w-3.5 h-3.5" />
-                Places
-              </TabsTrigger>
-              <TabsTrigger value="events" className="flex-1 gap-1.5">
-                <Calendar className="w-3.5 h-3.5" />
-                Events
-              </TabsTrigger>
-              <TabsTrigger value="organizers" className="flex-1 gap-1.5">
-                <Shield className="w-3.5 h-3.5" />
-                KHAOS
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="places" className="space-y-4 mt-4">
-              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                {CATEGORIES.map((cat) => (
-                  <button key={cat.id} onClick={() => setSelectedCategory(cat.id)} className={`chip flex-shrink-0 transition-all ${selectedCategory === cat.id ? "chip-primary" : ""}`}>
-                    <span>{cat.emoji}</span>
-                    <span>{cat.name}</span>
-                  </button>
-                ))}
-              </div>
-
-              <div className="card-premium p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="icon-premium w-10 h-10">
-                      <MapPin className="w-5 h-5 text-primary" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-foreground">Oklahoma City</p>
-                      <p className="text-xs text-muted-foreground">All spots verified by locals</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-2xl font-bold text-primary">{filteredPlaces.length}</p>
-                    <p className="text-caption">places</p>
-                  </div>
-                </div>
-              </div>
-
-              {loading ? (
-                <div className="flex items-center justify-center py-16">
-                  <Loader2 className="w-8 h-8 text-primary animate-spin" />
-                </div>
-              ) : (
-                <div className="grid gap-3">
-                  {filteredPlaces.map((place) => (
-                    <button key={place.id} onClick={() => setSelectedPlace(place)} className="feature-card text-left">
-                      <div className="icon-premium w-12 h-12">
-                        <span className="text-xl">{getCategoryEmoji(place.category)}</span>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-foreground truncate">{place.name}</h3>
-                        <div className="flex items-center gap-2 mt-0.5">
-                          <span className="chip text-[10px] py-0.5 px-2 capitalize">{place.category || "Date Spot"}</span>
-                          {place.city && <span className="text-caption truncate">{place.city}</span>}
-                        </div>
-                      </div>
-                      <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              {!loading && filteredPlaces.length === 0 && (
-                <div className="text-center py-12">
-                  <MapPin className="w-12 h-12 text-muted-foreground/50 mx-auto mb-3" />
-                  <p className="text-body">No places found</p>
-                  <p className="text-caption">Try a different category</p>
-                </div>
-              )}
-            </TabsContent>
-
-            <TabsContent value="events" className="mt-4">
-              <EventsTab />
-            </TabsContent>
-
-            <TabsContent value="organizers" className="mt-4">
-              <OrganizersTab />
-            </TabsContent>
-          </Tabs>
         )}
 
         <PoweredByTLC />
@@ -540,63 +635,46 @@ export default function PlacesPage() {
   );
 }
 
-function OrganizersTab() {
+function OrganizersSection() {
   const [organizers, setOrganizers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => { fetchOrganizers(); }, []);
+  useEffect(() => {
+    (async () => {
+      try {
+        const { data: orgs } = await supabase.from("organizers").select("*").order("name");
+        const { data: scores } = await supabase.from("khaos_scores").select("*");
+        const scoreMap = new Map();
+        scores?.forEach((s: any) => scoreMap.set(s.organizer_id, s));
+        const merged = (orgs || []).map((o: any) => ({ ...o, khaos: scoreMap.get(o.id) || null }));
+        merged.sort((a: any, b: any) => (b.khaos?.score_total || 0) - (a.khaos?.score_total || 0));
+        setOrganizers(merged);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
 
-  const fetchOrganizers = async () => {
-    try {
-      const { data: orgs } = await supabase.from("organizers").select("*").order("name");
-      const { data: scores } = await supabase.from("khaos_scores").select("*");
-      const scoreMap = new Map();
-      scores?.forEach((s: any) => scoreMap.set(s.organizer_id, s));
-      const merged = (orgs || []).map((o: any) => ({ ...o, khaos: scoreMap.get(o.id) || null }));
-      merged.sort((a: any, b: any) => (b.khaos?.score_total || 0) - (a.khaos?.score_total || 0));
-      setOrganizers(merged);
-    } catch (err) {
-      console.error("Error fetching organizers:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="w-8 h-8 text-primary animate-spin" /></div>;
-
-  if (organizers.length === 0) {
-    return (
-      <div className="text-center py-12">
-        <Shield className="w-12 h-12 text-muted-foreground/50 mx-auto mb-3" />
-        <p className="text-body">No organizers yet</p>
-        <p className="text-caption">Organizer data appears as events are discovered</p>
-      </div>
-    );
-  }
+  if (loading || organizers.length === 0) return null;
 
   return (
-    <div className="space-y-4">
-      <div className="card-premium p-4">
-        <div className="flex items-center gap-3">
-          <div className="icon-premium w-10 h-10"><Shield className="w-5 h-5 text-primary" /></div>
-          <div>
-            <p className="font-semibold text-foreground">KHAOS Scoring</p>
-            <p className="text-xs text-muted-foreground">Organizer trust & reputation rankings</p>
-          </div>
-        </div>
-      </div>
-      <div className="grid gap-3">
-        {organizers.map((org: any) => (
+    <div className="space-y-2">
+      <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+        <Shield className="w-4 h-4 text-primary" /> KHAOS Scores ({organizers.length})
+      </h3>
+      <div className="grid gap-2">
+        {organizers.slice(0, 8).map((org: any) => (
           <div key={org.id} className="feature-card">
-            <div className="icon-premium w-12 h-12"><span className="text-lg">🏢</span></div>
+            <div className="icon-premium w-10 h-10"><span className="text-lg">🏢</span></div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
-                <h3 className="font-medium text-foreground truncate">{org.name}</h3>
-                {org.claimed && <span className="chip text-[10px] py-0 px-1.5 bg-primary/10 text-primary">Verified</span>}
+                <h4 className="font-medium text-foreground text-sm truncate">{org.name}</h4>
+                {org.claimed && <span className="chip text-[10px] py-0 px-1.5 bg-primary/10 text-primary">✓</span>}
               </div>
               <div className="flex items-center gap-2 mt-0.5">
-                {org.khaos ? <KhaosScoreBadge score={org.khaos.score_total} /> : <span className="text-caption">No score yet</span>}
-                {org.website && <span className="text-caption truncate">{org.website}</span>}
+                {org.khaos ? <KhaosScoreBadge score={org.khaos.score_total} /> : <span className="text-caption">Unscored</span>}
               </div>
             </div>
           </div>
