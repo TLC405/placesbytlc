@@ -20,9 +20,13 @@ const QuizMBTI = lazy(() => import("./pages/QuizMBTI"));
 const QuizRelationshipStyle = lazy(() => import("./pages/QuizRelationshipStyle"));
 const QuizCompatibility = lazy(() => import("./pages/QuizCompatibility"));
 const QuizDateNightIQ = lazy(() => import("./pages/QuizDateNightIQ"));
+const QuizMasculineArchetype = lazy(() => import("./pages/QuizMasculineArchetype"));
+const QuizDatingConfidence = lazy(() => import("./pages/QuizDatingConfidence"));
 const AdminPanel = lazy(() => import("./pages/AdminPanel"));
 const AIRecommender = lazy(() => import("./pages/AIRecommender"));
 const PlacesPage = lazy(() => import("./pages/EnhancedOKCLegend"));
+const Recon = lazy(() => import("./pages/Recon"));
+const HerCycle = lazy(() => import("./pages/HerCycle"));
 const Auth = lazy(() => import("./pages/Auth"));
 const PeriodTracker = lazy(() => import("./pages/PeriodTracker"));
 
@@ -58,9 +62,13 @@ const AppRoutes = () => {
         <Route path="/quiz/relationship-style" element={<QuizRelationshipStyle />} />
         <Route path="/quiz/compatibility" element={<QuizCompatibility />} />
         <Route path="/quiz/date-night-iq" element={<QuizDateNightIQ />} />
+        <Route path="/quiz/masculine-archetype" element={<QuizMasculineArchetype />} />
+        <Route path="/quiz/dating-confidence" element={<QuizDatingConfidence />} />
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="/ai-recommender" element={<AIRecommender />} />
         <Route path="/places" element={<PlacesPage />} />
+        <Route path="/recon" element={<Recon />} />
+        <Route path="/her-cycle" element={<HerCycle />} />
         <Route path="/cycle" element={<PeriodTracker />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
