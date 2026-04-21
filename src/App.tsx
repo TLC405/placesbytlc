@@ -18,6 +18,8 @@ const Quizzes = lazy(() => import("./pages/Quizzes"));
 const QuizLove = lazy(() => import("./pages/QuizLove"));
 const QuizMBTI = lazy(() => import("./pages/QuizMBTI"));
 const QuizRelationshipStyle = lazy(() => import("./pages/QuizRelationshipStyle"));
+const QuizCompatibility = lazy(() => import("./pages/QuizCompatibility"));
+const QuizDateNightIQ = lazy(() => import("./pages/QuizDateNightIQ"));
 const AdminPanel = lazy(() => import("./pages/AdminPanel"));
 const AIRecommender = lazy(() => import("./pages/AIRecommender"));
 const PlacesPage = lazy(() => import("./pages/EnhancedOKCLegend"));
@@ -54,6 +56,8 @@ const AppRoutes = () => {
         <Route path="/quiz/love" element={<QuizLove />} />
         <Route path="/quiz/mbti" element={<QuizMBTI />} />
         <Route path="/quiz/relationship-style" element={<QuizRelationshipStyle />} />
+        <Route path="/quiz/compatibility" element={<QuizCompatibility />} />
+        <Route path="/quiz/date-night-iq" element={<QuizDateNightIQ />} />
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="/ai-recommender" element={<AIRecommender />} />
         <Route path="/places" element={<PlacesPage />} />
