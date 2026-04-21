@@ -1,84 +1,64 @@
 import { useNavigate } from "react-router-dom";
-import { MapPin, Sparkles, Heart, Brain, Users, ChevronRight, Map, ArrowRight } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import { Crosshair, Brain, Droplets, ChevronRight, Flame, Crown } from "lucide-react";
 import { PoweredByTLC } from "@/components/PoweredByTLC";
+import { AppLogo } from "@/components/AppLogo";
 
 export default function HackerHome() {
   const navigate = useNavigate();
-  const { user } = useAuth();
 
-  const quickActions = [
-    { id: "places", title: "Find Date Spots", subtitle: "70+ curated locations", icon: Map, color: "bg-primary/10 text-primary", path: "/places" },
-    { id: "cupid", title: "Ask Cupid AI", subtitle: "Get date ideas", icon: Sparkles, color: "bg-secondary/30 text-foreground", path: "/ai-recommender" },
+  const pillars = [
+    { id: "psych", title: "Self Recon", sub: "Know yourself first", icon: Brain, path: "/quizzes" },
+    { id: "recon", title: "Date Recon", sub: "Plan tonight's mission", icon: Crosshair, path: "/recon" },
+    { id: "cycle", title: "Her Cycle", sub: "Decode her phase", icon: Droplets, path: "/her-cycle" },
   ];
 
-  const quizzes = [
-    { id: "love", title: "Love Language", icon: Heart, color: "bg-rose-100 dark:bg-rose-900/30", iconColor: "text-rose-500", path: "/quiz/love" },
-    { id: "mbti", title: "MBTI Type", icon: Brain, color: "bg-violet-100 dark:bg-violet-900/30", iconColor: "text-violet-500", path: "/quiz/mbti" },
-    { id: "style", title: "Dating Style", icon: Users, color: "bg-blue-100 dark:bg-blue-900/30", iconColor: "text-blue-500", path: "/quiz/relationship-style" },
-  ];
-
-  const featuredSpots = [
-    { id: 1, name: "Automobile Alley", type: "Arts District", emoji: "🎨" },
-    { id: 2, name: "Bricktown", type: "Entertainment", emoji: "🌃" },
-    { id: 3, name: "Paseo District", type: "Culture", emoji: "🖼️" },
+  const quickQuizzes = [
+    { id: "arch", title: "Masculine Archetype", icon: Crown, path: "/quiz/masculine-archetype" },
+    { id: "conf", title: "Dating Confidence", icon: Flame, path: "/quiz/dating-confidence" },
   ];
 
   return (
     <div className="page-shell">
-      <div className="page-content space-y-8">
-        <header className="pt-4 animate-in">
-          <p className="text-caption mb-1">Welcome back</p>
-          <h1 className="text-display text-foreground">{user?.email?.split("@")[0] || "Explorer"}</h1>
+      <div className="page-content space-y-6">
+        <header className="animate-in">
+          <AppLogo />
+          <p className="text-center text-sm text-muted-foreground -mt-2 mb-2 italic">
+            Understand yourself. Decode her. Date deeper.
+          </p>
         </header>
 
-        <section className="animate-in-delay-1">
-          <div className="grid grid-cols-2 gap-3">
-            {quickActions.map((action) => {
-              const Icon = action.icon;
-              return (
-                <button key={action.id} onClick={() => navigate(action.path)} className="card-premium text-left">
-                  <div className={`icon-premium mb-3`}><Icon className="w-6 h-6 text-primary" /></div>
-                  <h3 className="font-semibold text-foreground text-sm mb-0.5">{action.title}</h3>
-                  <p className="text-xs text-muted-foreground">{action.subtitle}</p>
-                </button>
-              );
-            })}
-          </div>
+        <section className="animate-in-delay-1 space-y-3">
+          {pillars.map((p) => {
+            const Icon = p.icon;
+            return (
+              <button key={p.id} onClick={() => navigate(p.path)} className="card-premium w-full flex items-center gap-4 text-left">
+                <div className="icon-premium">
+                  <Icon className="w-6 h-6 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-base font-bold text-foreground">{p.title}</h3>
+                  <p className="text-xs text-muted-foreground">{p.sub}</p>
+                </div>
+                <ChevronRight className="w-5 h-5 text-muted-foreground" />
+              </button>
+            );
+          })}
         </section>
 
         <section className="animate-in-delay-2">
           <div className="section-header">
-            <h2 className="section-title">Featured Spots</h2>
-            <button onClick={() => navigate("/places")} className="section-action flex items-center gap-1">See all <ChevronRight className="w-3 h-3" /></button>
+            <h2 className="section-title">Start Here</h2>
+            <button onClick={() => navigate("/quizzes")} className="section-action">All quizzes →</button>
           </div>
-          <div className="scroll-row">
-            {featuredSpots.map((spot) => (
-              <button key={spot.id} onClick={() => navigate("/places")} className="flex-shrink-0 w-36 card-premium p-4">
-                <span className="text-3xl mb-2 block">{spot.emoji}</span>
-                <h3 className="font-medium text-foreground text-sm truncate">{spot.name}</h3>
-                <p className="text-xs text-muted-foreground">{spot.type}</p>
-              </button>
-            ))}
-          </div>
-        </section>
-
-        <section className="animate-in-delay-3">
-          <div className="section-header">
-            <h2 className="section-title">Psychology Quizzes</h2>
-            <button onClick={() => navigate("/quizzes")} className="section-action flex items-center gap-1">All quizzes <ChevronRight className="w-3 h-3" /></button>
-          </div>
-          <div className="space-y-2">
-            {quizzes.map((quiz) => {
-              const Icon = quiz.icon;
+          <div className="grid grid-cols-2 gap-3">
+            {quickQuizzes.map((q) => {
+              const Icon = q.icon;
               return (
-                <button key={quiz.id} onClick={() => navigate(quiz.path)} className="feature-card w-full">
-                  <div className="icon-premium w-12 h-12"><Icon className={`w-5 h-5 ${quiz.iconColor}`} /></div>
-                  <div className="flex-1 text-left">
-                    <h3 className="font-medium text-foreground text-sm">{quiz.title}</h3>
-                    <p className="text-xs text-muted-foreground">Take the quiz</p>
+                <button key={q.id} onClick={() => navigate(q.path)} className="card-premium p-4 text-left">
+                  <div className="icon-premium w-12 h-12 mb-2">
+                    <Icon className="w-5 h-5 text-primary" />
                   </div>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                  <h3 className="text-sm font-bold text-foreground leading-tight">{q.title}</h3>
                 </button>
               );
             })}
@@ -86,19 +66,14 @@ export default function HackerHome() {
         </section>
 
         <section className="animate-in-delay-3">
-          <div className="card-premium">
-            <div className="flex items-center gap-4">
-              <div className="flex-shrink-0">
-                <div className="icon-premium w-14 h-14"><MapPin className="w-7 h-7 text-primary" /></div>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-headline text-foreground mb-1">Plan Your Date</h3>
-                <p className="text-body text-sm">Explore 70+ handpicked spots in OKC</p>
-              </div>
-            </div>
-            <button onClick={() => navigate("/places")} className="btn-primary w-full mt-4">
-              <span>Start Exploring</span>
-              <ArrowRight className="w-4 h-4" />
+          <div className="card-premium text-center py-6">
+            <p className="text-[10px] font-bold tracking-[0.3em] uppercase text-primary mb-2">Tonight</p>
+            <h3 className="text-headline text-foreground mb-2">Run the playbook</h3>
+            <p className="text-sm text-muted-foreground mb-4 max-w-xs mx-auto">
+              Check her phase. Pick the move. Execute.
+            </p>
+            <button onClick={() => navigate("/her-cycle")} className="btn-primary">
+              <Droplets className="w-4 h-4" /> Open Her Cycle
             </button>
           </div>
         </section>

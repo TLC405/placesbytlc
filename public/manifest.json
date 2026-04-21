@@ -1,11 +1,11 @@
 {
-  "name": "InPerson OKC — Powered by TLC",
-  "short_name": "InPerson OKC",
-  "description": "Discover enchanting date spots, take psychology quizzes, and explore love through AI-powered recommendations — Powered by TLC",
+  "name": "DEEPER — Dating Intelligence for Men",
+  "short_name": "DEEPER",
+  "description": "Understand yourself. Decode her. Date deeper. Psychology quizzes, partner cycle tracker, and AI date night recon — built for modern men.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#fde7f3",
-  "theme_color": "#ff6aa2",
+  "background_color": "#0A0A0A",
+  "theme_color": "#FF1F6D",
   "orientation": "portrait-primary",
   "icons": [
     {
@@ -21,27 +21,27 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["lifestyle", "social", "entertainment"],
+  "categories": ["lifestyle", "social", "productivity"],
   "shortcuts": [
     {
-      "name": "Explore Places",
-      "short_name": "Explore",
-      "description": "Find romantic date spots in OKC",
-      "url": "/places",
+      "name": "Date Night Recon",
+      "short_name": "Recon",
+      "description": "Plan tonight's mission",
+      "url": "/recon",
       "icons": [{ "src": "/felicia-crown.png", "sizes": "96x96" }]
     },
     {
-      "name": "Psychology Quizzes",
+      "name": "Her Cycle",
+      "short_name": "Cycle",
+      "description": "Track her cycle, decode the vibe",
+      "url": "/her-cycle",
+      "icons": [{ "src": "/felicia-crown.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Psych",
       "short_name": "Psych",
-      "description": "Take research-backed personality assessments",
+      "description": "Self-understanding assessments",
       "url": "/quizzes",
-      "icons": [{ "src": "/felicia-crown.png", "sizes": "96x96" }]
-    },
-    {
-      "name": "Cupid AI",
-      "short_name": "Cupid",
-      "description": "Get AI date recommendations",
-      "url": "/ai-recommender",
       "icons": [{ "src": "/felicia-crown.png", "sizes": "96x96" }]
     }
   ]
