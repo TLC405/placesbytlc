@@ -1,13 +1,12 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { Home, MapPin, Sparkles, FlaskConical, User } from "lucide-react";
+import { Home, Brain, Crosshair, Droplets } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const tabs = [
   { id: "home", label: "Home", icon: Home, path: "/" },
-  { id: "places", label: "Places", icon: MapPin, path: "/places" },
-  { id: "cupid", label: "Cupid", icon: Sparkles, path: "/ai-recommender" },
-  { id: "psych", label: "Psych", icon: FlaskConical, path: "/quizzes" },
-  { id: "profile", label: "Profile", icon: User, path: "/auth" },
+  { id: "psych", label: "Psych", icon: Brain, path: "/quizzes" },
+  { id: "recon", label: "Recon", icon: Crosshair, path: "/recon" },
+  { id: "cycle", label: "Her Cycle", icon: Droplets, path: "/her-cycle" },
 ];
 
 export function BottomTabBar() {
@@ -25,7 +24,6 @@ export function BottomTabBar() {
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const active = isActive(tab.path);
-          
           return (
             <button
               key={tab.id}
