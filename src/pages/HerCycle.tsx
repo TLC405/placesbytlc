@@ -81,7 +81,7 @@ export default function HerCycle() {
 
   const logToday = () => {
     save({ ...data, lastPeriodStart: new Date().toISOString().split("T")[0] });
-    toast.success("🩸 Code Red logged. You're locked in.");
+    toast.success("Day 1 saved — you're synced.");
   };
 
   const reset = () => {
@@ -105,12 +105,12 @@ export default function HerCycle() {
               <Droplets className="w-7 h-7 text-primary" />
             </div>
             <div className="flex-1">
-              <p className="text-[10px] font-bold tracking-[0.25em] uppercase text-muted-foreground">Tactical Intel</p>
-              <h1 className="text-display text-foreground leading-none">Her Cycle</h1>
+              <p className="text-[10px] font-bold tracking-[0.25em] uppercase text-muted-foreground">Cycle sync</p>
+              <h1 className="text-display text-foreground leading-none">Sync</h1>
             </div>
           </div>
           <p className="text-body text-sm mt-3">
-            Decode her phase. Plan accordingly. Don't fumble it.
+            Where she's at, what to say, and what actually lands — without guessing.
           </p>
         </header>
 
