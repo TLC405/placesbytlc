@@ -4,9 +4,9 @@ import { cn } from "@/lib/utils";
 
 const tabs = [
   { id: "home", label: "Home", icon: Home, path: "/" },
-  { id: "psych", label: "Psych", icon: Brain, path: "/quizzes" },
-  { id: "recon", label: "Recon", icon: Crosshair, path: "/recon" },
-  { id: "cycle", label: "Her Cycle", icon: Droplets, path: "/her-cycle" },
+  { id: "psych", label: "Mind", icon: Brain, path: "/quizzes" },
+  { id: "recon", label: "Dates", icon: Crosshair, path: "/recon" },
+  { id: "cycle", label: "Sync", icon: Droplets, path: "/her-cycle" },
 ];
 
 export function BottomTabBar() {

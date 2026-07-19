@@ -81,7 +81,7 @@ export default function HerCycle() {
 
   const logToday = () => {
     save({ ...data, lastPeriodStart: new Date().toISOString().split("T")[0] });
-    toast.success("🩸 Code Red logged. You're locked in.");
+    toast.success("Day 1 saved — you're synced.");
   };
 
   const reset = () => {
@@ -105,12 +105,12 @@ export default function HerCycle() {
               <Droplets className="w-7 h-7 text-primary" />
             </div>
             <div className="flex-1">
-              <p className="text-[10px] font-bold tracking-[0.25em] uppercase text-muted-foreground">Tactical Intel</p>
-              <h1 className="text-display text-foreground leading-none">Her Cycle</h1>
+              <p className="text-[10px] font-bold tracking-[0.25em] uppercase text-muted-foreground">Cycle sync</p>
+              <h1 className="text-display text-foreground leading-none">Sync</h1>
             </div>
           </div>
           <p className="text-body text-sm mt-3">
-            Decode her phase. Plan accordingly. Don't fumble it.
+            Where she's at, what to say, and what actually lands — without guessing.
           </p>
         </header>
 
@@ -119,9 +119,9 @@ export default function HerCycle() {
           <section className="animate-in-delay-1">
             <div className="card-premium text-center py-8">
               <Calendar className="w-12 h-12 text-primary mx-auto mb-4" />
-              <h3 className="text-headline text-foreground mb-2">Lock In Day 1</h3>
+              <h3 className="text-headline text-foreground mb-2">Set Day 1</h3>
               <p className="text-body text-sm mb-6 max-w-xs mx-auto">
-                Tap below the day her period started. We'll handle the rest of the math.
+                Pick the day her period started. We handle the rest.
               </p>
               <input
                 type="date"
@@ -231,7 +231,7 @@ export default function HerCycle() {
             {intel && (
               <section className="animate-in-delay-2">
                 <div className="section-header">
-                  <h2 className="section-title">Tonight's Date Moves</h2>
+                  <h2 className="section-title">Date moves that fit tonight</h2>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   {intel.dateMoves.map((m, i) => (
@@ -249,7 +249,7 @@ export default function HerCycle() {
                 <div className="card-premium">
                   <div className="flex items-center gap-2 mb-3">
                     <MessageSquare className="w-4 h-4 text-primary" />
-                    <h3 className="text-sm font-bold tracking-wide uppercase text-foreground">Texts to send</h3>
+                    <h3 className="text-sm font-bold tracking-wide uppercase text-foreground">Texts that land</h3>
                   </div>
                   <div className="space-y-2">
                     {intel.texts.map((t, i) => (
@@ -262,7 +262,7 @@ export default function HerCycle() {
                 <div className="card-premium">
                   <div className="flex items-center gap-2 mb-3">
                     <Gift className="w-4 h-4 text-secondary" />
-                    <h3 className="text-sm font-bold tracking-wide uppercase text-foreground">Gift intel</h3>
+                    <h3 className="text-sm font-bold tracking-wide uppercase text-foreground">Gift ideas</h3>
                   </div>
                   <ul className="space-y-2">
                     {intel.giftIdeas.map((g, i) => (
@@ -279,8 +279,8 @@ export default function HerCycle() {
             {/* 28-day forecast */}
             <section className="animate-in-delay-3">
               <div className="section-header">
-                <h2 className="section-title">28-Day Forecast</h2>
-                <span className="text-[10px] text-muted-foreground">Tap a day for intel</span>
+                <h2 className="section-title">Next 28 days</h2>
+                <span className="text-[10px] text-muted-foreground">Tap for details</span>
               </div>
               <div className="grid grid-cols-7 gap-1.5">
                 {forecast.map((d, i) => (
@@ -323,7 +323,7 @@ export default function HerCycle() {
                 <Stepper label="Period length" sub="Avg duration of period" value={data.periodLength} min={3} max={8} onChange={(v) => save({ ...data, periodLength: v })} />
                 <div className="border-t border-border pt-4">
                   <button onClick={logToday} className="btn-secondary w-full">
-                    <RotateCcw className="w-4 h-4" /> Log new period start (today)
+                    <RotateCcw className="w-4 h-4" /> Log a new Day 1 (today)
                   </button>
                 </div>
                 <p className="text-[11px] text-muted-foreground text-center">

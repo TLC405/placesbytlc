@@ -1,34 +1,34 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Crosshair, Sparkles, MapPin, ChevronRight, Target, Compass } from "lucide-react";
+import { ArrowLeft, Crosshair, Sparkles, ChevronRight, Wand2, MapPin } from "lucide-react";
 import { PoweredByTLC } from "@/components/PoweredByTLC";
 
 export default function Recon() {
   const navigate = useNavigate();
 
-  const missions = [
+  const primary = [
     {
-      title: "Tonight's Mission",
-      sub: "AI-built date plan in 30 seconds",
-      icon: Target,
-      cta: "Brief Cupid AI",
+      title: "Plan tonight in 30s",
+      sub: "AI builds the full date — spots, order, vibe",
+      icon: Wand2,
+      cta: "Ask Cupid",
       onClick: () => navigate("/ai-recommender"),
       accent: true,
     },
     {
-      title: "Scout Locations",
-      sub: "Live venue feed + tactical filters",
-      icon: Compass,
-      cta: "Open Recon Feed",
+      title: "Browse real venues",
+      sub: "Live OKC feed — restaurants, events, hidden gems",
+      icon: MapPin,
+      cta: "Open feed",
       onClick: () => navigate("/places"),
       accent: false,
     },
   ];
 
   const playbooks = [
-    { emoji: "🔥", title: "Peak Mode Date", sub: "She's at maximum attraction window" },
-    { emoji: "🌙", title: "Storm Watch Night", sub: "Cozy, steady, low-pressure" },
-    { emoji: "🌱", title: "Power Up Adventure", sub: "Try something neither of you has done" },
-    { emoji: "🩸", title: "Code Red Comfort", sub: "At-home recovery mode" },
+    { emoji: "🔥", title: "Peak Window", sub: "She's dialed in — go bold" },
+    { emoji: "🌙", title: "Low-Key Night", sub: "Cozy, steady, zero pressure" },
+    { emoji: "🌱", title: "Fresh Adventure", sub: "Try something neither of you has" },
+    { emoji: "🩸", title: "At-Home Reset", sub: "Comfort mode, done right" },
   ];
 
   return (
@@ -43,18 +43,18 @@ export default function Recon() {
               <Crosshair className="w-7 h-7 text-primary" />
             </div>
             <div>
-              <p className="text-[10px] font-bold tracking-[0.25em] uppercase text-muted-foreground">Date Night</p>
-              <h1 className="text-display text-foreground leading-none">Recon</h1>
+              <p className="text-[10px] font-bold tracking-[0.25em] uppercase text-muted-foreground">Date planner</p>
+              <h1 className="text-display text-foreground leading-none">Dates</h1>
             </div>
           </div>
           <p className="text-body text-sm mt-3">
-            Mission briefings, scoutable locations, tactical playbooks. Plan the night, win the night.
+            AI-built plans and real venues — pick a vibe and stop overthinking it.
           </p>
         </header>
 
-        {/* Missions */}
+        {/* Primary actions */}
         <section className="animate-in-delay-1 space-y-3">
-          {missions.map((m) => {
+          {primary.map((m) => {
             const Icon = m.icon;
             return (
               <button
@@ -80,8 +80,8 @@ export default function Recon() {
         {/* Playbooks */}
         <section className="animate-in-delay-2">
           <div className="section-header">
-            <h2 className="section-title">Phase Playbooks</h2>
-            <button onClick={() => navigate("/her-cycle")} className="section-action">Her Cycle →</button>
+            <h2 className="section-title">Match her energy</h2>
+            <button onClick={() => navigate("/her-cycle")} className="section-action">Cycle Sync →</button>
           </div>
           <div className="grid grid-cols-2 gap-3">
             {playbooks.map((p) => (
@@ -98,15 +98,15 @@ export default function Recon() {
           </div>
         </section>
 
-        {/* Quick links */}
+        {/* Level up */}
         <section className="animate-in-delay-3">
           <div className="card-premium">
-            <div className="flex items-center gap-3 mb-3">
+            <div className="flex items-center gap-2 mb-3">
               <Sparkles className="w-4 h-4 text-primary" />
-              <h3 className="text-sm font-bold tracking-wide uppercase text-foreground">Tactical Edge</h3>
+              <h3 className="text-sm font-bold tracking-wide uppercase text-foreground">Level up your game</h3>
             </div>
             <p className="text-sm text-muted-foreground mb-4">
-              Run your Date Night IQ + Compatibility quizzes to unlock recon tailored to YOUR style.
+              Two quick quizzes and Cupid gets 10× smarter about what fits your style.
             </p>
             <div className="grid grid-cols-2 gap-2">
               <button onClick={() => navigate("/quiz/date-night-iq")} className="btn-secondary text-xs">Date Night IQ</button>

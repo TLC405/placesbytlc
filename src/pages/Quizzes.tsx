@@ -7,28 +7,28 @@ export default function Quizzes() {
 
   const sections = [
     {
-      title: "Self Recon",
-      sub: "Understand the man you are",
+      title: "Know yourself",
+      sub: "The work starts inside",
       quizzes: [
-        { id: "archetype", title: "Masculine Archetype", description: "King, Warrior, Magician, or Lover — Robert Moore framework adapted for modern dating", icon: Crown, path: "/quiz/masculine-archetype", duration: "4 min", questions: "8 Q", badge: "NEW", isNew: true },
-        { id: "confidence", title: "Dating Confidence Index", description: "Approach anxiety, follow-through, emotional regulation — your real number, no fluff", icon: Flame, path: "/quiz/dating-confidence", duration: "3 min", questions: "10 Q", badge: "NEW", isNew: true },
-        { id: "mbti", title: "Personality Type (MBTI)", description: "16-type cognitive profile + how your type pairs in relationships", icon: Brain, path: "/quiz/mbti", duration: "8 min", questions: "20 Q", badge: "16 types" },
+        { id: "archetype", title: "Masculine Archetype", description: "King, Warrior, Magician, Lover — the four modes of modern masculinity", icon: Crown, path: "/quiz/masculine-archetype", duration: "4 min", questions: "8 Q", badge: "NEW", isNew: true },
+        { id: "confidence", title: "Confidence Index", description: "Approach anxiety, follow-through, emotional regulation — your real number", icon: Flame, path: "/quiz/dating-confidence", duration: "3 min", questions: "10 Q", badge: "NEW", isNew: true },
+        { id: "mbti", title: "Personality Type", description: "16-type cognitive profile and how yours plays in relationships", icon: Brain, path: "/quiz/mbti", duration: "8 min", questions: "20 Q", badge: "MBTI" },
       ],
     },
     {
-      title: "Decode Her",
-      sub: "Read the dynamic, win the game",
+      title: "Read her",
+      sub: "See the dynamic clearly",
       quizzes: [
-        { id: "love", title: "Love Language", description: "How YOU give love + how to spot HER primary language", icon: Heart, path: "/quiz/love", duration: "5 min", questions: "15 Q", badge: "Chapman" },
-        { id: "style", title: "Attachment Style", description: "Anxious, avoidant, secure — how you bond and what derails you", icon: Users, path: "/quiz/relationship-style", duration: "6 min", questions: "12 Q", badge: "Bowlby" },
-        { id: "compatibility", title: "Compatibility", description: "Gottman-inspired analysis: communication, conflict, intimacy, values, growth", icon: Users2, path: "/quiz/compatibility", duration: "4 min", questions: "10 Q", badge: "Gottman" },
+        { id: "love", title: "Love Language", description: "How you give love — and how to spot hers in under a week", icon: Heart, path: "/quiz/love", duration: "5 min", questions: "15 Q", badge: "Chapman" },
+        { id: "style", title: "Attachment Style", description: "Anxious, avoidant, secure — how you bond and what throws you off", icon: Users, path: "/quiz/relationship-style", duration: "6 min", questions: "12 Q", badge: "Bowlby" },
+        { id: "compatibility", title: "Compatibility", description: "Communication, conflict, intimacy, values, growth — the five that matter", icon: Users2, path: "/quiz/compatibility", duration: "4 min", questions: "10 Q", badge: "Gottman" },
       ],
     },
     {
-      title: "Tactical",
-      sub: "Skills you can deploy tonight",
+      title: "Use it tonight",
+      sub: "Skills you can run this week",
       quizzes: [
-        { id: "date-iq", title: "Date Night IQ", description: "Personal evening profile + curated date moves matched to your blend", icon: Stars, path: "/quiz/date-night-iq", duration: "3 min", questions: "8 Q", badge: "Tactical" },
+        { id: "date-iq", title: "Date Night IQ", description: "Your evening profile plus date moves that actually fit your style", icon: Stars, path: "/quiz/date-night-iq", duration: "3 min", questions: "8 Q", badge: "Applied" },
       ],
     },
   ];
@@ -41,10 +41,10 @@ export default function Quizzes() {
             <ArrowLeft className="w-4 h-4" /><span>Back</span>
           </button>
           <div className="text-center">
-            <p className="text-[10px] font-bold tracking-[0.3em] uppercase text-primary mb-2">Self Recon</p>
-            <h1 className="text-display text-foreground mb-2">Psych</h1>
+            <p className="text-[10px] font-bold tracking-[0.3em] uppercase text-primary mb-2">Self-awareness</p>
+            <h1 className="text-display text-foreground mb-2">Mind</h1>
             <p className="text-body max-w-sm mx-auto">
-              Evidence-based assessments for men — understand yourself, then decode her.
+              Evidence-based quizzes — built for men who'd rather do the work than fake it.
             </p>
           </div>
         </header>
