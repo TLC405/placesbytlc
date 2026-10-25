@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { toast } from 'sonner';
+import { isHalloweenSeason } from '@/lib/season';
 
 export type ThemeType = 'romance' | 'man-mode' | 'cyberpunk' | 'nature';
 
@@ -68,6 +69,7 @@ const THEMES: Record<ThemeType, ThemeConfig> = {
 };
 
 interface ThemeContextType {
+  isHalloween: boolean;
   currentTheme: ThemeType;
   setTheme: (theme: ThemeType) => void;
   themes: typeof THEMES;
@@ -77,36 +79,37 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [currentTheme, setCurrentTheme] = useState<ThemeType>('romance');
+  const [isHalloween, setIsHalloween] = useState(() => isHalloweenSeason());
 
   useEffect(() => {
     const saved = localStorage.getItem('tlc_theme') as ThemeType;
     if (saved && THEMES[saved]) {
-      applyTheme(saved);
       setCurrentTheme(saved);
     }
   }, []);
 
-  const applyTheme = (theme: ThemeType) => {
-    const config = THEMES[theme];
-    document.documentElement.setAttribute('data-theme', theme);
-    
-    // Apply CSS variables
+  useEffect(() => {
+    const check = () => setIsHalloween(isHalloweenSeason());
+    const interval = window.setInterval(check, 60000);
+    window.addEventListener('focus', check);
+    return () => { clearInterval(interval); window.removeEventListener('focus', check); };
+  }, []);
+
+  useEffect(() => {
     const root = document.documentElement;
-    root.style.setProperty('--primary', config.colors.primary);
-    root.style.setProperty('--accent', config.colors.accent);
-    root.style.setProperty('--background', config.colors.background);
-    root.style.setProperty('--foreground', config.colors.foreground);
-  };
+    for (const token of ['--primary', '--accent', '--background', '--foreground']) root.style.removeProperty(token);
+    root.setAttribute('data-season', isHalloween ? 'halloween' : 'regular');
+    root.removeAttribute('data-theme');
+  }, [isHalloween]);
 
   const setTheme = (theme: ThemeType) => {
-    applyTheme(theme);
     setCurrentTheme(theme);
     localStorage.setItem('tlc_theme', theme);
     toast.success(`${THEMES[theme].icon} ${THEMES[theme].displayName} activated`);
   };
 
   return (
-    <ThemeContext.Provider value={{ currentTheme, setTheme, themes: THEMES }}>
+    <ThemeContext.Provider value={{ currentTheme, setTheme, themes: THEMES, isHalloween }}>
       {children}
     </ThemeContext.Provider>
   );
