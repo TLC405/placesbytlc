@@ -9,7 +9,8 @@ export default function HackerHome() {
   const pillars = [
     { id: "psych", title: "Know Yourself", sub: "The work starts inside", icon: Brain, path: "/quizzes", tag: "Mindset" },
     { id: "recon", title: "Plan the Date", sub: "AI-built plans, real venues", icon: Crosshair, path: "/recon", tag: "Tonight" },
-    { id: "cycle", title: "Read the Room", sub: "Sync with her cycle, not against it", icon: Droplets, path: "/her-cycle", tag: "Cycle IQ" },
+    { id: "cycle", title: "Read the Room", sub: "Track her cycle, not against it", icon: Droplets, path: "/her-cycle", tag: "Cycle" },
+    { id: "sync", title: "Partner Sync", sub: "Link up and share moods, plans, notes", icon: Sparkles, path: "/sync", tag: "Together" },
   ];
 
   const quickQuizzes = [
