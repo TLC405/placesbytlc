@@ -1,12 +1,13 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { Home, Brain, Crosshair, Droplets } from "lucide-react";
+import { Home, Brain, Crosshair, Droplets, Link2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const tabs = [
   { id: "home", label: "Home", icon: Home, path: "/" },
   { id: "psych", label: "Mind", icon: Brain, path: "/quizzes" },
   { id: "recon", label: "Dates", icon: Crosshair, path: "/recon" },
-  { id: "cycle", label: "Sync", icon: Droplets, path: "/her-cycle" },
+  { id: "cycle", label: "Cycle", icon: Droplets, path: "/her-cycle" },
+  { id: "sync", label: "Sync", icon: Link2, path: "/sync" },
 ];
 
 export function BottomTabBar() {

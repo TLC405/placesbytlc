@@ -28,6 +28,7 @@ const PlacesPage = lazy(() => import("./pages/EnhancedOKCLegend"));
 const Recon = lazy(() => import("./pages/Recon"));
 const HerCycle = lazy(() => import("./pages/HerCycle"));
 const Auth = lazy(() => import("./pages/Auth"));
+const PartnerSync = lazy(() => import("./pages/PartnerSync"));
 const PeriodTracker = lazy(() => import("./pages/PeriodTracker"));
 
 import { useGoogleMaps } from "@/hooks/useGoogleMaps";
@@ -69,6 +70,7 @@ const AppRoutes = () => {
         <Route path="/places" element={<PlacesPage />} />
         <Route path="/recon" element={<Recon />} />
         <Route path="/her-cycle" element={<HerCycle />} />
+        <Route path="/sync" element={<PartnerSync />} />
         <Route path="/cycle" element={<PeriodTracker />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
