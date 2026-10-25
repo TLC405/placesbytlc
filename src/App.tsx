@@ -36,12 +36,17 @@ import { DevModeProvider } from "@/contexts/DevModeContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { PINProvider } from "@/contexts/PINContext";
+import { ProfileProvider, useProfile } from "@/contexts/ProfileContext";
+import { FirstVisit } from "@/components/FirstVisit";
+import { SeasonalDetails } from "@/components/SeasonalDetails";
 
 const queryClient = new QueryClient();
 
 const AppRoutes = () => {
   useSessionTracker();
   useGoogleMaps();
+  const { needsIntake, editing } = useProfile();
+  if (needsIntake || editing) return <FirstVisit />;
 
   return (
     <Suspense
@@ -56,6 +61,7 @@ const AppRoutes = () => {
     >
       <Routes>
         <Route path="/" element={<HackerHome />} />
+        <Route path="/index" element={<HackerHome />} />
         <Route path="/auth" element={<Auth />} />
         <Route path="/quizzes" element={<Quizzes />} />
         <Route path="/quiz/love" element={<QuizLove />} />
@@ -92,8 +98,10 @@ const App = () => {
                   <Sonner />
                 <BrowserRouter>
                   <ActivityTracker />
-                  <DetailedCupid />
-                  <AppRoutes />
+                  <ProfileProvider>
+                    <SeasonalDetails />
+                    <AppRoutes />
+                  </ProfileProvider>
                 </BrowserRouter>
                 </TooltipProvider>
               </PINProvider>

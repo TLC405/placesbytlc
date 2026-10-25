@@ -5,17 +5,17 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-bold ring-offset-background transition-all duration-500 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-95 relative overflow-hidden",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-semibold ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.98] relative",
   {
     variants: {
       variant: {
-        default: "gradient-primary text-primary-foreground hover:shadow-glow hover:scale-105 shadow-premium before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent before:translate-x-[-100%] hover:before:translate-x-[100%] before:transition-transform before:duration-700",
-        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-card hover:shadow-elevated hover:scale-105",
-        outline: "border-2 border-primary/30 bg-card/50 backdrop-blur-sm hover:bg-card hover:border-primary/60 hover:shadow-glow shadow-card hover:scale-105",
-        secondary: "bg-secondary text-secondary-foreground hover:bg-muted shadow-card hover:shadow-elevated hover:scale-105",
-        ghost: "border border-border/30 bg-transparent hover:bg-accent/50 hover:text-accent-foreground hover:border-primary/40 hover:scale-105 backdrop-blur-sm",
-        link: "text-primary underline-offset-4 hover:underline rounded-none hover:scale-105",
-        premium: "glass-premium gradient-primary text-primary-foreground hover:shadow-premium hover:scale-105 border-2 border-primary/20 hover:border-primary/40",
+        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+        outline: "border border-border bg-card text-foreground hover:bg-muted hover:border-primary/50",
+        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/90",
+        ghost: "text-foreground hover:bg-muted",
+        link: "text-primary underline-offset-4 hover:underline rounded-none",
+        premium: "bg-primary text-primary-foreground hover:bg-primary/90 border border-primary/20",
       },
       size: {
         default: "h-12 px-8 py-3",
