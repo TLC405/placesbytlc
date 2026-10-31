@@ -81,7 +81,7 @@ export default function Recon() {
         <section className="animate-in-delay-2">
           <div className="section-header">
             <h2 className="section-title">Match her energy</h2>
-            <button onClick={() => navigate("/her-cycle")} className="section-action">Cycle Sync →</button>
+            <button onClick={() => navigate("/her-cycle")} className="section-action">Cycle →</button>
           </div>
           <div className="grid grid-cols-2 gap-3">
             {playbooks.map((p) => (
@@ -103,10 +103,10 @@ export default function Recon() {
           <div className="card-premium">
             <div className="flex items-center gap-2 mb-3">
               <Sparkles className="w-4 h-4 text-primary" />
-              <h3 className="text-sm font-bold tracking-wide uppercase text-foreground">Level up your game</h3>
+              <h3 className="text-sm font-bold tracking-wide uppercase text-foreground">Make it feel like you</h3>
             </div>
             <p className="text-sm text-muted-foreground mb-4">
-              Two quick quizzes and Cupid gets 10× smarter about what fits your style.
+              Two quick check-ins to explore your date style and how you connect.
             </p>
             <div className="grid grid-cols-2 gap-2">
               <button onClick={() => navigate("/quiz/date-night-iq")} className="btn-secondary text-xs">Date Night IQ</button>

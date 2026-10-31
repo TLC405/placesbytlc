@@ -672,6 +672,89 @@ export type Database = {
         }
         Relationships: []
       }
+      partner_sync_devices: {
+        Row: {
+          expires_at: string
+          pair_id: string | null
+          token_hash: string
+        }
+        Insert: {
+          expires_at?: string
+          pair_id?: string | null
+          token_hash: string
+        }
+        Update: {
+          expires_at?: string
+          pair_id?: string | null
+          token_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partner_sync_devices_pair_id_fkey"
+            columns: ["pair_id"]
+            isOneToOne: false
+            referencedRelation: "partner_sync_pairs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      partner_sync_limits: {
+        Row: {
+          key: string
+          requests: number
+          window_start: string
+        }
+        Insert: {
+          key: string
+          requests?: number
+          window_start?: string
+        }
+        Update: {
+          key?: string
+          requests?: number
+          window_start?: string
+        }
+        Relationships: []
+      }
+      partner_sync_pairs: {
+        Row: {
+          created_at: string
+          guest_hash: string | null
+          host_hash: string
+          id: string
+          invite_code: string | null
+          invite_expires_at: string
+          invite_hash: string | null
+          shared: Json
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          guest_hash?: string | null
+          host_hash: string
+          id?: string
+          invite_code?: string | null
+          invite_expires_at?: string
+          invite_hash?: string | null
+          shared?: Json
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          guest_hash?: string | null
+          host_hash?: string
+          id?: string
+          invite_code?: string | null
+          invite_expires_at?: string
+          invite_hash?: string | null
+          shared?: Json
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       phone_rate_limits: {
         Row: {
           created_at: string
@@ -1091,6 +1174,18 @@ export type Database = {
         Returns: boolean
       }
       join_couple: { Args: { _code: string }; Returns: string }
+      partner_sync_action: {
+        Args: {
+          _action: string
+          _code?: string
+          _code_hash?: string
+          _ip_hash: string
+          _key?: string
+          _text?: string
+          _token_hash: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

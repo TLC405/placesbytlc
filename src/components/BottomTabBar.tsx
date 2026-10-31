@@ -1,8 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { Home, Brain, Crosshair, Droplets, Link2, Ghost, Moon, Heart } from "lucide-react";
+import { Home, Brain, Crosshair, Droplets, Link2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { PumpkinIcon, BatIcon } from "@/components/HalloweenIcon";
 import { useTheme } from "@/contexts/ThemeContext";
 
 const tabs = [
@@ -16,8 +15,7 @@ const tabs = [
 export function BottomTabBar() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { isHalloween } = useTheme();
-  const seasonalIcons = [PumpkinIcon, Ghost, BatIcon, Moon, Heart];
+  const { currentTheme, themes } = useTheme();
 
   const isActive = (path: string) => {
     if (path === "/") return location.pathname === "/" || location.pathname === "/index";
@@ -31,7 +29,7 @@ export function BottomTabBar() {
     <nav className="tab-bar" aria-label="Main navigation">
       <div className="tab-bar-inner">
         {tabs.map((tab, index) => {
-          const Icon = isHalloween ? seasonalIcons[index] : tab.icon;
+          const Icon = themes[currentTheme].navIcons[index] || tab.icon;
           const active = isActive(tab.path);
           return (
             <Button

@@ -4,6 +4,7 @@ import { ArrowLeft, Droplets, Calendar, MessageSquare, Gift, ShieldCheck, Ban, S
 import { toast } from "sonner";
 import { PoweredByTLC } from "@/components/PoweredByTLC";
 import { phaseIntel, getPhaseFromDay, type CyclePhase } from "@/data/cyclePhaseIntel";
+import { Button } from "@/components/ui/button";
 
 interface CycleData {
   lastPeriodStart: string | null;
@@ -101,16 +102,16 @@ export default function HerCycle() {
             <ArrowLeft className="w-4 h-4" /><span>Back</span>
           </button>
           <div className="flex items-center gap-3">
-            <div className="icon-premium" style={{ background: "linear-gradient(135deg, hsl(var(--primary)/0.15), hsl(var(--secondary)/0.15))" }}>
+            <div className="icon-premium">
               <Droplets className="w-7 h-7 text-primary" />
             </div>
             <div className="flex-1">
-              <p className="text-[10px] font-bold tracking-[0.25em] uppercase text-muted-foreground">Cycle sync</p>
-              <h1 className="text-display text-foreground leading-none">Sync</h1>
+              <p className="text-[10px] font-bold tracking-[0.25em] uppercase text-muted-foreground">A little more care</p>
+              <h1 className="text-display text-foreground leading-none">Cycle</h1>
             </div>
           </div>
           <p className="text-body text-sm mt-3">
-            Where she's at, what to say, and what actually lands — without guessing.
+            A thoughtful check-in, not a crystal ball. Ask how she feels—every cycle is different.
           </p>
         </header>
 
@@ -140,27 +141,23 @@ export default function HerCycle() {
             {intel && (
               <section className="animate-in-delay-1">
                 <div
-                  className="rounded-2xl p-6 relative overflow-hidden border-2"
-                  style={{
-                    background: `linear-gradient(135deg, ${intel.hex}15, hsl(var(--card)))`,
-                    borderColor: `${intel.hex}40`,
-                  }}
+                  className={`phase-panel phase-${phase}`}
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div>
-                      <p className="text-[10px] font-bold tracking-[0.25em] uppercase" style={{ color: intel.hex }}>
-                        Today — Day {today! + 1} / {data.cycleLength}
+                      <p className="text-[10px] font-bold phase-accent">
+                        Today — Day {(today ?? 0) + 1} / {data.cycleLength}
                       </p>
                       <h2 className="text-3xl font-black tracking-tight text-foreground mt-1">
                         {intel.emoji} {intel.codename}
                       </h2>
                       <p className="text-xs font-medium text-muted-foreground mt-0.5">
-                        {phaseIntel[phase!].key.charAt(0) + phaseIntel[phase!].key.slice(1).toLowerCase()} phase
+                        {phase ? phase.charAt(0) + phase.slice(1).toLowerCase() : ""} phase
                       </p>
                     </div>
                     {daysUntilNext !== null && (
                       <div className="text-right">
-                        <p className="text-3xl font-black" style={{ color: intel.hex }}>{daysUntilNext}</p>
+                        <p className="text-3xl font-black phase-accent">{daysUntilNext}</p>
                         <p className="text-[9px] font-bold tracking-widest uppercase text-muted-foreground">
                           days to next
                         </p>
@@ -284,25 +281,20 @@ export default function HerCycle() {
               </div>
               <div className="grid grid-cols-7 gap-1.5">
                 {forecast.map((d, i) => (
-                  <button
+                  <Button variant="ghost"
                     key={i}
                     onClick={() => toast(`${d.intel.emoji} ${d.intel.codename} — ${fmt(d.date)}`, { description: d.intel.oneLiner })}
-                    className="aspect-square rounded-lg flex flex-col items-center justify-center text-[10px] font-bold transition-transform hover:scale-105 active:scale-95"
-                    style={{
-                      background: i === 0 ? d.intel.hex : `${d.intel.hex}25`,
-                      color: i === 0 ? "white" : d.intel.hex,
-                      border: i === 0 ? `2px solid ${d.intel.hex}` : "none",
-                    }}
+                    className={`phase-day phase-${d.phase} ${i === 0 ? "phase-day-today" : ""} aspect-square h-auto p-1 gap-1 rounded-lg flex flex-col items-center justify-center text-[10px] font-bold`}
                   >
                     <span className="text-base leading-none">{d.intel.emoji}</span>
                     <span className="leading-none mt-0.5">{d.date.getDate()}</span>
-                  </button>
+                  </Button>
                 ))}
               </div>
               <div className="flex flex-wrap gap-2 mt-4 text-[10px] text-muted-foreground">
                 {(["MENSTRUAL", "FOLLICULAR", "OVULATION", "LUTEAL"] as CyclePhase[]).map((p) => (
                   <span key={p} className="inline-flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-sm" style={{ background: phaseIntel[p].hex }} />
+                    <span className={`w-2.5 h-2.5 rounded-sm phase-dot phase-${p}`} />
                     {phaseIntel[p].codename}
                   </span>
                 ))}
@@ -327,7 +319,7 @@ export default function HerCycle() {
                   </button>
                 </div>
                 <p className="text-[11px] text-muted-foreground text-center">
-                  Stored on this device only. Nothing leaves your phone.
+                  Stored on this device only. Estimates are not medical advice or contraception.
                 </p>
               </div>
             </section>

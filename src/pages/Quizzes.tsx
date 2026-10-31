@@ -16,7 +16,7 @@ export default function Quizzes() {
       ],
     },
     {
-      title: "Read her",
+      title: "Understand each other",
       sub: "See the dynamic clearly",
       quizzes: [
         { id: "love", title: "Love Language", description: "How you give love — and how to spot hers in under a week", icon: Heart, path: "/quiz/love", duration: "5 min", questions: "15 Q", badge: "Chapman" },
@@ -44,7 +44,7 @@ export default function Quizzes() {
             <p className="text-[10px] font-bold tracking-[0.3em] uppercase text-primary mb-2">Self-awareness</p>
             <h1 className="text-display text-foreground mb-2">Mind</h1>
             <p className="text-body max-w-sm mx-auto">
-              Evidence-based quizzes — built for men who'd rather do the work than fake it.
+              A little self-reflection, a better understanding of each other. Not a diagnosis—just a place to start.
             </p>
           </div>
         </header>
