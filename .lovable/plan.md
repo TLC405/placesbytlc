@@ -1,59 +1,59 @@
+# Natalie and Trevel’s Couples App
 
+## Same app, a complete new identity
+Continue the upgrade underway and rename the app **Natalie and Trevel’s Couples App**. Design it for both of you without adding unrelated features. Keep Home, Mind, Dates, Cycle and Sync, the existing quizzes, Cupid and places search.
 
-# Supercharge TLC Engine Search — Full Discovery Overhaul
+**Your choices:** no sign-in for normal use or partner Sync; connect with a code. Themes are always manual. Spooky stays until you switch it, even after Halloween. These choices replace the earlier seasonal-only behavior.
 
-## Problem
-The search only returns results when keywords match exact titles/descriptions. With only 10 places and 50 events in the DB, and Ticketmaster limited to keyword matching, most searches feel empty. There's no way to browse by category, no auto-loading, and no AI enrichment unless everything else returns zero.
+## 1. Couples branding everywhere
+- Use a carefully typeset “Natalie & Trevel” wordmark with “Couples App” beneath it. Use the full requested name in the browser title and installed-app name.
+- Update the first-visit page and active screens; replace men-only introductions with thoughtful, natural language for both partners.
+- Keep “Powered by TLC” discreetly. Preserve existing quiz names and scoring rather than silently rewriting assessments.
+- Keep all saved profiles, quizzes, cycle information and partner data. Do not rename hidden storage keys merely for branding.
 
-## Plan
+## 2. Four complete visual worlds
+Keep Spooky and replace the other legacy looks entirely. I’ll choose **Love Letters** as the default for new visitors; preserve Spooky for your current experience.
 
-### 1. Auto-Load Everything on Page Open
-- On mount, fetch ALL upcoming events from DB + fire a broad Ticketmaster query (no keyword, just OKC lat/lng + next 30 days) to show 20+ events immediately
-- Show all 10+ discovered_places grouped by category
-- No typing required — user sees a full feed instantly
+| Theme | Visual direction |
+| --- | --- |
+| **Spooky** | Charcoal, coral pumpkins and blush ghosts; sculptural Halloween artwork; pumpkin, bat and moon navigation; gentle drifting details. |
+| **Love Letters** | White, ink black and raspberry pink; expressive serif headings; original paper-and-ribbon artwork; heart details; outlined controls and soft page reveals. |
+| **Midnight Cinema** | Near-black, pearl white, icy blue and red accents; film-inspired imagery; refined sans-serif lettering; precise dividers and cinematic transitions. |
+| **Garden Studio** | White, deep green and soft pink; original botanical artwork; literary headings; airy spacing; leaf-inspired icons and quiet motion. |
 
-### 2. Expand Ticketmaster Search Strategy (Edge Function)
-Current: single keyword search, `size=20`
-New approach in `search-everything`:
-- When user searches a **category** (e.g. "music", "food", "sports"), fire **multiple Ticketmaster queries** using `classificationName` parameter instead of `keyword` — this returns far more results
-- Increase `size` to 50
-- Add `sort=date,asc` for chronological browsing
-- When query is empty but category is set, do a **browse** query (no keyword, just classification + location)
-- Search `tags` column in events table too (currently only searches title/description)
+Each changes **artwork, lettering, icons, surfaces, borders, shadows, buttons, bottom navigation and animation**, not just colors. No gradients. Keep page destinations and familiar control order stable.
 
-### 3. AI-Enriched Category Discovery
-- When user taps a category or searches, **always** call AI (not just on zero results) to supplement with 5-10 real OKC suggestions for that category
-- Use Gemini Flash to generate places by category: "Best OKC restaurants", "Best OKC nightlife", etc.
-- Show AI results in a separate "Recommended" section so the feed always feels full
+## 3. A working appearance chooser
+- Place a clearly labeled appearance control in the existing home/profile area—not another tab.
+- Show four visual previews with a clear selected state. Apply immediately and remember the choice on that device after refresh.
+- Spooky is available year-round; remove automatic calendar overrides.
+- Each partner controls their own look without changing the other partner’s screen or shared information.
+- Migrate old theme preferences safely to the replacement designs; fall back predictably for invalid saved values.
 
-### 4. Richer Category System
-Replace the current 5 basic categories with 12+ tappable category cards that auto-search:
-- Music, Sports, Food & Drink, Nightlife, Arts & Culture, Outdoor, Comedy, Family, Fitness, Shopping, Wellness, Date Night
-- Each category maps to both a Ticketmaster `classificationName` AND an AI prompt
+## 4. Finish the ongoing upgrade
+- Finish and verify the optional first-visit questions and profile editing; details stay on-device and do not affect quiz scores.
+- Complete private **code-only partner Sync without accounts**: invites, joining, moods, date plans, notes and unlinking. No extra sharing categories.
+- Keep Cycle separate from Sync, correct the remaining “Sync” cycle heading, and carry the chosen theme into forecasts and settings.
+- Apply each theme end to end: home, quizzes and results, Dates, search, Cupid, Cycle, Sync, forms, loading states and errors.
+- Preserve public app access and existing admin protection. No couple-only entry gate or new login requirement.
 
-### 5. Vibe Match, Date Builder, Hidden Gems, Live Pulse
-- **Vibe Match**: Text input like "chill sunset drinks" → AI interprets mood and returns matched events + places
-- **Date Builder**: Pick vibe + budget + time → AI generates a full evening itinerary using real DB data
-- **Hidden Gems**: AI-curated section of underrated OKC spots, shown on the main feed
-- **Live Pulse**: Count events by area/venue and show "buzzing" indicators on category cards
+## Technical details
+- The inspected theme context saves legacy selections but does not apply their colors. Replace it with one typed theme registry and semantic HSL tokens; do not duplicate the app into four implementations.
+- Theme assets, font pairs, icons and motion settings come from the shared registry. Load only needed artwork/fonts, avoid a flash of the wrong theme, and respect reduced-motion settings.
+- Guest linking uses random device credentials checked by Lovable Cloud functions and stored as hashes server-side. Keep guest tables inaccessible directly from browsers. Validate invite expiry, single-use joins, two-partner capacity, authorship and unlinking through atomic operations; use authorized polling rather than public data channels.
+- Preserve existing account-linked data and its protections; never expose old private tables just to remove sign-in.
+- Use current supported Lovable tooling, asset generation, Cloud deployment and browser verification where relevant. Do not add unrelated integrations, change AI models or migrate the entire framework just to claim “latest.” Framework migration is separate work, not required for detailed themes.
+- Fix the reported missing `bun:test` type support. Investigate the reported missing service-worker response and resolve registration for the existing preview/installed-app setup.
+- On approval, update the task list and saved preferences first: corrected **Trevel** spelling, couples identity, manual-only themes and code-only Sync. Update architecture rules to match.
 
-### 6. Frontend Changes (EnhancedOKCLegend.tsx)
-- Replace static quick-search tags with tappable category grid (2 columns, emoji + label)
-- Auto-load events + places on mount
-- Add "Vibe Match" input above categories
-- Add "Date Builder" and "Hidden Gems" sections
-- Always show results — never an empty state
+## Verification
+- Check all four themes on small and large screens, including long names, buttons, artwork, navigation and readable contrast.
+- Switch from Home, confirm every existing screen matches, refresh, and confirm the choice persists.
+- Test that Spooky remains selected outside October and no timer overrides it.
+- Verify first-visit skip/save/edit and unchanged quiz scores.
+- In two separate browsers without accounts, link by code and confirm a mood, date plan and note appear on the other device. Test expired/invalid/reused codes, a third-device join and access after unlinking.
+- Run relevant tests and check current app diagnostics before reporting completion.
 
-### 7. Edge Function Changes (search-everything)
-- Add `mode` parameter: `search` | `browse` | `vibe` | `date-builder`
-- Browse mode: no keyword, uses classification + location
-- Vibe mode: AI interprets natural language, maps to categories + keywords, then searches
-- Always run AI enrichment (not just on zero results)
-- Search events by `tags` array in addition to title/description
-- Increase Ticketmaster result size to 50
-
-## Files Changed
-- `supabase/functions/search-everything/index.ts` — multi-mode search, broader TM queries, always-on AI
-- `src/pages/EnhancedOKCLegend.tsx` — category grid, auto-load, vibe match, date builder, hidden gems, live pulse
-- No new tables needed — uses existing events, venues, discovered_places
+## Scope and teaching
+No new games, subscriptions, social feeds, notifications or unrelated sections. Brief milestone updates explain the changes simply: themes are different outfits for the same familiar app. Nothing is published automatically.
 
