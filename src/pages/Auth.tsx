@@ -33,7 +33,7 @@ export default function Auth() {
         });
         if (error) throw error;
         if (data.user) {
-          toast.success("Account created!", { description: "Welcome to InPerson OKC" });
+          toast.success("Account created!", { description: "Welcome to Natalie and Trevel’s Couples App" });
           navigate("/");
         }
       }
@@ -64,7 +64,7 @@ export default function Auth() {
                 {isLogin ? "Welcome back" : "Create account"}
               </h1>
               <p className="text-body mt-2">
-                {isLogin ? "Sign in to continue your journey" : "Start discovering amazing date spots"}
+                Optional account access. You can use the app and link with your partner without signing in.
               </p>
             </div>
 

@@ -1,7 +1,7 @@
 {
-  "name": "DEEPER — Dating Intelligence for Men",
-  "short_name": "DEEPER",
-  "description": "Understand yourself. Decode her. Date deeper. Psychology quizzes, partner cycle tracker, and AI date night recon — built for modern men.",
+  "name": "Natalie and Trevel’s Couples App",
+  "short_name": "Natalie & Trevel",
+  "description": "A little more understanding, a little more us. Psychology quizzes, dates, cycle care and private partner linking.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0A0A0A",
@@ -24,9 +24,9 @@
   "categories": ["lifestyle", "social", "productivity"],
   "shortcuts": [
     {
-      "name": "Date Night Recon",
-      "short_name": "Recon",
-      "description": "Plan tonight's mission",
+      "name": "Date Night",
+      "short_name": "Dates",
+      "description": "Plan a good night together",
       "url": "/recon",
       "icons": [{ "src": "/felicia-crown.png", "sizes": "96x96" }]
     },

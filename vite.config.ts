@@ -15,11 +15,12 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && componentTagger(),
     VitePWA({
       registerType: 'autoUpdate',
+      injectRegister: null,
       includeAssets: ['felicia-crown.png', 'robots.txt'],
       manifest: {
-        name: 'FELICIA.TLC - Your Love Journey',
-        short_name: 'FELICIA.TLC',
-        description: 'Discover perfect date spots with AI-powered recommendations',
+        name: 'Natalie and Trevel’s Couples App',
+        short_name: 'Natalie & Trevel',
+        description: 'Quizzes, dates, cycle care and private partner Sync',
         theme_color: '#ff6aa2',
         background_color: '#fff0f5',
         display: 'standalone',
