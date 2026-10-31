@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { PoweredByTLC } from "@/components/PoweredByTLC";
+import { GuestPartnerSync } from "@/components/GuestPartnerSync";
 
 type Couple = { id: string; partner_1_id: string; partner_2_id: string | null; pairing_code: string | null; status: string | null };
 type Shared = Record<string, { data: any; created_by: string | null; updated_at: string }>;
@@ -25,7 +26,7 @@ export default function PartnerSync() {
 
   const loadCouple = useCallback(async () => {
     if (!user) { setLoading(false); return; }
-    const { data } = await supabase.from("couples").select("*").or(`partner_1_id.eq.${user.id},partner_2_id.eq.${user.id}`).order("created_at", { ascending: false }).limit(1).maybeSingle();
+    const { data } = await supabase.from("couples").select("*").in("status", ["pending", "paired"]).or(`partner_1_id.eq.${user.id},partner_2_id.eq.${user.id}`).order("created_at", { ascending: false }).limit(1).maybeSingle();
     setCouple(data as Couple | null);
     setLoading(false);
   }, [user]);
@@ -84,7 +85,8 @@ export default function PartnerSync() {
 
   const unpair = async () => {
     if (!couple) return;
-    await supabase.from("couples").update({ status: "ended" }).eq("id", couple.id);
+    const { error } = await supabase.from("couples").update({ status: "unpaired" }).eq("id", couple.id);
+    if (error) return toast.error("Couldn’t unlink. Please try again.");
     setCouple(null);
   };
 
@@ -93,6 +95,8 @@ export default function PartnerSync() {
   const partnerId = couple ? (couple.partner_1_id === user?.id ? couple.partner_2_id : couple.partner_1_id) : null;
   const partnerMood = partnerId ? shared[`mood_${partnerId}`]?.data?.mood : null;
   const active = couple && couple.status !== "ended" ? couple : null;
+
+  if (!loading && !active) return <div className="page-shell"><div className="page-content space-y-6"><header><p className="eyebrow">Partner Sync</p><h1 className="text-display mt-2">A little more us</h1><p className="text-sm text-muted-foreground mt-3">Moods, plans, and the things worth saying.</p></header><GuestPartnerSync /><PoweredByTLC /></div></div>;
 
   return (
     <div className="page-shell">
