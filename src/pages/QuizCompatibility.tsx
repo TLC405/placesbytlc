@@ -51,8 +51,8 @@ export default function QuizCompatibility() {
             <ArrowLeft className="w-4 h-4" /><span>Back</span>
           </button>
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
-              <Users2 className="w-6 h-6 text-emerald-500" />
+            <div className="icon-premium">
+              <Users2 className="w-6 h-6 text-primary" />
             </div>
             <div>
               <h1 className="text-headline text-foreground">Compatibility</h1>
@@ -110,8 +110,8 @@ export default function QuizCompatibility() {
                 <Trophy className="w-5 h-5 text-primary" />
                 <span className="text-caption">Your dominant strength</span>
               </div>
-              <h3 className="text-headline text-foreground mb-2">{compatLabels[top!]}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">{compatDescriptions[top!]}</p>
+              <h3 className="text-headline text-foreground mb-2">{top ? compatLabels[top] : ""}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">{top ? compatDescriptions[top] : ""}</p>
             </div>
 
             <div className="card-luxury">
@@ -137,7 +137,7 @@ export default function QuizCompatibility() {
                 <h4 className="font-semibold text-foreground">Grow this strength</h4>
               </div>
               <ul className="space-y-2">
-                {compatRecommendations[top!].map((r, i) => (
+                {(top ? compatRecommendations[top] : []).map((r, i) => (
                   <li key={i} className="flex items-start gap-2 text-sm">
                     <span className="text-primary mt-0.5">•</span>
                     <span className="text-muted-foreground">{r}</span>

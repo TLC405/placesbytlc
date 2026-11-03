@@ -243,7 +243,7 @@ export default function PlacesPage() {
             <span>Back</span>
           </button>
           <h1 className="text-display text-foreground">
-            <span className="text-brand">TLC</span> Engine
+            Places & events
           </h1>
           <p className="text-body">Discover everything OKC — powered by AI + live data</p>
         </header>
@@ -345,13 +345,13 @@ export default function PlacesPage() {
         {results?.live_pulse && results.live_pulse.length > 0 && (
           <div className="animate-in space-y-2">
             <div className="flex items-center gap-2">
-              <Flame className="w-4 h-4 text-orange-500" />
+              <Flame className="w-4 h-4 text-secondary" />
               <span className="text-xs font-bold text-foreground tracking-wide uppercase">Live Pulse</span>
             </div>
             <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
               {results.live_pulse.slice(0, 6).map((p, i) => (
                 <div key={i} className="chip flex-shrink-0 gap-1.5">
-                  <Flame className={`w-3 h-3 ${p.count > 3 ? "text-orange-500" : "text-muted-foreground"}`} />
+                  <Flame className={`w-3 h-3 ${p.count > 3 ? "text-secondary" : "text-muted-foreground"}`} />
                   <span className="truncate max-w-[120px]">{p.venue}</span>
                   <span className="font-bold text-primary">{p.count}</span>
                 </div>
@@ -457,8 +457,8 @@ export default function PlacesPage() {
             {results.live_events.length > 0 && (
               <div className="space-y-2">
                 <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-                  <Zap className="w-4 h-4 text-amber-500" /> Live Events ({results.live_events.length})
-                  <span className="chip text-[10px] py-0 px-1.5 bg-amber-500/10 text-amber-600">Live</span>
+                  <Zap className="w-4 h-4 text-secondary" /> Live Events ({results.live_events.length})
+                  <span className="chip-primary text-[10px] py-0 px-1.5">Live</span>
                 </h3>
                 <div className="grid gap-2">
                   {results.live_events.slice(0, 20).map((event) => (
@@ -469,7 +469,7 @@ export default function PlacesPage() {
                         </div>
                       ) : (
                         <div className="icon-premium w-12 h-12 flex-shrink-0">
-                          <Zap className="w-5 h-5 text-amber-500" />
+                          <Zap className="w-5 h-5 text-secondary" />
                         </div>
                       )}
                       <div className="flex-1 min-w-0 space-y-0.5">
@@ -558,7 +558,7 @@ export default function PlacesPage() {
             {results.ai_suggestions.length > 0 && (
               <div className="space-y-2">
                 <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-violet-500" /> Recommended
+                  <Sparkles className="w-4 h-4 text-primary" /> Recommended
                 </h3>
                 <div className="grid gap-2">
                   {results.ai_suggestions.map((s, i) => (

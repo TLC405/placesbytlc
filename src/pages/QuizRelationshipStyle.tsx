@@ -149,8 +149,8 @@ export default function QuizRelationshipStyle() {
           </button>
 
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-              <Users className="w-6 h-6 text-blue-500" />
+            <div className="icon-premium">
+              <Users className="w-6 h-6 text-primary" />
             </div>
             <div>
               <h1 className="text-headline text-foreground">Relationship Style</h1>

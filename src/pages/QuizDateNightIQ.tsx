@@ -50,8 +50,8 @@ export default function QuizDateNightIQ() {
             <ArrowLeft className="w-4 h-4" /><span>Back</span>
           </button>
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 rounded-xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-              <Stars className="w-6 h-6 text-amber-500" />
+            <div className="icon-premium">
+              <Stars className="w-6 h-6 text-primary" />
             </div>
             <div>
               <h1 className="text-headline text-foreground">Date Night IQ</h1>
@@ -107,8 +107,8 @@ export default function QuizDateNightIQ() {
             <div className="card-highlight text-center">
               <span className="text-caption">Date Night IQ</span>
               <div className="text-5xl font-bold text-primary my-2">{iq}</div>
-              <h3 className="text-headline text-foreground mb-2">{dateVibeLabels[top!]}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">{dateVibeDescriptions[top!]}</p>
+              <h3 className="text-headline text-foreground mb-2">{top ? dateVibeLabels[top] : ""}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">{top ? dateVibeDescriptions[top] : ""}</p>
             </div>
 
             <div className="card-luxury">
@@ -134,7 +134,7 @@ export default function QuizDateNightIQ() {
                 <h4 className="font-semibold text-foreground">OKC dates curated for you</h4>
               </div>
               <ul className="space-y-2">
-                {dateVibeRecommendations[top!].map((r, i) => (
+                {(top ? dateVibeRecommendations[top] : []).map((r, i) => (
                   <li key={i} className="flex items-start gap-2 text-sm">
                     <MapPin className="w-3.5 h-3.5 text-primary mt-0.5 flex-shrink-0" />
                     <span className="text-muted-foreground">{r}</span>
