@@ -307,7 +307,7 @@ const AdminPanel = () => {
   }
 
   return (
-    <div className="h-screen overflow-hidden bg-gradient-to-br from-background via-muted/20 to-background flex flex-col">
+    <div className="h-screen overflow-hidden bg-background flex flex-col">
       {/* Compact Header */}
       <div className="flex-shrink-0 border-b bg-card/50 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-6 py-4">

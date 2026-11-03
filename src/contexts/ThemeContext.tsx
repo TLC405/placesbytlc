@@ -18,7 +18,20 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     root.removeAttribute("data-season");
     root.setAttribute("data-theme", currentTheme);
     root.classList.remove("dark");
-    localStorage.setItem(THEME_KEY, currentTheme);
+    try { localStorage.setItem(THEME_KEY, currentTheme); } catch { /* Appearance still works when storage is blocked. */ }
+    const fonts: Record<ThemeType, string> = {
+      spooky: "Playfair+Display:wght@400;500;600;700&family=Inter:wght@400;500;600;700",
+      "love-letters": "Instrument+Serif:ital@0;1&family=Work+Sans:wght@400;500;600;700",
+      "midnight-cinema": "Sora:wght@400;500;600;700&family=Manrope:wght@400;500;600;700",
+      "garden-studio": "Lora:wght@400;500;600;700&family=Nunito+Sans:wght@400;500;600;700",
+    };
+    const id = `theme-font-${currentTheme}`;
+    if (!document.getElementById(id)) {
+      const link = document.createElement("link");
+      link.id = id; link.rel = "stylesheet";
+      link.href = `https://fonts.googleapis.com/css2?family=${fonts[currentTheme]}&display=swap`;
+      document.head.appendChild(link);
+    }
   }, [currentTheme]);
   useEffect(() => {
     const sync = (event: StorageEvent) => { if (event.key === THEME_KEY && isTheme(event.newValue)) setCurrentTheme(event.newValue); };

@@ -236,12 +236,12 @@
 
   /* Typography */
   .text-display {
-    font-family: "Playfair Display", Georgia, serif;
+    font-family: var(--font-heading);
     @apply text-3xl sm:text-4xl font-semibold;
   }
 
   .text-headline {
-    font-family: "Playfair Display", Georgia, serif;
+    font-family: var(--font-heading);
     @apply text-xl sm:text-2xl font-medium;
   }
 
@@ -606,6 +606,15 @@
 .phase-day { background: hsl(var(--phase-color) / 0.12); color: hsl(var(--foreground)); border: 1px solid hsl(var(--phase-color) / 0.3); }
 .phase-day-today { border: 2px solid hsl(var(--primary)); }
 .phase-dot { background: hsl(var(--phase-color)); }
+.modal-overlay { background: hsl(var(--foreground) / 0.55); }
+.app-dialog { transform: translate(-50%, -50%); width: calc(100% - 32px); max-height: 90dvh; overflow-y: auto; animation: dialog-arrival 160ms ease-out; }
+@keyframes dialog-arrival { from { opacity: 0; } to { opacity: 1; } }
+.shared-content { overflow-wrap: anywhere; }
+.page-content { animation: page-arrival 240ms ease-out; }
+:root[data-theme="midnight-cinema"] .page-content { animation: cinema-arrival 320ms ease-out; }
+:root[data-theme="garden-studio"] .page-content { animation: page-arrival 420ms ease-out; }
+@keyframes page-arrival { from { opacity: 0.5; translate: 0 8px; } to { opacity: 1; translate: 0 0; } }
+@keyframes cinema-arrival { from { opacity: 0; } to { opacity: 1; } }
 @media (max-width: 480px) { .home-masthead { gap: 12px; align-items: center; } .couple-wordmark { font-size: 21px; } .appearance-trigger { width: 36px; padding: 0; } .appearance-trigger span { display: none; } :root[data-theme="midnight-cinema"] .home-hero h1 { font-size: 28px; } .home-hero-copy { max-width: 60%; } }
 @media (max-width: 480px) {
   .intake-heading { font-size: 38px; }

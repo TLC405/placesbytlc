@@ -17,11 +17,14 @@ export function GuestPartnerSync() {
   const [note, setNote] = useState("");
   const alive = useRef(true);
   const pending = useRef(false);
+  const mutating = useRef(false);
+  const generation = useRef(0);
   const refresh = useCallback(async () => {
-    if (pending.current) return;
+    if (pending.current || mutating.current) return;
+    const request = generation.current;
     pending.current = true;
-    try { const next = await partnerSync("load"); if (alive.current) { setPair(next); setError(""); } }
-    catch (e) { if (alive.current) setError(e instanceof Error ? e.message : "Couldn’t connect."); }
+    try { const next = await partnerSync("load"); if (alive.current && request === generation.current) { setPair(next); setError(""); } }
+    catch (e) { if (alive.current && request === generation.current) setError(e instanceof Error ? e.message : "Couldn’t connect."); }
     finally { pending.current = false; if (alive.current) setLoading(false); }
   }, []);
   useEffect(() => {
@@ -30,11 +33,13 @@ export function GuestPartnerSync() {
     return () => { alive.current = false; clearInterval(interval); };
   }, [refresh]);
   const act = async (action: "create" | "join" | "save" | "unlink", fields = {}) => {
-    if (busy) return false;
+    if (mutating.current) return false;
+    mutating.current = true;
+    generation.current += 1;
     setBusy(true); setError("");
-    try { const next = await partnerSync(action, fields); setPair(next); if (action === "save") toast.success("Shared with your partner"); return true; }
-    catch (e) { setError(e instanceof Error ? e.message : "Please try again."); return false; }
-    finally { setBusy(false); }
+    try { const next = await partnerSync(action, fields); if (!alive.current) return false; setPair(next); if (action === "save") toast.success("Shared with your partner"); if (action === "unlink" || action === "join") { setDate(""); setNote(""); } return true; }
+    catch (e) { if (alive.current) setError(e instanceof Error ? e.message : "Please try again."); return false; }
+    finally { mutating.current = false; if (alive.current) setBusy(false); }
   };
   const myMood = pair?.shared[`mood_${pair.slot}`]?.text;
   const theirMood = pair?.shared[`mood_${pair.slot === "host" ? "guest" : "host"}`]?.text;

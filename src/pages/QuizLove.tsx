@@ -58,8 +58,8 @@ export default function QuizLove() {
           </button>
 
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 rounded-xl bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center">
-              <Heart className="w-6 h-6 text-rose-500" />
+            <div className="icon-premium">
+              <Heart className="w-6 h-6 text-primary" />
             </div>
             <div>
               <h1 className="text-headline text-foreground">Love Language</h1>

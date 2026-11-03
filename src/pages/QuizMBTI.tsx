@@ -70,8 +70,8 @@ export default function QuizMBTI() {
           </button>
 
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 rounded-xl bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center">
-              <Brain className="w-6 h-6 text-violet-500" />
+            <div className="icon-premium">
+              <Brain className="w-6 h-6 text-primary" />
             </div>
             <div>
               <h1 className="text-headline text-foreground">Personality Type</h1>
@@ -101,12 +101,12 @@ export default function QuizMBTI() {
                 >
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-[10px] text-muted-foreground">Disagree</span>
-                    <div className="flex gap-2">
+                    <div className="flex gap-1 sm:gap-2 shrink-0">
                       {[1, 2, 3, 4, 5].map((v) => (
                         <label
                           key={v}
                           htmlFor={`q${idx}-${v}`}
-                          className={`w-10 h-10 rounded-full flex items-center justify-center cursor-pointer transition-all text-sm font-medium ${
+                          className={`w-8 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center cursor-pointer transition-all text-sm font-medium ${
                             answers[idx] === v
                               ? "bg-primary text-primary-foreground"
                               : "bg-muted hover:bg-muted/80 text-muted-foreground"
@@ -146,7 +146,7 @@ export default function QuizMBTI() {
               <ul className="space-y-2">
                 {traits?.pros.map((pro, idx) => (
                   <li key={idx} className="flex items-start gap-2 text-sm">
-                    <span className="text-green-500 mt-0.5">✓</span>
+                    <span className="text-success mt-0.5">✓</span>
                     <span className="text-muted-foreground">{pro}</span>
                   </li>
                 ))}

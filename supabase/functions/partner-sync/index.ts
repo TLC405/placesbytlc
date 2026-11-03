@@ -1,6 +1,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { z } from "npm:zod@3";
+import { readLimitedJson } from "./readBody.ts";
 
 const Body = z.object({
   token: z.string().regex(/^[a-f0-9]{64}$/),
@@ -25,7 +26,7 @@ Deno.serve(async req => {
   if (req.method !== "POST") return reply({ error: "Method not allowed" }, 405);
   try {
     if (Number(req.headers.get("content-length") || "0") > 4096) return reply({ error: "Request too large" }, 413);
-    const parsed = Body.safeParse(await req.json());
+    const parsed = Body.safeParse(await readLimitedJson(req));
     if (!parsed.success) return reply({ error: "Check your code or message and try again." }, 400);
     const { token, action, key, text } = parsed.data;
     if (action === "join" && !parsed.data.code) return reply({ error: "Enter your partner’s code." }, 400);
@@ -35,15 +36,14 @@ Deno.serve(async req => {
     if (!url || !serviceKey) return reply({ error: "Partner linking is temporarily unavailable." }, 503);
     const admin = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
     const invite = action === "create" ? code() : parsed.data.code;
-    // Gateway-supplied address only; never accept a device or pair ID from the caller.
-    const address = req.headers.get("x-real-ip") || req.headers.get("cf-connecting-ip") || "unknown";
+    // No caller-supplied IP headers: independent capability quotas and a global invite cap.
     const { data, error } = await admin.rpc("partner_sync_action", {
-      _token_hash: await hash(token), _ip_hash: await hash(address), _action: action,
+      _token_hash: await hash(token), _ip_hash: await hash("partner-sync-global"), _action: action,
       _code: invite || null, _code_hash: invite ? await hash(invite) : null,
       _key: key || null, _text: text || null,
     });
     if (error) return reply({ error: "Couldn’t update your connection. Please try again." }, 500);
     if (data?.error) return reply(data, data.error.includes("wait") ? 429 : 400);
     return reply(data);
-  } catch { return reply({ error: "Couldn’t read this request. Please try again." }, 400); }
+  } catch (error) { if (error instanceof Error && error.message === "Request too large") return reply({ error: "Request too large" }, 413); return reply({ error: "Couldn’t read this request. Please try again." }, 400); }
 });

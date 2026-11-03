@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import { ActivityTracker } from "@/components/ActivityTracker";
 import { DetailedCupid } from "@/components/DetailedCupid";
@@ -77,7 +77,7 @@ const AppRoutes = () => {
         <Route path="/recon" element={<Recon />} />
         <Route path="/her-cycle" element={<HerCycle />} />
         <Route path="/sync" element={<PartnerSync />} />
-        <Route path="/cycle" element={<PeriodTracker />} />
+        <Route path="/cycle" element={<Navigate to="/her-cycle" replace />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <BottomTabBar />

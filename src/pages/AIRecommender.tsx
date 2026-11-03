@@ -74,7 +74,7 @@ const getCategoryIcon = (category: string) => {
 };
 
 const getScoreColor = (score: number) => {
-  if (score >= 85) return "text-green-500";
+  if (score >= 85) return "text-success";
   if (score >= 70) return "text-primary";
   return "text-muted-foreground";
 };
