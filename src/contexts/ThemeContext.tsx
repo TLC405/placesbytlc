@@ -18,7 +18,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     root.removeAttribute("data-season");
     root.setAttribute("data-theme", currentTheme);
     root.classList.remove("dark");
-    localStorage.setItem(THEME_KEY, currentTheme);
+    try { localStorage.setItem(THEME_KEY, currentTheme); } catch { /* Appearance still works when storage is blocked. */ }
     const fonts: Record<ThemeType, string> = {
       spooky: "Playfair+Display:wght@400;500;600;700&family=Inter:wght@400;500;600;700",
       "love-letters": "Instrument+Serif:ital@0;1&family=Work+Sans:wght@400;500;600;700",

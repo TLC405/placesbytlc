@@ -1,5 +1,6 @@
 import "https://deno.land/std@0.224.0/dotenv/load.ts";
 import { assertEquals, assert } from "https://deno.land/std@0.224.0/assert/mod.ts";
+import { readLimitedJson } from "./readBody.ts";
 const url = Deno.env.get("VITE_SUPABASE_URL");
 const key = Deno.env.get("VITE_SUPABASE_PUBLISHABLE_KEY") || Deno.env.get("VITE_SUPABASE_ANON_KEY");
 function token() { return Array.from(crypto.getRandomValues(new Uint8Array(32)), b => b.toString(16).padStart(2, "0")).join(""); }
@@ -40,4 +41,10 @@ Deno.test("code-only Sync: two partners, isolated moods, single-use code and unl
 Deno.test("missing capability and forged authorship are refused", async () => {
   assertEquals((await call({ action: "load" })).status, 400);
   assertEquals((await call({ token: token(), action: "save", key: "note", text: "Hello", pair_id: "forged" })).status, 400);
+});
+Deno.test("request body is limited to 4096 real bytes without relying on a length header", async () => {
+  let rejected = false;
+  try { await readLimitedJson(new Request("http://localhost", { method: "POST", body: JSON.stringify({ text: "x".repeat(5000) }) })); }
+  catch (e) { rejected = e instanceof Error && e.message === "Request too large"; }
+  assertEquals(rejected, true);
 });
