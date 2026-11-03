@@ -607,6 +607,8 @@
 .phase-day-today { border: 2px solid hsl(var(--primary)); }
 .phase-dot { background: hsl(var(--phase-color)); }
 .modal-overlay { background: hsl(var(--foreground) / 0.55); }
+.app-dialog { transform: translate(-50%, -50%); width: calc(100% - 32px); max-height: 90dvh; overflow-y: auto; animation: dialog-arrival 160ms ease-out; }
+@keyframes dialog-arrival { from { opacity: 0; } to { opacity: 1; } }
 .shared-content { overflow-wrap: anywhere; }
 .page-content { animation: page-arrival 240ms ease-out; }
 :root[data-theme="midnight-cinema"] .page-content { animation: cinema-arrival 320ms ease-out; }
