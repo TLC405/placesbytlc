@@ -16,6 +16,7 @@ export default defineConfig(({ mode }) => ({
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: null,
+      devOptions: { enabled: false },
       includeAssets: ['felicia-crown.png', 'robots.txt'],
       manifest: {
         name: 'Natalie and Trevel’s Couples App',

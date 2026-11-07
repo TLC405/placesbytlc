@@ -2,6 +2,7 @@ import { useState, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
 import { archetypeQuestions, archetypeLabels, archetypeDescriptions, archetypeDatingTips, type Archetype } from "@/data/masculineArchetypeQuiz";
 import { toast } from "sonner";
 import { ArrowLeft, Crown, RotateCcw, Sparkles, Trophy } from "lucide-react";
@@ -37,15 +38,15 @@ export default function QuizMasculineArchetype() {
     <div className="page-shell">
       <div className="page-content space-y-6">
         <header className="pt-2 animate-in">
-          <button onClick={() => navigate("/quizzes")} className="btn-ghost -ml-3 mb-4">
+          <Button variant="ghost" onClick={() => navigate("/quizzes")} className="-ml-3 mb-4">
             <ArrowLeft className="w-4 h-4" /><span>Back</span>
-          </button>
+          </Button>
           <div className="flex items-center gap-3 mb-4">
             <div className="icon-premium">
               <Crown className="w-6 h-6 text-primary" />
             </div>
             <div>
-              <p className="text-[10px] font-bold tracking-[0.25em] uppercase text-muted-foreground">Self Recon</p>
+              <p className="text-[10px] font-bold uppercase text-muted-foreground">Psychology</p>
               <h1 className="text-headline text-foreground">Masculine Archetype</h1>
             </div>
           </div>
@@ -86,7 +87,7 @@ export default function QuizMasculineArchetype() {
                 </RadioGroup>
               </div>
             ))}
-            <button type="submit" className="btn-primary w-full h-12">Reveal My Archetype</button>
+            <Button type="submit" className="w-full">Reveal My Archetype</Button>
           </form>
         ) : (
           <div className="space-y-6 animate-in">
@@ -95,8 +96,8 @@ export default function QuizMasculineArchetype() {
                 <Trophy className="w-5 h-5 text-primary" />
                 <span className="text-caption">Your dominant archetype</span>
               </div>
-              <h3 className="text-display text-foreground mb-2">{archetypeLabels[top!]}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">{archetypeDescriptions[top!]}</p>
+              <h3 className="text-display text-foreground mb-2">{top ? archetypeLabels[top] : ""}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">{top ? archetypeDescriptions[top] : ""}</p>
             </div>
 
             <div className="card-luxury">
@@ -119,10 +120,10 @@ export default function QuizMasculineArchetype() {
             <div className="card-luxury">
               <div className="flex items-center gap-2 mb-3">
                 <Sparkles className="w-4 h-4 text-primary" />
-                <h4 className="font-semibold text-foreground">Dating playbook for The {archetypeLabels[top!].replace("The ", "")}</h4>
+                <h4 className="font-semibold text-foreground">Dating tips for {top ? archetypeLabels[top] : "you"}</h4>
               </div>
               <ul className="space-y-2">
-                {archetypeDatingTips[top!].map((t, i) => (
+                {(top ? archetypeDatingTips[top] : []).map((t, i) => (
                   <li key={i} className="flex items-start gap-2 text-sm">
                     <span className="text-primary font-bold mt-0.5">→</span>
                     <span className="text-muted-foreground">{t}</span>
@@ -132,10 +133,10 @@ export default function QuizMasculineArchetype() {
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-              <button onClick={() => { setResult(null); setAnswers({}); }} className="btn-secondary">
+              <Button variant="secondary" onClick={() => { setResult(null); setAnswers({}); }}>
                 <RotateCcw className="w-4 h-4" /> Retake
-              </button>
-              <button onClick={() => navigate("/recon")} className="btn-primary">Plan a date</button>
+              </Button>
+              <Button onClick={() => navigate("/recon")}>Plan a date</Button>
             </div>
           </div>
         )}
