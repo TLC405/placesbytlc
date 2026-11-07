@@ -24,7 +24,7 @@ export function FirstVisit() {
         <div className="flex items-center justify-between gap-3"><AppLogo /><ThemeSelector /></div>
         <p className="eyebrow mt-10">{editing ? "Your profile" : "Nice to meet you"}</p>
         <h1 className="intake-heading">{editing ? "People change.\nSo can this." : "First,\na little about you."}</h1>
-        <p className="text-muted-foreground mt-3 max-w-sm text-sm leading-relaxed">Your name, your stage, your next chapter. Share as much—or as little—as you like.</p>
+        <p className="text-muted-foreground mt-3 max-w-sm text-sm leading-relaxed">A name, a vibe, maybe a little oversharing. All optional. We’re not your in-laws.</p>
       </div>
     </section>
     <form className="intake-form" onSubmit={e => { e.preventDefault(); if (!validAge(draft.age)) { setError("Enter a whole age from 18 to 120, or leave it blank."); return; } saveProfile(draft); }}>

@@ -1,4 +1,10 @@
-# Natalie and Trevel’s Couples App upgrade
+# A Couples App — Powered by TLC
+
+## Fold and Cupid update
+- [x] Make all four theme choices fully reachable on the unfolded Galaxy Fold 5, including short viewports.
+- [x] Rename visible branding and app metadata to A Couples App, Powered by TLC; use cute, funny wording.
+- [x] Restore a visible, reachable Cupid connected to the existing date planner.
+- [x] Verify theme switching, Cupid navigation and phone/fold/desktop layouts.
 
 - [x] Add local, optional first-visit profile questions and editing.
 - [x] Rebrand active screens and app metadata for Natalie and Trevel without changing quiz scoring or saved data.

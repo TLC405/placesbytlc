@@ -6,7 +6,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import { ActivityTracker } from "@/components/ActivityTracker";
-import { DetailedCupid } from "@/components/DetailedCupid";
 import { BottomTabBar } from "@/components/BottomTabBar";
 import { useSessionTracker } from "@/hooks/useSessionTracker";
 import { ErrorBoundary } from "@/components/ErrorBoundary";

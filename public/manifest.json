@@ -1,7 +1,7 @@
 {
-  "name": "Natalie and Trevel’s Couples App",
-  "short_name": "Natalie & Trevel",
-  "description": "A little more understanding, a little more us. Psychology quizzes, dates, cycle care and private partner linking.",
+  "name": "A Couples App — Powered by TLC",
+  "short_name": "A Couples App",
+  "description": "Cupid, cute dates, quizzes, cycle care and private partner Sync. Powered by TLC.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0A0A0A",

@@ -4,6 +4,7 @@ import { Sparkles, Send, ArrowLeft, MapPin, Heart, Clock, DollarSign, ExternalLi
 import { toast } from "sonner";
 import { PoweredByTLC } from "@/components/PoweredByTLC";
 import { supabase } from "@/integrations/supabase/client";
+import { CupidPortrait } from "@/components/CupidPortrait";
 
 interface Recommendation {
   name: string;
@@ -155,12 +156,12 @@ export default function AIRecommender() {
           </button>
 
           <div className="flex items-center gap-4">
-            <div className="icon-premium w-14 h-14 rounded-2xl" style={{ animation: "glow-pulse 3s ease-in-out infinite" }}>
-              <Sparkles className="w-7 h-7 text-primary" />
+            <div className="cupid-planner-portrait">
+              <CupidPortrait />
             </div>
             <div>
               <h1 className="text-headline text-foreground">Cupid AI</h1>
-              <p className="text-xs text-muted-foreground">Powered by real OKC data • {messages.length > 0 ? "Chatting" : "Ready"}</p>
+              <p className="text-xs text-muted-foreground">{messages.length > 0 ? "Your wingman is on it." : "Less scrolling. More butterflies."} Real OKC places & events.</p>
             </div>
           </div>
         </header>

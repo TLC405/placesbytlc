@@ -572,7 +572,7 @@
 .seasonal-mist { position: absolute; bottom: 12%; left: -10%; width: 120%; height: 28px; background: hsl(var(--foreground) / 0.025); filter: blur(20px); animation: seasonal-drift 24s ease-in-out infinite; }
 @keyframes seasonal-drift { 0%, 100% { translate: 0 0; } 50% { translate: 14px -10px; } }
 * { letter-spacing: 0 !important; }
-.couple-wordmark { display: flex; flex-direction: column; gap: 3px; font-family: var(--font-heading); font-size: 25px; line-height: 1.1; color: hsl(var(--foreground)); }
+.couple-wordmark { display: flex; flex-direction: column; gap: 5px; min-width: 0; font-family: var(--font-heading); font-size: 25px; line-height: 1.1; color: hsl(var(--foreground)); }
 .wordmark-amp { color: hsl(var(--primary)); font-style: italic; }
 .wordmark-caption { font-family: var(--font-body); font-size: 10px; color: hsl(var(--muted-foreground)); }
 .home-hero-art { opacity: 1; }
@@ -584,6 +584,22 @@
 .theme-preview.selected { border-color: hsl(var(--primary)); }
 .theme-preview img { display: block; width: 100%; height: 106px; object-fit: cover; }
 .theme-preview-caption { padding: 13px; color: hsl(var(--foreground)); background: hsl(var(--card)); }
+.app-dialog.theme-sheet { z-index: 90; display: flex; flex-direction: column; width: calc(100% - 32px); max-width: 640px; max-height: calc(100dvh - 32px); overflow: hidden; padding: 20px; gap: 0; border-radius: 8px; }
+.theme-sheet-header { flex-shrink: 0; padding-right: 32px; text-align: left; }
+.theme-choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; gap: 12px; margin-top: 20px; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; touch-action: pan-y; }
+.theme-choices .theme-preview { min-width: 0; min-height: 0; height: 100%; border-radius: 8px; }
+.theme-choices .theme-preview img { height: clamp(52px, 14dvh, 106px); }
+.theme-choices .theme-preview-caption { padding: 12px; overflow-wrap: anywhere; }
+.theme-choices .theme-preview-caption > span:last-child { min-height: 36px; }
+.cupid-portrait { display: block; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 4px 8px hsl(var(--foreground) / 0.1)); }
+.cupid-welcome { display: grid; grid-template-columns: 108px minmax(0, 1fr) auto; align-items: center; gap: 18px; border-block: 1px solid hsl(var(--border)); padding-block: 20px; }
+.cupid-welcome-portrait { width: 108px; height: 148px; animation: cupid-bob 4s ease-in-out infinite; }
+.cupid-welcome h2 { font-size: 24px; line-height: 1.2; margin: 6px 0 8px; }
+.cupid-welcome p { font-size: 13px; line-height: 1.6; color: hsl(var(--muted-foreground)); }
+.cupid-planner-portrait { width: 64px; height: 82px; flex-shrink: 0; }
+@keyframes cupid-bob { 0%, 100% { translate: 0 0; rotate: -1deg; } 50% { translate: 0 -5px; rotate: 1deg; } }
+@media (max-height: 560px) { .app-dialog.theme-sheet { padding: 16px; } .theme-choices { margin-top: 12px; gap: 8px; } .theme-choices .theme-preview img { height: 52px; } .theme-choices .theme-preview-caption { padding: 8px 10px; } }
+@media (max-width: 520px) { .cupid-welcome { grid-template-columns: 88px minmax(0, 1fr); gap: 14px; } .cupid-welcome-portrait { width: 88px; height: 128px; grid-row: span 2; } .cupid-welcome h2 { font-size: 22px; } .cupid-welcome > .cupid-start { justify-self: start; } }
 :root[data-theme="love-letters"] .home-hero { border-block: 1px solid hsl(var(--border)); }
 :root[data-theme="love-letters"] .dashboard-card h3 { font-size: 22px; }
 :root[data-theme="love-letters"] .card-premium { box-shadow: none; }
@@ -615,7 +631,7 @@
 :root[data-theme="garden-studio"] .page-content { animation: page-arrival 420ms ease-out; }
 @keyframes page-arrival { from { opacity: 0.5; translate: 0 8px; } to { opacity: 1; translate: 0 0; } }
 @keyframes cinema-arrival { from { opacity: 0; } to { opacity: 1; } }
-@media (max-width: 480px) { .home-masthead { gap: 12px; align-items: center; } .couple-wordmark { font-size: 21px; } .appearance-trigger { width: 36px; padding: 0; } .appearance-trigger span { display: none; } :root[data-theme="midnight-cinema"] .home-hero h1 { font-size: 28px; } .home-hero-copy { max-width: 60%; } }
+@media (max-width: 480px) { .home-masthead { gap: 8px; align-items: center; } .couple-wordmark { font-size: 19px; } .appearance-trigger { padding-inline: 10px; gap: 6px; } :root[data-theme="midnight-cinema"] .home-hero h1 { font-size: 28px; } .home-hero-copy { max-width: 60%; } }
 @media (max-width: 480px) {
   .intake-heading { font-size: 38px; }
   .season-label { max-width: 150px; }

@@ -33,7 +33,7 @@ export default function Auth() {
         });
         if (error) throw error;
         if (data.user) {
-          toast.success("Account created!", { description: "Welcome to Natalie and Trevel’s Couples App" });
+          toast.success("Account created!", { description: "Welcome to A Couples App, Powered by TLC" });
           navigate("/");
         }
       }

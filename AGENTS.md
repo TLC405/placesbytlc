@@ -7,3 +7,5 @@
 - Preserve the existing account-based partner path for already-linked signed-in users rather than replacing or exposing their data.
 - Discard guest polling responses started before a mutation and clear only the submitted draft, so delayed responses cannot overwrite a new update.
 - Theme typography loads from the manual theme registry; global CSS owns colors, so fonts and appearance switch together without RGB overrides.
+- Keep theme dialogs header-fixed with a separate scrollable choices region and dynamic viewport bounds, so foldable and short displays retain access to every theme.
+- Use the shared static Cupid cutout on Home and the existing planner rather than the evasive floating widget, so Cupid stays reachable without covering navigation.

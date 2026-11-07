@@ -19,9 +19,9 @@ export default defineConfig(({ mode }) => ({
       devOptions: { enabled: false },
       includeAssets: ['felicia-crown.png', 'robots.txt'],
       manifest: {
-        name: 'Natalie and Trevel’s Couples App',
-        short_name: 'Natalie & Trevel',
-        description: 'Quizzes, dates, cycle care and private partner Sync',
+        name: 'A Couples App — Powered by TLC',
+        short_name: 'A Couples App',
+        description: 'Cupid, cute dates, quizzes, cycle care and private partner Sync. Powered by TLC.',
         theme_color: '#ff6aa2',
         background_color: '#fff0f5',
         display: 'standalone',
