@@ -33,7 +33,7 @@
     {
       "name": "Her Cycle",
       "short_name": "Cycle",
-      "description": "Track her cycle, decode the vibe",
+      "description": "Track her cycle, plan around her week",
       "url": "/her-cycle",
       "icons": [{ "src": "/felicia-crown.png", "sizes": "96x96" }]
     },

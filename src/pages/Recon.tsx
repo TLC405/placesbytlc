@@ -8,15 +8,15 @@ export default function Recon() {
   const primary = [
     {
       title: "Plan tonight in 30s",
-      sub: "AI builds the full date — spots, order, vibe",
+      sub: "Tell Cupid your mood and budget — get a full plan",
       icon: Wand2,
       cta: "Ask Cupid",
       onClick: () => navigate("/ai-recommender"),
       accent: true,
     },
     {
-      title: "Browse real venues",
-      sub: "Live OKC feed — restaurants, events, hidden gems",
+      title: "Browse real places",
+      sub: "Restaurants, events, and hidden gems near you",
       icon: MapPin,
       cta: "Open feed",
       onClick: () => navigate("/places"),
@@ -25,10 +25,10 @@ export default function Recon() {
   ];
 
   const playbooks = [
-    { emoji: "🔥", title: "Peak Window", sub: "She's dialed in — go bold" },
-    { emoji: "🌙", title: "Low-Key Night", sub: "Cozy, steady, zero pressure" },
-    { emoji: "🌱", title: "Fresh Adventure", sub: "Try something neither of you has" },
-    { emoji: "🩸", title: "At-Home Reset", sub: "Comfort mode, done right" },
+    { emoji: "🔥", title: "Big night out", sub: "She’s feeling great — go bold" },
+    { emoji: "🌙", title: "Low-key night", sub: "Cozy, easy, zero pressure" },
+    { emoji: "🌱", title: "Something new", sub: "Try something neither of you has" },
+    { emoji: "🩸", title: "Cozy night in", sub: "Comfort food and a blanket, done right" },
   ];
 
   return (
@@ -48,7 +48,7 @@ export default function Recon() {
             </div>
           </div>
           <p className="text-body text-sm mt-3">
-            AI-built plans and real venues — pick a vibe and stop overthinking it.
+            Date plans and real places — pick one and stop overthinking it.
           </p>
         </header>
 
@@ -80,7 +80,7 @@ export default function Recon() {
         {/* Playbooks */}
         <section className="animate-in-delay-2">
           <div className="section-header">
-            <h2 className="section-title">Match her energy</h2>
+            <h2 className="section-title">Date ideas for her week</h2>
             <button onClick={() => navigate("/her-cycle")} className="section-action">Cycle →</button>
           </div>
           <div className="grid grid-cols-2 gap-3">
@@ -103,10 +103,10 @@ export default function Recon() {
           <div className="card-premium">
             <div className="flex items-center gap-2 mb-3">
               <Sparkles className="w-4 h-4 text-primary" />
-              <h3 className="text-sm font-bold tracking-wide uppercase text-foreground">Make it feel like you</h3>
+              <h3 className="text-sm font-bold tracking-wide uppercase text-foreground">Two quick quizzes</h3>
             </div>
             <p className="text-sm text-muted-foreground mb-4">
-              Two quick check-ins to explore your date style and how you connect.
+              See your date style and how you two connect.
             </p>
             <div className="grid grid-cols-2 gap-2">
               <button onClick={() => navigate("/quiz/date-night-iq")} className="btn-secondary text-xs">Date Night IQ</button>

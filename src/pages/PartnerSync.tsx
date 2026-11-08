@@ -96,7 +96,7 @@ export default function PartnerSync() {
   const partnerMood = partnerId ? shared[`mood_${partnerId}`]?.data?.mood : null;
   const active = couple && couple.status !== "ended" ? couple : null;
 
-  if (!loading && !active) return <div className="page-shell"><div className="page-content space-y-6"><header><p className="eyebrow">Partner Sync</p><h1 className="text-display mt-2">A little more us</h1><p className="text-sm text-muted-foreground mt-3">Moods, plans, and the things worth saying.</p></header><GuestPartnerSync /><PoweredByTLC /></div></div>;
+  if (!loading && !active) return <div className="page-shell"><div className="page-content space-y-6"><header><p className="eyebrow">Partner Sync</p><h1 className="text-display mt-2">Share with your partner</h1><p className="text-sm text-muted-foreground mt-3">Moods, date plans, and notes — no sign-in needed.</p></header><GuestPartnerSync /><PoweredByTLC /></div></div>;
 
   return (
     <div className="page-shell">

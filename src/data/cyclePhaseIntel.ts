@@ -18,10 +18,10 @@ export interface PhaseIntel {
 export const phaseIntel: Record<CyclePhase, PhaseIntel> = {
   MENSTRUAL: {
     key: "MENSTRUAL",
-    codename: "Code Red",
+    codename: "Period week",
     emoji: "🩸",
     hex: "#C4002B",
-    oneLiner: "Comfort mode. Bring snacks, lower the lights, raise the empathy.",
+    oneLiner: "Keep it cozy. Snacks, comfort, and a little extra patience.",
     vibe: "Tired, tender, low-energy. Cramps possible. She wants to feel SAFE, not impressed.",
     her: [
       "Energy dips, sleep needs spike",
@@ -59,10 +59,10 @@ export const phaseIntel: Record<CyclePhase, PhaseIntel> = {
   },
   FOLLICULAR: {
     key: "FOLLICULAR",
-    codename: "Power Up",
+    codename: "Energy up",
     emoji: "🌱",
     hex: "#FF1F6D",
-    oneLiner: "She's recharging. Energy rising. Time to plant the date-night seed.",
+    oneLiner: "Her energy's coming back. Good week to plan something fun.",
     vibe: "Optimistic, social, adventurous. Open to new ideas and trying things.",
     her: [
       "Energy and mood climbing daily",
@@ -99,10 +99,10 @@ export const phaseIntel: Record<CyclePhase, PhaseIntel> = {
   },
   OVULATION: {
     key: "OVULATION",
-    codename: "Peak Mode",
+    codename: "Feel-good days",
     emoji: "🔥",
     hex: "#FF1F6D",
-    oneLiner: "Maximum attraction window. This is THE night. Don't fumble it.",
+    oneLiner: "She's feeling her best. Great week for a real date night.",
     vibe: "Glowing, magnetic, confident. Libido peak. Wants to feel desired.",
     her: [
       "Highest energy and libido of the cycle",
@@ -139,10 +139,10 @@ export const phaseIntel: Record<CyclePhase, PhaseIntel> = {
   },
   LUTEAL: {
     key: "LUTEAL",
-    codename: "Storm Watch",
+    codename: "Winding down",
     emoji: "🌙",
     hex: "#0A0A0A",
-    oneLiner: "Mood may shift. Be steady, be present, lower the chaos.",
+    oneLiner: "Moods can swing. Be patient, be steady, keep plans simple.",
     vibe: "Inward, sometimes irritable, craving comfort + control. PMS may show up late.",
     her: [
       "Energy slowly winds down",

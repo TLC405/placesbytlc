@@ -8,27 +8,27 @@ export default function Quizzes() {
   const sections = [
     {
       title: "Know yourself",
-      sub: "The work starts inside",
+      sub: "Quick quizzes about you",
       quizzes: [
         { id: "archetype", title: "Masculine Archetype", description: "King, Warrior, Magician, Lover — the four modes of modern masculinity", icon: Crown, path: "/quiz/masculine-archetype", duration: "4 min", questions: "8 Q", badge: "NEW", isNew: true },
-        { id: "confidence", title: "Confidence Index", description: "Approach anxiety, follow-through, emotional regulation — your real number", icon: Flame, path: "/quiz/dating-confidence", duration: "3 min", questions: "10 Q", badge: "NEW", isNew: true },
-        { id: "mbti", title: "Personality Type", description: "16-type cognitive profile and how yours plays in relationships", icon: Brain, path: "/quiz/mbti", duration: "8 min", questions: "20 Q", badge: "MBTI" },
+        { id: "confidence", title: "Confidence Index", description: "How confident you really feel, and where to grow", icon: Flame, path: "/quiz/dating-confidence", duration: "3 min", questions: "10 Q", badge: "NEW", isNew: true },
+        { id: "mbti", title: "Personality Type", description: "Your personality type and what it means for dating", icon: Brain, path: "/quiz/mbti", duration: "8 min", questions: "20 Q", badge: "MBTI" },
       ],
     },
     {
       title: "Understand each other",
-      sub: "See the dynamic clearly",
+      sub: "How you two connect",
       quizzes: [
         { id: "love", title: "Love Language", description: "How you give love — and how to spot hers in under a week", icon: Heart, path: "/quiz/love", duration: "5 min", questions: "15 Q", badge: "Chapman" },
         { id: "style", title: "Attachment Style", description: "Anxious, avoidant, secure — how you bond and what throws you off", icon: Users, path: "/quiz/relationship-style", duration: "6 min", questions: "12 Q", badge: "Bowlby" },
-        { id: "compatibility", title: "Compatibility", description: "Communication, conflict, intimacy, values, growth — the five that matter", icon: Users2, path: "/quiz/compatibility", duration: "4 min", questions: "10 Q", badge: "Gottman" },
+        { id: "compatibility", title: "Compatibility", description: "The five things that make or break a couple", icon: Users2, path: "/quiz/compatibility", duration: "4 min", questions: "10 Q", badge: "Gottman" },
       ],
     },
     {
       title: "Use it tonight",
-      sub: "Skills you can run this week",
+      sub: "Put what you learn to use",
       quizzes: [
-        { id: "date-iq", title: "Date Night IQ", description: "Your evening profile plus date moves that actually fit your style", icon: Stars, path: "/quiz/date-night-iq", duration: "3 min", questions: "8 Q", badge: "Applied" },
+        { id: "date-iq", title: "Date Night IQ", description: "Find your date style and get ideas that fit it", icon: Stars, path: "/quiz/date-night-iq", duration: "3 min", questions: "8 Q", badge: "Applied" },
       ],
     },
   ];
