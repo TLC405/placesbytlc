@@ -12,7 +12,7 @@ interface ProfileContextValue {
 const ProfileContext = createContext<ProfileContextValue | undefined>(undefined);
 export function ProfileProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState(readProfile);
-  const [needsIntake, setNeedsIntake] = useState(() => localStorage.getItem(INTAKE_KEY) !== "true");
+  const [needsIntake, setNeedsIntake] = useState(false);
   const [editing, setEditing] = useState(false);
   const finish = () => { localStorage.setItem(INTAKE_KEY, "true"); setNeedsIntake(false); setEditing(false); };
   const saveProfile = (next: LocalProfile) => { localStorage.setItem(PROFILE_KEY, JSON.stringify(next)); setProfile(next); finish(); };
